@@ -27,6 +27,19 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # My apps
+    'owner',
+    'payroll_dept',
+    'hr_dept',
+    'asset_dept',
+    'clients_dept',
+    'car',
+    'restaurant',
+    'rest_manager',
+    'driver',
+    'users',
+    
+    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,16 +53,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'djoser',
     
-    # My apps
-    'owner',
-    'payroll_dept',
-    'hr_dept',
-    'asset_dept',
-    'clients_dept',
-    'car',
-    'restaurant',
-    'rest_manager',
-    'driver',
     
 ]
 
@@ -117,6 +120,9 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# User
+AUTH_USER_MODEL = 'users.GeneralUser'
 
 
 # Internationalization
