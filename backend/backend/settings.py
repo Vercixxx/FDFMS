@@ -21,7 +21,7 @@ SECRET_KEY = secret_data.get("SECRET_KEY_VALUE")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -39,6 +39,12 @@ INSTALLED_APPS = [
     'driver',
     'users',
     
+    # My packages
+    'rest_framework',
+    'rest_framework.authtoken',
+    'corsheaders',
+    'djoser',
+    
     # Django
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,11 +53,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # My packages
-    'rest_framework',
-    'rest_framework.authtoken',
-    'corsheaders',
-    'djoser',
     
     
 ]
