@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'rest_manager',
     'driver',
     'users',
+    'fleet',
     
     # My packages
     'rest_framework',

@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
@@ -9,7 +8,7 @@ from .models import GeneralUser
 class GeneralUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeneralUser
-        fields = ['username', 'password', 'email' , 'user_role']
+        fields = ['id', 'username', 'password', 'email' , 'user_role']
         
 class GeneralUserRegistrationSerializer(serializers.ModelSerializer):
     
