@@ -2,31 +2,33 @@
 # Auth
 from django.contrib.auth import authenticate, get_user_model, login, logout
 # Password Auth
-from django.contrib.auth import password_validation
 from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.exceptions import ValidationError
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.contrib.auth.password_validation import get_password_validators
+from rest_framework.authtoken.models import Token
 
-from .models import GeneralUser
+
+
 from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer
 from django.http import JsonResponse
 
+# Models
+from .models import GeneralUser
+from asset_dept.models import *
+from clients_dept.models import *
+from hr_dept.models import *
+from payroll_dept.models import *
+from driver.models import Driver
+from rest_manager.models import RestManager
 
-def is_password_valid(password):
-    password_validators = get_password_validators({})
-    password_errors = []
-
-    for validator in password_validators:
-        try:
-            validator.validate(password)
-        except ValidationError as e:
-            password_errors.extend(e.messages)
-    
-    return password_errors
+def app_redirect(role):
+    role = f'{role}'
+    output_redirect = f'{role}_dashboard' 
+    return output_redirect
 
 @api_view(['GET'])
 def getUsers(request):
@@ -53,6 +55,10 @@ def createUser(request):
             data['message'] = 'Succesfully registered a new User'
             data['username'] = account.username
             data['user_role'] = account.user_role
+            
+            user = GeneralUser.objects.get(username=request.data['username'])
+            token = Token.objects.create(user=user)
+            data['token'] = token.key
         
         else:
             data = serializer.errors
@@ -75,16 +81,29 @@ def generalLogIn(request):
         general_user = authenticate(username=username, password=password)
     
         if general_user is not None:
-            login(request, general_user)
-        
-            return Response({'message': 'Logged in successfully', 'role' : general_user.user_role, 'username': general_user.username}, status=status.HTTP_200_OK)
+            user_role = general_user.user_role
+
+            user_role_to_model = {
+                'Driver': Driver,
+                'Manager': RestManager,
+            }
+
+            if user_role in user_role_to_model:
+                using_model = user_role_to_model[user_role]
+                logged_user = using_model.objects.get(id=general_user.id)
+                login(request, logged_user)
+            
+            
+            token, created = Token.objects.get_or_create(user=general_user)
+            redirection = app_redirect(general_user.user_role)
+            return JsonResponse({'message': 'Logged in successfully', 'user-model' : using_model, 'username': general_user.username, 'redirect_to': redirection, 'token':token.key}, status=status.HTTP_200_OK)
         
         else:
-            return Response({'message': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse({'message': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
         
     else:
-        return Response({'message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # CHANGE TO POST IN PRODUCTION=========================================== 
@@ -95,3 +114,14 @@ def generalLogOut(request):
         return Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
     else:
         return Response({'message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_token(request):
+    return JsonResponse({'passed_for': request.user.username})
+
+
+
+
+
