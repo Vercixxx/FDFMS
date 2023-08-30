@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'restaurant',
     'rest_manager',
     'driver',
+    'administrator',
     'fleet',
     
     # My packages
