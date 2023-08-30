@@ -1,3 +1,9 @@
 from django.db import models
+from users.models import GeneralUser
 
-# Create your models here.
+
+class Driver(GeneralUser):
+    phone_number = models.IntegerField()
+
+    def __str__(self):
+        return self.username

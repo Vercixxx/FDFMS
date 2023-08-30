@@ -21,7 +21,7 @@ SECRET_KEY = secret_data.get("SECRET_KEY_VALUE")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -38,6 +38,13 @@ INSTALLED_APPS = [
     'rest_manager',
     'driver',
     'users',
+    'fleet',
+    
+    # My packages
+    'rest_framework',
+    'rest_framework.authtoken',
+    'corsheaders',
+    'djoser',
     
     # Django
     'django.contrib.admin',
@@ -47,11 +54,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # My packages
-    'rest_framework',
-    'rest_framework.authtoken',
-    'corsheaders',
-    'djoser',
     
     
 ]
@@ -72,6 +74,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'backend.urls'
+
 
 TEMPLATES = [
     {
@@ -97,8 +100,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': secret_data.get("DB_NAME"),
+        'USER': secret_data.get("DB_USER"),
+        'PASSWORD': secret_data.get("DB_PASSWORD"),
+        'HOST': secret_data.get("DB_HOST"),
+        'PORT': secret_data.get("DB_PORT"),
     }
 }
 
