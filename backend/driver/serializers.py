@@ -2,16 +2,16 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 
-from .models import RestManager
+from .models import Driver
 from users.models import GeneralUser
 
 
-class AddManagerSerializer(serializers.ModelSerializer):
+class AddDriverSerializer(serializers.ModelSerializer):
     
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only = True)
     
     class Meta:
-        model = RestManager
+        model = Driver
         fields = '__all__'
         extra_kwargs = {
             'password': {'write_only': True,
@@ -22,13 +22,13 @@ class AddManagerSerializer(serializers.ModelSerializer):
 
 
     def save(self):
-        account = RestManager(
-            user_role = 'Manager',
+        account = Driver(
+            user_role = 'Driver',
             email = self.validated_data['email'],
             username = self.validated_data['username'],
             first_name = self.validated_data['first_name'],
             last_name = self.validated_data['last_name'],
-            test_field = self.validated_data['test_field'],  #Temporary
+            phone_number123 = self.validated_data['phone_number'], #Temporary
         )
     
         password = self.validated_data['password']

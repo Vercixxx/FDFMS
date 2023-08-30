@@ -3,7 +3,10 @@ from users.models import GeneralUser
 
 
 class Driver(GeneralUser):
-    phone_number = models.IntegerField()
+    phone_number123 = models.IntegerField()
+
+    class Meta:
+        db_table = 'Drivers'
 
     def __str__(self):
         return self.username
