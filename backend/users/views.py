@@ -12,20 +12,29 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
 
+from django.http import JsonResponse
 
 from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer
+from owner.serializers import AddOwnerSerializer
 from rest_manager.serializers import AddManagerSerializer
+from asset_dept.serializers import AddAssetUserSerializer
+from clients_dept.serializers import AddClientsUserSerializer
+from hr_dept.serializers import AddHRUserSerializer
+from payroll_dept.serializers import AddPayrollUserSerializer
 from driver.serializers import AddDriverSerializer
-from django.http import JsonResponse
+from administrator.serializers import AddAdministratorSerializer
+
 
 # Models
 from .models import GeneralUser
-from asset_dept.models import *
-from clients_dept.models import *
-from hr_dept.models import *
-from payroll_dept.models import *
-from driver.models import Driver
+from owner.models import Owner
 from rest_manager.models import RestManager
+from asset_dept.models import AssetUser
+from clients_dept.models import ClientsUser
+from hr_dept.models import HRUser
+from payroll_dept.models import PayrollUser
+from driver.models import Driver
+from administrator.models import Administrator
 
 def app_redirect(role):
     role = f'{role}'
@@ -52,8 +61,14 @@ def add_user(request):
         user_role = request.data.get('user_role')
         
         serializers = {
+            'Owner' : AddOwnerSerializer,
             'Manager' : AddManagerSerializer,
-            'Driver' : AddDriverSerializer,
+            'Asset' : AddAssetUserSerializer,
+            'Clients' : AddClientsUserSerializer,
+            'HR' : AddHRUserSerializer,
+            'Payroll' : AddPayrollUserSerializer,
+            'Driver' : AddOwnerSerializer,
+            'Administrator' : AddAdministratorSerializer,
         }
         
         sz = serializers[user_role]
@@ -94,8 +109,14 @@ def log_in(request):
             user_role = general_user.user_role
 
             user_role_to_model = {
-                'Driver': Driver,
+                'Owner': Owner,
                 'Manager': RestManager,
+                'Asset': AssetUser,
+                'Clients': ClientsUser,
+                'HR': HRUser,
+                'Payroll': PayrollUser,
+                'Driver': Driver,
+                'Administrator': Administrator,
             }
 
             if user_role in user_role_to_model:
