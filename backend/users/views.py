@@ -11,8 +11,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
+import json 
+import datetime
 
 from django.http import JsonResponse
+from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
 
 from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer
 from owner.serializers import AddOwnerSerializer
@@ -104,8 +108,9 @@ def log_in(request):
         password = request.data.get('password')
  
         general_user = authenticate(username=username, password=password)
-    
+
         if general_user is not None:
+
             user_role = general_user.user_role
 
             user_role_to_model = {
@@ -123,31 +128,44 @@ def log_in(request):
                 using_model = user_role_to_model[user_role]
                 logged_user = using_model.objects.get(id=general_user.id)
                 login(request, logged_user)
-                print(using_model)
+
             
             token, created = Token.objects.get_or_create(user=general_user)
             redirection = app_redirect(general_user.user_role)
-            return JsonResponse({'message': 'Logged in successfully',  'username': logged_user.username, 'user_model':using_model.__name__, 'redirect_to': redirection, 'token':token.key}, status=status.HTTP_200_OK)
+            
+            # user objects return 
+            user_obj = serializers.serialize('json', [logged_user])
+            
+            return JsonResponse({'message': 'Logged in successfully',  'username': logged_user.username, 'user_model':using_model.__name__, 'redirect_to': redirection, 'token':token.key, 'user': user_obj, 'user_role':logged_user.user_role})
         
         else:
-            return JsonResponse({'message': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse({'error': 'Invalid username or password'})
 
         
     else:
-        return JsonResponse({'message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'message': 'Invalid request'})
 
 
-# CHANGE TO POST IN PRODUCTION=========================================== 
-@api_view(['GET'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+@api_view(['POST'])
 def log_out(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
+
         if request.user.is_authenticated:
+            token_dict = request.data
+            token = token_dict.get('token')
+            
+            # user = GeneralUser.objects.get(auth_token=token).first() 
+            # request.user = user
+            
+            request.session.flush()
             logout(request)
-            return JsonResponse({'message': 'Logged out successfully'}, status=200)
+            return JsonResponse({'message': 'Logged out successfully'})
         else:
-            return JsonResponse({'message': 'User is not logged in'}, status=400)
+            return JsonResponse({'error': 'User is not logged in'})
     else:
-        return JsonResponse({'message': 'Invalid request'}, status=400)
+        return JsonResponse({'error': 'Invalid request'})
 
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
@@ -155,7 +173,39 @@ def log_out(request):
 def get_token(request):
     return JsonResponse({'passed_for': request.user.username})
 
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+@api_view(['POST'])
+def get_user_data(request):
+    authorization_header = request.META.get('HTTP_AUTHORIZATION')
+    token = authorization_header.split(' ')[1] if authorization_header.startswith('Token ') else None
+    
+    all_data = request.data
+    user_model = all_data.get('user_model')
+
+    
+    user_role_to_serializer = {
+        'Owner': AddOwnerSerializer,
+        'Manager': AddManagerSerializer,
+        'Asset': AddAssetUserSerializer,
+        'Clients': AddClientsUserSerializer,
+        'HR': AddHRUserSerializer,
+        'Payroll': AddPayrollUserSerializer,
+        'Driver': AddDriverSerializer,
+        'Administrator': AddAdministratorSerializer,
+    }
+    
+    if user_model in user_role_to_serializer:
+        serializer_class = user_role_to_serializer[user_model]
+        user_class = serializer_class.Meta.model
+    else:
+        return JsonResponse({'error': 'Unsupported user model'})
+
+    user = user_class.objects.get(auth_token=token)
+        
+
+    serializer = serializer_class(user)
+    user_data = serializer.data
 
 
-
-
+    return JsonResponse(user_data)
