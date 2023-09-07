@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import HRUser
 
-# Register your models here.
+@admin.register(HRUser)
+class YourModelAdmin(admin.ModelAdmin):
+    list_display = ['username', 'user_role', 'is_active']
