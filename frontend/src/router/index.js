@@ -2,7 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 // My imports
 import Login from '../components/Login.vue'
-import HrView from '../views/HrView.vue'
+
+// hr
+import { hrRoutes } from './hrRoutes'
 
 
 
@@ -12,11 +14,7 @@ const routes = [
     name: 'Login',
     component: Login
   },
-  {
-    path: '/hr',
-    name: 'HrView',
-    component: HrView,
-  },
+  ...hrRoutes,
 ]
 
 

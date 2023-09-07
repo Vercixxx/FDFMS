@@ -7,25 +7,18 @@
     </div>
 
     <div class="p-2 row d-flex justify-content-center align-items-start min-vh-50" style="margin-top: 5%;">
-        <div class="col-12 col-md-6">
-
+        <div class="col-12 col-md-4">
 
             <form action="" method="POST" class="mx-auto w-100 mb-4 p-2 text-center " @submit.prevent="login">
 
 
 
-                <!-- temporary error -->
-                <div v-if="responseData" class="response-div">
-                    <pre> {{ responseData }}</pre>
-                    <pre>{{ responseData.message }}</pre>
-                </div>
-                <!-- temporary error -->
 
 
                 <!-- Username section -->
-                <div class="row mb-3">
+                <div class="row mb-5">
                     <!-- SVG image of user -->
-                    <div class="col-2 d-flex justify-content-center align-items-center">
+                    <div class="col-2 d-flex justify-content-end align-items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
                             class="bi bi-person" viewBox="0 0 16 16">
                             <path
@@ -35,15 +28,17 @@
                     <!-- Input form for username -->
                     <div class="col-10 form-floating d-flex justify-content-center align-items-center">
                         <input type="text" class="form-control" name="username" id="username" ref="usernameInput"
-                            placeholder="username" v-model="formData.username" :minlength="4" required />
+                            placeholder="username" v-model="formData.username" :minlength="4"
+                            :class="{ 'border border-danger': dataError }" required />
                         <label for="username" class="text-center">Username</label>
                     </div>
                 </div>
 
+
                 <!-- Password section -->
-                <div class="row mb-5">
+                <div class="row mb-2">
                     <!-- SVG image of key -->
-                    <div class="col-2 d-flex justify-content-center align-items-center">
+                    <div class="col-2 d-flex justify-content-end align-items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-key"
                             viewBox="0 0 16 16">
                             <path
@@ -85,27 +80,45 @@
                         <label for="password" class="text-center">
                             Password
                         </label>
-                    </div>
-                    <div class="form-text" id="basic-addon4">
-                        <button class="btn btn-outline-secondary btn-sm mb-4" disabled>
-                            Forgot password
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
-                                class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd"
-                                    d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z" />
-                                <path
-                                    d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z" />
-                            </svg>
-                        </button>
+
+                        <div>
+
+                        </div>
+
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-2">
+
+                    </div>
+                    <div class="col-10 d-flex justify-content-between">
+                        <div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="remember_me_checkbox">
+                                <label class="form-check-label" for="remember_me_checkbox">Remember me</label>
+                            </div>
+                        </div>
+
+                        <div class="form-text" id="basic-addon4">
+                            <p><a href="#" class="link-danger link-offset-2 text-decoration-none">
+                                    Forgot password
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd"
+                                            d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z" />
+                                        <path
+                                            d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z" />
+                                    </svg>
+                                </a></p>
+
+                        </div>
+                    </div>
+
+                </div>
+
                 <!-- Buuttons section -->
-                <div class="d-flex flex-column align-items-center justify-content-center">
-
-
-
-
+                <div class="d-flex mt-5 flex-column align-items-center justify-content-center">
 
                     <button class="btn btn-success btn-lg" @click="login" :disabled="!isFormValid || isButtonDisabled">
                         Log in
@@ -118,17 +131,37 @@
                         </svg>
                     </button>
 
-
-
                 </div>
                 <!-- Buuttons section -->
 
-
             </form>
 
-
-
         </div>
+
+        <!-- modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ErrorModal" id="hiddenButton"
+            style="display: none;">
+            
+        </button>
+
+        <div class="modal fade" id="ErrorModal" tabindex="-1" aria-labelledby="ErrorModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="ErrorModalLabel">Error</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center text-danger fs-4">
+                        {{ dataError }}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- modal -->
+
+
+
     </div>
 </template>
 
@@ -143,6 +176,20 @@ export default {
         this.isButtonDisabled = false;
     },
 
+    mounted() {
+        const cookie_username = Cookies.get('username');
+        const cookie_password = Cookies.get('password');
+        
+        if (cookie_username && cookie_password) {
+            this.isButtonDisabled = false;
+ 
+            this.$refs.usernameInput.value = cookie_username;
+            this.$refs.passwordInput.value = cookie_password;
+
+            this.$refs.usernameInput.dispatchEvent(new Event('input'));
+            this.$refs.passwordInput.dispatchEvent(new Event('input'));
+        }
+    },
     data() {
         return {
             showPassword: false,
@@ -150,7 +197,7 @@ export default {
                 username: '',
                 password: '',
             },
-            responseData: null, // Inicjalnie brak odpowiedzi temporary for tests
+            dataError: null,
             isButtonDisabled: false,
             errorContent: '', // Treść błędu do wyświetlenia w modalu
         };
@@ -172,7 +219,7 @@ export default {
         },
         async login() {
             if (this.isFormValid) {
-                this.isButtonDisabled = true; // Dezaktywuj przycisk przed wysłaniem żądania
+                this.isButtonDisabled = true;
 
                 const username = this.$refs.usernameInput.value;
                 const password = this.$refs.passwordInput.value;
@@ -188,18 +235,25 @@ export default {
 
                 if (response.data.error) {
                     this.isButtonDisabled = false; // Włącz przycisk po otrzymaniu odpowiedzi lub błędzie
-                    this.responseData = response.data.error; // temporary for tests
+                    this.dataError = response.data.error;
 
                     // modal
                     this.errorContent = response.data.error;
-                    this.isErrorModalVisible = true;
+                    document.getElementById('hiddenButton').click();
                 }
                 else {
                     // Authentication was successfull
                     const token = response.data.token;
                     Cookies.set('token', token, { expires: 7 });
+                    localStorage.setItem('user_role', response.data.user_role)
 
-                    localStorage.setItem('user_model', response.data.user_role)
+                    // check if remeber_me is checked
+                    const checkbox = document.getElementById("remember_me_checkbox");
+                    if (checkbox.checked) {
+                        Cookies.set('username', username, { expires: new Date('9999-12-31') });
+                        Cookies.set('password', password, { expires: new Date('9999-12-31') });
+
+                    }
                     await this.$router.push('/hr');
                 }
             }
