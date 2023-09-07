@@ -9,10 +9,10 @@
           <p class="fs-2 fst-italic mb-4 px-2">FDFMS - HR Management console</p>
 
         </div>
-        <div class="p-2">
+        <div class="p-2 text-end">
 
-          <button type="submit" name="" id="" class="btn btn-danger btn-lg shadow" @click="logout" >Logout</button>
           <p class="fs-3 mb-1 px-2">Hi, {{ userData.username }}</p>
+          <button type="submit" name="" id="" class="btn btn-danger btn-lg shadow" @click="logout">Logout</button>
         </div>
 
       </div>
@@ -32,13 +32,14 @@
           <ul class="navbar-nav">
             <!-- Option 1 -->
             <li class="nav-item dropdown">
-              <button class="nav-link dropdown-toggle btn btn-outline-secondary p-2 fs-5" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <button class="nav-link dropdown-toggle btn btn-outline-secondary p-2 fs-5" href="#" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
                 Users
               </button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Add user</a></li>
-                <li><a class="dropdown-item" href="#">Modify user</a></li>
-                <li><a class="dropdown-item" href="#">Remove user</a></li>
+                <li><a class="dropdown-item" @click="showAddUserComponent">Add user</a></li>
+                <li><a class="dropdown-item" @click="showModifyUserComponent">Modify user</a></li>
+                <!-- <li><a class="dropdown-item" @click="showRemoveUserComponent">Remove user</a></li> -->
               </ul>
             </li>
             <!-- Option 1 -->
@@ -50,7 +51,18 @@
 
 
 
-    <button type="submit" name="" id="" class="btn btn-primary m-5 position-fixed start-0 bottom-0" @click="fetchTokenData">check token</button>
+    <button type="submit" name="" id="" class="btn btn-primary m-5 position-fixed start-0 bottom-0"
+      @click="fetchTokenData">check token</button>
+
+
+    <!-- content -->
+    <div class="cointainter m-2 p-2">
+      <component :is="currentComponent"></component>
+    </div>
+    <!-- content -->
+
+
+
 
 
   </div>
@@ -60,12 +72,28 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+// components
+import AddUser from '../components/hr/AddUser';
+
+// add users components
+import HrUser from '../components/hr/users/AddHr';
+import PayrollUser from '../components/hr/users/AddPayroll';
+import AssetUser from '../components/hr/users/AddAsset';
+import ClientUser from '../components/hr/users/AddClient';
+import ManagerUser from '../components/hr/users/AddManager';
+import DriverUser from '../components/hr/users/AddDriver';
+
+import ModifyUser from '../components/hr/ModifyUser';
+import RemoveUser from '../components/hr/RemoveUser';
+
+
 export default {
   name: "HRView",
 
   data() {
     return {
-      userData: {}, // Inicjalizuj pustym obiektem
+      userData: {},
+      currentComponent: null,
     };
   },
 
@@ -75,26 +103,27 @@ export default {
     if (!token) {
       this.$router.push('/');
 
-    } else {
-      const user_model = localStorage.getItem('user_model')
-      const response = await axios.post('user/', { 'user_model': user_model });
-      this.userData = response.data;
-
-      if (response.data.user_role != 'HR') {
-        await axios.post('log-out/', { token });
-        Cookies.remove('token')
-        this.$router.push('/');
-  
+    } 
+    else {
+      const user_role = localStorage.getItem('user_role')
+      if (user_role != 'HR') {
+        this.logout()
       }
-    }
+      else {
+        const response = await axios.post('user/', { 'user_role': user_role });
+        this.userData = response.data;
+        console.log(user_role)
+        console.log(response.data)
+      }
 
+    }
 
 
   },
 
+
   methods: {
     async logout() {
-
       const token = Cookies.get('token');
 
       if (token) {
@@ -103,7 +132,7 @@ export default {
         this.$router.push('/');
       }
       else {
-        console.warn('Brak tokena użytkownika w localStorage.');
+        console.warn('Missing token');
       }
 
     },
@@ -115,13 +144,40 @@ export default {
 
         console.log('Username:', response.data.passed_for);
 
-      } catch (error) {
+      } 
+      catch (error) {
 
         console.error('Error:', error);
       }
     },
 
-
+    showAddUserComponent() {
+      this.currentComponent = AddUser;
+    },
+    showAddHrComponent() {
+      this.currentComponent = HrUser;
+    },
+    showAddPayrollComponent() {
+      this.currentComponent = PayrollUser;
+    },
+    showAddAssetComponent() {
+      this.currentComponent = AssetUser;
+    },
+    showAddClientComponent() {
+      this.currentComponent = ClientUser;
+    },
+    showAddManagerComponent() {
+      this.currentComponent = ManagerUser;
+    },
+    showAddDriverComponent() {
+      this.currentComponent = DriverUser;
+    },
+    showModifyUserComponent() {
+      this.currentComponent = ModifyUser;
+    },
+    showRemoveUserComponent() {
+      this.currentComponent = RemoveUser;
+    },
   },
 
   components: {},
