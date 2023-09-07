@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 
+from driver.models import Driver
+
 class Car(models.Model):
     vin = models.TextField(primary_key=True, max_length=17)
     
@@ -41,4 +43,53 @@ class Car(models.Model):
         return self.vin
     class Meta:
         db_table = 'Cars'
+        
+class DriverCar(models.Model):
+    date =  models.DateTimeField(null=True)
     
+    user = models.ForeignKey(Driver, on_delete=models.CASCADE)
+    car = models.ForeignKey(Car, on_delete=models.CASCADE)
+    
+    car_mileage = models.IntegerField(null=True)
+    
+    car_condition_options = (
+        ('Good', 'Good'),
+        ('Average', 'Average'),
+        ('Bad', 'Bad'),
+        )
+    
+    car_condition = models.CharField(
+        max_length=20,
+        choices=car_condition_options,
+        default='Good'
+    )
+    
+    how_clean_is_car_options = (
+        ('5', '5'),
+        ('4', '4'),
+        ('3', '3'),
+        ('2', '2'),
+        ('1', '1'),
+
+        )
+    
+    car_cleanliness = models.CharField(
+        max_length=5,
+        choices=how_clean_is_car_options,
+        default='5'
+    )
+    
+    additional_remarks = models.TextField(null=True)
+    
+    def formatted_date(self):
+        return self.date.strftime('%d:%m:%Y:%H:%M') if self.date else ""
+
+    def save(self, *args, **kwargs):
+        if self.formatted_date():
+            self.date = timezone.datetime.strptime(self.formatted_date(), '%d:%m:%Y:%H:%M')
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return self.date, self.car, self.car_mileage
+    class Meta:
+        db_table = 'DD_report'

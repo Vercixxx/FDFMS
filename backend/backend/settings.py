@@ -28,6 +28,7 @@ ALLOWED_HOSTS = ['127.0.0.1']
 
 INSTALLED_APPS = [
     # My apps
+    'users',
     'owner',
     'payroll_dept',
     'hr_dept',
@@ -37,7 +38,7 @@ INSTALLED_APPS = [
     'restaurant',
     'rest_manager',
     'driver',
-    'users',
+    'administrator',
     'fleet',
     
     # My packages
@@ -58,9 +59,11 @@ INSTALLED_APPS = [
     
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
-]
+CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:8080",
+#     "http://127.0.0.1:8080",
+# ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
