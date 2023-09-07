@@ -8,7 +8,7 @@ from .models import GeneralUser
 class GeneralUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeneralUser
-        fields = ['id', 'username', 'password', 'email' , 'user_role']
+        fields = ['username', 'email' , 'user_role', 'is_active']
         
 class GeneralUserRegistrationSerializer(serializers.ModelSerializer):
     

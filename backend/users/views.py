@@ -43,18 +43,17 @@ def app_redirect(role):
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 @api_view(['GET'])
-def get_users(request, role):
+def get_users(request, role, active):
     queryset  = GeneralUser.objects.all()
     
     if role and role.lower() != 'all':
             queryset = queryset.filter(user_role=role)
 
-    # if active and active.lower() != 'all':
-    #     #  'true' lub 'false'
-    #     if active.lower() == 'true':
-    #         queryset = queryset.filter(is_active=True)
-    #     elif active.lower() == 'false':
-    #         queryset = queryset.filter(is_active=False)
+    if active and active.lower() != 'all':
+        if active.lower() == 'true':
+            queryset = queryset.filter(is_active=True)
+        elif active.lower() == 'false':
+            queryset = queryset.filter(is_active=False)
 
 
     serializer = GeneralUserSerializer(queryset, many=True) 
