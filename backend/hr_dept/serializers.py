@@ -5,7 +5,11 @@ from django.contrib.auth.password_validation import validate_password
 from .models import HRUser
 from users.models import GeneralUser
 
-
+class HRUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HRUser
+        fields = '__all__'
+        
 class AddHRUserSerializer(serializers.ModelSerializer):
     
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only = True)
@@ -28,11 +32,12 @@ class AddHRUserSerializer(serializers.ModelSerializer):
             username = self.validated_data['username'],
             first_name = self.validated_data['first_name'],
             last_name = self.validated_data['last_name'],
-            test_field = self.validated_data['test_field'],  #Temporary
+            test_field = self.validated_data['test_field'],  #Temporary 
         )
     
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
+        
         
         
         if password != password2:
@@ -41,3 +46,4 @@ class AddHRUserSerializer(serializers.ModelSerializer):
         account.set_password(password)
         account.save()
         return account
+

@@ -2,17 +2,12 @@
 # Auth
 from django.contrib.auth import authenticate, get_user_model, login, logout
 # Password Auth
-from django.http import HttpResponse
-from django.shortcuts import render
-from rest_framework import status
+from django.shortcuts import get_object_or_404, render
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-
-import json 
-import datetime
 
 from django.http import JsonResponse
 from django.core import serializers
@@ -23,7 +18,7 @@ from owner.serializers import AddOwnerSerializer
 from rest_manager.serializers import AddManagerSerializer
 from asset_dept.serializers import AddAssetUserSerializer
 from clients_dept.serializers import AddClientsUserSerializer
-from hr_dept.serializers import AddHRUserSerializer
+from hr_dept.serializers import AddHRUserSerializer, HRUserSerializer
 from payroll_dept.serializers import AddPayrollUserSerializer
 from driver.serializers import AddDriverSerializer
 from administrator.serializers import AddAdministratorSerializer
@@ -45,23 +40,35 @@ def app_redirect(role):
     output_redirect = f'{role}_dashboard' 
     return output_redirect
 
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
 @api_view(['GET'])
-def get_users(request):
-    """
-    Method to log-in user
-    """
-    users = GeneralUser.objects.all()
+def get_users(request, role):
+    queryset  = GeneralUser.objects.all()
     
-    users_serialized = GeneralUserSerializer(users, many=True)
-    return Response(users_serialized.data)
+    if role and role.lower() != 'all':
+            queryset = queryset.filter(user_role=role)
+
+    # if active and active.lower() != 'all':
+    #     #  'true' lub 'false'
+    #     if active.lower() == 'true':
+    #         queryset = queryset.filter(is_active=True)
+    #     elif active.lower() == 'false':
+    #         queryset = queryset.filter(is_active=False)
 
 
+    serializer = GeneralUserSerializer(queryset, many=True) 
+    return JsonResponse(serializer.data, safe=False)
+
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
 @api_view(['POST'])
 def add_user(request):
     """
     Method to register new general user
     """
     if request.method == 'POST':
+        
         user_role = request.data.get('user_role')
         
         serializers = {
@@ -83,16 +90,43 @@ def add_user(request):
             account = serializer.save()
             data['message'] = 'Succesfully registered a new User'
             data['username'] = account.username
-            data['user_role'] = account.user_role
             
             user = GeneralUser.objects.get(username=request.data['username'])
             token = Token.objects.create(user=user)
-            data['token'] = token.key
+            # data['token'] = token.key
         
         else:
             data = serializer.errors
+            print(data)
             
         return JsonResponse(data)
+
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+@api_view(['DELETE'])
+def remove_user(request, username, user_role):
+    
+    user_role_to_model = {
+        'Owner': Owner,
+        'Manager': RestManager,
+        'Asset': AssetUser,
+        'Clients': ClientsUser,
+        'HR': HRUser,
+        'Payroll': PayrollUser,
+        'Driver': Driver,
+        'Administrator': Administrator,
+    }
+    
+    user_model = user_role_to_model[user_role]
+    
+    try:
+        user  = get_object_or_404(user_model, username=username)
+        user.delete()
+        return JsonResponse({'message': 'User successfully deleted'})
+    except HRUser.DoesNotExist:
+        return JsonResponse({'error': 'User does not exist'})
+    except Exception as e:
+        return JsonResponse({'error' : str(e)})
 
 
 @api_view(['POST'])
@@ -181,7 +215,7 @@ def get_user_data(request):
     token = authorization_header.split(' ')[1] if authorization_header.startswith('Token ') else None
     
     all_data = request.data
-    user_model = all_data.get('user_model')
+    user_model = all_data.get('user_role')
 
     
     user_role_to_serializer = {
@@ -189,7 +223,7 @@ def get_user_data(request):
         'Manager': AddManagerSerializer,
         'Asset': AddAssetUserSerializer,
         'Clients': AddClientsUserSerializer,
-        'HR': AddHRUserSerializer,
+        'HR': HRUserSerializer,
         'Payroll': AddPayrollUserSerializer,
         'Driver': AddDriverSerializer,
         'Administrator': AddAdministratorSerializer,
