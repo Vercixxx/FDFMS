@@ -51,37 +51,13 @@
         <div class="input-group">
 
           <input class="form-control " type="search" placeholder="Search" aria-label="Search" v-model="search_content">
-          <button type="submit" class="btn btn-outline-success" @click="search">
+          <button type="button" class="btn btn-outline-success d-flex align-items-center px-3" @click="search">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search me-2"
               viewBox="0 0 16 16">
               <path
                 d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
             </svg>
           </button>
-          <button type="button" class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
-            data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-            <span class="visually-hidden">Toggle Dropdown</span>
-          </button>
-
-          <div class="dropdown-menu">
-            <li><a class="dropdown-item disabled text-center">Choose filters</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <div class="mb-1">
-              <input type="checkbox" class="btn-check dropdown-item" id="btncheck1" name="checkbox_title"
-                autocomplete="off" checked>
-              <label class="btn btn-outline-secondary w-100 rounded-0 border-0" for="btncheck1">Username</label>
-            </div>
-
-            <div class="mb-1">
-              <input type="checkbox" class="btn-check dropdown-item" id="btncheck2" name="checkbox_content"
-                autocomplete="off">
-              <label class="btn btn-outline-secondary w-100 rounded-0 border-0" for="btncheck2">Email</label>
-            </div>
-
-          </div>
 
         </div>
       </form>
@@ -185,7 +161,7 @@
     </div>
     <!-- Message modal -->
 
-      <button type="button" class="btn btn-primary" @click="reloadComponent">reload</button>
+    <button type="button" class="btn btn-primary" @click="reloadComponent">reload</button>
 
 
   </div>
@@ -227,15 +203,22 @@ export default {
     }
   },
 
+  computed: {
+    searchQuery() {
+      return this.search_content || 'all';
+    },
+  },
+
   methods: {
     async loadUsers() {
       try {
         const query_data = {
           role: this.selectedRole,
           active: this.selectedActive,
+          search: this.searchQuery,
         }
 
-        const response = await axios.get(`get-users/${query_data.role}/${query_data.active}/`);
+        const response = await axios.get(`get-users/${query_data.role}/${query_data.active}/${query_data.search}/`);
 
         this.users = response.data;
         console.log(response.data)
@@ -270,11 +253,11 @@ export default {
     },
 
     editUser(user) {
-
+      
     },
 
     search() {
-      console.log(this.search_content)
+      this.loadUsers();
     },
 
     reloadComponent() {
