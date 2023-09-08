@@ -12,7 +12,7 @@
         <div class="p-2 text-end">
 
           <p class="fs-3 mb-1 px-2">Hi, {{ userData.username }}</p>
-          <button type="submit" name="" id="" class="btn btn-danger btn-lg shadow" @click="logoutConfirmFunc">Logout</button>
+          <button type="submit" name="" id="" class="btn btn-danger shadow" @click="logoutConfirmFunc">Logout</button>
         </div>
 
       </div>

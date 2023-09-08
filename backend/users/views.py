@@ -34,6 +34,7 @@ from hr_dept.models import HRUser
 from payroll_dept.models import PayrollUser
 from driver.models import Driver
 from administrator.models import Administrator
+from django.db.models import Q
 
 def app_redirect(role):
     role = f'{role}'
@@ -43,7 +44,7 @@ def app_redirect(role):
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 @api_view(['GET'])
-def get_users(request, role, active):
+def get_users(request, role, active, search):
     queryset  = GeneralUser.objects.all()
     
     if role and role.lower() != 'all':
@@ -55,9 +56,14 @@ def get_users(request, role, active):
         elif active.lower() == 'false':
             queryset = queryset.filter(is_active=False)
 
+    users = queryset.all()
+    users_serialized = GeneralUserSerializer(users, many=True)
 
-    serializer = GeneralUserSerializer(queryset, many=True) 
-    return JsonResponse(serializer.data, safe=False)
+    if search != 'all':
+        search_results = [user for user in users_serialized.data if any(search_term in str(user.values()) for search_term in [search])]
+        return Response(search_results)
+    else:
+        return Response(users_serialized.data)
 
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
