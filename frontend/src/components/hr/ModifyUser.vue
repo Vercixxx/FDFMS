@@ -2,6 +2,7 @@
   <div>
 
     <p class="p-2 fw-bolder fs-5">Filters</p>
+
     <!-- Search bar section -->
     <div class="text-center mb-5 d-flex justify-content-between">
 
@@ -46,7 +47,8 @@
 
 
         <div class="btn-group mx-2">
-          <input type="text" name="" id="" class="input-group-text rounded-0 rounded-start w-25" v-model="pagination_amount">
+          <input type="text" name="" id="" class="input-group-text rounded-0 rounded-start w-25"
+            v-model="users_per_site" @keyup.enter="loadUsers">
           <span class="input-group-text rounded-0 rounded-end" id="basic-addon1">Users per site</span>
         </div>
 
@@ -57,7 +59,7 @@
 
         <div class="input-group">
 
-          <input class="form-control " type="search" placeholder="Search" aria-label="Search" v-model="search_content">
+          <input class="form-control " type="search" placeholder="Search" aria-label="Search" v-model="query">
           <button type="button" class="btn btn-outline-success d-flex align-items-center px-3" @click="search">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search me-2"
               viewBox="0 0 16 16">
@@ -73,6 +75,39 @@
 
     <!-- End of search bar section -->
 
+
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center ">
+      <!-- Button previous -->
+      <button type="button" class="btn btn-outline-secondary" @click="previousPage"
+        :disabled="!page_flip.previous">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left"
+          viewBox="0 0 16 16">
+          <path
+            d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+        </svg>
+      </button>
+
+      <!-- Current page -->
+      <p class="fw-bolder mx-2">Page {{ currentPage }} of {{ page_flip.count }}</p>
+
+      <!-- Button next -->
+      <button type="button" class="btn btn-outline-secondary " @click="nextPage"
+      :disabled="!page_flip.next">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right"
+          viewBox="0 0 16 16">
+          <path
+            d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+        </svg>
+      </button>
+
+    </div>
+
+    <!-- Pagination -->
+
+
+    <!-- Table -->
     <div v-if="users.length === 0" class="text-danger fs-2">
       No records.
     </div>
@@ -183,7 +218,11 @@ export default {
   data() {
     return {
       users: [],
-      search_content: '',
+      currentPage: 0,
+      users_per_site: 20,
+      page_flip: {
+      },
+      query: '',
       dataError: null,
       dataSuccess: null,
       dataConfirmUsername: null,
@@ -191,7 +230,6 @@ export default {
       selectedRole: 'All',
       selectedActive: 'All',
       query_data: {},
-      pagination_amount: '30',
     };
   },
 
@@ -211,12 +249,6 @@ export default {
     }
   },
 
-  computed: {
-    searchQuery() {
-      return this.search_content || 'all';
-    },
-  },
-
   methods: {
     async loadUsers() {
       try {
@@ -226,14 +258,36 @@ export default {
           search: this.searchQuery,
         }
 
-        const response = await axios.get(`get-users/${query_data.role}/${query_data.active}/${query_data.search}/`);
+        const response = await axios.get('api/get-gu/', {
+          params: {
+            limit: this.users_per_site,
+            offset: this.currentPage,
+            search: this.query,
+          }
+        });
 
-        this.users = response.data;
         console.log(response.data)
+
+        this.page_flip = {
+          count: response.data.count,
+          next: response.data.next,
+          previous: response.data.previous,
+        }
+
+        this.users = response.data.results;
       }
       catch (error) {
         console.error('Error when fetching', error);
       }
+    },
+
+    previousPage() {
+      this.currentPage -= 1;
+      this.loadUsers();
+    },
+    nextPage() {
+      this.currentPage += 1;
+      this.loadUsers();
     },
 
     deleteConfirm(username, user_role) {
@@ -242,9 +296,16 @@ export default {
       document.getElementById('confirm_modal_button').click();
     },
 
-    async deleteUser(username, user_role) {
+    async deleteUser(username, user_role, id) {
       try {
-        const response = await axios.delete(`remove-user/${username}/${user_role}/`);
+        const response = await axios.delete('api/get-gu/', {
+          params: {
+            id: id,
+            username: username,
+            user_role: user_role,
+          }
+        });
+        
         if (response.data.error) {
           this.dataError = response.data.error;
           document.getElementById('hiddenButton').click();

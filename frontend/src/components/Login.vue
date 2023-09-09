@@ -230,11 +230,11 @@ export default {
 
                 };
 
-                const response = await axios.post('log-in/', data, { timeout: 5000 })
-
+                const response = await axios.post('api/auth/', data)
+                console.log(response.data)
 
                 if (response.data.error) {
-                    this.isButtonDisabled = false; // Włącz przycisk po otrzymaniu odpowiedzi lub błędzie
+                    this.isButtonDisabled = false;
                     this.dataError = response.data.error;
 
                     // modal

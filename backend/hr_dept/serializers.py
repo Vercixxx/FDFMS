@@ -8,7 +8,7 @@ from users.models import GeneralUser
 class HRUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = HRUser
-        fields = '__all__'
+        fields = ['email', 'first_name', 'id', 'is_active', 'last_name', 'test_field', 'user_role', 'username']
         
 class AddHRUserSerializer(serializers.ModelSerializer):
     
