@@ -136,7 +136,12 @@ export default {
         this.logout()
       }
       else {
-        const response = await axios.post('user/', { 'user_role': user_role });
+        const response = await axios.get('api/gu/', {
+          params: {
+            user_role: user_role,
+          }
+        });
+
         this.userData = response.data;
         console.log(user_role)
         console.log(response.data)
@@ -159,8 +164,9 @@ export default {
 
       if (token) {
         Cookies.remove('token');
-        const response2 = await axios.post('log-out/', { token });
+        const response2 = await axios.delete('api/auth/', { token });
         this.$router.push('/');
+        console.log(response2)
       }
       else {
         console.warn('Missing token');
