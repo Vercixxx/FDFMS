@@ -26,7 +26,7 @@
 
 
 
-        <div class="btn-group dropdown">
+        <div class="btn-group dropdown mx-2">
           <span class="input-group-text rounded-0 rounded-start" id="basic-addon1">User status</span>
 
           <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
@@ -41,6 +41,13 @@
             <li @click="selectedActive = 'True'; loadUsers();"><a class="dropdown-item ">Active</a></li>
             <li @click="selectedActive = 'False'; loadUsers();"><a class="dropdown-item ">Not active</a></li>
           </ul>
+        </div>
+
+
+
+        <div class="btn-group mx-2">
+          <input type="text" name="" id="" class="input-group-text rounded-0 rounded-start w-25" v-model="pagination_amount">
+          <span class="input-group-text rounded-0 rounded-end" id="basic-addon1">Users per site</span>
         </div>
 
       </div>
@@ -184,6 +191,7 @@ export default {
       selectedRole: 'All',
       selectedActive: 'All',
       query_data: {},
+      pagination_amount: '30',
     };
   },
 
@@ -253,7 +261,7 @@ export default {
     },
 
     editUser(user) {
-      
+
     },
 
     search() {
