@@ -66,8 +66,19 @@
                     </div>
 
                     <div class="text-center">
-                        <button type="button" class="btn btn-success" @click="createUser"
-                            :disabled="!isFormValid">Create</button>
+                        <button type="button" class="btn btn-success shadow" @click="createUser" :disabled="!isFormValid"
+                            :class="{ 'btn-outline-danger': !isFormValid }">
+                            <span class="d-flex align-items-center">
+                                Create
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                    class="bi bi-person-add ms-2" viewBox="0 0 16 16">
+                                    <path
+                                        d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0Zm-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+                                    <path
+                                        d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z" />
+                                </svg>
+                            </span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -80,17 +91,42 @@
         <div class="modal fade" id="ErrorModal" tabindex="-1" aria-labelledby="ErrorModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <!-- Error -->
+                    <div v-if="dataError" class="modal-header d-flex justify-content-between">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red"
+                            class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                            <path
+                                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
+                            <path
+                                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
+                        </svg>
+                        <h1 class="modal-title fs-5 text-danger" id="confirmModalLabel">
+                            Error
+                        </h1>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red"
+                            class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                            <path
+                                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
+                            <path
+                                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
+                        </svg>
+                    </div>
+                    <!-- Error -->
+
+                    <!-- Success -->
+                    <div v-else class="modal-header">
                         <h1 class="modal-title fs-5" id="ErrorModalLabel">
-                            <p v-if="dataError">Error</p>
-                            <p v-else>Success</p>
+                            <p>Success!</p>
                         </h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
+                    <!-- Success -->
+
                     <div class="modal-body text-center text-danger">
                         <div v-for="(messages, field) in dataError" :key="field">
                             <p v-for="message in messages" :key="message">{{ field }} - {{ message }}</p>
                         </div>
+
                         <div v-if="dataCorrect">
                             <p class="text-success">
                                 Succesfully created {{ dataCorrect.username }} account
@@ -98,6 +134,11 @@
                         </div>
 
 
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="button" class="btn btn-secondary fs-5 w-25" data-bs-dismiss="modal">
+                            Ok
+                        </button>
                     </div>
 
                 </div>
@@ -166,7 +207,8 @@ export default {
             }
             console.log(fetched_data)
 
-            const response = await axios.post('add-user/', fetched_data);
+            this.dataError = ''
+            const response = await axios.post('api/create/', fetched_data);
 
 
             if (response.data.message) {

@@ -5,7 +5,7 @@ from users.models import GeneralUser
 from datetime import datetime
 
 class Driver(GeneralUser):
-    phone_number123 = models.IntegerField()
+    license_number = models.CharField(max_length=50, null=True)
 
     class Meta:
         db_table = 'Drivers'
