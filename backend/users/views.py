@@ -17,7 +17,7 @@ from asset_dept.serializers import AddAssetUserSerializer
 from clients_dept.serializers import AddClientsUserSerializer
 from hr_dept.serializers import AddHRUserSerializer, HRUserSerializer
 from payroll_dept.serializers import AddPayrollUserSerializer
-from driver.serializers import AddDriverSerializer
+from driver.serializers import AddDriverSerializer, DriverSerializer
 from administrator.serializers import AddAdministratorSerializer
 
 # Rest API
@@ -47,15 +47,41 @@ from django.db.models import Q
 # CBV
 
 class GUViewSet(viewsets.ModelViewSet):
-    serializer_class = GeneralUserSerializer
-    queryset = GeneralUser.objects.all()
-    
     # query
     filter_backends = (filters.SearchFilter, )
     search_fields = ('username', 'email')
 
+
+    def initial(self, request, *args, **kwargs):
+        super().initial(request, *args, **kwargs)
+        
+        # Choosing correct serializer
+        role = self.request.query_params.get('role')
+        
+        available_serializers = {
+            'HR': HRUserSerializer,
+            'Driver': DriverSerializer,
+            
+        }
+        
+        serializer_class = available_serializers.get(role, GeneralUserSerializer)
+        
+        self.serializer_class = serializer_class
+        
+        
+        status = self.request.query_params.get('status')
+        self.queryset = serializer_class.Meta.model.objects.all()
+        
+        # Filtering by status
+        if status == 'True':
+            self.queryset = self.queryset.filter(is_active=True)
+        elif status == 'False':
+            self.queryset = self.queryset.filter(is_active=False)
+
+        
+        
     
-    def get_gu(self, request):
+    def get_users(self, request):
         serializer = GeneralUserSerializer(self.queryset, many=True)
         return Response(serializer.data)
     
@@ -174,6 +200,45 @@ class UserAuth(APIView):
         logout(request)
         return JsonResponse({'message': 'Logged out successfully'})
 
+class AddUser(APIView):
+    def post(self, request):
+        print(request.data)
+        user_role = request.data.get('user_role')
+
+        serializers = {
+            'Owner' : AddOwnerSerializer,
+            'Manager' : AddManagerSerializer,
+            'Asset' : AddAssetUserSerializer,
+            'Clients' : AddClientsUserSerializer,
+            'HR' : AddHRUserSerializer,
+            'Payroll' : AddPayrollUserSerializer,
+            'Driver' : AddDriverSerializer,
+            'Administrator' : AddAdministratorSerializer,
+        }
+        
+        selected_serializer = serializers[user_role]
+        serializer = selected_serializer(data=request.data)
+        data = {}
+        
+        if serializer.is_valid():
+            account = serializer.save()
+            data['message'] = 'Succesfully registered a new User'
+            data['username'] = account.username
+            
+            user_model = account.__class__  # Klasa modelu użytkownika
+            user = user_model.objects.get(username=account.username)
+            
+            token = Token.objects.create(user=user)
+            
+            # data['token'] = token.key
+        
+        else:
+            data = serializer.errors
+            print(data)
+            
+        return JsonResponse(data)
+
+
 # CBV
 
 
@@ -204,46 +269,6 @@ def get_users(request, role, active, search):
     else:
         return Response(users_serialized.data)
 
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
-@api_view(['POST'])
-def add_user(request):
-    """
-    Method to register new general user
-    """
-    if request.method == 'POST':
-        
-        user_role = request.data.get('user_role')
-        
-        serializers = {
-            'Owner' : AddOwnerSerializer,
-            'Manager' : AddManagerSerializer,
-            'Asset' : AddAssetUserSerializer,
-            'Clients' : AddClientsUserSerializer,
-            'HR' : AddHRUserSerializer,
-            'Payroll' : AddPayrollUserSerializer,
-            'Driver' : AddOwnerSerializer,
-            'Administrator' : AddAdministratorSerializer,
-        }
-        
-        sz = serializers[user_role]
-        serializer = sz(data=request.data)
-        data = {}
-        
-        if serializer.is_valid():
-            account = serializer.save()
-            data['message'] = 'Succesfully registered a new User'
-            data['username'] = account.username
-            
-            user = GeneralUser.objects.get(username=request.data['username'])
-            token = Token.objects.create(user=user)
-            # data['token'] = token.key
-        
-        else:
-            data = serializer.errors
-            print(data)
-            
-        return JsonResponse(data)
 
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])

@@ -16,7 +16,18 @@ class GeneralUserRegistrationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = GeneralUser
-        fields = ['username', 'password', 'password2', 'email' , 'user_role']
+        fields = ['username', 
+                  'password', 
+                  'password2', 
+                  'email' , 
+                  'phone_number' , 
+                  'country' , 
+                  'city' , 
+                  'state' , 
+                  'street' , 
+                  'home_number' , 
+                  'apartament_number' , 
+                  'zip_code' ]
         extra_kwargs = {
             'password': {'write_only': True,
                          'validators': [validate_password]},
@@ -30,6 +41,14 @@ class GeneralUserRegistrationSerializer(serializers.ModelSerializer):
             user_role = self.validated_data['user_role'],
             email = self.validated_data['email'],
             username = self.validated_data['username'],
+            phone_number = self.validated_data['phone_number'],
+            country = self.validated_data['country'],
+            city = self.validated_data['city'],
+            state = self.validated_data['state'],
+            street = self.validated_data['street'],
+            home_number = self.validated_data['home_number'],
+            apartament_number = self.validated_data['apartament_number'],
+            zip_code = self.validated_data['zip_code'],
         )
     
         password = self.validated_data['password']
