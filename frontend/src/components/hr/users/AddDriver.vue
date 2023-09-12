@@ -35,91 +35,6 @@
                             :class="{ 'border border-danger': dataError && dataError['phone'] }">
                     </div>
 
-                    <!-- Password -->
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="password">Password</span>
-                        <input type="password" class="form-control" placeholder="Password" aria-label="password"
-                            aria-describedby="password" v-model="password"
-                            :class="{ 'border border-danger': dataError && dataError['password'] }">
-                    </div>
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="password2">Repeat password</span>
-                        <input type="password" class="form-control" placeholder="Password" aria-label="password2"
-                            aria-describedby="password2" v-model="password2"
-                            :class="{ 'border border-danger': dataError && dataError['password'] || dataError && dataError['password2'] }">
-                    </div>
-                    <!-- Password -->
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="username">Username</span>
-                        <input type="text" class="form-control" placeholder="Username" aria-label="Username"
-                            aria-describedby="username" v-model="username" disabled
-                            :class="{ 'border border-danger': dataError && dataError['username'] }">
-                    </div>
-
-
-                    <div class="border border-2 p-2 text-center my-5 fw-bolder">
-                        Check-in information
-                    </div>
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="country">Country</span>
-                        <input type="text" class="form-control" placeholder="Country" aria-label="country"
-                            aria-describedby="country" v-model="country"
-                            :class="{ 'border border-danger': dataError && dataError['country'] }">
-                    </div>
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="city">City</span>
-                        <input type="text" class="form-control" placeholder="City" aria-label="city" aria-describedby="city"
-                            v-model="city" :class="{ 'border border-danger': dataError && dataError['city'] }">
-                    </div>
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="state">State</span>
-                        <input type="text" class="form-control" placeholder="State" aria-label="state"
-                            aria-describedby="state" v-model="state"
-                            :class="{ 'border border-danger': dataError && dataError['state'] }">
-                    </div>
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="street">Street</span>
-                        <input type="text" class="form-control" placeholder="Street" aria-label="street"
-                            aria-describedby="street" v-model="street"
-                            :class="{ 'border border-danger': dataError && dataError['street'] }">
-                    </div>
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="homeNumber">Home number/Apartament Number</span>
-                        <input type="text" class="form-control" placeholder="Home number" aria-label="homeNumber"
-                            aria-describedby="homeNumber" v-model="homeNumber"
-                            :class="{ 'border border-danger': dataError && dataError['homeNumber'] }">
-
-                        <input type="text" class="form-control" placeholder="Apartament number"
-                            aria-label="apartamentNumber" aria-describedby="apartamentNumber" v-model="apartamentNumber"
-                            :class="{ 'border border-danger': dataError && dataError['apartamentNumber'] }">
-                    </div>
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="zipCode">Zip code</span>
-                        <input type="text" class="form-control" placeholder="Zip code" aria-label="zipCode"
-                            aria-describedby="zipCode" v-model="zipCode"
-                            :class="{ 'border border-danger': dataError && dataError['zipCode'] }">
-                    </div>
-
-
-
-                    <div class="border border-2 p-2 text-center my-5 fw-bolder">
-                        Driver license information
-                    </div>
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="licenseNumber">License number</span>
-                        <input type="text" class="form-control" placeholder="License number" aria-label="licenseNumber"
-                            aria-describedby="licenseNumber" v-model="licenseNumber"
-                            :class="{ 'border border-danger': dataError && dataError['licenseNumber'] }">
-                    </div>
 
                     <div class="text-center">
                         <button type="button" class="btn btn-success shadow" @click="createUser" :disabled="!isFormValid"
@@ -211,21 +126,15 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            firstName: '',
-            lastName: '',
-            username: '',
-            email: '',
-            phone: '',
             password: '',
             password2: '',
-            country: '',
-            city: '',
-            state: '',
-            street: '',
-            homeNumber: '',
-            apartamentNumber: null,
-            zipCode: '',
-            licenseNumber: '',
+            username: '',
+
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+
             fetched_data: {},
             dataError: null,
             dataCorrect: null,
@@ -238,16 +147,7 @@ export default {
                 this.firstName &&
                 this.lastName &&
                 this.email &&
-                this.phone &&
-                this.password &&
-                this.password2 &&
-                this.country &&
-                this.city &&
-                this.state &&
-                this.street &&
-                this.zipCode &&
-                this.licenseNumber &&
-                this.homeNumber
+                this.phone
             );
         },
     },
@@ -262,7 +162,21 @@ export default {
             const randomDigits = this.generateRandomDigits();
             this.username = firstThreeChars + lastThreeChars + randomDigits;
         },
+        generatePassword() {
+            const length = 8;
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=";
+            let result = '';
+
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * charset.length);
+                result += charset.charAt(randomIndex);
+            }
+            this.password = result;
+            this.password2 = result;
+        },
         async createUser() {
+            this.generatePassword()
+
             const fetched_data = {
                 first_name: this.firstName,
                 last_name: this.lastName,
@@ -271,31 +185,21 @@ export default {
                 username: this.username,
                 password: this.password,
                 password2: this.password2,
-                country: this.country,
-                city: this.city,
-                state: this.state,
-                street: this.street,
-                zip_code: this.zipCode,
-                home_number: this.homeNumber,
-                apartament_number: this.apartamentNumber,
-                license_number: this.licenseNumber,
                 user_role: 'Driver',
             }
-            console.log(fetched_data)
+
             this.dataError = ''
             const response = await axios.post('api/create/', fetched_data);
-            console.log(response.data)
+
 
             if (response.data.message) {
                 this.dataCorrect = response.data;
                 document.getElementById('hiddenButton').click();
-                console.log('success!', response.data);
                 this.resetForm();
             }
             else {
                 this.dataError = response.data;
                 document.getElementById('hiddenButton').click();
-                console.error(response.data);
             }
 
         },
@@ -306,14 +210,6 @@ export default {
             this.username = '';
             this.password = '';
             this.password2 = '';
-            this.country = '';
-            this.city = '';
-            this.state = '';
-            this.street = '';
-            this.homeNumber = '';
-            this.apartamentNumber = null;
-            this.zipCode = '';
-            this.licenseNumber = '';
         },
     }
 };

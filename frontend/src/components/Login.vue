@@ -254,7 +254,21 @@ export default {
                         Cookies.set('password', password, { expires: new Date('9999-12-31') });
 
                     }
-                    await this.$router.push('/hr');
+                    
+
+                    switch(response.data.user_role) {
+                        case 'HR':
+                            await this.$router.push('/hr');
+                            break;
+                        
+                        case 'Asset':
+                            await this.$router.push('/asset');
+                            break;
+                        
+
+                    }
+
+
                 }
             }
         },

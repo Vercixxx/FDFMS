@@ -61,7 +61,6 @@ class GUViewSet(viewsets.ModelViewSet):
         available_serializers = {
             'HR': HRUserSerializer,
             'Driver': DriverSerializer,
-            
         }
         
         serializer_class = available_serializers.get(role, GeneralUserSerializer)
@@ -122,8 +121,7 @@ class GeneralUser(APIView):
     def get(self, request):
         """
             Returns user data from GeneralUser class
-            
-            * Requires token authentication
+
         """
 
         authorization_header = request.META.get('HTTP_AUTHORIZATION')
@@ -154,7 +152,6 @@ class GeneralUser(APIView):
 
         serializer = serializer_class(user)
         user_data = serializer.data
-
 
         return JsonResponse(user_data)
         
@@ -202,7 +199,6 @@ class UserAuth(APIView):
 
 class AddUser(APIView):
     def post(self, request):
-        print(request.data)
         user_role = request.data.get('user_role')
 
         serializers = {
@@ -225,16 +221,13 @@ class AddUser(APIView):
             data['message'] = 'Succesfully registered a new User'
             data['username'] = account.username
             
-            user_model = account.__class__  # Klasa modelu użytkownika
+            user_model = account.__class__
             user = user_model.objects.get(username=account.username)
             
             token = Token.objects.create(user=user)
-            
-            # data['token'] = token.key
         
         else:
             data = serializer.errors
-            print(data)
             
         return JsonResponse(data)
 
