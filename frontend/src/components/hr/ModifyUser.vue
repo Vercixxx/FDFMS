@@ -60,8 +60,8 @@
 
 
         <div class="btn-group mx-2">
-          <input type="number" name="" id="" class="input-group-text rounded-0 rounded-start w-25 no-spinners" v-model="users_per_site"
-            @keyup.enter="loadUsers">
+          <input type="number" name="" id="" class="input-group-text rounded-0 rounded-start w-25 no-spinners"
+            v-model="users_per_site" @keyup.enter="loadUsers">
           <span class="input-group-text rounded-0 rounded-end" id="basic-addon1">Users per site</span>
         </div>
 
@@ -74,7 +74,7 @@
 
           <input class="form-control " type="search" placeholder="Search" aria-label="Search" v-model="query">
           <button type="button" class="btn btn-outline-success d-flex align-items-center px-3" @click="search">
-            
+
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search me-2"
               viewBox="0 0 16 16">
               <path
@@ -137,6 +137,7 @@
         <tbody class="table-group-divider">
           <tr v-for="user in users" :key="user.id" class="text-center align-middle">
             <td v-for="column in columns" :key="column.attribute">
+
               <!-- Mapping "is_active" -->
               <!-- <span v-if="column.attribute === 'is_active'">{{ user[column.attribute] ? 'Yes' : 'No' }}</span> -->
               <span v-if="column.attribute === 'is_active'">
@@ -158,7 +159,15 @@
 
               </span>
               <!-- other columns -->
-              <span v-else>{{ user[column.attribute] }}</span>
+
+              <span v-else>
+                <span v-if="user[column.attribute] !== null">{{ user[column.attribute] }}</span>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-x"
+                  viewBox="0 0 16 16">
+                  <path
+                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 1 1 .708.708L8.707 8l2.647 2.646a.5.5 0 1 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                </svg>
+              </span>
             </td>
             <td>
               <!-- Button edit -->
@@ -348,26 +357,31 @@ export default {
     defineColumnsByUserRole() {
       const columnDefinitions = {
         Driver: [
-          { label: 'Username', attribute: 'username' },
+        { label: 'Username', attribute: 'username' },
           { label: 'Email', attribute: 'email' },
+          { label: 'Phone Number', attribute: 'phone' },
           { label: 'Active', attribute: 'is_active' },
-          { label: 'Phone Number', attribute: 'phone_number' },
-          { label: 'Country', attribute: 'country' },
-          { label: 'City', attribute: 'city' },
-          { label: 'State', attribute: 'state' },
-          { label: 'Zip code', attribute: 'zip_code' },
-          { label: 'License number', attribute: 'license_number' },
+          { label: 'Country', attribute: 'residence_country' },
+          { label: 'City', attribute: 'residence_city' },
+          { label: 'Zip code', attribute: 'residence_zip_code' },
+          { label: 'State', attribute: 'residence_state' },
+          { label: 'Street', attribute: 'residence_street' },
+          { label: 'Home number', attribute: 'residence_home_number' },
+          { label: 'Apartament', attribute: 'residence_apartament_number' },
         ],
         HR: [
           { label: 'Username', attribute: 'username' },
           { label: 'Email', attribute: 'email' },
+          { label: 'Phone Number', attribute: 'phone' },
           { label: 'Active', attribute: 'is_active' },
-          { label: 'Phone Number', attribute: 'phone_number' },
-          { label: 'Country', attribute: 'country' },
-          { label: 'City', attribute: 'city' },
-          { label: 'State', attribute: 'state' },
-          { label: 'Zip code', attribute: 'zip_code' },
-          { label: 'Test field', attribute: 'test_field' },
+          { label: 'Country', attribute: 'residence_country' },
+          { label: 'City', attribute: 'residence_city' },
+          { label: 'Zip code', attribute: 'residence_zip_code' },
+          { label: 'State', attribute: 'residence_state' },
+          { label: 'Street', attribute: 'residence_street' },
+          { label: 'Home number', attribute: 'residence_home_number' },
+          { label: 'Apartament', attribute: 'residence_apartament_number' },
+
         ],
         All: [
           { label: 'Username', attribute: 'username' },

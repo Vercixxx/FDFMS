@@ -5,7 +5,14 @@ from users.models import GeneralUser
 from datetime import datetime
 
 class Driver(GeneralUser):
-    license_number = models.CharField(max_length=50, null=True)
+    license_number = models.CharField(max_length=50, blank=True, null=True)
+    ln_release_date = models.DateField(max_length=50, blank=True, null=True)
+    ln_expire_date = models.DateField(max_length=50, blank=True, null=True)
+    ln_published_by = models.CharField(max_length=70, blank=True, null=True)
+    ln_code = models.CharField(max_length=15, blank=True, null=True)
+
+    
+    
 
     class Meta:
         db_table = 'Drivers'

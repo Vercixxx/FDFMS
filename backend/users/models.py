@@ -21,15 +21,42 @@ class GeneralUser(AbstractUser):
         default='Driver'
     )
     
+    phone = models.CharField(max_length=25, blank=True, null=True)
     
-    country = models.CharField(max_length=100, blank=True, null=True)
-    city = models.CharField(max_length=100, blank=True, null=True)
-    state = models.CharField(max_length=100, blank=True, null=True)
-    street = models.CharField(max_length=200, blank=True, null=True)
-    home_number = models.CharField(max_length=10, blank=True, null=True)
-    apartament_number = models.CharField(max_length=10, blank=True, null=True)
-    zip_code = models.CharField(max_length=10, blank=True, null=True)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    #address of residence
+    residence_country = models.CharField(max_length=100, blank=True, null=True)
+    residence_city = models.CharField(max_length=100, blank=True, null=True)
+    residence_state = models.CharField(max_length=100, blank=True, null=True)
+    residence_street = models.CharField(max_length=200, blank=True, null=True)
+    residence_home_number = models.CharField(max_length=10, blank=True, null=True)
+    residence_apartament_number = models.CharField(max_length=10, blank=True, null=True)
+    residence_zip_code = models.CharField(max_length=10, blank=True, null=True)
+    
+    
+    # Adress of registered
+    registered_country = models.CharField(max_length=100, blank=True, null=True)
+    registered_city = models.CharField(max_length=100, blank=True, null=True)
+    registered_state = models.CharField(max_length=100, blank=True, null=True)
+    registered_street = models.CharField(max_length=200, blank=True, null=True)
+    registered_home_number = models.CharField(max_length=10, blank=True, null=True)
+    registered_apartament_number = models.CharField(max_length=10, blank=True, null=True)
+    registered_zip_code = models.CharField(max_length=10, blank=True, null=True)
+    
+    # Adress of correspondence
+    correspondence_country = models.CharField(max_length=100, blank=True, null=True)
+    correspondence_city = models.CharField(max_length=100, blank=True, null=True)
+    correspondence_state = models.CharField(max_length=100, blank=True, null=True)
+    correspondence_street = models.CharField(max_length=200, blank=True, null=True)
+    correspondence_home_number = models.CharField(max_length=10, blank=True, null=True)
+    correspondence_apartament_number = models.CharField(max_length=10, blank=True, null=True)
+    correspondence_zip_code = models.CharField(max_length=10, blank=True, null=True)
+    
+    bank_account_number = models.CharField(max_length=30, blank=True, null=True)
+    pesel_nip = models.CharField(max_length=12, blank=True, null=True)
+    tax_office_name = models.CharField(max_length=80, blank=True, null=True)
+    tax_office_address = models.CharField(max_length=220, blank=True, null=True)
+
+    nfz = models.CharField(max_length=200, blank=True, null=True)
     
     def __str__(self):
         return self.username

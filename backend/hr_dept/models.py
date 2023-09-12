@@ -2,7 +2,7 @@ from django.db import models
 from users.models import GeneralUser
 
 class HRUser(GeneralUser):
-    test_field = models.IntegerField()
+
 
     class Meta:
         db_table = 'HRUsers'
