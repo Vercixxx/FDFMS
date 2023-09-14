@@ -523,6 +523,7 @@ export default {
 
 
             this.dataError = ''
+            console.log(fetched_data)
             const response = await axios.post('api/create/', fetched_data);
 
 

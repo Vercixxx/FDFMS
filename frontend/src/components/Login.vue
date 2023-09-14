@@ -2,7 +2,14 @@
     <div class="rounded p-2 m-2 bg-success">
 
         <!-- Title -->
-        <p class="display-5 fst-italic mb-4 px-2">FDFMS - Log in</p>
+        <p class="display-5 fst-italic mb-4 px-2">
+            <span class="fw-bold">F</span>ood
+            <span class="fw-bold">D</span>elivery
+            <span class="fw-bold">F</span>leet
+            <span class="fw-bold">M</span>anagement
+            <span class="fw-bold">S</span>ystem
+             - Log in
+        </p>
 
     </div>
 
@@ -225,8 +232,8 @@ export default {
                 const password = this.$refs.passwordInput.value;
 
                 const data = {
-                    username: username,
-                    password: password,
+                    username: username.trim(),
+                    password: password.trim(),
 
                 };
 
