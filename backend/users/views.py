@@ -13,7 +13,7 @@ from django.core import serializers
 from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer
 from owner.serializers import AddOwnerSerializer
 from rest_manager.serializers import AddManagerSerializer
-from asset_dept.serializers import AddAssetUserSerializer
+from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer
 from clients_dept.serializers import AddClientsUserSerializer
 from hr_dept.serializers import AddHRUserSerializer, HRUserSerializer
 from payroll_dept.serializers import AddPayrollUserSerializer
@@ -61,6 +61,7 @@ class GUViewSet(viewsets.ModelViewSet):
         available_serializers = {
             'HR': HRUserSerializer,
             'Driver': DriverSerializer,
+            'Asset': AssetSerializer,
         }
         
         serializer_class = available_serializers.get(role, GeneralUserSerializer)

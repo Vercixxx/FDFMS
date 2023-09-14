@@ -369,6 +369,20 @@ export default {
           { label: 'Home number', attribute: 'residence_home_number' },
           { label: 'Apartament', attribute: 'residence_apartament_number' },
         ],
+        Asset: [
+          { label: 'Username', attribute: 'username' },
+          { label: 'Email', attribute: 'email' },
+          { label: 'Phone Number', attribute: 'phone' },
+          { label: 'Active', attribute: 'is_active' },
+          { label: 'Country', attribute: 'residence_country' },
+          { label: 'City', attribute: 'residence_city' },
+          { label: 'Zip code', attribute: 'residence_zip_code' },
+          { label: 'State', attribute: 'residence_state' },
+          { label: 'Street', attribute: 'residence_street' },
+          { label: 'Home number', attribute: 'residence_home_number' },
+          { label: 'Apartament', attribute: 'residence_apartament_number' },
+
+        ],
         HR: [
           { label: 'Username', attribute: 'username' },
           { label: 'Email', attribute: 'email' },

@@ -2,7 +2,7 @@
     <div class="AssetView">
 
 
-        <div class="containter rounded-3 p-1 m-2 bg-body-secondary">
+        <div class="containter rounded-3 p-1 m-2" style="--bs-bg-opacity: .5; background-image: var(--bs-gradient);">
             <div class="d-flex justify-content-between">
 
                 <div class="p-2">
@@ -13,7 +13,7 @@
                 </div>
                 <div class="p-2 text-end">
 
-                    <p class="fs-3 mb-1 px-2">Hi, tomek </p>
+                    <p class="fs-3 mb-1 px-2">Hi, {{ userData.username }} </p>
                     <button type="submit" name="" id="" class="btn btn-outline-danger shadow" @click="logoutConfirmFunc">
                         <span class="d-flex align-items-center">
 
@@ -55,7 +55,7 @@
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu shadow">
-                                    <li><a class="dropdown-item " @click="showAddUserComponent" role="button">
+                                    <li><a class="dropdown-item " @click="AddCarComponent" role="button">
                                             <span class="d-flex align-items-center">
 
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -68,7 +68,7 @@
                                                 Add car
                                             </span>
                                         </a></li>
-                                    <li><a class="dropdown-item" @click="showModifyUserComponent" role="button">
+                                    <li><a class="dropdown-item" @click="ShowCarsComponent" role="button">
                                             <span class="d-flex align-items-center">
 
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -128,6 +128,20 @@
                                                         d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
                                                 </svg>
                                                 Modify fleet
+                                            </span>
+                                        </a></li>
+
+
+                                    <li><a class="dropdown-item" @click="showModifyUserComponent" role="button">
+                                            <span class="d-flex align-items-center">
+
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-arrow-left-right me-2"
+                                                    viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                        d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z" />
+                                                </svg>
+                                                Transfer cars
                                             </span>
                                         </a></li>
 
@@ -239,6 +253,57 @@
             <!-- Navbar -->
         </div>
     </div>
+    <!-- content -->
+    <div class="cointainter m-2 p-2">
+        <component :is="currentComponent"></component>
+    </div>
+    <!-- content -->
+
+    <!-- Confirmation modal -->
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmLogout"
+        id="confirmLogoutButton" style="display: none;">
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirmLogout" tabindex="-1" aria-labelledby="confirmLogoutLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-between">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                        class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                        <path
+                            d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
+                        <path
+                            d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
+                    </svg>
+                    <h1 class="modal-title fs-5" id="confirmLogoutLabel">
+
+                        Logout
+                    </h1>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                        class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                        <path
+                            d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
+                        <path
+                            d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
+                    </svg>
+
+                </div>
+                <div class="modal-body fs-5 text-center">
+                    <p>
+                        Are you sure?
+                    </p>
+                </div>
+                <div class="mb-4 d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary w-25 me-2 fs-4" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger w-25 fs-4" data-bs-dismiss="modal"
+                        @click="logout">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Confirmation modal -->
 </template>
 
 <script>
@@ -246,19 +311,8 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 // components
-import AddUser from '../components/hr/AddUser';
-
-// add users components
-import HrUser from '../components/hr/users/AddHr';
-import PayrollUser from '../components/hr/users/AddPayroll';
-import AssetUser from '../components/hr/users/AddAsset';
-import ClientUser from '../components/hr/users/AddClient';
-import ManagerUser from '../components/hr/users/AddManager';
-import DriverUser from '../components/hr/users/AddDriver';
-
-import ModifyUser from '../components/hr/ModifyUser';
-
-
+import AddCar from '../components/asset/AddCar.vue';
+import ShowCars from '../components/asset/ShowCars.vue';
 
 export default {
     name: "AssetView",
@@ -291,8 +345,7 @@ export default {
                 });
 
                 this.userData = response.data;
-                console.log(user_role)
-                console.log(response.data)
+                console.log(user_role, response.data)
             }
 
         }
@@ -335,11 +388,11 @@ export default {
             }
         },
 
-        showAddUserComponent() {
-            this.currentComponent = AddUser;
+        AddCarComponent() {
+            this.currentComponent = AddCar;
         },
-        showAddHrComponent() {
-            this.currentComponent = HrUser;
+        ShowCarsComponent() {
+            this.currentComponent = ShowCars;
         },
         showAddPayrollComponent() {
             this.currentComponent = PayrollUser;
