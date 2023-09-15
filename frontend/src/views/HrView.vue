@@ -278,11 +278,6 @@
     <!-- Confirmation modal -->
 
 
-
-    <button type="submit" name="" id="" class="btn btn-primary m-5 position-fixed start-0 bottom-0"
-      @click="fetchTokenData">check token</button>
-
-
     <!-- content -->
     <div class="cointainter m-2 p-2">
       <component :is="currentComponent"></component>
@@ -362,20 +357,6 @@ export default {
         console.warn('Missing token');
       }
 
-    },
-
-    async fetchTokenData() {
-      const token = Cookies.get('token');
-      try {
-        const response = await axios.get('get-token/');
-
-        console.log('Username:', response.data.passed_for);
-
-      }
-      catch (error) {
-
-        console.error('Error:', error);
-      }
     },
 
     showAddUserComponent() {
