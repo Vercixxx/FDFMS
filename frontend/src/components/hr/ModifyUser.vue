@@ -171,8 +171,8 @@
             </td>
             <td>
               <!-- Button edit -->
-              <button class="btn btn-outline-success m-3" @click="editUser(user)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil"
+              <button class="btn btn-outline-success m-3" disabled @click="editUser(user.username)">
+                <svg xmlns="http://www.w3.org/2000/svg"  width="16" height="16" fill="currentColor" class="bi bi-pencil"
                   viewBox="0 0 16 16">
                   <path
                     d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
@@ -180,7 +180,7 @@
               </button>
 
               <!-- Button delete -->
-              <button class="btn btn-outline-danger" @click="deleteConfirm(user.username, user.user_role)">
+              <button class="btn btn-outline-danger" @click="deleteConfirm(user.username)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3"
                   viewBox="0 0 16 16">
                   <path
@@ -225,14 +225,14 @@
           </div>
           <div class="modal-body text-danger fs-5">
             <p>
-              You are trying to delete {{ dataConfirmUsername }}, this operation is <span
+              You are trying to delete {{ usernameDelete }}, this operation is <span
                 class="fw-bold">irreversible</span>. Are you sure?
             </p>
           </div>
           <div class="modal-footer d-flex justify-content-center">
             <button type="button" class="btn btn-outline-secondary fs-5 w-25" data-bs-dismiss="modal">No</button>
             <button type="button" class="btn btn-danger fs-5 w-25" data-bs-dismiss="modal"
-              @click="deleteUser(dataConfirmUsername, dataConfirmUserRole)">Yes</button>
+              @click="deleteUser(usernameDelete)">Yes</button>
           </div>
         </div>
       </div>
@@ -251,15 +251,14 @@
               <p v-if="dataError">Error</p>
               <p v-else>Success</p>
             </h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-              @click='loadUsers'></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
           </div>
           <div class="modal-body text-center text-danger">
             <div v-if="dataError">
               <p> {{ dataError }}</p>
             </div>
             <div v-if="dataSuccess">
-              <p class="text-success">Succesfully created new user with username {{ dataSuccess.username }}
+              <p class="text-success">{{ dataSuccess }}
               </p>
             </div>
 
@@ -270,8 +269,6 @@
       </div>
     </div>
     <!-- Message modal -->
-
-    <button type="button" class="btn btn-primary" @click="reloadComponent">reload</button>
 
 
   </div>
@@ -294,10 +291,10 @@ export default {
       query: '',
       dataError: null,
       dataSuccess: null,
-      dataConfirmUsername: null,
-      dataConfirmUserRole: null,
+
       selectedRole: 'All',
       selectedActive: 'All',
+      usernameDelete: ''
     };
   },
 
@@ -411,28 +408,24 @@ export default {
     },
 
 
-    deleteConfirm(username, user_role) {
-      this.dataConfirmUsername = username;
-      this.dataConfirmUserRole = user_role;
+    deleteConfirm(username) {
+      this.usernameDelete = username
       document.getElementById('confirm_modal_button').click();
     },
 
-    async deleteUser(username, user_role, id) {
+    async deleteUser() {
       try {
-        const response = await axios.delete('api/get-gu/', {
-          params: {
-            id: id,
-            username: username,
-            user_role: user_role,
-          }
-        });
+        const response = await axios.delete('api/users/delete/' + this.usernameDelete + '/');
+        this.usernameDelete = '';
+        this.reloadComponent()
+        console.log(response)
 
-        if (response.data.error) {
-          this.dataError = response.data.error;
+        if (response.status == 204) {
+          this.dataSuccess = 'Success!';
           document.getElementById('hiddenButton').click();
         }
-        else if (response.data.message) {
-          localStorage.setItem('message', response.data.message);
+        else{
+          console.log('Error')
           this.loadUsers();
         }
 

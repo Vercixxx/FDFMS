@@ -7,7 +7,6 @@ from django.shortcuts import get_object_or_404, render
 
 
 from django.http import JsonResponse
-from django.core import serializers
 
 
 from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer
@@ -30,6 +29,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
+from rest_framework.generics import DestroyAPIView
 
 # Models
 from .models import GeneralUser
@@ -43,8 +43,6 @@ from driver.models import Driver
 from administrator.models import Administrator
 from django.db.models import Q
 
-
-# CBV
 
 class GUViewSet(viewsets.ModelViewSet):
     # query
@@ -86,80 +84,17 @@ class GUViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     
-    def destroy(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        user_role = request.data.get('user_role')
-        print(username,user_role)
-        user_role_to_model = {
-        'Owner': Owner,
-        'Manager': RestManager,
-        'Asset': AssetUser,
-        'Clients': ClientsUser,
-        'HR': HRUser,
-        'Payroll': PayrollUser,
-        'Driver': Driver,
-        'Administrator': Administrator,
-        }
-        
-        user_model = user_role_to_model[user_role]
-        
-        try:
-            user  = get_object_or_404(user_model, username=username)
-            user.delete()
-            return JsonResponse({'message': 'User successfully deleted'})
-        except HRUser.DoesNotExist:
-            return JsonResponse({'error': 'User does not exist'})
-        except Exception as e:
-            return JsonResponse({'error' : str(e)})
-    
-    
-    
     # authentication_classes = [SessionAuthentication, TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+
+class DeleteUser(DestroyAPIView):
+    queryset = GeneralUser.objects.all()
+    serializer_class = GeneralUserSerializer
+    lookup_field = 'username'
+
 class GeneralUser(APIView):
 
     pass    
-    # def get(self, request):
-    #     """
-    #         Returns user data from GeneralUser class
 
-    #     """
-
-    #     authorization_header = request.META.get('HTTP_AUTHORIZATION')
-    #     token = authorization_header.split(' ')[1] if authorization_header.startswith('Token ') else None
-        
-    #     user_model = request.GET.get('user_role')
-        
-    #     user_role_to_serializer = {
-    #         'Owner': AddOwnerSerializer,
-    #         'Manager': AddManagerSerializer,
-    #         'Asset': AssetSerializer,
-    #         'Clients': AddClientsUserSerializer,
-    #         'HR': HRUserSerializer,
-    #         'Payroll': AddPayrollUserSerializer,
-    #         'Driver': AddDriverSerializer,
-    #         'Administrator': AddAdministratorSerializer,
-    #     }
-        
-    #     if user_model in user_role_to_serializer:
-    #         serializer_class = user_role_to_serializer[user_model]
-    #         user_class = serializer_class.Meta.model
-    #     else:
-    #         return JsonResponse({'error': 'Unsupported user model'})
-
-    #     user = user_class.objects.get(auth_token=token)
-            
-
-    #     serializer = serializer_class(user)
-    #     user_data = serializer.data
-
-        # if user_model in user_role_to_serializer:
-        #     user_data = user_role_to_serializer[user_model].objects.get(auth_token=token)
-            
-        # print(user_data)
-        # print(type(user_data))
-        # {'username':user_data.username}
-        # return JsonResponse(user_data)
         
 class UserAuth(APIView):
     def post(self, request):
@@ -260,68 +195,3 @@ class AddUser(APIView):
             
         return JsonResponse(data)
 
-
-# CBV
-
-
-
-
-
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
-@api_view(['GET'])
-def get_users(request, role, active, search):
-    queryset  = GeneralUser.objects.all()
-    
-    if role and role.lower() != 'all':
-            queryset = queryset.filter(user_role=role)
-
-    if active and active.lower() != 'all':
-        if active.lower() == 'true':
-            queryset = queryset.filter(is_active=True)
-        elif active.lower() == 'false':
-            queryset = queryset.filter(is_active=False)
-
-    users = queryset.all()
-    users_serialized = GeneralUserSerializer(users, many=True)
-
-    if search != 'all':
-        search_results = [user for user in users_serialized.data if any(search_term in str(user.values()) for search_term in [search])]
-        return Response(search_results)
-    else:
-        return Response(users_serialized.data)
-
-
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
-@api_view(['DELETE'])
-def remove_user(request, username, user_role):
-    
-    user_role_to_model = {
-        'Owner': Owner,
-        'Manager': RestManager,
-        'Asset': AssetUser,
-        'Clients': ClientsUser,
-        'HR': HRUser,
-        'Payroll': PayrollUser,
-        'Driver': Driver,
-        'Administrator': Administrator,
-    }
-    
-    user_model = user_role_to_model[user_role]
-    
-    try:
-        user  = get_object_or_404(user_model, username=username)
-        user.delete()
-        return JsonResponse({'message': 'User successfully deleted'})
-    except HRUser.DoesNotExist:
-        return JsonResponse({'error': 'User does not exist'})
-    except Exception as e:
-        return JsonResponse({'error' : str(e)})
-
-
-@api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def get_token(request):
-    return JsonResponse({'passed_for': request.user.username})
