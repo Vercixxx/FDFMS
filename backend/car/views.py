@@ -3,8 +3,13 @@ from django.http import JsonResponse
 
 from .serializers import CarSerializer, CreateCarSerializer
 
+from .models import Car
+
 from rest_framework import viewsets, filters
 from rest_framework.views import APIView
+from rest_framework.generics import DestroyAPIView
+
+
 
 class CarView(APIView):
     def post(self, request):
@@ -20,6 +25,14 @@ class CarView(APIView):
         serializer = CarSerializer
         return JsonResponse(serializer)
     
+
+class DeleteCar(DestroyAPIView):
+    queryset = Car.objects.all()
+    serializer_class = CarSerializer
+    lookup_field = 'vin'
+    
+
+    # print(lookup_field)
     
 class CarsViewSet(viewsets.ModelViewSet):
     # query

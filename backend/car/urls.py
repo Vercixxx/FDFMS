@@ -16,4 +16,7 @@ urlpatterns = [
     # Creating car
     path('api/car', views.CarView.as_view(), name="cars"),
     
+    # Delete car
+    path('api/car/delete/<str:vin>', views.DeleteCar.as_view(), name="delete-cars"),
+    
 ]

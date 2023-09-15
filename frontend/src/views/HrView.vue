@@ -319,7 +319,7 @@ export default {
 
   data() {
     return {
-      userData: {},
+      userData: this.$store.getters.responseData,
       currentComponent: null,
       confirmLogout: null,
     };
@@ -337,18 +337,6 @@ export default {
       if (user_role != 'HR') {
         this.logout()
       }
-      else {
-        const response = await axios.get('api/gu/', {
-          params: {
-            user_role: user_role,
-          }
-        });
-
-        this.userData = response.data;
-        console.log(user_role)
-        console.log(response.data)
-      }
-
     }
 
 

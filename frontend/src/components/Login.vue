@@ -252,7 +252,14 @@ export default {
                     // Authentication was successfull
                     const token = response.data.token;
                     Cookies.set('token', token, { expires: 7 });
-                    localStorage.setItem('user_role', response.data.user_role)
+
+
+                    // Vuex 
+                    this.$store.dispatch('fetchAndSetResponseData', response.data.data);
+
+
+                    const role = response.data.user_role
+                    localStorage.setItem('user_role', role)
 
                     // check if remeber_me is checked
                     const checkbox = document.getElementById("remember_me_checkbox");
@@ -261,15 +268,17 @@ export default {
                         Cookies.set('password', password, { expires: new Date('9999-12-31') });
 
                     }
+
+
                     
 
-                    switch(response.data.user_role) {
+                    switch(role) {
                         case 'HR':
-                            await this.$router.push('/hr');
+                            this.$router.push('/hr');
                             break;
                         
                         case 'Asset':
-                            await this.$router.push('/asset');
+                            this.$router.push('/asset');
                             break;
                         
 

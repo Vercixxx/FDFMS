@@ -12,8 +12,8 @@
 
                 </div>
                 <div class="p-2 text-end">
-
-                    <p class="fs-3 mb-1 px-2">Hi, {{ userData.username }} </p>
+                    
+                    <p class="fs-3 mb-1 px-2">Hi, {{ userData.username }}</p>
                     <button type="submit" name="" id="" class="btn btn-outline-danger shadow" @click="logoutConfirmFunc">
                         <span class="d-flex align-items-center">
 
@@ -319,7 +319,7 @@ export default {
 
     data() {
         return {
-            userData: {},
+            userData: this.$store.getters.responseData,
             currentComponent: null,
             confirmLogout: null,
         };
@@ -337,20 +337,10 @@ export default {
             if (user_role != 'Asset') {
                 this.logout()
             }
-            else {
-                const response = await axios.get('api/gu/', {
-                    params: {
-                        user_role: user_role,
-                    }
-                });
-
-                this.userData = response.data;
-                console.log(user_role, response.data)
-            }
-
         }
-
     },
+
+
 
 
     methods: {

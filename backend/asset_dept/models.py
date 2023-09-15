@@ -4,7 +4,7 @@ from users.models import GeneralUser
 class AssetUser(GeneralUser):
 
     class Meta:
-        db_table = 'AssetsUsers'
+        db_table = 'AssetUser'
         
     def __str__(self):
         return self.username

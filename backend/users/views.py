@@ -114,47 +114,52 @@ class GUViewSet(viewsets.ModelViewSet):
     
     
     
-
-class GeneralUser(APIView):
     # authentication_classes = [SessionAuthentication, TokenAuthentication]
     # permission_classes = [IsAuthenticated]
-    
-    def get(self, request):
-        """
-            Returns user data from GeneralUser class
+class GeneralUser(APIView):
 
-        """
+    pass    
+    # def get(self, request):
+    #     """
+    #         Returns user data from GeneralUser class
 
-        authorization_header = request.META.get('HTTP_AUTHORIZATION')
-        token = authorization_header.split(' ')[1] if authorization_header.startswith('Token ') else None
+    #     """
+
+    #     authorization_header = request.META.get('HTTP_AUTHORIZATION')
+    #     token = authorization_header.split(' ')[1] if authorization_header.startswith('Token ') else None
         
-        user_model = request.GET.get('user_role')
-
+    #     user_model = request.GET.get('user_role')
         
-        user_role_to_serializer = {
-            'Owner': AddOwnerSerializer,
-            'Manager': AddManagerSerializer,
-            'Asset': AddAssetUserSerializer,
-            'Clients': AddClientsUserSerializer,
-            'HR': HRUserSerializer,
-            'Payroll': AddPayrollUserSerializer,
-            'Driver': AddDriverSerializer,
-            'Administrator': AddAdministratorSerializer,
-        }
+    #     user_role_to_serializer = {
+    #         'Owner': AddOwnerSerializer,
+    #         'Manager': AddManagerSerializer,
+    #         'Asset': AssetSerializer,
+    #         'Clients': AddClientsUserSerializer,
+    #         'HR': HRUserSerializer,
+    #         'Payroll': AddPayrollUserSerializer,
+    #         'Driver': AddDriverSerializer,
+    #         'Administrator': AddAdministratorSerializer,
+    #     }
         
-        if user_model in user_role_to_serializer:
-            serializer_class = user_role_to_serializer[user_model]
-            user_class = serializer_class.Meta.model
-        else:
-            return JsonResponse({'error': 'Unsupported user model'})
+    #     if user_model in user_role_to_serializer:
+    #         serializer_class = user_role_to_serializer[user_model]
+    #         user_class = serializer_class.Meta.model
+    #     else:
+    #         return JsonResponse({'error': 'Unsupported user model'})
 
-        user = user_class.objects.get(auth_token=token)
+    #     user = user_class.objects.get(auth_token=token)
             
 
-        serializer = serializer_class(user)
-        user_data = serializer.data
+    #     serializer = serializer_class(user)
+    #     user_data = serializer.data
 
-        return JsonResponse(user_data)
+        # if user_model in user_role_to_serializer:
+        #     user_data = user_role_to_serializer[user_model].objects.get(auth_token=token)
+            
+        # print(user_data)
+        # print(type(user_data))
+        # {'username':user_data.username}
+        # return JsonResponse(user_data)
         
 class UserAuth(APIView):
     def post(self, request):
@@ -184,7 +189,30 @@ class UserAuth(APIView):
 
                 login(request, logged_user)
                 token, created = Token.objects.get_or_create(user=general_user)
-                return JsonResponse({'message': 'Logged in successfully', 'user_role':logged_user.user_role, 'token':token.key })
+                
+                
+                avalible_serializers = {
+                    'Owner': AddOwnerSerializer,
+                    'Manager': AddManagerSerializer,
+                    'Asset': AssetSerializer,
+                    'Clients': AddClientsUserSerializer,
+                    'HR': HRUserSerializer,
+                    'Payroll': AddPayrollUserSerializer,
+                    'Driver': AddDriverSerializer,
+                    'Administrator': AddAdministratorSerializer,
+                }
+                
+                if user_role in avalible_serializers:
+                    choosen_seralizer = avalible_serializers[user_role]
+                else:
+                    return JsonResponse({'error': 'Unsupported user model'})
+
+
+                serializer = choosen_seralizer(logged_user)
+                user_data = serializer.data
+                        
+                
+                return JsonResponse({'message': 'Logged in successfully', 'user_role':logged_user.user_role, 'token':token.key, 'data':user_data })
         
         else:
             return JsonResponse({'error': 'Invalid username or password'})
