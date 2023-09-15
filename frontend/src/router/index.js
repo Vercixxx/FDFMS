@@ -6,6 +6,9 @@ import Login from '../components/Login.vue'
 // hr
 import { hrRoutes } from './hrRoutes'
 
+// Asset
+import AssetView from '../views/AssetView.vue'
+
 
 
 const routes = [
@@ -13,6 +16,11 @@ const routes = [
     path: '/',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/asset',
+    name: 'Asset',
+    component: AssetView
   },
   ...hrRoutes,
 ]
