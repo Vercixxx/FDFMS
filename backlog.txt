@@ -1,0 +1,6 @@
+Todo:
+(HR Management Console):
+DONE    -make search working
+    -add editnig button logic
+    -add other users creating forms
+    -add specific atribuites that user has, when seraching by user role

@@ -2,7 +2,14 @@
     <div class="rounded p-2 m-2 bg-success">
 
         <!-- Title -->
-        <p class="display-5 fst-italic mb-4 px-2">FDFMS - Log in</p>
+        <p class="display-5 fst-italic mb-4 px-2">
+            <span class="fw-bold">F</span>ood
+            <span class="fw-bold">D</span>elivery
+            <span class="fw-bold">F</span>leet
+            <span class="fw-bold">M</span>anagement
+            <span class="fw-bold">S</span>ystem
+             - Log in
+        </p>
 
     </div>
 
@@ -225,16 +232,16 @@ export default {
                 const password = this.$refs.passwordInput.value;
 
                 const data = {
-                    username: username,
-                    password: password,
+                    username: username.trim(),
+                    password: password.trim(),
 
                 };
 
-                const response = await axios.post('log-in/', data, { timeout: 5000 })
-
+                const response = await axios.post('api/auth/', data)
+                console.log(response.data)
 
                 if (response.data.error) {
-                    this.isButtonDisabled = false; // Włącz przycisk po otrzymaniu odpowiedzi lub błędzie
+                    this.isButtonDisabled = false;
                     this.dataError = response.data.error;
 
                     // modal
@@ -245,7 +252,14 @@ export default {
                     // Authentication was successfull
                     const token = response.data.token;
                     Cookies.set('token', token, { expires: 7 });
-                    localStorage.setItem('user_role', response.data.user_role)
+
+
+                    // Vuex 
+                    this.$store.dispatch('fetchAndSetResponseData', response.data.data);
+
+
+                    const role = response.data.user_role
+                    localStorage.setItem('user_role', role)
 
                     // check if remeber_me is checked
                     const checkbox = document.getElementById("remember_me_checkbox");
@@ -254,7 +268,23 @@ export default {
                         Cookies.set('password', password, { expires: new Date('9999-12-31') });
 
                     }
-                    await this.$router.push('/hr');
+
+
+                    
+
+                    switch(role) {
+                        case 'HR':
+                            this.$router.push('/hr');
+                            break;
+                        
+                        case 'Asset':
+                            this.$router.push('/asset');
+                            break;
+                        
+
+                    }
+
+
                 }
             }
         },
