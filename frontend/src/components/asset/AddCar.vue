@@ -340,8 +340,6 @@ export default {
                 this.vin &&
                 this.selectedTranssmision &&
                 this.policyNumber &&
-                this.oc &&
-                this.ac &&
                 this.insurancePhone
             );
         },

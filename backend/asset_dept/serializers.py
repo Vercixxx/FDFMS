@@ -5,7 +5,6 @@ from django.contrib.auth.password_validation import validate_password
 from .models import AssetUser
 from users.models import GeneralUser
 
-
 class AssetSerializer(serializers.ModelSerializer):
     class Meta:
         model = AssetUser

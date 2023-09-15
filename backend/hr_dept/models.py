@@ -3,7 +3,6 @@ from users.models import GeneralUser
 
 class HRUser(GeneralUser):
 
-
     class Meta:
         db_table = 'HRUser'
         
