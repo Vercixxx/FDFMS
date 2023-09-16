@@ -9,14 +9,14 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('fleet', '0001_initial'),
-        ('restaurant', '0001_initial'),
+        ('car', '0001_initial'),
+        ('driver', '0002_initial'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='fleet',
-            name='restaurant',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='restaurant.restaurant'),
+            model_name='drivercar',
+            name='user',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='driver.driver'),
         ),
     ]

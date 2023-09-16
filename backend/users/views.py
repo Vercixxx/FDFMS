@@ -31,6 +31,10 @@ from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.generics import DestroyAPIView
 
+# JWT
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.settings import api_settings
+
 # Models
 from .models import GeneralUser
 from owner.models import Owner
@@ -43,8 +47,54 @@ from driver.models import Driver
 from administrator.models import Administrator
 from django.db.models import Q
 
+from django.http import HttpResponse
+import json
+
+class RegisterAPI(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        user_role = request.data.get('user_role')
+
+        serializers = {
+            'Owner' : AddOwnerSerializer,
+            'Manager' : AddManagerSerializer,
+            'Asset' : AddAssetUserSerializer,
+            'Clients' : AddClientsUserSerializer,
+            'HR' : AddHRUserSerializer,
+            'Payroll' : AddPayrollUserSerializer,
+            'Driver' : AddDriverSerializer,
+            'Administrator' : AddAdministratorSerializer,
+        }
+        
+        selected_serializer = serializers[user_role]
+        serializer = selected_serializer(data=request.data)
+        data = {}
+        
+        if serializer.is_valid():
+            account = serializer.save()
+            data['message'] = 'Succesfully registered a new User'
+            data['username'] = account.username
+            
+            user_model = account.__class__
+            user = user_model.objects.get(username=account.username)
+            
+            token = Token.objects.create(user=user)
+        
+        else:
+            data = serializer.errors
+            
+        return JsonResponse(data)
+
+
+
+
+
 
 class GUViewSet(viewsets.ModelViewSet):
+    
+    permission_classes = [IsAuthenticated]
+    
     # query
     filter_backends = (filters.SearchFilter, )
     search_fields = ('username', 'email')
@@ -52,6 +102,7 @@ class GUViewSet(viewsets.ModelViewSet):
 
     def initial(self, request, *args, **kwargs):
         super().initial(request, *args, **kwargs)
+
         
         # Choosing correct serializer
         role = self.request.query_params.get('role')
@@ -87,6 +138,7 @@ class GUViewSet(viewsets.ModelViewSet):
     # authentication_classes = [SessionAuthentication, TokenAuthentication]
 
 class DeleteUser(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = GeneralUser.objects.all()
     serializer_class = GeneralUserSerializer
     lookup_field = 'username'
@@ -95,7 +147,14 @@ class GeneralUser(APIView):
 
     pass    
 
-        
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+    
 class UserAuth(APIView):
     def post(self, request):
         username = request.data.get('username')
@@ -122,9 +181,12 @@ class UserAuth(APIView):
                 using_model = user_role_to_model[user_role]
                 logged_user = using_model.objects.get(id=general_user.id)
 
-                login(request, logged_user)
-                token, created = Token.objects.get_or_create(user=general_user)
-                
+                # JWT
+                # jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+                # jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+                # payload = jwt_payload_handler(logged_user)  
+                # token = jwt_encode_handler(payload)
                 
                 avalible_serializers = {
                     'Owner': AddOwnerSerializer,
@@ -145,9 +207,13 @@ class UserAuth(APIView):
 
                 serializer = choosen_seralizer(logged_user)
                 user_data = serializer.data
-                        
                 
-                return JsonResponse({'message': 'Logged in successfully', 'user_role':logged_user.user_role, 'token':token.key, 'data':user_data })
+                # print(type(logged_user), logged_user)
+                
+                jwt = get_tokens_for_user(logged_user)
+                
+                # return JsonResponse({'message':'test'})
+                return JsonResponse({'message': 'Logged in successfully', 'user_role':logged_user.user_role, 'data':user_data , 'jwt':jwt})
         
         else:
             return JsonResponse({'error': 'Invalid username or password'})
@@ -163,6 +229,7 @@ class UserAuth(APIView):
 
 class AddUser(APIView):
     def post(self, request):
+        print('asdafgdsas')
         user_role = request.data.get('user_role')
 
         serializers = {
@@ -188,7 +255,6 @@ class AddUser(APIView):
             user_model = account.__class__
             user = user_model.objects.get(username=account.username)
             
-            token = Token.objects.create(user=user)
         
         else:
             data = serializer.errors

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 // My imports
 import Login from '../components/Login.vue'
+import { isAuthenticated } from '../auth-guard';
 
 // hr
 import { hrRoutes } from './hrRoutes'
@@ -20,7 +21,14 @@ const routes = [
   {
     path: '/asset',
     name: 'Asset',
-    component: AssetView
+    component: AssetView,
+    beforeEnter: (to, from, next) => {
+      if (!isAuthenticated()) {
+        next('/')
+      } else {
+        next();
+      }
+    },
   },
   ...hrRoutes,
 ]

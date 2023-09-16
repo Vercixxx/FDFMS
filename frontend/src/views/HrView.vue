@@ -320,22 +320,22 @@ export default {
     };
   },
 
-  async created() {
-    const token = Cookies.get('token');
+  // async created() {
+  //   const token = Cookies.get('token');
 
-    if (!token) {
-      this.$router.push('/');
+  //   if (!token) {
+  //     this.$router.push('/');
 
-    }
-    else {
-      const user_role = localStorage.getItem('user_role')
-      if (user_role != 'HR') {
-        this.logout()
-      }
-    }
+  //   }
+  //   else {
+  //     const user_role = localStorage.getItem('user_role')
+  //     if (user_role != 'HR') {
+  //       this.logout()
+  //     }
+  //   }
 
 
-  },
+  // },
 
 
   methods: {
@@ -345,17 +345,8 @@ export default {
     },
 
     async logout() {
-      const token = Cookies.get('token');
-
-      if (token) {
-        Cookies.remove('token');
-        const response2 = await axios.delete('api/auth/', { token });
+        this.$store.commit('resetState');
         this.$router.push('/');
-        console.log(response2)
-      }
-      else {
-        console.warn('Missing token');
-      }
 
     },
 
