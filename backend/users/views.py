@@ -46,37 +46,6 @@ from driver.models import Driver
 from administrator.models import Administrator
 
 
-# class RegisterAPI(APIView):
-#     permission_classes = [IsAuthenticated]
-    
-#     def post(self, request):
-#         user_role = request.data.get('user_role')
-
-#         serializers = {
-#             'Owner' : AddOwnerSerializer,
-#             'Manager' : AddManagerSerializer,
-#             'Asset' : AddAssetUserSerializer,
-#             'Clients' : AddClientsUserSerializer,
-#             'HR' : AddHRUserSerializer,
-#             'Payroll' : AddPayrollUserSerializer,
-#             'Driver' : AddDriverSerializer,
-#             'Administrator' : AddAdministratorSerializer,
-#         }
-        
-#         selected_serializer = serializers[user_role]
-#         serializer = selected_serializer(data=request.data)
-#         data = {}
-        
-#         if serializer.is_valid():
-#             account = serializer.save()
-#             data['message'] = 'Succesfully registered a new User'
-#             data['username'] = account.username
-        
-#         else:
-#             data = serializer.errors
-            
-#         return JsonResponse(data)
-
 class GUViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     
@@ -224,4 +193,19 @@ class AddUser(APIView):
             data = serializer.errors
             
         return JsonResponse(data)
-
+    
+    
+    
+class UpdateUser(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, username, user_role):
+        print(username, user_role)
+        
+        
+        
+        data = {
+            'message': 'Test message'
+        }
+        
+        return JsonResponse(data, status=200)
