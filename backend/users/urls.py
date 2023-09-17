@@ -12,9 +12,6 @@ router.register(r"get-gu", views.GUViewSet, basename='get-gu')
 
 urlpatterns = [
     path('api/', include(router.urls)),
-    # path('api/gu/', views.GeneralUser.as_view(), name="gu"),
-    
-    # Logging
     
     # Creating account
     path('api/create/', views.AddUser.as_view(), name="add-user"),
@@ -26,6 +23,7 @@ urlpatterns = [
     path('api/v1/', include('djoser.urls')),
     path('api/v1/', include('djoser.urls.jwt')),
     
+    # Logging
     path('api/v1/login/', views.UserAuth.as_view(), name='login'),
     
 

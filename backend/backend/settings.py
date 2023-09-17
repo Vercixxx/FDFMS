@@ -174,11 +174,19 @@ SIMPLE_JWT = {
     # 'ALGORITHM': 'HS256',
     # 'SIGNING_KEY': None,
     # 'VERIFYING_KEY': None,
-    'AUTH_HEADER_TYPES': ('JWT',),
     # "AUTH_HEADER_TYPES": ("Bearer",),
     # "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
     
     
     # "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     # "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('JWT',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_REFRESH_LIFETIME_ALLOW_REFRESH': True,
+    'SLIDING_TOKEN_LIFETIME_ALLOW_REFRESH': True,
+    'SLIDING_TOKEN_REFRESH_EACH_TIME': True,
+    'SLIDING_TOKEN_REFRESH_AFTER_GRACE_PERIOD': False,
+    
 }
