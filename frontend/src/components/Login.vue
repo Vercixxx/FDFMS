@@ -253,12 +253,10 @@ export default {
 
                     // Vuex
                     this.$store.dispatch('setResponseData', response.data.data);
-                    // this.$store.dispatch('setJwt', response.data.jwt);
-                    this.$store.commit('setJwt', {
-                        accessToken: response.data.jwt.access,
-                        refreshToken: response.data.jwt.refresh,
-                    });
 
+                    this.$store.commit('setAccessToken', response.data.jwt.access);
+                    this.$store.commit('setRefreshToken', response.data.jwt.refresh);
+                    
                     axios.defaults.headers.common['Authorization'] = `JWT ${response.data.jwt.access}`;
 
 
