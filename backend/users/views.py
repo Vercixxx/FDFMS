@@ -269,3 +269,11 @@ class UpdateUser(APIView):
             
             else:
                 return JsonResponse(serializer.errors, status=400)
+            
+
+class ChangeUserState(APIView):
+    def put(self, request, username):
+        user = GeneralUser.objects.get(username = username)
+        user.is_active = not user.is_active
+        user.save()
+        return JsonResponse({'message' : 'Changed successfully'}, status=200)

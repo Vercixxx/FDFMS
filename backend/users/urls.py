@@ -32,8 +32,10 @@ urlpatterns = [
     path('api/users/get/<str:username>/<str:user_role>/', views.getUser.as_view(), name="get-user"),
     
     # Save User data
-    path('api/users/save/<str:username>/<str:user_role>/', views.UpdateUser.as_view(), name="save-user")
+    path('api/users/save/<str:username>/<str:user_role>/', views.UpdateUser.as_view(), name="save-user"),
     
+    # Change user state
+    path('api/users/change-state/<str:username>/', views.ChangeUserState.as_view(), name="change-user-state"),
     
 
 
