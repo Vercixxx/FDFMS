@@ -12,21 +12,31 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('users', '0001_initial'),
+        ('driver', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ClientsUser',
+            name='Driver',
             fields=[
                 ('generaluser_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('test_field', models.IntegerField()),
+                ('license_number', models.CharField(blank=True, max_length=50, null=True)),
+                ('ln_release_date', models.DateField(blank=True, max_length=50, null=True)),
+                ('ln_expire_date', models.DateField(blank=True, max_length=50, null=True)),
+                ('ln_published_by', models.CharField(blank=True, max_length=70, null=True)),
+                ('ln_code', models.CharField(blank=True, max_length=15, null=True)),
             ],
             options={
-                'db_table': 'ClientsUsers',
+                'db_table': 'Drivers',
             },
             bases=('users.generaluser',),
             managers=[
                 ('objects', django.contrib.auth.models.UserManager()),
             ],
+        ),
+        migrations.AddField(
+            model_name='dailywork',
+            name='user',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='driver.driver'),
         ),
     ]

@@ -1,8 +1,7 @@
 <template>
     <div class="AssetView">
-
-
-        <div class="containter rounded-3 p-1 m-2" style="--bs-bg-opacity: .5; background-image: var(--bs-gradient);">
+        <div class="containter rounded-3 p-1 m-2 border shadow"
+            style="--bs-bg-opacity: .5; background-image: var(--bs-gradient);">
             <div class="d-flex justify-content-between">
 
                 <div class="p-2">
@@ -11,12 +10,16 @@
                     <p class="fs-2 fst-italic mb-4 px-2">FDFMS - Asset Management console</p>
 
                 </div>
-                <div class="p-2 text-end">
-                    
-                    <p class="fs-3 mb-1 px-2">Hi, {{ userData.username }}</p>
-                    <button type="submit" name="" id="" class="btn btn-outline-danger shadow" @click="logoutConfirmFunc">
-                        <span class="d-flex align-items-center">
+                <div class="p-2 d-flex align-items-center">
 
+                    <p class="fs-3 mb-1 px-2">
+                        Hi,
+                        <span class="p-2 btn btn-outline-secondary fw-bolder">
+                            {{ userData.first_name }}
+                        </span>
+                    </p>
+                    <button type="submit" class="btn btn-outline-danger shadow" @click="logoutConfirmFunc">
+                        <span class="d-flex align-items-center">
                             Logout
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                                 class="bi bi-box-arrow-right ms-2" viewBox="0 0 16 16">
@@ -39,9 +42,31 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav">
+
+
+                            <!-- Home button -->
+                            <li class="nav-item me-3">
+                                <button class="nav-link  btn btn-outline p-2 fs-5 my-2 border shadow " role="button"
+                                    aria-expanded="false" @click="showHomeComponent">
+                                    <span class="d-flex align-items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                            class="bi bi-house me-2" viewBox="0 0 16 16">
+                                            <path
+                                                d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z" />
+                                        </svg>
+                                        Home
+                                    </span>
+                                </button>
+                            </li>
+                            <!-- Home button -->
+
+
+
+
+
                             <!-- Option 1 -->
                             <li class="nav-item dropdown me-3">
-                                <button class="nav-link  btn btn-outline p-2 fs-5 border shadow " role="button"
+                                <button class="nav-link  btn btn-outline p-2 fs-5 my-2 border shadow " role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <span class="d-flex align-items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -87,7 +112,7 @@
 
                             <!-- Option 2 -->
                             <li class="nav-item dropdown me-3">
-                                <button class="nav-link  btn btn-outline p-2 fs-5 border shadow " role="button"
+                                <button class="nav-link  btn btn-outline p-2 fs-5 my-2 border shadow " role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <span class="d-flex align-items-center">
 
@@ -152,7 +177,7 @@
 
                             <!-- Option 3 -->
                             <li class="nav-item dropdown me-3">
-                                <button class="nav-link  btn btn-outline p-2 fs-5 border shadow " role="button"
+                                <button class="nav-link  btn btn-outline p-2 fs-5 my-2 border shadow " role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <span class="d-flex align-items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -200,7 +225,7 @@
 
                             <!-- Option 4 -->
                             <li class="nav-item dropdown">
-                                <button class="nav-link  btn btn-outline p-2 fs-5 border shadow " role="button"
+                                <button class="nav-link  btn btn-outline p-2 fs-5 my-2 border shadow " role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <span class="d-flex align-items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -269,7 +294,7 @@
     <div class="modal fade" id="confirmLogout" tabindex="-1" aria-labelledby="confirmLogoutLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header d-flex justify-content-between">
+                <div class="modal-header d-flex justify-content-between text-warning">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
                         class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
                         <path
@@ -311,6 +336,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 // components
+import Home from '../components/Home.vue';
 import AddCar from '../components/asset/AddCar.vue';
 import ShowCars from '../components/asset/ShowCars.vue';
 
@@ -325,22 +351,6 @@ export default {
         };
     },
 
-    async created() {
-        const token = Cookies.get('token');
-
-        if (!token) {
-            this.$router.push('/');
-
-        }
-        else {
-            const user_role = localStorage.getItem('user_role')
-            if (user_role != 'Asset') {
-                this.logout()
-            }
-        }
-    },
-
-
 
 
     methods: {
@@ -350,34 +360,14 @@ export default {
         },
 
         async logout() {
-            const token = Cookies.get('token');
-
-            if (token) {
-                Cookies.remove('token');
-                const response2 = await axios.delete('api/auth/', { token });
-                this.$router.push('/');
-                console.log(response2)
-            }
-            else {
-                console.warn('Missing token');
-            }
+            this.$store.commit('resetState');
+            this.$router.push('/');
 
         },
 
-        async fetchTokenData() {
-            const token = Cookies.get('token');
-            try {
-                const response = await axios.get('get-token/');
-
-                console.log('Username:', response.data.passed_for);
-
-            }
-            catch (error) {
-
-                console.error('Error:', error);
-            }
+        showHomeComponent() {
+            this.currentComponent = Home;
         },
-
         AddCarComponent() {
             this.currentComponent = AddCar;
         },

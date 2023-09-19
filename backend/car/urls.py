@@ -19,4 +19,8 @@ urlpatterns = [
     # Delete car
     path('api/car/delete/<str:vin>', views.DeleteCar.as_view(), name="delete-cars"),
     
+    # Get car info
+    path('api/car/edit/<int:id>', views.getCar.as_view(), name="edit-car"),
+    # Save car info
+    path('api/car/save/<int:id>', views.saveCar.as_view(), name="save-car")
 ]

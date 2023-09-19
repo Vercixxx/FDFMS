@@ -57,3 +57,51 @@ class CreateCarSerializer(serializers.ModelSerializer):
 
         car_obj.save()
         return car_obj
+    
+    
+class UpdateCarSerializer(serializers.Serializer):
+    class Meta:
+        model = Car
+        fields = [
+            'vin',
+            'brand',
+            'model',
+            'year_of_prod',
+            'color',
+            'mileage',
+            'engine_cap',
+            'engine_pow',
+            'transmission',
+            'policy_number',
+            'is_oc',
+            'is_ac',
+            'phone_policy_contact',
+        ]
+        extra_kwargs = {
+            'vin' : {'validators' : [UniqueValidator(queryset=Car.objects.all(), message='This vin number is already in use.')]}
+        }
+        
+    def update(self, instance, validated_data):
+        instance.vin = validated_data.get('vin', instance.vin)
+        instance.brand = validated_data.get('brand', instance.brand)
+        instance.model = validated_data.get('model', instance.model)
+        instance.year_of_prod = validated_data.get('year_of_prod', instance.year_of_prod)
+        instance.color = validated_data.get('color', instance.color)
+        instance.mileage = validated_data.get('mileage', instance.mileage)
+        instance.engine_cap = validated_data.get('engine_cap', instance.engine_cap)
+        instance.engine_pow = validated_data.get('engine_pow', instance.engine_pow)
+        instance.transmission = validated_data.get('transmission', instance.transmission)
+        instance.policy_number = validated_data.get('policy_number', instance.policy_number)
+        instance.is_oc = validated_data.get('is_oc', instance.is_oc)
+        instance.is_ac = validated_data.get('is_ac', instance.is_ac)
+        instance.phone_policy_contact = validated_data.get('phone_policy_contact', instance.phone_policy_contact)
+
+        instance.save()  # Zapisz zaktualizowany obiekt Car
+        return instance
+
+
+
+
+
+
+
