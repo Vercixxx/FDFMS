@@ -4,7 +4,9 @@ from django.utils import timezone
 from driver.models import Driver
 
 class Car(models.Model):
-    vin = models.TextField(primary_key=True, max_length=17)
+    id = models.AutoField(primary_key=True)
+    
+    vin = models.TextField(max_length=17)
     
     brand = models.TextField()
     model = models.TextField()

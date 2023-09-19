@@ -8,7 +8,7 @@
             <span class="fw-bold">F</span>leet
             <span class="fw-bold">M</span>anagement
             <span class="fw-bold">S</span>ystem
-             - Log in
+            - Log in
         </p>
 
     </div>
@@ -148,7 +148,7 @@
         <!-- modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ErrorModal" id="hiddenButton"
             style="display: none;">
-            
+
         </button>
 
         <div class="modal fade" id="ErrorModal" tabindex="-1" aria-labelledby="ErrorModalLabel" aria-hidden="true">
@@ -186,10 +186,10 @@ export default {
     mounted() {
         const cookie_username = Cookies.get('username');
         const cookie_password = Cookies.get('password');
-        
+
         if (cookie_username && cookie_password) {
             this.isButtonDisabled = false;
- 
+
             this.$refs.usernameInput.value = cookie_username;
             this.$refs.passwordInput.value = cookie_password;
 
@@ -237,7 +237,7 @@ export default {
 
                 };
 
-                const response = await axios.post('api/auth/', data)
+                const response = await axios.post('api/v1/login/', data)
                 console.log(response.data)
 
                 if (response.data.error) {
@@ -250,16 +250,15 @@ export default {
                 }
                 else {
                     // Authentication was successfull
-                    const token = response.data.token;
-                    Cookies.set('token', token, { expires: 7 });
 
+                    // Vuex
+                    this.$store.dispatch('setResponseData', response.data.data);
 
-                    // Vuex 
-                    this.$store.dispatch('fetchAndSetResponseData', response.data.data);
+                    this.$store.commit('setAccessToken', response.data.jwt.access);
+                    this.$store.commit('setRefreshToken', response.data.jwt.refresh);
+                    
+                    axios.defaults.headers.common['Authorization'] = `JWT ${response.data.jwt.access}`;
 
-
-                    const role = response.data.user_role
-                    localStorage.setItem('user_role', role)
 
                     // check if remeber_me is checked
                     const checkbox = document.getElementById("remember_me_checkbox");
@@ -270,17 +269,17 @@ export default {
                     }
 
 
-                    
+                    const role = response.data.user_role
 
-                    switch(role) {
+                    switch (role) {
                         case 'HR':
                             this.$router.push('/hr');
                             break;
-                        
+
                         case 'Asset':
                             this.$router.push('/asset');
                             break;
-                        
+
 
                     }
 

@@ -1,6 +1,6 @@
 
 # Auth
-from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth import authenticate, get_user_model
 
 # Password Auth
 from django.shortcuts import get_object_or_404, render
@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer
 from owner.serializers import AddOwnerSerializer
 from rest_manager.serializers import AddManagerSerializer
-from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer
+from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer, GetAssetUser, UpdateAssetUser
 from clients_dept.serializers import AddClientsUserSerializer
 from hr_dept.serializers import AddHRUserSerializer, HRUserSerializer
 from payroll_dept.serializers import AddPayrollUserSerializer
@@ -25,11 +25,14 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.generics import DestroyAPIView
+
+# JWT
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.settings import api_settings
 
 # Models
 from .models import GeneralUser
@@ -41,10 +44,11 @@ from hr_dept.models import HRUser
 from payroll_dept.models import PayrollUser
 from driver.models import Driver
 from administrator.models import Administrator
-from django.db.models import Q
 
 
 class GUViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    
     # query
     filter_backends = (filters.SearchFilter, )
     search_fields = ('username', 'email')
@@ -52,6 +56,7 @@ class GUViewSet(viewsets.ModelViewSet):
 
     def initial(self, request, *args, **kwargs):
         super().initial(request, *args, **kwargs)
+
         
         # Choosing correct serializer
         role = self.request.query_params.get('role')
@@ -84,18 +89,13 @@ class GUViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     
-    # authentication_classes = [SessionAuthentication, TokenAuthentication]
-
 class DeleteUser(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = GeneralUser.objects.all()
     serializer_class = GeneralUserSerializer
     lookup_field = 'username'
-
-class GeneralUser(APIView):
-
-    pass    
-
-        
+  
+    
 class UserAuth(APIView):
     def post(self, request):
         username = request.data.get('username')
@@ -121,10 +121,6 @@ class UserAuth(APIView):
             if user_role in user_role_to_model:
                 using_model = user_role_to_model[user_role]
                 logged_user = using_model.objects.get(id=general_user.id)
-
-                login(request, logged_user)
-                token, created = Token.objects.get_or_create(user=general_user)
-                
                 
                 avalible_serializers = {
                     'Owner': AddOwnerSerializer,
@@ -145,23 +141,27 @@ class UserAuth(APIView):
 
                 serializer = choosen_seralizer(logged_user)
                 user_data = serializer.data
-                        
                 
-                return JsonResponse({'message': 'Logged in successfully', 'user_role':logged_user.user_role, 'token':token.key, 'data':user_data })
+                jwt = self.get_tokens_for_user(logged_user)
+                
+
+                return JsonResponse({'message': 'Logged in successfully', 'user_role':logged_user.user_role, 'data':user_data , 'jwt':jwt})
         
         else:
             return JsonResponse({'error': 'Invalid username or password'})
 
     
-    def delete(self, request):
-        token_dict = request.data
-        token = token_dict.get('token')
-        
-        request.session.flush()
-        logout(request)
-        return JsonResponse({'message': 'Logged out successfully'})
+    def get_tokens_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
 
 class AddUser(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def post(self, request):
         user_role = request.data.get('user_role')
 
@@ -188,10 +188,92 @@ class AddUser(APIView):
             user_model = account.__class__
             user = user_model.objects.get(username=account.username)
             
-            token = Token.objects.create(user=user)
         
         else:
             data = serializer.errors
             
         return JsonResponse(data)
+    
 
+class getUser(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, username, user_role):
+
+        available_models = {
+            'Owner': Owner,
+            'Manager': RestManager,
+            'Asset': AssetUser,
+            'Clients': ClientsUser,
+            'HR': HRUser,
+            'Payroll': PayrollUser,
+            'Driver': Driver,
+            'Administrator': Administrator,
+        }
+
+        if user_role in available_models:
+            using_model = available_models[user_role]
+            user = using_model.objects.get(username = username)
+            
+            available_serializers = {
+                'Owner': AddOwnerSerializer,
+                'Manager': AddManagerSerializer,
+                'Asset': GetAssetUser,
+                'Clients': AddClientsUserSerializer,
+                'HR': HRUserSerializer,
+                'Payroll': AddPayrollUserSerializer,
+                'Driver': AddDriverSerializer,
+                'Administrator': AddAdministratorSerializer,
+            }
+            
+            if user_role in available_serializers:
+                choosen_seralizer = available_serializers[user_role]
+                serializer_instance  = choosen_seralizer(user)
+                output = serializer_instance.data
+                return JsonResponse(output, status=200, safe=False)
+            else:
+                return JsonResponse({'error': 'Unsupported user model'}, status=404)
+        
+        
+    
+class UpdateUser(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, username, user_role):
+        
+        available_models = {
+            'Owner': Owner,
+            'Manager': RestManager,
+            'Asset': AssetUser,
+            'Clients': ClientsUser,
+            'HR': HRUser,
+            'Payroll': PayrollUser,
+            'Driver': Driver,
+            'Administrator': Administrator,
+        }
+
+        if user_role in available_models:
+            using_model = available_models[user_role]
+            user = using_model.objects.get(username = username)
+            
+            available_serializers = {
+                'Asset': UpdateAssetUser,
+            }
+            
+            data = request.data
+            serializer = UpdateAssetUser(user, data=data)
+            
+            if serializer.is_valid():
+                serializer.update(user, data)  
+                return JsonResponse({'message' : 'success'},status=200)
+            
+            else:
+                return JsonResponse(serializer.errors, status=400)
+            
+
+class ChangeUserState(APIView):
+    def put(self, request, username):
+        user = GeneralUser.objects.get(username = username)
+        user.is_active = not user.is_active
+        user.save()
+        return JsonResponse({'message' : 'Changed successfully'}, status=200)

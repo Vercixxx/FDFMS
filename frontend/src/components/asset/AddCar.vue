@@ -4,7 +4,8 @@
         <div class="containter m-2 p-2 d-flex justify-content-center">
 
             <div class="col-12 col-md-9">
-                <p class="fs-4">Add new Car</p>
+                <p v-if="carId !== null" class="fs-4 fw-bolder">Edit Car</p>
+                <p v-else class="fs-4 fw-bolder">Add new Car</p>
                 <form action="" method="post" class="border rounded-3 p-3" @submit.prevent="createCar">
 
 
@@ -212,8 +213,8 @@
 
 
                     <div class="text-center">
-                        <button type="button" class="btn btn-success shadow" @click="createCar" :disabled="!isFormValid"
-                            :class="{ 'btn-outline-danger': !isFormValid }">
+                        <button v-if="carId === null" type="button" class="btn btn-success shadow" @click="createCar"
+                            :disabled="!isFormValid" :class="{ 'btn-outline-danger': !isFormValid }">
                             <span class="d-flex align-items-center">
                                 Add
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -225,6 +226,21 @@
                                 </svg>
                             </span>
                         </button>
+
+                        <!-- Button when editing existing car -->
+                        <button v-else type="button" class="btn btn-success shadow" @click="modifyCar">
+                            <span class="d-flex align-items-center">
+                                Save
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                    class="bi bi-floppy ms-2" viewBox="0 0 16 16">
+                                    <path d="M11 2H9v3h2V2Z" />
+                                    <path
+                                        d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0ZM1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5Zm3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4v4.5ZM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5V15Z" />
+                                </svg>
+                            </span>
+                        </button>
+                        <!-- Button when editing existing car -->
+
                     </div>
                 </form>
             </div>
@@ -305,6 +321,7 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            carId: null,
             vin: '',
             brand: '',
             model: '',
@@ -349,6 +366,10 @@ export default {
         const currentYear = new Date().getFullYear();
         for (let year = currentYear; year >= 1990; year--) {
             this.availableYears.push(year.toString());
+        }
+        this.carId = localStorage.getItem('carid')
+        if (this.carId !== null) {
+            this.getCarInfo()
         }
     },
 
@@ -405,7 +426,57 @@ export default {
             this.selectedYear = '';
             this.selectedTranssmision = '';
         },
-    }
+
+        async modifyCar() {
+
+            const push_data = {
+                vin: this.vin,
+                brand: this.brand,
+                model: this.model,
+                year_of_prod: this.selectedYear,
+                color: this.color,
+                mileage: this.mileage,
+                engine_cap: this.capacity,
+                engine_pow: this.power,
+                vin: this.vin,
+                transmission: this.selectedTranssmision,
+                policy_number: this.policyNumber,
+                is_oc: this.oc,
+                is_ac: this.ac,
+                phone_policy_contact: this.insurancePhone,
+
+            }
+            console.log(push_data)
+            const response = await axios.put(`api/car/save/${this.carId}`, push_data);
+            console.log(response)
+
+            localStorage.removeItem('carid')
+            this.$parent.ShowCarsComponent()
+
+        },
+
+        async getCarInfo() {
+            console.log(this.carId)
+            const response = await axios.get(`api/car/edit/${this.carId}`);
+            console.log(response.data);
+
+            this.vin = response.data.vin;
+            this.brand = response.data.brand;
+            this.model = response.data.model;
+            this.selectedYear = response.data.year_of_prod;
+            this.color = response.data.color;
+            this.mileage = response.data.mileage;
+            this.capacity = response.data.engine_cap;
+            this.power = response.data.engine_pow;
+            this.selectedTranssmision = response.data.transmission;
+            this.policyNumber = response.data.policy_number;
+            this.oc = response.data.is_oc;
+            this.ac = response.data.is_ac;
+            this.insurancePhone = response.data.phone_policy_contact;
+
+        }
+    },
+
 
 }
 </script>

@@ -1,6 +1,8 @@
 from pathlib import Path
 import os
 import json
+from datetime import timedelta
+
 
 SECRET_DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'secret_data.json')
 
@@ -44,8 +46,9 @@ INSTALLED_APPS = [
     # My packages
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
+    'rest_framework_simplejwt',
     'djoser',
+    'corsheaders',
     
     # Django
     'django.contrib.admin',
@@ -59,11 +62,13 @@ INSTALLED_APPS = [
     
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:8080",
-#     "http://127.0.0.1:8080",
-# ]
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://127.0.0.1:8000",
+    "http://192.168.0.155:8080",
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -99,8 +104,6 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -136,14 +139,9 @@ AUTH_USER_MODEL = 'users.GeneralUser'
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -160,5 +158,35 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+
+SIMPLE_JWT = {
+    # 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Ustaw czas ważności tokena dostępu
+    # 'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),  # Ustaw czas ważności odświeżania tokena
+    # 'SLIDING_TOKEN_LIFETIME': timedelta(days=14),  # Ustaw czas ważności slidinowego tokena
+    # 'SLIDING_TOKEN_REFRESH_LIFETIME_GRACE_PERIOD': timedelta(days=7),  # Ustaw okres łaski przed odświeżeniem slidinowego tokenu
+    # 'ROTATE_REFRESH_TOKENS': False,
+    # 'ALGORITHM': 'HS256',
+    # 'SIGNING_KEY': None,
+    # 'VERIFYING_KEY': None,
+    # "AUTH_HEADER_TYPES": ("Bearer",),
+    # "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    
+    
+    # "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    # "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('JWT',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_REFRESH_LIFETIME_ALLOW_REFRESH': True,
+    'SLIDING_TOKEN_LIFETIME_ALLOW_REFRESH': True,
+    'SLIDING_TOKEN_REFRESH_EACH_TIME': True,
+    'SLIDING_TOKEN_REFRESH_AFTER_GRACE_PERIOD': False,
     
 }
