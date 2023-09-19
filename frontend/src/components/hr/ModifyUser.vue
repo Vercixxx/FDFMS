@@ -93,7 +93,7 @@
 
 
     <!-- Pagination -->
-    <div class="d-flex justify-content-center ">
+    <div class="d-flex justify-content-center mb-4">
 
       <!-- Button previous -->
       <button type="button" class="btn btn-outline-secondary" @click="previousPage" :disabled="!page_flip.previous">
@@ -105,7 +105,7 @@
       </button>
 
       <!-- Current page -->
-      <p class="fw-bolder mx-2">Page {{ currentPage + 1 }} of ?</p>
+      <p class="fw-bolder mx-2">Page {{ currentPage + 1 }}</p>
 
       <!-- Button next -->
       <button type="button" class="btn btn-outline-secondary " @click="nextPage" :disabled="!page_flip.next">
@@ -130,7 +130,19 @@
       <table class="table table-hover table-striped">
         <thead>
           <tr class="text-center">
-            <th v-for="column in columns" :key="column.attribute">{{ column.label }}</th>
+            <th v-for="column in columns" :key="column.attribute">
+              <span v-if="column.label === 'Active'" class="text-info">
+                {{ column.label }}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning"
+                  viewBox="0 0 16 16">
+                  <path
+                    d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1H6.374z" />
+                </svg>
+              </span>
+              <span v-else>
+                {{ column.label }}
+              </span>
+            </th>
             <th>Action</th>
           </tr>
         </thead>
@@ -139,7 +151,6 @@
             <td v-for="column in columns" :key="column.attribute">
 
               <!-- Mapping "is_active" -->
-              <!-- <span v-if="column.attribute === 'is_active'">{{ user[column.attribute] ? 'Yes' : 'No' }}</span> -->
               <span v-if="column.attribute === 'is_active'">
 
                 <!-- SVG when user is active -->
@@ -170,9 +181,20 @@
               </span>
             </td>
             <td>
+              <button v-tooltip="tooltipContent">asdasd</button>
+              <!-- Button status -->
+              <button class="btn btn-outline-info m-1"
+                @click="changeState(user.username, user.user_role, user.is_active)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning"
+                  viewBox="0 0 16 16">
+                  <path
+                    d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1H6.374z" />
+                </svg>
+              </button>
+
               <!-- Button edit -->
-              <button class="btn btn-outline-success m-3" disabled @click="editUser(user.username)">
-                <svg xmlns="http://www.w3.org/2000/svg"  width="16" height="16" fill="currentColor" class="bi bi-pencil"
+              <button class="btn btn-outline-success m-1" @click="editUser(user.username, user.user_role)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil"
                   viewBox="0 0 16 16">
                   <path
                     d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
@@ -180,7 +202,7 @@
               </button>
 
               <!-- Button delete -->
-              <button class="btn btn-outline-danger" @click="deleteConfirm(user.username)">
+              <button class="btn btn-outline-danger m-1" @click="deleteConfirm(user.username)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3"
                   viewBox="0 0 16 16">
                   <path
@@ -225,8 +247,8 @@
           </div>
           <div class="modal-body text-danger fs-5">
             <p>
-              You are trying to delete {{ usernameDelete }}, this operation is <span
-                class="fw-bold">irreversible</span>. Are you sure?
+              You are trying to delete {{ usernameDelete }}, this operation is <span class="fw-bold">irreversible</span>.
+              Are you sure?
             </p>
           </div>
           <div class="modal-footer d-flex justify-content-center">
@@ -251,7 +273,7 @@
               <p v-if="dataError">Error</p>
               <p v-else>Success</p>
             </h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body text-center text-danger">
             <div v-if="dataError">
@@ -270,12 +292,71 @@
     </div>
     <!-- Message modal -->
 
+    <!-- Change state active modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#StateModal" id="state_modal"
+      style="display: none;">
+    </button>
+    <div class="modal fade" id="StateModal" tabindex="-1" aria-labelledby="StateModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header d-flex justify-content-between">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red" class="bi bi-exclamation-triangle"
+              viewBox="0 0 16 16">
+              <path
+                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
+              <path
+                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
+            </svg>
+            <h1 class="modal-title fs-5" id="confirmModalLabel">
+              Caution
+            </h1>
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red" class="bi bi-exclamation-triangle"
+              viewBox="0 0 16 16">
+              <path
+                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
+              <path
+                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
+            </svg>
+          </div>
+          <div class="modal-body text-center">
+
+            <div>
+              This operation will change active state of
+              <span class='fw-bolder'>
+                {{ change_state.username }}
+              </span>
+              from
+              <span v-if="change_state.state === true"> active </span>
+              <span v-else> not active </span>
+              to
+              <span v-if="change_state.state === true"> not active </span>
+              <span v-else> active </span>.
+              <p class="text-warning fs-4">Are you sure?</p>
+
+            </div>
+
+          </div>
+
+          <div class="modal-footer d-flex justify-content-center">
+
+            <button type="button" class="btn btn-secondary w-25 me-2 fs-4" data-bs-dismiss="modal">No</button>
+            <button type="button" class="btn btn-danger w-25 fs-4" data-bs-dismiss="modal">Yes</button>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- Change state active modal -->
+
+
 
   </div>
 </template>
   
 <script>
 import axios from 'axios';
+import { createPopper } from '@popperjs/core';
 
 export default {
   name: 'App',
@@ -294,9 +375,16 @@ export default {
 
       selectedRole: 'All',
       selectedActive: 'All',
-      usernameDelete: ''
+      usernameDelete: '',
+
+      change_state: {
+        username: '',
+        user_role: '',
+        state: '',
+      }
     };
   },
+
 
   created() {
     this.loadUsers();
@@ -354,7 +442,7 @@ export default {
     defineColumnsByUserRole() {
       const columnDefinitions = {
         Driver: [
-        { label: 'Username', attribute: 'username' },
+          { label: 'Username', attribute: 'username' },
           { label: 'Email', attribute: 'email' },
           { label: 'Phone Number', attribute: 'phone' },
           { label: 'Active', attribute: 'is_active' },
@@ -424,7 +512,7 @@ export default {
           this.dataSuccess = 'Success!';
           document.getElementById('hiddenButton').click();
         }
-        else{
+        else {
           console.log('Error')
           this.loadUsers();
         }
@@ -435,7 +523,21 @@ export default {
       }
     },
 
-    editUser(user) {
+    editUser(username, user_role) {
+      localStorage.setItem('username', username)
+      localStorage.setItem('user_role', user_role)
+
+      switch (user_role) {
+        case 'HR':
+          this.$parent.showAddHrComponent()
+          break;
+
+        case 'Asset':
+          this.$parent.showAddAssetComponent()
+          break;
+      }
+
+
 
     },
 
@@ -445,6 +547,13 @@ export default {
 
     reloadComponent() {
       this.loadUsers();
+    },
+
+    changeState(username, user_role, state) {
+      this.change_state.username = username;
+      this.change_state.user_role = user_role;
+      this.change_state.state = state;
+      document.getElementById('state_modal').click();
     },
 
 

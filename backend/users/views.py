@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer
 from owner.serializers import AddOwnerSerializer
 from rest_manager.serializers import AddManagerSerializer
-from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer
+from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer, GetAssetUser, UpdateAssetUser
 from clients_dept.serializers import AddClientsUserSerializer
 from hr_dept.serializers import AddHRUserSerializer, HRUserSerializer
 from payroll_dept.serializers import AddPayrollUserSerializer
@@ -194,18 +194,78 @@ class AddUser(APIView):
             
         return JsonResponse(data)
     
+
+class getUser(APIView):
+    permission_classes = [IsAuthenticated]
     
+    def get(self, request, username, user_role):
+
+        available_models = {
+            'Owner': Owner,
+            'Manager': RestManager,
+            'Asset': AssetUser,
+            'Clients': ClientsUser,
+            'HR': HRUser,
+            'Payroll': PayrollUser,
+            'Driver': Driver,
+            'Administrator': Administrator,
+        }
+
+        if user_role in available_models:
+            using_model = available_models[user_role]
+            user = using_model.objects.get(username = username)
+            
+            available_serializers = {
+                'Owner': AddOwnerSerializer,
+                'Manager': AddManagerSerializer,
+                'Asset': GetAssetUser,
+                'Clients': AddClientsUserSerializer,
+                'HR': HRUserSerializer,
+                'Payroll': AddPayrollUserSerializer,
+                'Driver': AddDriverSerializer,
+                'Administrator': AddAdministratorSerializer,
+            }
+            
+            if user_role in available_serializers:
+                choosen_seralizer = available_serializers[user_role]
+                serializer_instance  = choosen_seralizer(user)
+                output = serializer_instance.data
+                return JsonResponse(output, status=200, safe=False)
+            else:
+                return JsonResponse({'error': 'Unsupported user model'}, status=404)
+        
+        
     
 class UpdateUser(APIView):
     permission_classes = [IsAuthenticated]
     
     def put(self, request, username, user_role):
-        print(username, user_role)
         
-        
-        
-        data = {
-            'message': 'Test message'
+        available_models = {
+            'Owner': Owner,
+            'Manager': RestManager,
+            'Asset': AssetUser,
+            'Clients': ClientsUser,
+            'HR': HRUser,
+            'Payroll': PayrollUser,
+            'Driver': Driver,
+            'Administrator': Administrator,
         }
-        
-        return JsonResponse(data, status=200)
+
+        if user_role in available_models:
+            using_model = available_models[user_role]
+            user = using_model.objects.get(username = username)
+            
+            available_serializers = {
+                'Asset': UpdateAssetUser,
+            }
+            
+            data = request.data
+            serializer = UpdateAssetUser(user, data=data)
+            
+            if serializer.is_valid():
+                serializer.update(user, data)  
+                return JsonResponse({'message' : 'success'},status=200)
+            
+            else:
+                return JsonResponse(serializer.errors, status=400)

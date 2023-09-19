@@ -28,6 +28,12 @@ urlpatterns = [
     # Logging
     path('api/v1/login/', views.UserAuth.as_view(), name='login'),
     
+    # Get User data
+    path('api/users/get/<str:username>/<str:user_role>/', views.getUser.as_view(), name="get-user"),
+    
+    # Save User data
+    path('api/users/save/<str:username>/<str:user_role>/', views.UpdateUser.as_view(), name="save-user")
+    
     
 
 
