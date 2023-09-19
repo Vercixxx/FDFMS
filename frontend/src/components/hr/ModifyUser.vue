@@ -147,7 +147,7 @@
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          <tr v-for="user in users" :key="user.id" class="text-center align-middle">
+          <tr v-for="user in users" :key="user.id" class="text-center align-middle "  :class="{ 'text-decoration-line-through': user.is_active === 'false' ? false : !user.is_active }">
             <td v-for="column in columns" :key="column.attribute">
 
               <!-- Mapping "is_active" -->
@@ -179,13 +179,13 @@
                     d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 1 1 .708.708L8.707 8l2.647 2.646a.5.5 0 1 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
                 </svg>
               </span>
+
             </td>
             <td>
-              <button v-tooltip="tooltipContent">asdasd</button>
               <!-- Button status -->
               <button class="btn btn-outline-info m-1"
-                @click="changeState(user.username, user.user_role, user.is_active)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning"
+                @click="changeStateConfirm(user.username, user.user_role, user.is_active)" :class="{ 'btn-outline-danger': user.is_active === 'false' ? false : !user.is_active }">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning" 
                   viewBox="0 0 16 16">
                   <path
                     d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1H6.374z" />
@@ -330,7 +330,7 @@
               <span v-else> not active </span>
               to
               <span v-if="change_state.state === true"> not active </span>
-              <span v-else> active </span>.
+              <span v-else> active </span>
               <p class="text-warning fs-4">Are you sure?</p>
 
             </div>
@@ -340,7 +340,7 @@
           <div class="modal-footer d-flex justify-content-center">
 
             <button type="button" class="btn btn-secondary w-25 me-2 fs-4" data-bs-dismiss="modal">No</button>
-            <button type="button" class="btn btn-danger w-25 fs-4" data-bs-dismiss="modal">Yes</button>
+            <button type="button" class="btn btn-danger w-25 fs-4" data-bs-dismiss="modal" @click="changeState(change_state.username)">Yes</button>
 
           </div>
 
@@ -549,11 +549,18 @@ export default {
       this.loadUsers();
     },
 
-    changeState(username, user_role, state) {
+    changeStateConfirm(username, user_role, state) {
       this.change_state.username = username;
       this.change_state.user_role = user_role;
       this.change_state.state = state;
       document.getElementById('state_modal').click();
+    },
+
+    async changeState(username) {
+      const response = await axios.put(`api/users/change-state/${username}/`)
+      console.log(response)
+      this.reloadComponent()
+
     },
 
 

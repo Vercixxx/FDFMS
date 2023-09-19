@@ -4,7 +4,24 @@
             <div class="col-12 col-md-9">
 
                 <p v-if="user_role === null" class="fs-4 text-center fw-bolder">Add new Asset user</p>
-                <p v-else class="fs-4 text-center fw-bolder">Edit user</p>
+                <div v-else class="d-flex justify-content-between">
+                    <div>
+                        <button type="button" class="btn btn-outline-primary mb-3 " @click="goBack">
+                            <span class="d-flex align-items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                    class="bi bi-arrow-left me-2 " viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                                        
+                                </svg>
+                                Back
+                            </span>
+                        </button>
+                    </div>
+                    <div class="fs-4 text-center fw-bolder">Edit user</div>
+                    <div></div>
+
+                </div>
 
                 <form action="" method="post" class="border rounded-3 p-3" @submit.prevent="createUser">
 
@@ -539,37 +556,36 @@
                     </div>
 
 
-                        <div class="text-center">
-                            <button v-if="user_role === null" type="button" class="btn btn-success shadow"
-                                @click="createUser" :disabled="!isFormValid"
-                                :class="{ 'btn-outline-danger': !isFormValid }">
-                                <span class="d-flex align-items-center">
-                                    Create
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                        class="bi bi-person-add ms-2" viewBox="0 0 16 16">
-                                        <path
-                                            d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0Zm-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
-                                        <path
-                                            d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z" />
-                                    </svg>
-                                </span>
-                            </button>
+                    <div class="text-center">
+                        <button v-if="user_role === null" type="button" class="btn btn-success shadow" @click="createUser"
+                            :disabled="!isFormValid" :class="{ 'btn-outline-danger': !isFormValid }">
+                            <span class="d-flex align-items-center">
+                                Create
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                    class="bi bi-person-add ms-2" viewBox="0 0 16 16">
+                                    <path
+                                        d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0Zm-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+                                    <path
+                                        d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z" />
+                                </svg>
+                            </span>
+                        </button>
 
 
-                            <!-- Button when editing existing car -->
-                            <button v-else type="button" class="btn btn-success shadow" @click="modifyCar">
-                                <span class="d-flex align-items-center" @click="updateUser">
-                                    Save
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                        class="bi bi-floppy ms-2" viewBox="0 0 16 16">
-                                        <path d="M11 2H9v3h2V2Z" />
-                                        <path
-                                            d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0ZM1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5Zm3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4v4.5ZM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5V15Z" />
-                                    </svg>
-                                </span>
-                            </button>
-                            <!-- Button when editing existing car -->
-                        </div>
+                        <!-- Button when editing existing user -->
+                        <button v-else type="button" class="btn btn-success shadow" @click="updateUser">
+                            <span class="d-flex align-items-center">
+                                Save
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                    class="bi bi-floppy ms-2" viewBox="0 0 16 16">
+                                    <path d="M11 2H9v3h2V2Z" />
+                                    <path
+                                        d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0ZM1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5Zm3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4v4.5ZM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5V15Z" />
+                                </svg>
+                            </span>
+                        </button>
+                        <!-- Button when editing existing user -->
+                    </div>
                 </form>
             </div>
 
@@ -893,6 +909,9 @@ export default {
             const response = await axios.get(`api/users/get/${username}/${user_role}`);
             console.log(response.data);
 
+            localStorage.removeItem('username');
+            localStorage.removeItem('user_role');
+            
             // Set input data
             this.username = response.data.username;
 
@@ -979,10 +998,12 @@ export default {
 
 
             // Finish
-            localStorage.removeItem('username');
-            localStorage.removeItem('user_role');
-            this.$parent.showModifyUserComponent()
+            this.goBack()
         },
+
+        goBack() {
+            this.$parent.showModifyUserComponent()
+        }
     }
 };
 </script>
