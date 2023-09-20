@@ -11,13 +11,13 @@ from django.http import JsonResponse
 
 from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer
 from owner.serializers import AddOwnerSerializer
-from rest_manager.serializers import AddManagerSerializer
+from rest_manager.serializers import AddManagerSerializer, RestManagerSerializer, GetRestManager, UpdateRestManager
 from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer, GetAssetUser, UpdateAssetUser
-from clients_dept.serializers import AddClientsUserSerializer
-from hr_dept.serializers import AddHRUserSerializer, HRUserSerializer
-from payroll_dept.serializers import AddPayrollUserSerializer
-from driver.serializers import AddDriverSerializer, DriverSerializer
-from administrator.serializers import AddAdministratorSerializer
+from clients_dept.serializers import AddClientsUserSerializer, GetClientsUser, UpdateClientsUser
+from hr_dept.serializers import AddHRUserSerializer, HRUserSerializer, GetHRUser, UpdateHRUser
+from payroll_dept.serializers import AddPayrollUserSerializer, PayrollUser, GetPayrollUser, UpdatePayrollUser
+from driver.serializers import AddDriverSerializer, DriverSerializer, GetDriver, UpdateDriverUser
+from administrator.serializers import AddAdministratorSerializer, AdministratorSerializer, GetAdministrator, UpdateAdministrator
 
 # Rest API
 from rest_framework import viewsets, filters
@@ -46,6 +46,64 @@ from driver.models import Driver
 from administrator.models import Administrator
 
 
+class GlobalDictionaries:
+    dicts = {
+        'UserModels': {
+            'Owner': Owner,
+            'Manager': RestManager,
+            'Asset': AssetUser,
+            'Clients': ClientsUser,
+            'HR': HRUser,
+            'Payroll': PayrollUser,
+            'Driver': Driver,
+            'Administrator': Administrator,
+        },
+        
+        'AddUserSerializers': {
+            'Owner' : AddOwnerSerializer,
+            'Manager' : AddManagerSerializer,
+            'Asset' : AddAssetUserSerializer,
+            'Clients' : AddClientsUserSerializer,
+            'HR' : AddHRUserSerializer,
+            'Payroll' : AddPayrollUserSerializer,
+            'Driver' : AddDriverSerializer,
+            'Administrator' : AddAdministratorSerializer,
+        },
+        
+        'UserSerializers': {
+            'Manager' : RestManagerSerializer,
+            'Asset' : AssetSerializer,
+            'Clients' : AddClientsUserSerializer,
+            'HR' : HRUserSerializer,
+            'Payroll' : AddPayrollUserSerializer,
+            'Driver' : DriverSerializer,
+            'Administrator' : AdministratorSerializer,
+        },
+        
+        'GetUserSerializers': {
+            'Manager': GetRestManager,
+            'Asset': GetAssetUser,
+            'Clients': GetClientsUser,
+            'HR': GetHRUser,
+            'Payroll': GetPayrollUser,
+            'Driver': GetDriver,
+            'Administrator': GetAdministrator,
+        },
+        
+        'UpdateUserSerializers': {
+            'Asset': UpdateAssetUser,
+            'Manager': UpdateRestManager,
+        }
+    }
+        
+    @staticmethod
+    def get_serializer(name, key):
+        dictionary = GlobalDictionaries.dicts.get(name)
+        if dictionary:
+            return dictionary.get(key)
+            
+        
+
 class GUViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     
@@ -60,20 +118,13 @@ class GUViewSet(viewsets.ModelViewSet):
         
         # Choosing correct serializer
         role = self.request.query_params.get('role')
-        
-        available_serializers = {
-            'HR': HRUserSerializer,
-            'Driver': DriverSerializer,
-            'Asset': AssetSerializer,
-        }
-        
-        serializer_class = available_serializers.get(role, GeneralUserSerializer)
-        
-        self.serializer_class = serializer_class
+
+        serializer_class = GlobalDictionaries.get_serializer('UserSerializers', role)
+        self.serializer_class = serializer_class if serializer_class else GeneralUserSerializer
         
         
         status = self.request.query_params.get('status')
-        self.queryset = serializer_class.Meta.model.objects.all()
+        self.queryset = self.serializer_class.Meta.model.objects.all()
         
         # Filtering by status
         if status == 'True':
@@ -107,45 +158,18 @@ class UserAuth(APIView):
 
             user_role = general_user.user_role
 
-            user_role_to_model = {
-                'Owner': Owner,
-                'Manager': RestManager,
-                'Asset': AssetUser,
-                'Clients': ClientsUser,
-                'HR': HRUser,
-                'Payroll': PayrollUser,
-                'Driver': Driver,
-                'Administrator': Administrator,
-            }
+            user_model = GlobalDictionaries.get_serializer('UserModels', user_role)
+            logged_user = user_model.objects.get(id=general_user.id)
+            
+            serializer_class = GlobalDictionaries.get_serializer('UserSerializers', user_role)
 
-            if user_role in user_role_to_model:
-                using_model = user_role_to_model[user_role]
-                logged_user = using_model.objects.get(id=general_user.id)
-                
-                avalible_serializers = {
-                    'Owner': AddOwnerSerializer,
-                    'Manager': AddManagerSerializer,
-                    'Asset': AssetSerializer,
-                    'Clients': AddClientsUserSerializer,
-                    'HR': HRUserSerializer,
-                    'Payroll': AddPayrollUserSerializer,
-                    'Driver': AddDriverSerializer,
-                    'Administrator': AddAdministratorSerializer,
-                }
-                
-                if user_role in avalible_serializers:
-                    choosen_seralizer = avalible_serializers[user_role]
-                else:
-                    return JsonResponse({'error': 'Unsupported user model'})
+            serializer = serializer_class(logged_user)
+            user_data = serializer.data
+            
+            jwt = self.get_tokens_for_user(logged_user)
+            
 
-
-                serializer = choosen_seralizer(logged_user)
-                user_data = serializer.data
-                
-                jwt = self.get_tokens_for_user(logged_user)
-                
-
-                return JsonResponse({'message': 'Logged in successfully', 'user_role':logged_user.user_role, 'data':user_data , 'jwt':jwt})
+            return JsonResponse({'message': 'Logged in successfully', 'user_role':logged_user.user_role, 'data':user_data , 'jwt':jwt})
         
         else:
             return JsonResponse({'error': 'Invalid username or password'})
@@ -165,19 +189,10 @@ class AddUser(APIView):
     def post(self, request):
         user_role = request.data.get('user_role')
 
-        serializers = {
-            'Owner' : AddOwnerSerializer,
-            'Manager' : AddManagerSerializer,
-            'Asset' : AddAssetUserSerializer,
-            'Clients' : AddClientsUserSerializer,
-            'HR' : AddHRUserSerializer,
-            'Payroll' : AddPayrollUserSerializer,
-            'Driver' : AddDriverSerializer,
-            'Administrator' : AddAdministratorSerializer,
-        }
-        
-        selected_serializer = serializers[user_role]
-        serializer = selected_serializer(data=request.data)
+
+        serializer_class = GlobalDictionaries.get_serializer('AddUserSerializers', user_role) 
+
+        serializer = serializer_class(data=request.data)
         data = {}
         
         if serializer.is_valid():
@@ -200,75 +215,37 @@ class getUser(APIView):
     
     def get(self, request, username, user_role):
 
-        available_models = {
-            'Owner': Owner,
-            'Manager': RestManager,
-            'Asset': AssetUser,
-            'Clients': ClientsUser,
-            'HR': HRUser,
-            'Payroll': PayrollUser,
-            'Driver': Driver,
-            'Administrator': Administrator,
-        }
 
-        if user_role in available_models:
-            using_model = available_models[user_role]
-            user = using_model.objects.get(username = username)
-            
-            available_serializers = {
-                'Owner': AddOwnerSerializer,
-                'Manager': AddManagerSerializer,
-                'Asset': GetAssetUser,
-                'Clients': AddClientsUserSerializer,
-                'HR': HRUserSerializer,
-                'Payroll': AddPayrollUserSerializer,
-                'Driver': AddDriverSerializer,
-                'Administrator': AddAdministratorSerializer,
-            }
-            
-            if user_role in available_serializers:
-                choosen_seralizer = available_serializers[user_role]
-                serializer_instance  = choosen_seralizer(user)
-                output = serializer_instance.data
-                return JsonResponse(output, status=200, safe=False)
-            else:
-                return JsonResponse({'error': 'Unsupported user model'}, status=404)
+        user_model = GlobalDictionaries.get_serializer('UserModels', user_role)
+        user = user_model.objects.get(username = username)
         
         
+        user_serializer = GlobalDictionaries.get_serializer('GetUserSerializers', user_role)
+        serializer_instance  = user_serializer(user)
+        output = serializer_instance.data
+        return JsonResponse(output, status=200, safe=False)
+
     
 class UpdateUser(APIView):
     permission_classes = [IsAuthenticated]
     
     def put(self, request, username, user_role):
+        data = request.data
         
-        available_models = {
-            'Owner': Owner,
-            'Manager': RestManager,
-            'Asset': AssetUser,
-            'Clients': ClientsUser,
-            'HR': HRUser,
-            'Payroll': PayrollUser,
-            'Driver': Driver,
-            'Administrator': Administrator,
-        }
 
-        if user_role in available_models:
-            using_model = available_models[user_role]
-            user = using_model.objects.get(username = username)
-            
-            available_serializers = {
-                'Asset': UpdateAssetUser,
-            }
-            
-            data = request.data
-            serializer = UpdateAssetUser(user, data=data)
-            
-            if serializer.is_valid():
-                serializer.update(user, data)  
-                return JsonResponse({'message' : 'success'},status=200)
-            
-            else:
-                return JsonResponse(serializer.errors, status=400)
+        user_model = GlobalDictionaries.get_serializer('UserModels', user_role)
+        user = user_model.objects.get(username = username)
+    
+        
+        serializer_class = GlobalDictionaries.get_serializer('UpdateUserSerializers', user_role)
+        serializer = serializer_class(user, data=data)
+        
+        if serializer.is_valid():
+            serializer.update(user, data)  
+            return JsonResponse({'message' : 'success'},status=200)
+        
+        else:
+            return JsonResponse(serializer.errors, status=400)
             
 
 class ChangeUserState(APIView):

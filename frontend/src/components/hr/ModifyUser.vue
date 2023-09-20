@@ -26,8 +26,8 @@
                 class="dropdown-item ">Asset</a></li>
             <li @click="selectedRole = 'Payroll'; loadUsers(); defineColumnsByUserRole();"><a
                 class="dropdown-item ">Payroll</a></li>
-            <li @click="selectedRole = 'Client'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item ">Client</a></li>
+            <li @click="selectedRole = 'Clients'; loadUsers(); defineColumnsByUserRole();"><a
+                class="dropdown-item ">Clients</a></li>
             <li @click="selectedRole = 'Manager'; loadUsers(); defineColumnsByUserRole();"><a
                 class="dropdown-item ">Manager</a></li>
             <li @click="selectedRole = 'Driver'; loadUsers(); defineColumnsByUserRole();"><a
@@ -60,7 +60,7 @@
 
 
         <div class="btn-group mx-2">
-          <input type="number" name="" id="" class="input-group-text rounded-0 rounded-start w-25 no-spinners"
+          <input type="number" name="" id="" class="form-control rounded-0 rounded-start w-25 no-spinners text-center"
             v-model="users_per_site" @keyup.enter="loadUsers">
           <span class="input-group-text rounded-0 rounded-end" id="basic-addon1">Users per site</span>
         </div>
@@ -469,6 +469,48 @@ export default {
 
         ],
         HR: [
+          { label: 'Username', attribute: 'username' },
+          { label: 'Email', attribute: 'email' },
+          { label: 'Phone Number', attribute: 'phone' },
+          { label: 'Active', attribute: 'is_active' },
+          { label: 'Country', attribute: 'residence_country' },
+          { label: 'City', attribute: 'residence_city' },
+          { label: 'Zip code', attribute: 'residence_zip_code' },
+          { label: 'State', attribute: 'residence_state' },
+          { label: 'Street', attribute: 'residence_street' },
+          { label: 'Home number', attribute: 'residence_home_number' },
+          { label: 'Apartament', attribute: 'residence_apartament_number' },
+
+        ],
+        Manager: [
+          { label: 'Username', attribute: 'username' },
+          { label: 'Email', attribute: 'email' },
+          { label: 'Phone Number', attribute: 'phone' },
+          { label: 'Active', attribute: 'is_active' },
+          { label: 'Country', attribute: 'residence_country' },
+          { label: 'City', attribute: 'residence_city' },
+          { label: 'Zip code', attribute: 'residence_zip_code' },
+          { label: 'State', attribute: 'residence_state' },
+          { label: 'Street', attribute: 'residence_street' },
+          { label: 'Home number', attribute: 'residence_home_number' },
+          { label: 'Apartament', attribute: 'residence_apartament_number' },
+
+        ],
+        Payroll: [
+          { label: 'Username', attribute: 'username' },
+          { label: 'Email', attribute: 'email' },
+          { label: 'Phone Number', attribute: 'phone' },
+          { label: 'Active', attribute: 'is_active' },
+          { label: 'Country', attribute: 'residence_country' },
+          { label: 'City', attribute: 'residence_city' },
+          { label: 'Zip code', attribute: 'residence_zip_code' },
+          { label: 'State', attribute: 'residence_state' },
+          { label: 'Street', attribute: 'residence_street' },
+          { label: 'Home number', attribute: 'residence_home_number' },
+          { label: 'Apartament', attribute: 'residence_apartament_number' },
+
+        ],
+        Clients: [
           { label: 'Username', attribute: 'username' },
           { label: 'Email', attribute: 'email' },
           { label: 'Phone Number', attribute: 'phone' },
