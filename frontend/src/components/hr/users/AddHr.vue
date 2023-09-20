@@ -2,43 +2,118 @@
     <div>
         <div class="containter m-2 p-2 d-flex justify-content-center">
             <div class="col-12 col-md-9">
-                <p class="fs-4 text-center">Add new HR user</p>
+
+                <p v-if="user_role === null" class="fs-4 text-center fw-bolder">Add new HR user</p>
+                <div v-else class="d-flex justify-content-between">
+                    <div>
+                        <button type="button" class="btn btn-outline-primary mb-3 " @click="goBack">
+                            <span class="d-flex align-items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                    class="bi bi-arrow-left me-2 " viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                                        
+                                </svg>
+                                Back
+                            </span>
+                        </button>
+                    </div>
+                    <div class="fs-4 text-center fw-bolder">Edit user</div>
+                    <div></div>
+
+                </div>
+
                 <form action="" method="post" class="border rounded-3 p-3" @submit.prevent="createUser">
 
+                    <!-- Username field visible only when editing existing user -->
+                    <div v-if="username !== null" class="input-group mb-3">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            Username
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" disabled aria-label="username"
+                                aria-describedby="username" v-model="username"
+                                :class="{ 'border border-danger': dataError && dataError['username'] }">
+                        </div>
+                    </div>
+                    <!-- Username field visible only when editing existing user -->
+
+
+                    <!-- First name -->
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="first_name">First name</span>
-                        <input type="text" class="form-control" placeholder="First name" aria-label="first_name"
-                            aria-describedby="first_name" v-model="firstName" @input="updateUsername"
-                            :class="{ 'border border-danger': dataError && dataError['first_name'] }">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            First name
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="first_name"
+                                aria-describedby="first_name" v-model="firstName" @input="updateUsername"
+                                :class="{ 'border border-danger': dataError && dataError['first_name'] }">
+                        </div>
+                    </div>
+                    <!-- First name -->
+
+
+                    <!-- Last name -->
+                    <div class="input-group mb-3">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            Last name
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="last_name"
+                                aria-describedby="last_name" v-model="lastName" @input="updateUsername"
+                                :class="{ 'border border-danger': dataError && dataError['last_name'] }">
+                        </div>
+                    </div>
+                    <!-- Last name -->
+
+
+                    <!-- Email -->
+                    <div class="input-group mb-3">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            Email
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="email" class="form-control rounded-0 rounded-end" aria-label="email"
+                                aria-describedby="email" v-model="email"
+                                :class="{ 'border border-danger': dataError && dataError['email'] }">
+                        </div>
+                    </div>
+                    <!-- Email -->
+
+
+                    <!-- Phone number -->
+                    <div class="input-group mb-3">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            Phone number
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="phone" class="form-control rounded-0 rounded-end" aria-label="phone"
+                                aria-describedby="phone" v-model="phone"
+                                :class="{ 'border border-danger': dataError && dataError['phone'] }">
+                        </div>
                     </div>
 
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="last_name">Last name</span>
-                        <input type="text" class="form-control" placeholder="Last name" aria-label="last_name"
-                            aria-describedby="last_name" v-model="lastName" @input="updateUsername"
-                            :class="{ 'border border-danger': dataError && dataError['last_name'] }">
-                    </div>
+                    <!-- Phone number -->
 
 
+                    <!-- PESEL / NIP -->
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="email">Email</span>
-                        <input type="email" class="form-control" placeholder="Email" aria-label="email"
-                            aria-describedby="email" v-model="email"
-                            :class="{ 'border border-danger': dataError && dataError['email'] }">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            PESEL / NIP
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="identity"
+                                aria-describedby="identity" v-model="identity"
+                                :class="{ 'border border-danger': dataError && dataError['identity'] }">
+                        </div>
                     </div>
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="phone">Phone number</span>
-                        <input type="phone" class="form-control" placeholder="Phone number" aria-label="phone"
-                            aria-describedby="phone" v-model="phone"
-                            :class="{ 'border border-danger': dataError && dataError['phone'] }">
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="identity">PESEL / NIP</span>
-                        <input type="text" class="form-control" placeholder="PESEL / NIP" aria-label="identity"
-                            aria-describedby="identity" v-model="identity"
-                            :class="{ 'border border-danger': dataError && dataError['identity'] }">
-                    </div>
+                    <!-- PESEL / NIP -->
 
 
                     <!-- Dane rozliczeniowe i zdrowotne -->
@@ -46,235 +121,444 @@
                         Tax and health information
                     </div>
 
+
+                    <!-- Tax office name -->
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="tax_name">Tax office name</span>
-                        <input type="text" class="form-control" placeholder="Tax office name" aria-label="tax_name"
-                            aria-describedby="tax_name" v-model="taxName"
-                            :class="{ 'border border-danger': dataError && dataError['taxName'] }">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            Tax office name
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="tax_name"
+                                aria-describedby="tax_name" v-model="taxName"
+                                :class="{ 'border border-danger': dataError && dataError['taxName'] }">
+                        </div>
                     </div>
+                    <!-- Tax office name -->
+
+
+                    <!-- Tax office address -->
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="tax_address">Tax office address</span>
-                        <input type="text" class="form-control" placeholder="Tax office address" aria-label="tax_address"
-                            aria-describedby="tax_address" v-model="tax_address"
-                            :class="{ 'border border-danger': dataError && dataError['tax_address'] }">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            Tax office address
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="tax_address"
+                                aria-describedby="tax_address" v-model="tax_address"
+                                :class="{ 'border border-danger': dataError && dataError['tax_address'] }">
+                        </div>
                     </div>
+                    <!-- Tax office address -->
+
+
+                    <!-- NFZ branch -->
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="nfz">NFZ branch</span>
-                        <input type="text" class="form-control" placeholder="NFZ branch" aria-label="nfz"
-                            aria-describedby="nfz" v-model="nfz"
-                            :class="{ 'border border-danger': dataError && dataError['nfz'] }">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            NFZ branch
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="nfz"
+                                aria-describedby="nfz" v-model="nfz"
+                                :class="{ 'border border-danger': dataError && dataError['nfz'] }">
+                        </div>
                     </div>
+                    <!-- NFZ branch -->
+
+
+                    <!-- Bank Account Number -->
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="bank_account">Bank Account Number</span>
-                        <input type="text" class="form-control" placeholder="Bank Account Number" aria-label="bank_account"
-                            aria-describedby="bank_account" v-model="bankAccount"
-                            :class="{ 'border border-danger': dataError && dataError['bankAccount'] }">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            Bank Account Number
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="bank_account"
+                                aria-describedby="bank_account" v-model="bankAccount"
+                                :class="{ 'border border-danger': dataError && dataError['bankAccount'] }">
+                        </div>
                     </div>
+                    <!-- Bank Account Number -->
+
 
 
                     <div class="border border-2 p-2 text-center my-5 fw-bolder shadow">
                         Residence address
                     </div>
 
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="res_country">Country</span>
-                        <input type="text" class="form-control" placeholder="Country" aria-label="res_country"
-                            aria-describedby="res_country" v-model="resCountry"
-                            :class="{ 'border border-danger': dataError && dataError['resCountry'] }">
-                    </div>
 
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="res_city">City</span>
-                        <input type="text" class="form-control" placeholder="City" aria-label="res_city"
-                            aria-describedby="res_city" v-model="resCity"
-                            :class="{ 'border border-danger': dataError && dataError['resCity'] }">
-                    </div>
 
+                    <!-- Residence address Country -->
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="res_state">State</span>
-                        <input type="text" class="form-control" placeholder="State" aria-label="res_state"
-                            aria-describedby="res_state" v-model="resState"
-                            :class="{ 'border border-danger': dataError && dataError['resState'] }">
-                    </div>
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="res_street">Street</span>
-                        <input type="text" class="form-control" placeholder="Street" aria-label="res_street"
-                            aria-describedby="res_street" v-model="resStreet"
-                            :class="{ 'border border-danger': dataError && dataError['resStreet'] }">
-                    </div>
-
-                    <div class="input-group mb-3 row gx-0">
-                        <div class="d-flex col-6">
-                            <span class="input-group-text rounded-0 rounded-start" id="res_homeNumber">Home</span>
-                            <input type="text" class="form-control rounded-0 rounded-end me-2" placeholder="Home number"
-                                aria-label="res_homeNumber" aria-describedby="res_homeNumber" v-model="resHomeNumber"
-                                :class="{ 'border border-danger': dataError && dataError['resHomeNumber'] }">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            Country
                         </div>
-
-                        <div class="d-flex col-6">
-                            <span class="input-group-text rounded-0 rounded-start"
-                                id="res_apartamentNumber">Apartament</span>
-                            <input type="text" class="form-control rounded-0 rounded-end" placeholder="Apartament number"
-                                aria-label="res_apartamentNumber" aria-describedby="res_apartamentNumber"
-                                v-model="resApartamentNumber"
-                                :class="{ 'border border-danger': dataError && dataError['resApartamentNumber'] }">
-
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="res_country"
+                                aria-describedby="res_country" v-model="resCountry"
+                                :class="{ 'border border-danger': dataError && dataError['resCountry'] }">
                         </div>
                     </div>
+                    <!-- Residence address Country -->
 
+
+                    <!-- Residence address City -->
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="res_zipCode">Zip code</span>
-                        <input type="text" class="form-control" placeholder="Zip code" aria-label="res_zipCode"
-                            aria-describedby="res_zipCode" v-model="resZipCode"
-                            :class="{ 'border border-danger': dataError && dataError['resZipCode'] }">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            City
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="res_city"
+                                aria-describedby="res_city" v-model="resCity"
+                                :class="{ 'border border-danger': dataError && dataError['resCity'] }">
+                        </div>
                     </div>
+                    <!-- Residence address City -->
 
-                    <div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input toggleSwitch" type="checkbox" v-model="show_corespondece_form">
-                            <div class="fs-6 ms-2 fw-semibold mx-auto p-2">
-                                Correspodence address same as residence address
+
+                    <!-- Residence address State -->
+                    <div class="input-group mb-3">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            State
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="res_state"
+                                aria-describedby="res_state" v-model="resState"
+                                :class="{ 'border border-danger': dataError && dataError['resState'] }">
+                        </div>
+                    </div>
+                    <!-- Residence address State -->
+
+
+                    <!-- Residence address Street -->
+                    <div class="input-group mb-3">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            Street
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="res_street"
+                                aria-describedby="res_street" v-model="resStreet"
+                                :class="{ 'border border-danger': dataError && dataError['resStreet'] }">
+                        </div>
+                    </div>
+                    <!-- Residence address Street -->
+
+
+                    <div class="input-group mb-3 gx-0">
+
+                        <!-- Residence address Home number -->
+                        <div class="input-group">
+                            <div
+                                class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                Home
                             </div>
-                            <div class="slider" :class="{ active: show_corespondece_form }"></div>
+                            <div class="col-4 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end me-2"
+                                    aria-label="res_homeNumber" aria-describedby="res_homeNumber" v-model="resHomeNumber"
+                                    :class="{ 'border border-danger': dataError && dataError['resHomeNumber'] }">
+                            </div>
+                            <!-- Residence address Home number -->
+
+
+                            <!-- Residence address Apartament number -->
+                            <div
+                                class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                Apartament
+                            </div>
+                            <div class="col-4 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end"
+                                    aria-label="res_apartamentNumber" aria-describedby="res_apartamentNumber"
+                                    v-model="resApartamentNumber"
+                                    :class="{ 'border border-danger': dataError && dataError['resApartamentNumber'] }">
+                            </div>
+                            <!-- Residence address Apartament number -->
                         </div>
+
                     </div>
 
-                    <!-- Registered address form -->
+
+                    <!-- Residence Zip code -->
+                    <div class="input-group mb-3">
+                        <div
+                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                            Zip code
+                        </div>
+                        <div class="col-9 d-flex align-items-center">
+                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="res_zipCode"
+                                aria-describedby="res_zipCode" v-model="resZipCode"
+                                :class="{ 'border border-danger': dataError && dataError['resZipCode'] }">
+                        </div>
+                    </div>
+                    <!-- Residence Zip code -->
+
+
+
+                    <div class="form-check form-switch" id="switch1">
+                        <input class="form-check-input toggleSwitch" type="checkbox" v-model="show_corespondece_form">
+                        <div class="fs-6 ms-2 fw-semibold mx-auto p-2">
+                            Correspodence address same as residence address
+                        </div>
+                        <div class="slider" :class="{ active: show_corespondece_form }"></div>
+                    </div>
+
+
+                    <!-- Correspodence address form -->
                     <div :style="{ display: show_corespondece_form ? 'none' : 'block' }">
+
                         <div class="border border-2 p-2 text-center my-5 fw-bolder shadow">
                             Addres for correspodence
                         </div>
 
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="cor_country">Country</span>
-                            <input type="text" class="form-control" placeholder="Country" aria-label="cor_country"
-                                aria-describedby="cor_country" v-model="corCountry"
-                                :class="{ 'border border-danger': dataError && dataError['corCountry'] }">
-                        </div>
 
+                        <!-- Correspodence address Country -->
                         <div class="input-group mb-3">
-                            <span class="input-group-text" id="cor_city">City</span>
-                            <input type="text" class="form-control" placeholder="City" aria-label="cor_city"
-                                aria-describedby="cor_city" v-model="corCity"
-                                :class="{ 'border border-danger': dataError && dataError['corCity'] }">
-                        </div>
-
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="cor_state">State</span>
-                            <input type="text" class="form-control" placeholder="State" aria-label="cor_state"
-                                aria-describedby="cor_state" v-model="corState"
-                                :class="{ 'border border-danger': dataError && dataError['corState'] }">
-                        </div>
-
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="cor_street">Street</span>
-                            <input type="text" class="form-control" placeholder="Street" aria-label="cor_street"
-                                aria-describedby="cor_street" v-model="corStreet"
-                                :class="{ 'border border-danger': dataError && dataError['corStreet'] }">
-                        </div>
-
-                        <div class="input-group mb-3 row gx-0">
-                            <div class="d-flex col-6">
-                                <span class="input-group-text rounded-0 rounded-start" id="cor_homeNumber">Home</span>
-                                <input type="text" class="form-control rounded-0 rounded-end me-2" placeholder="Home number"
-                                    aria-label="cor_homeNumber" aria-describedby="cor_homeNumber" v-model="corHomeNumber"
-                                    :class="{ 'border border-danger': dataError && dataError['corHomeNumber'] }">
+                            <div
+                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                Country
                             </div>
-
-                            <div class="d-flex col-6">
-                                <span class="input-group-text rounded-0 rounded-start"
-                                    id="cor_apartamentNumber">Apartament</span>
-                                <input type="text" class="form-control rounded-0 rounded-end"
-                                    placeholder="Apartament number" aria-label="cor_apartamentNumber"
-                                    aria-describedby="cor_apartamentNumber" v-model="corApartamentNumber"
-                                    :class="{ 'border border-danger': dataError && dataError['corApartamentNumber'] }">
-
+                            <div class="col-9 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="cor_country"
+                                    aria-describedby="cor_country" v-model="corCountry"
+                                    :class="{ 'border border-danger': dataError && dataError['corCountry'] }">
                             </div>
                         </div>
+                        <!-- Correspodence address Country -->
 
+
+                        <!-- Correspodence address City -->
                         <div class="input-group mb-3">
-                            <span class="input-group-text" id="cor_zipCode">Zip code</span>
-                            <input type="text" class="form-control" placeholder="Zip code" aria-label="cor_zipCode"
-                                aria-describedby="cor_zipCode" v-model="corZipCode"
-                                :class="{ 'border border-danger': dataError && dataError['corZipCode'] }">
+                            <div
+                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                City
+                            </div>
+                            <div class="col-9 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="cor_city"
+                                    aria-describedby="cor_city" v-model="corCity"
+                                    :class="{ 'border border-danger': dataError && dataError['corCity'] }">
+                            </div>
                         </div>
+                        <!-- Correspodence address City -->
+
+
+                        <!-- Correspodence address State -->
+                        <div class="input-group mb-3">
+                            <div
+                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                State
+                            </div>
+                            <div class="col-9 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="cor_state"
+                                    aria-describedby="cor_state" v-model="corState"
+                                    :class="{ 'border border-danger': dataError && dataError['corState'] }">
+                            </div>
+                        </div>
+                        <!-- Correspodence address State -->
+
+
+                        <!-- Correspodence address Street -->
+                        <div class="input-group mb-3">
+                            <div
+                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                Street
+                            </div>
+                            <div class="col-9 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="cor_street"
+                                    aria-describedby="cor_street" v-model="corStreet"
+                                    :class="{ 'border border-danger': dataError && dataError['corStreet'] }">
+                            </div>
+                        </div>
+                        <!-- Correspodence address Street -->
+
+
+                        <div class="input-group mb-3 gx-0">
+
+                            <!-- Correspodence address Home number -->
+                            <div class="input-group">
+                                <div
+                                    class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                    Home
+                                </div>
+                                <div class="col-4 d-flex align-items-center">
+                                    <input type="text" class="form-control rounded-0 rounded-end me-2"
+                                        aria-label="cor_homeNumber" aria-describedby="cor_homeNumber"
+                                        v-model="corHomeNumber"
+                                        :class="{ 'border border-danger': dataError && dataError['corHomeNumber'] }">
+                                </div>
+                                <!-- Correspodence address Home number -->
+
+
+                                <!-- Correspodence address Apartament number -->
+                                <div
+                                    class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                    Apartament
+                                </div>
+                                <div class="col-4 d-flex align-items-center">
+                                    <input type="text" class="form-control rounded-0 rounded-end"
+                                        aria-label="cor_apartamentNumber" aria-describedby="cor_apartamentNumber"
+                                        v-model="corApartamentNumber"
+                                        :class="{ 'border border-danger': dataError && dataError['corApartamentNumber'] }">
+                                </div>
+                                <!-- Correspodence address Apartament number -->
+                            </div>
+
+                        </div>
+
+
+                        <!-- Correspodence Zip code -->
+                        <div class="input-group mb-3">
+                            <div
+                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                Zip code
+                            </div>
+                            <div class="col-9 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="cor_zipCode"
+                                    aria-describedby="cor_zipCode" v-model="corZipCode"
+                                    :class="{ 'border border-danger': dataError && dataError['corZipCode'] }">
+                            </div>
+                        </div>
+                        <!-- Correspodence Zip code -->
+
+                    </div>
+                    <!-- Correspodence address form -->
+
+
+
+
+
+                    <div class="form-check form-switch" id="switch2">
+                        <input class="form-check-input toggleSwitch" type="checkbox" v-model="show_registered_form">
+                        <div class="fs-6 ms-2 text-wrap fw-semibold mx-auto p-2">
+                            Registered address same as residence address
+                        </div>
+                        <div class="slider" :class="{ active: show_registered_form }"></div>
                     </div>
 
-                    <!-- Registered address form -->
-                    <div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input toggleSwitch" type="checkbox" v-model="show_registered_form">
-                            <div class="fs-6 ms-2 text-wrap fw-semibold mx-auto p-2">
-                                Registered address same as residence address
-                            </div>
-                            <div class="slider" :class="{ active: show_registered_form }"></div>
-                        </div>
-                    </div>
                     <!-- Registered address form -->
                     <div :style="{ display: show_registered_form ? 'none' : 'block' }">
+
                         <div class="border border-2 p-2 text-center my-5 fw-bolder shadow">
                             Registered address
                         </div>
 
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="reg_country">Country</span>
-                            <input type="text" class="form-control" placeholder="Country" aria-label="reg_country"
-                                aria-describedby="reg_country" v-model="regCountry"
-                                :class="{ 'border border-danger': dataError && dataError['regCountry'] }">
-                        </div>
 
+                        <!-- Registered address Country -->
                         <div class="input-group mb-3">
-                            <span class="input-group-text" id="reg_city">City</span>
-                            <input type="text" class="form-control" placeholder="City" aria-label="reg_city"
-                                aria-describedby="reg_city" v-model="regCity"
-                                :class="{ 'border border-danger': dataError && dataError['regCity'] }">
-                        </div>
-
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="reg_state">State</span>
-                            <input type="text" class="form-control" placeholder="State" aria-label="reg_state"
-                                aria-describedby="reg_state" v-model="regState"
-                                :class="{ 'border border-danger': dataError && dataError['regState'] }">
-                        </div>
-
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="reg_street">Street</span>
-                            <input type="text" class="form-control" placeholder="Street" aria-label="reg_street"
-                                aria-describedby="reg_street" v-model="regStreet"
-                                :class="{ 'border border-danger': dataError && dataError['regStreet'] }">
-                        </div>
-
-                        <div class="input-group mb-3 row gx-0">
-                            <div class="d-flex col-6">
-                                <span class="input-group-text rounded-0 rounded-start" id="reg_homeNumber">Home</span>
-                                <input type="text" class="form-control rounded-0 rounded-end me-2" placeholder="Home number"
-                                    aria-label="reg_homeNumber" aria-describedby="reg_homeNumber" v-model="regHomeNumber"
-                                    :class="{ 'border border-danger': dataError && dataError['regHomeNumber'] }">
+                            <div
+                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                Country
                             </div>
-
-                            <div class="d-flex col-6">
-                                <span class="input-group-text rounded-0 rounded-start"
-                                    id="reg_apartamentNumber">Apartament</span>
-                                <input type="text" class="form-control rounded-0 rounded-end"
-                                    placeholder="Apartament number" aria-label="reg_apartamentNumber"
-                                    aria-describedby="reg_apartamentNumber" v-model="regApartamentNumber"
-                                    :class="{ 'border border-danger': dataError && dataError['regApartamentNumber'] }">
-
+                            <div class="col-9 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="reg_country"
+                                    aria-describedby="reg_country" v-model="regCountry"
+                                    :class="{ 'border border-danger': dataError && dataError['regCountry'] }">
                             </div>
                         </div>
+                        <!-- Registered address Country -->
 
+
+                        <!-- Registered address City -->
                         <div class="input-group mb-3">
-                            <span class="input-group-text" id="reg_zipCode">Zip code</span>
-                            <input type="text" class="form-control" placeholder="Zip code" aria-label="reg_zipCode"
-                                aria-describedby="reg_zipCode" v-model="regZipCode"
-                                :class="{ 'border border-danger': dataError && dataError['regZipCode'] }">
+                            <div
+                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                City
+                            </div>
+                            <div class="col-9 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="reg_city"
+                                    aria-describedby="reg_city" v-model="regCity"
+                                    :class="{ 'border border-danger': dataError && dataError['regCity'] }">
+                            </div>
                         </div>
+                        <!-- Registered address City -->
+
+
+                        <!-- Registered address State -->
+                        <div class="input-group mb-3">
+                            <div
+                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                State
+                            </div>
+                            <div class="col-9 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="reg_state"
+                                    aria-describedby="reg_state" v-model="regState"
+                                    :class="{ 'border border-danger': dataError && dataError['regState'] }">
+                            </div>
+                        </div>
+                        <!-- Registered address State -->
+
+
+                        <!-- Registered address Street -->
+                        <div class="input-group mb-3">
+                            <div
+                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                Street
+                            </div>
+                            <div class="col-9 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="reg_street"
+                                    aria-describedby="reg_street" v-model="regStreet"
+                                    :class="{ 'border border-danger': dataError && dataError['regStreet'] }">
+                            </div>
+                        </div>
+                        <!-- Registered address Street -->
+
+
+                        <div class="input-group mb-3 gx-0">
+
+                            <!-- Registered address Home number -->
+                            <div class="input-group">
+                                <div
+                                    class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                    Home
+                                </div>
+                                <div class="col-4 d-flex align-items-center">
+                                    <input type="text" class="form-control rounded-0 rounded-end me-2"
+                                        aria-label="reg_homeNumber" aria-describedby="reg_homeNumber"
+                                        v-model="regHomeNumber"
+                                        :class="{ 'border border-danger': dataError && dataError['regHomeNumber'] }">
+                                </div>
+                                <!-- Registered address Home number -->
+
+
+                                <!-- Registered address Apartament number -->
+                                <div
+                                    class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                    Apartament
+                                </div>
+                                <div class="col-4 d-flex align-items-center">
+                                    <input type="text" class="form-control rounded-0 rounded-end"
+                                        aria-label="reg_apartamentNumber" aria-describedby="reg_apartamentNumber"
+                                        v-model="regApartamentNumber"
+                                        :class="{ 'border border-danger': dataError && dataError['regApartamentNumber'] }">
+                                </div>
+                                <!-- Registered address Apartament number -->
+                            </div>
+
+                        </div>
+
+
+                        <!-- Registered Zip code -->
+                        <div class="input-group mb-3">
+                            <div
+                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                Zip code
+                            </div>
+                            <div class="col-9 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="reg_zipCode"
+                                    aria-describedby="reg_zipCode" v-model="regZipCode"
+                                    :class="{ 'border border-danger': dataError && dataError['regZipCode'] }">
+                            </div>
+                        </div>
+                        <!-- Registered Zip code -->
                     </div>
 
+
                     <div class="text-center">
-                        <button type="button" class="btn btn-success shadow" @click="createUser" :disabled="!isFormValid"
-                            :class="{ 'btn-outline-danger': !isFormValid }">
+                        <button v-if="user_role === null" type="button" class="btn btn-success shadow" @click="createUser"
+                            :disabled="!isFormValid" :class="{ 'btn-outline-danger': !isFormValid }">
                             <span class="d-flex align-items-center">
                                 Create
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -286,6 +570,21 @@
                                 </svg>
                             </span>
                         </button>
+
+
+                        <!-- Button when editing existing user -->
+                        <button v-else type="button" class="btn btn-success shadow" @click="updateUser">
+                            <span class="d-flex align-items-center">
+                                Save
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                    class="bi bi-floppy ms-2" viewBox="0 0 16 16">
+                                    <path d="M11 2H9v3h2V2Z" />
+                                    <path
+                                        d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0ZM1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5Zm3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4v4.5ZM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5V15Z" />
+                                </svg>
+                            </span>
+                        </button>
+                        <!-- Button when editing existing user -->
                     </div>
                 </form>
             </div>
@@ -407,6 +706,9 @@ export default {
             dataCorrect: null,
             show_corespondece_form: true,
             show_registered_form: true,
+
+            user_role: null,
+
         };
     },
 
@@ -432,15 +734,40 @@ export default {
         },
     },
 
+
+    mounted() {
+        this.username = localStorage.getItem('username')
+
+        if (this.username !== null) {
+            this.user_role = localStorage.getItem('user_role')
+            this.getUserData(this.username, this.user_role);
+
+            // Correspodence and Register forms
+            var switch1 = document.getElementById("switch1");
+            var switch2 = document.getElementById("switch2");
+
+            switch1.style.display = 'none';
+            switch2.style.display = 'none';
+
+            this.show_corespondece_form = false;
+            this.show_registered_form = false;
+            // Correspodence and Register forms
+
+        }
+    },
+
+
     methods: {
         generateRandomDigits() {
             return Math.floor(100 + Math.random() * 900);
         },
         updateUsername() {
-            const firstThreeChars = this.firstName.slice(0, 3).toLowerCase();
-            const lastThreeChars = this.lastName.slice(0, 3).toLowerCase();
-            const randomDigits = this.generateRandomDigits();
-            this.username = firstThreeChars + lastThreeChars + randomDigits;
+            if (this.user_role === null) {
+                const firstThreeChars = this.firstName.slice(0, 3).toLowerCase();
+                const lastThreeChars = this.lastName.slice(0, 3).toLowerCase();
+                const randomDigits = this.generateRandomDigits();
+                this.username = firstThreeChars + lastThreeChars + randomDigits;
+            }
         },
         generatePassword() {
             const length = 8;
@@ -482,7 +809,7 @@ export default {
             }
 
             //Corespondence addres
-            if(this.show_corespondece_form){
+            if (this.show_corespondece_form) {
                 fetched_data.correspondence_country = this.resCountry;
                 fetched_data.correspondence_city = this.resCity;
                 fetched_data.correspondence_state = this.resState;
@@ -502,7 +829,7 @@ export default {
             }
 
             //Registered addres
-            if(this.show_registered_form){
+            if (this.show_registered_form) {
                 fetched_data.registered_country = this.resCountry;
                 fetched_data.registered_city = this.resCity;
                 fetched_data.registered_state = this.resState;
@@ -521,9 +848,8 @@ export default {
                 fetched_data.registered_zip_code = this.regZipCode;
             }
 
-
-            this.dataError = ''
             console.log(fetched_data)
+            this.dataError = ''
             const response = await axios.post('api/create/', fetched_data);
 
 
@@ -577,6 +903,107 @@ export default {
             this.regApartamentNumber = '';
             this.regZipCode = '';
         },
+
+        async getUserData(username, user_role) {
+
+            const response = await axios.get(`api/users/get/${username}/${user_role}`);
+            console.log(response.data);
+
+            localStorage.removeItem('username');
+            localStorage.removeItem('user_role');
+            
+            // Set input data
+            this.username = response.data.username;
+
+            this.firstName = response.data.first_name;
+            this.lastName = response.data.last_name;
+            this.email = response.data.email;
+            this.phone = response.data.phone;
+            this.identity = response.data.pesel_nip;
+            this.taxName = response.data.tax_office_name;
+            this.tax_address = response.data.tax_office_address;
+            this.nfz = response.data.nfz;
+            this.bankAccount = response.data.bank_account_number;
+
+            this.resCountry = response.data.residence_country;
+            this.resCity = response.data.residence_city;
+            this.resState = response.data.residence_state;
+            this.resStreet = response.data.residence_street;
+            this.resHomeNumber = response.data.residence_home_number;
+            this.resApartamentNumber = response.data.residence_apartament_number;
+            this.resZipCode = response.data.residence_zip_code;
+
+            this.corCountry = response.data.correspondence_country;
+            this.corCity = response.data.correspondence_city;
+            this.corState = response.data.correspondence_state;
+            this.corStreet = response.data.correspondence_street;
+            this.corHomeNumber = response.data.correspondence_home_number;
+            this.corApartamentNumber = response.data.correspondence_apartament_number;
+            this.corZipCode = response.data.correspondence_zip_code;
+
+            this.regCountry = response.data.registered_country;
+            this.regCity = response.data.registered_city;
+            this.regState = response.data.registered_state;
+            this.regStreet = response.data.registered_street;
+            this.regHomeNumber = response.data.registered_home_number;
+            this.regApartamentNumber = response.data.registered_apartament_number;
+            this.regZipCode = response.data.registered_zip_code;
+            // Set input data
+
+
+        },
+
+        async updateUser() {
+            // Generate dict for sending
+            const fetched_data = {
+                first_name: this.firstName,
+                last_name: this.lastName,
+                email: this.email,
+                phone: this.phone,
+                username: this.username,
+                password: this.password,
+
+                pesel_nip: this.identity,
+                tax_office_name: this.taxName,
+                tax_office_address: this.tax_address,
+                nfz: this.nfz,
+                bank_account_number: this.bankAccount,
+                residence_country: this.resCountry,
+                residence_city: this.resCity,
+                residence_state: this.resState,
+                residence_street: this.resStreet,
+                residence_home_number: this.resHomeNumber,
+                residence_apartament_number: this.resApartamentNumber,
+                residence_zip_code: this.resZipCode,
+
+                correspondence_country: this.corCountry,
+                correspondence_city: this.corCity,
+                correspondence_state: this.corState,
+                correspondence_street: this.corStreet,
+                correspondence_home_number: this.corHomeNumber,
+                correspondence_apartament_number: this.corApartamentNumber,
+                correspondence_zip_code: this.corZipCode,
+
+                registered_country: this.regCountry,
+                registered_city: this.regCity,
+                registered_state: this.regState,
+                registered_street: this.regStreet,
+                registered_home_number: this.regHomeNumber,
+                registered_apartament_number: this.regApartamentNumber,
+                registered_zip_code: this.regZipCode,
+            };
+
+            // Send put request
+            const response2 = await axios.put(`api/users/save/${this.username}/${this.user_role}/`, fetched_data)
+
+
+            // Finish
+            this.goBack()
+        },
+
+        goBack() {
+            this.$parent.showModifyUserComponent()
+        }
     }
 };
 </script>

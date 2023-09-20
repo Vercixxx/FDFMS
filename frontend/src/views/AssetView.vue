@@ -332,9 +332,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Cookies from 'js-cookie';
-
 // components
 import Home from '../components/Home.vue';
 import AddCar from '../components/asset/AddCar.vue';
@@ -362,7 +359,6 @@ export default {
         async logout() {
             this.$store.commit('resetState');
             this.$router.push('/');
-
         },
 
         showHomeComponent() {

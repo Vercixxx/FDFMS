@@ -280,6 +280,26 @@ export default {
                             this.$router.push('/asset');
                             break;
 
+                        case 'Clients':
+                            this.$router.push('/clients');
+                            break;
+
+                        case 'Payroll':
+                            this.$router.push('/payroll');
+                            break;
+
+                        case 'Manager':
+                            this.$router.push('/manager');
+                            break;
+
+                        case 'Driver':
+                            this.$router.push('/driver');
+                            break;
+
+                        case 'Administrator':
+                            this.$router.push('/admin');
+                            break;
+
 
                     }
 

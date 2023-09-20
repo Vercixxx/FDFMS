@@ -5,6 +5,11 @@ from django.contrib.auth.password_validation import validate_password
 from .models import HRUser
 from users.models import GeneralUser
 
+class GetHRUser(serializers.ModelSerializer):
+    class Meta:
+        model = HRUser
+        fields = '__all__'
+
 class HRUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = HRUser
@@ -90,3 +95,77 @@ class AddHRUserSerializer(serializers.ModelSerializer):
         account.save()
         return account
 
+class UpdateHRUser(serializers.Serializer):
+    class Meta:
+        model = HRUser
+        fields = [
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'phone',
+            'residence_country',
+            'residence_city',
+            'residence_state',
+            'residence_street',
+            'residence_home_number',
+            'residence_apartament_number',
+            'residence_zip_code',
+            'registered_country',
+            'registered_city',
+            'registered_state',
+            'registered_street',
+            'registered_home_number',
+            'registered_apartament_number',
+            'registered_zip_code',
+            'correspondence_country',
+            'correspondence_city',
+            'correspondence_state',
+            'correspondence_street',
+            'correspondence_home_number',
+            'correspondence_apartament_number',
+            'correspondence_zip_code',
+            'bank_account_number',
+            'pesel_nip',
+            'tax_office_name',
+            'tax_office_address',
+            'nfz',
+        ]
+        extra_kwargs = {
+            'username' : {'validators' : [UniqueValidator(queryset=GeneralUser.objects.all(), message='This username is already in use.')]}
+        }
+        
+    def update(self, instance, validated_data):
+        instance.email = validated_data.get('email', instance.email)
+        instance.username = validated_data.get('username', instance.username)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.residence_country = validated_data.get('residence_country', instance.residence_country)
+        instance.residence_city = validated_data.get('residence_city', instance.residence_city)
+        instance.residence_state = validated_data.get('residence_state', instance.residence_state)
+        instance.residence_street = validated_data.get('residence_street', instance.residence_street)
+        instance.residence_home_number = validated_data.get('residence_home_number', instance.residence_home_number)
+        instance.residence_apartament_number = validated_data.get('residence_apartament_number', instance.residence_apartament_number)
+        instance.residence_zip_code = validated_data.get('residence_zip_code', instance.residence_zip_code)
+        instance.registered_country = validated_data.get('registered_country', instance.registered_country)
+        instance.registered_city = validated_data.get('registered_city', instance.registered_city)
+        instance.registered_state = validated_data.get('registered_state', instance.registered_state)
+        instance.registered_street = validated_data.get('registered_street', instance.registered_street)
+        instance.registered_home_number = validated_data.get('registered_home_number', instance.registered_home_number)
+        instance.registered_apartament_number = validated_data.get('registered_apartament_number', instance.registered_apartament_number)
+        instance.registered_zip_code = validated_data.get('registered_zip_code', instance.registered_zip_code)
+        instance.correspondence_country = validated_data.get('correspondence_country', instance.correspondence_country)
+        instance.correspondence_city = validated_data.get('correspondence_city', instance.correspondence_city)
+        instance.correspondence_state = validated_data.get('correspondence_state', instance.correspondence_state)
+        instance.correspondence_street = validated_data.get('correspondence_street', instance.correspondence_street)
+        instance.correspondence_home_number = validated_data.get('correspondence_home_number', instance.correspondence_home_number)
+        instance.correspondence_apartament_number = validated_data.get('correspondence_apartament_number', instance.correspondence_apartament_number)
+        instance.correspondence_zip_code = validated_data.get('correspondence_zip_code', instance.correspondence_zip_code)
+        instance.bank_account_number = validated_data.get('bank_account_number', instance.bank_account_number)
+        instance.pesel_nip = validated_data.get('pesel_nip', instance.pesel_nip)
+        instance.tax_office_name = validated_data.get('tax_office_name', instance.tax_office_name)
+        instance.tax_office_address = validated_data.get('tax_office_address', instance.tax_office_address)
+        instance.nfz = validated_data.get('nfz', instance.nfz)
+        instance.save()
+        return instance
