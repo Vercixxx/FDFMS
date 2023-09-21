@@ -1,25 +1,44 @@
-<template>
-    <!-- Modal -->
-    <div class="modal fade" id="alertPopup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Error</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    {{ errorcontent }}
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal -->
+<!-- <template>
+  <div>
+    <b-alert show :dismiss-sec="dismissSecs" dismissible fade>
+      This alert will dismiss after {{ dismissSecs }} seconds...
+    </b-alert>
+
+    <b-button @click="showAlert" variant="info" class="m-1">
+      Show alert with count-down timer
+    </b-button>
+  </div>
 </template>
 
 <script>
 export default {
-    props: {
-        errorcontent: String, // Przekazuje zawartość błędu jako props
+  data() {
+    return {
+      dismissSecs: 5,
+    };
+  },
+  methods: {
+    showAlert() {
+      // Pokaż alert
+      this.$bvToast.toast("This is a timed alert!", {
+        title: "Alert",
+        variant: "info",
+        solid: true,
+        noCloseButton: true,
+        appendToast: true,
+      });
+
+      // Rozpocznij odliczanie
+      let countDown = this.dismissSecs;
+      const intervalId = setInterval(() => {
+        if (countDown <= 0) {
+          clearInterval(intervalId);
+          this.$bvToast.hide("my-toast");
+        } else {
+          countDown--;
+        }
+      }, 1000);
     },
+  },
 };
-</script>
+</script> -->

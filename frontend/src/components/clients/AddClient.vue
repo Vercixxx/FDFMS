@@ -282,15 +282,16 @@
 
         </div>
 
+
         <!-- Message modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ErrorModal" id="hiddenButton"
+        <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ErrorModal" id="hiddenButton"
             style="display: none;">
         </button>
         <div class="modal fade" id="ErrorModal" tabindex="-1" aria-labelledby="ErrorModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content">
+                <div class="modal-content"> -->
                     <!-- Error -->
-                    <div v-if="dataError" class="modal-header d-flex justify-content-between">
+                    <!-- <div v-if="dataError" class="modal-header d-flex justify-content-between">
                         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red"
                             class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
                             <path
@@ -308,20 +309,20 @@
                             <path
                                 d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
                         </svg>
-                    </div>
+                    </div> -->
                     <!-- Error -->
 
                     <!-- Success -->
-                    <div v-else class="modal-header">
+                    <!-- <div v-else class="modal-header">
                         <h1 class="modal-title fs-5" id="ErrorModalLabel">
                             <p>Success!</p>
                         </h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+                    </div> -->
                     <!-- Success -->
-                    
 
-                    <div class="modal-body text-center text-danger">
+
+                    <!-- <div class="modal-body text-center text-danger">
                         <div v-for="(messages, field) in dataError" :key="field">
                             <p v-for="message in messages" :key="message">{{ field }} - {{ message }}</p>
                         </div>
@@ -342,14 +343,16 @@
 
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- Message modal -->
+
 
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+
 
 export default {
     data() {
@@ -381,9 +384,14 @@ export default {
 
     mounted() {
         this.getAllUsernames()
+        
     },
 
     methods: {
+        showAlert(alertClass, alertText) {
+            this.$root.showAlert(alertClass, alertText);
+        },
+        
         isFormValid() {
             return (
                 this.name &&
@@ -474,3 +482,4 @@ export default {
 
 }
 </script>
+

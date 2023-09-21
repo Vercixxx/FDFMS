@@ -98,7 +98,8 @@
                         </td>
                         <td>
                             <!-- Button edit -->
-                            <button class="btn btn-outline-success m-3" @click="editRestaurant(restaurant.name)">
+                            <button class="btn btn-outline-success m-3" @click="editRestaurant(restaurant.name)"
+                                v-b-tooltip="'Edit'">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-pencil" viewBox="0 0 16 16">
                                     <path
@@ -107,7 +108,8 @@
                             </button>
 
                             <!-- Button delete -->
-                            <button class="btn btn-outline-danger" @click="deleteConfirm(restaurant.name)">
+                            <button class="btn btn-outline-danger" @click="deleteConfirm(restaurant.name)"
+                                v-b-tooltip="'Delete'">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-trash3" viewBox="0 0 16 16">
                                     <path
@@ -130,29 +132,29 @@
 
             <div class="border rounded-2 d-flex align-items-center">
 
-                    <!-- Button previous -->
-                    <button type="button" class="btn btn-outline-secondary border-0 ms-2" @click="previousPage"
-                        :disabled="!page_flip.previous">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-caret-left" viewBox="0 0 16 16">
-                            <path
-                                d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-                        </svg>
-                    </button>
+                <!-- Button previous -->
+                <button type="button" class="btn btn-outline-secondary border-0 ms-2" @click="previousPage"
+                    :disabled="!page_flip.previous">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-caret-left" viewBox="0 0 16 16">
+                        <path
+                            d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                    </svg>
+                </button>
 
-                    <!-- Current page -->
-                    <p class="fw-bolder mx-2 text-center mt-3">Page {{ currentPage + 1 }}</p>
+                <!-- Current page -->
+                <p class="fw-bolder mx-2 text-center mt-3">Page {{ currentPage + 1 }}</p>
 
 
-                    <!-- Button next -->
-                    <button type="button" class="btn btn-outline-secondary border-0 me-2" @click="nextPage"
-                        :disabled="!page_flip.next">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-caret-right" viewBox="0 0 16 16">
-                            <path
-                                d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-                        </svg>
-                    </button>
+                <!-- Button next -->
+                <button type="button" class="btn btn-outline-secondary border-0 me-2" @click="nextPage"
+                    :disabled="!page_flip.next">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-caret-right" viewBox="0 0 16 16">
+                        <path
+                            d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                    </svg>
+                </button>
 
             </div>
 
