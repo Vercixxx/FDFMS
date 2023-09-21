@@ -1,22 +1,26 @@
 <template>
     <div class="ClientsView">
-        <div class="containter rounded-3 p-1 m-2 border shadow"
-            style="--bs-bg-opacity: .5; background-image: var(--bs-gradient);">
+        <div class="containter rounded-3 p-1 m-2 border shadow text-white" :style="{
+            'background-image': 'url(' + backgroundImage + ')',
+            'background-size': 'cover',
+            'background-position': 'center 50%',
+        }">
             <div class="d-flex justify-content-between">
 
                 <div class="p-2">
 
                     <!-- Title -->
-                    <p class="fs-2 fst-italic mb-4 px-2">FDFMS - Clients Management console</p>
+                    <div class="my-text-container rounded-3">
+
+                        <p class="fs-2 fst-italic mb-4 px-2">FDFMS - Clients Management console</p>
+                    </div>
 
                 </div>
                 <div class="p-2 d-flex align-items-center">
 
-                    <p class="fs-3 mb-1 px-2">
+                    <p class="fs-3 mb-1 px-2 my-text-container me-2">
                         Hi,
-                        <span class="p-2 btn btn-outline-secondary fw-bolder">
-                            {{ userData.first_name }}
-                        </span>
+                        {{ userData.first_name }}
                     </p>
                     <button type="submit" class="btn btn-outline-danger shadow" @click="logoutConfirmFunc">
                         <span class="d-flex align-items-center">
@@ -36,7 +40,7 @@
             <!-- Navbar -->
             <nav class="navbar navbar-expand-lg ">
                 <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    <button class="navbar-toggler custom-button " type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -46,7 +50,7 @@
 
                             <!-- Home button -->
                             <li class="nav-item me-3">
-                                <button class="nav-link  btn btn-outline p-2 fs-5 my-2 border shadow " role="button"
+                                <button class="nav-link btn btn-outline p-2 fs-5 my-2 border shadow custom-button" role="button" 
                                     aria-expanded="false" @click="showHomeComponent">
                                     <span class="d-flex align-items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -66,7 +70,7 @@
 
                             <!-- Option 1 -->
                             <li class="nav-item dropdown me-3">
-                                <button class="nav-link  btn btn-outline p-2 fs-5 my-2 border shadow " role="button"
+                                <button class="nav-link  btn btn-outline p-2 fs-5 my-2 border shadow custom-button " role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <span class="d-flex align-items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -173,6 +177,8 @@
 </template>
 
 <script>
+import backgroundImage from '../assets/bg.jpg';
+
 // components
 import Home from '../components/Home.vue';
 import AddClient from '../components/clients/AddClient.vue';
@@ -183,6 +189,7 @@ export default {
 
     data() {
         return {
+            backgroundImage: backgroundImage,
             userData: this.$store.getters.responseData,
             currentComponent: null,
             confirmLogout: null,
@@ -217,3 +224,23 @@ export default {
     components: {},
 };
 </script>
+
+<style>
+
+.custom-button {
+  background: rgba(200, 200, 200, 0.3); 
+  backdrop-filter: blur(5px); 
+  transition: background-color 0.3s;
+  color:rgb(239, 239, 228);
+}
+
+.custom-button:hover {
+  background-color: rgba(200, 200, 200, 0.7);
+  backdrop-filter: blur(5px); 
+  color:rgb(239, 239, 228);
+}
+
+.my-text-container {
+  backdrop-filter: blur(3px);
+}
+</style>
