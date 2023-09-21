@@ -2,10 +2,9 @@
 <template>
   <div id="wrapper">
     <ColorModes /> <!-- ColorModes button -->
-    
 
 
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -18,9 +17,8 @@ export default {
   components: {
     ColorModes,
   },
+
 };
 </script>
 
-<style lang="scss">
-
-</style>
+<style lang="scss"></style>
