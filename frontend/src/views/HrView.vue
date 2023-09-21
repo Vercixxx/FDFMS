@@ -325,18 +325,18 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 // components
-import AddUser from '../components/hr/AddUser';
+import AddUser from '../components/hr/AddUser.vue';
 
 // add users components
 import Home from '../components/Home.vue';
-import HrUser from '../components/hr/users/AddHr';
-import PayrollUser from '../components/hr/users/AddPayroll';
-import AssetUser from '../components/hr/users/AddAsset';
-import ClientUser from '../components/hr/users/AddClient';
-import ManagerUser from '../components/hr/users/AddManager';
-import DriverUser from '../components/hr/users/AddDriver';
+import HrUser from '../components/hr/users/AddHr.vue';
+import PayrollUser from '../components/hr/users/AddPayroll.vue';
+import AssetUser from '../components/hr/users/AddAsset.vue';
+import ClientUser from '../components/hr/users/AddClient.vue';
+import ManagerUser from '../components/hr/users/AddManager.vue';
+import DriverUser from '../components/hr/users/AddDriver.vue';
 
-import ModifyUser from '../components/hr/ModifyUser';
+import ModifyUser from '../components/hr/ModifyUser.vue';
 
 
 export default {
