@@ -8,8 +8,9 @@ import { isAuthenticated } from '../auth-guard';
 import { hrRoutes } from './hrRoutes'
 
 // Views
+import Login1 from '../views/LoginView.vue'
 import AssetView from '../views/AssetView.vue'
-import ClientsView from '../views/ClientsView.vue'
+import ClientsView from '../views/ClientsViewEx.vue'
 import PayrollView from '../views/PayrollView.vue'
 import ManagerView from '../views/ManagerView.vue'
 import DriverView from '../views/DriverView.vue'
@@ -22,6 +23,11 @@ const routes = [
     path: '/',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/1',
+    name: 'Login1',
+    component: Login1
   },
 
   // Asset

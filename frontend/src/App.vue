@@ -1,7 +1,7 @@
 
 <template>
   <div id="wrapper">
-    <ColorModes /> <!-- ColorModes button -->
+    <!-- <ColorModes /> ColorModes button -->
 
 
     <router-view />
