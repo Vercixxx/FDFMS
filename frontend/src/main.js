@@ -20,6 +20,11 @@ import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
+// my
+import my_vuetify from './plugins/vuetify'
+
+
+
 const vuetify = createVuetify({
     components,
     directives,
@@ -52,6 +57,7 @@ setInterval(refreshAccessToken, 58 * 60 * 1000);
 
 
 
-createApp(App).use(store).use(router).use(vuetify).mount('#app')
+createApp(App).use(store).use(router).use(vuetify).use(my_vuetify).mount('#app')
+
 
 
