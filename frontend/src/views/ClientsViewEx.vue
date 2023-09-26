@@ -2,7 +2,7 @@
     <v-app>
         <v-layout class="rounded rounded-md">
             <!-- image="https://picsum.photos/1920/1080?random" -->
-            <v-app-bar app :elevation="10">
+            <v-app-bar app :elevation="3" class="bg-success">
 
 
                 <v-row align="center" no-gutters>
@@ -19,9 +19,10 @@
 
 
                     <!-- Title -->
-                    <v-col cols="7" align="start" class="text-h5 font-weight-bold">
-                        <p>FDFMS - {{ userData.user_role }} Management console</p>
+                    <v-col class="text-start">
+                        <p class="text-h6 font-weight-bold">FDFMS - {{ userData.user_role }} Management console</p>
                     </v-col>
+
                     <!-- Title -->
 
 
@@ -30,7 +31,7 @@
                         <v-col cols="auto">
                             <v-dialog transition="dialog-top-transition" width="auto">
                                 <template v-slot:activator="{ props }">
-                                    <v-btn color="primary" v-bind="props" variant="tonal">
+                                    <v-btn v-bind="props" variant="tonal">
                                         <span class="material-symbols-outlined">
                                             logout
                                         </span>
@@ -93,22 +94,24 @@
 
                     <v-divider></v-divider>
 
-                    <v-list-item>
-                        <v-btn block variant="tonal" @click="showHomeComponent">
-                            <span class="material-symbols-outlined">
-                                home
-                            </span>
-                            Home
-                        </v-btn>
-                    </v-list-item>
-
                     <component :is="getNavigationComponent(userData.user_role)" />
 
                 </v-list>
 
                 <template v-slot:append>
-                    <div class="pa-2">
-                        <v-btn block variant="outlined" @click="toggleTheme">Toogle dark mode</v-btn>
+                    <div class="d-flex align-center justify-center">
+                        <v-btn block :style="{ display: actualTheme ? 'none' : 'block' }" @click="toggleTheme"
+                            variant="plain">
+                            <span class="material-symbols-outlined">
+                                dark_mode
+                            </span>
+                        </v-btn>
+                        <v-btn block :style="{ display: actualTheme ? 'block' : 'none' }" @click="toggleTheme"
+                            variant="plain">
+                            <span class="material-symbols-outlined">
+                                light_mode
+                            </span>
+                        </v-btn>
                     </div>
                 </template>
 
@@ -130,33 +133,44 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
 import { useTheme } from 'vuetify'
+import { drawer, closeDrawer } from '../store/store.js';
+// import { isDarkMode } from '../plugins/theme.js';
+
+const toggleDrawer = () => {
+    drawer.value = !drawer.value
+}
 
 const theme = useTheme()
-
-const drawer = ref(false)
-const group = ref(null)
-
-watch(group, () => {
-    drawer.value = false
-})
+let actualTheme = theme.global.current.value.dark
 
 function toggleTheme() {
     theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+    actualTheme = theme.global.current.value.dark
+    // isDarkMode.value = actualTheme;
+
 }
+
 </script>
 
 
 <script>
+import { markRaw } from 'vue';
 
 // Home components
 import Home from '../components/Home.vue';
+const NonReactiveHome = markRaw(Home);
 // Home components
 
 // Navigation Bars
 import ClientsNav from "../components/clients/ClientsMenu.vue"
+import HRNav from "../components/hr/HRMenu.vue"
 // Navigation Bars
+
+// HR
+import AddUser from '../components/hr/AddUser.vue';
+import ModifyUser from '../components/hr/ModifyUser.vue';
+// HR
 
 // Clients
 import AddClient from '../components/clients/AddClient.vue';
@@ -167,7 +181,7 @@ export default {
     data() {
         return {
             userData: this.$store.getters.responseData,
-            currentComponent: null,
+            currentComponent: NonReactiveHome,
             confirmLogout: null,
             drawer: false,
             group: null,
@@ -201,17 +215,12 @@ export default {
             this.$store.commit('resetState');
             this.$router.push('/');
         },
-
-        showHomeComponent() {
-            this.currentComponent = Home;
-        },
-
         getNavigationComponent(userRole) {
             switch (userRole) {
                 case "Clients":
                     return ClientsNav;
-                case "Asset":
-                    return AssetNavigation;
+                case "HR":
+                    return HRNav;
 
                 default:
                     return null;
@@ -219,6 +228,19 @@ export default {
         },
 
 
+        HomeComponent() {
+            this.currentComponent = NonReactiveHome;
+        },
+
+        // HR
+        AddUserComponent() {
+            this.currentComponent = AddUser
+        },
+        ModifyUserComponent() {
+            this.currentComponent = ModifyUser
+        },
+
+        // Clients
         AddClientComponent() {
             this.currentComponent = AddClient
         },
