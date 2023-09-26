@@ -1,19 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 // My imports
-import Login from '../components/Login.vue'
+// import Login from '../components/Login.vue'
 import { isAuthenticated } from '../auth-guard';
 
 // hr
 import { hrRoutes } from './hrRoutes'
 
 // Views
-import Login1 from '../views/LoginView.vue'
-import AssetView from '../views/AssetView.vue'
-import ClientsView from '../views/ClientsViewEx.vue'
-import PayrollView from '../views/PayrollView.vue'
-import ManagerView from '../views/ManagerView.vue'
-import DriverView from '../views/DriverView.vue'
+import Login from '../views/LoginView.vue'
+// import AssetView from '../views/AssetView.vue'
+import Dashboard from '../views/ClientsViewEx.vue'
+// import PayrollView from '../views/PayrollView.vue'
+// import ManagerView from '../views/ManagerView.vue'
+// import DriverView from '../views/DriverView.vue'
 // import AdministratorView from '../views/AssetView.vue'
 
 
@@ -24,17 +24,13 @@ const routes = [
     name: 'Login',
     component: Login
   },
-  {
-    path: '/1',
-    name: 'Login1',
-    component: Login1
-  },
 
-  // Asset
+
+
   {
-    path: '/asset',
-    name: 'Asset',
-    component: AssetView,
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: Dashboard,
     beforeEnter: (to, from, next) => {
       if (!isAuthenticated()) {
         next('/')
@@ -44,61 +40,20 @@ const routes = [
     },
   },
 
-  // Clients
-  {
-    path: '/clients',
-    name: 'Clients',
-    component: ClientsView,
-    beforeEnter: (to, from, next) => {
-      if (!isAuthenticated()) {
-        next('/')
-      } else {
-        next();
-      }
-    },
-  },
-
-  // Payroll
-  {
-    path: '/payroll',
-    name: 'Payroll',
-    component: PayrollView,
-    beforeEnter: (to, from, next) => {
-      if (!isAuthenticated()) {
-        next('/')
-      } else {
-        next();
-      }
-    },
-  },
-
-  // Manager
-  {
-    path: '/manager',
-    name: 'Manager',
-    component: ManagerView,
-    beforeEnter: (to, from, next) => {
-      if (!isAuthenticated()) {
-        next('/')
-      } else {
-        next();
-      }
-    },
-  },
 
   // Driver
-  {
-    path: '/driver',
-    name: 'Driver',
-    component: DriverView,
-    beforeEnter: (to, from, next) => {
-      if (!isAuthenticated()) {
-        next('/')
-      } else {
-        next();
-      }
-    },
-  },
+  // {
+  //   path: '/driver',
+  //   name: 'Driver',
+  //   component: DriverView,
+  //   beforeEnter: (to, from, next) => {
+  //     if (!isAuthenticated()) {
+  //       next('/')
+  //     } else {
+  //       next();
+  //     }
+  //   },
+  // },
 
   // Administrator
   // {
