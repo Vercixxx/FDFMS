@@ -135,7 +135,8 @@
 <script setup>
 import { useTheme } from 'vuetify'
 import { drawer, closeDrawer } from '../store/store.js';
-// import { isDarkMode } from '../plugins/theme.js';
+import useEventsBus from '../plugins/eventBus.js'
+const {emit}=useEventsBus()
 
 const toggleDrawer = () => {
     drawer.value = !drawer.value
@@ -147,8 +148,7 @@ let actualTheme = theme.global.current.value.dark
 function toggleTheme() {
     theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
     actualTheme = theme.global.current.value.dark
-    // isDarkMode.value = actualTheme;
-
+    emit('theme',actualTheme)
 }
 
 </script>
