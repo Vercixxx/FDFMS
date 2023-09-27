@@ -12,6 +12,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import axios from 'axios';
+import mitt from 'mitt';
+
 
 
 // Vuetify
@@ -57,7 +59,6 @@ function refreshAccessToken() {
 // interval
 setInterval(refreshAccessToken, 58 * 60 * 1000);
 // Access token refreshing
-
 
 
 createApp(App).use(store).use(router).use(vuetify).mount('#app')

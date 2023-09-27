@@ -69,7 +69,7 @@
 
 
       <form role="search" method="POST" action="" @submit.prevent="search">
-
+        {{ theme }}
         <div class="input-group">
 
           <input class="form-control " type="search" placeholder="Search" aria-label="Search" v-model="query">
@@ -126,7 +126,8 @@
     </div>
 
     <div v-else class="table-responsive">
-      <table :class="{'table table-hover table-striped': !isDarkModeOn, 'table table-hover table-striped table-dark ': isDarkModeOn}">
+      <table
+        :class="{ 'table table-hover table-striped': !theme, 'table table-hover table-striped table-dark ': theme }">
         <thead>
           <tr class="text-center">
             <th v-for="column in columns" :key="column.attribute">
@@ -352,15 +353,13 @@
 </template>
   
 
-<script setup>
-// import { isDarkMode } from '../../plugins/theme.js';
 
-// const isDarkModeOn = isDarkMode;
-</script>
 
 <script>
 import axios from 'axios';
-
+import useEventsBus from '../../plugins/eventBus.js'
+import { ref, watch } from "vue"; // Importuj funkcję watch
+import { useTheme } from 'vuetify'
 
 export default {
   name: 'App',
@@ -386,6 +385,7 @@ export default {
         user_role: '',
         state: '',
       },
+      theme: false, 
     };
   },
 
@@ -403,8 +403,24 @@ export default {
       // this.dataError = message;
       //       document.getElementById('hiddenButton').click();
 
-    }
+    };
   },
+
+  mounted() {
+    const { bus } = useEventsBus();
+
+    watch(
+      () => bus.value.get('theme'),
+      (val) => {
+        const [themeBus] = val ?? [];
+        this.theme = themeBus;
+      }
+    );
+
+    const theme = useTheme();
+    this.theme = theme.global.current.value.dark;
+  },
+
 
   methods: {
     async loadUsers() {
@@ -611,6 +627,7 @@ export default {
 
 
   },
+
 };
 </script>
   
