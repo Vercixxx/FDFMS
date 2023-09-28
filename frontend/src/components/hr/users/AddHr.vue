@@ -3,300 +3,121 @@
         <div class="containter m-2 p-2 d-flex justify-content-center">
             <div class="col-12 col-md-9">
 
-                <p v-if="user_role === null" class="fs-4 text-center fw-bolder">Add new HR user</p>
-                <div v-else class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between mb-5">
                     <div>
                         <button type="button" class="btn btn-outline-primary mb-3 " @click="goBack">
                             <span class="d-flex align-items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                    class="bi bi-arrow-left me-2 " viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
-                                        
-                                </svg>
+                                <span class="material-symbols-outlined">
+                                    arrow_back
+                                </span>
                                 Back
                             </span>
                         </button>
                     </div>
-                    <div class="fs-4 text-center fw-bolder">Edit user</div>
+                    <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new HR user</div>
+                    <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit user</div>
                     <div></div>
 
                 </div>
 
+
+
+                <v-form v-model="form" @submit.prevent="onSubmit">
+                    <v-container class=" mb-5 bg-green-lighten-5 rounded-xl elevation-5">
+
+                        <div class="fw-light">
+                            <span class="filled-star-example"></span> - field required
+                        </div>
+
+                        <p align="center" class="text-h6 text-md-h5 text-lg-h4">Basic info</p>
+                        <v-row>
+                            <v-col cols="12" sm="6" v-for="input in basicInfoInputs" :key="input.name">
+                                <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
+                                    :readonly="input.readonly || false" :hint="input.hint || undefined"
+                                    :rules="input.required ? [required] : []">
+
+                                    <!-- Star sign -->
+                                    <template v-slot:append-inner>
+                                        <div v-if="input.required" class="filled-star">
+                                        </div>
+                                    </template>
+                                    <!-- Star sign -->
+
+                                </v-text-field>
+                            </v-col>
+                        </v-row>
+
+                        <p align="center" class="text-h6 text-md-h5 text-lg-h4">Tax, Health and Bank account info</p>
+                        <v-row>
+                            <v-col cols="12" sm="6" v-for="input in taxAndHealth" :key="input.name">
+
+                                <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
+                                    :readonly="input.readonly || false" :hint="input.hint || undefined"
+                                    :rules="input.required ? [required] : []">
+
+                                    <!-- Star sign -->
+                                    <template v-slot:append-inner>
+                                        <div v-if="input.required" class="filled-star">
+                                        </div>
+                                    </template>
+                                    <!-- Star sign -->
+
+                                </v-text-field>
+
+                            </v-col>
+                        </v-row>
+
+                        <p align="center" class="text-h6 text-md-h5 text-lg-h4">Residence address</p>
+                        <v-row>
+                            <v-col cols="12" sm="6" v-for="input in residenceAddress" :key="input.name">
+
+                                <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
+                                    :readonly="input.readonly || false" :hint="input.hint || undefined"
+                                    :rules="input.required ? [required] : []">
+
+                                    <!-- Star sign -->
+                                    <template v-slot:append-inner>
+                                        <div v-if="input.required" class="filled-star">
+                                        </div>
+                                    </template>
+                                    <!-- Star sign -->
+
+                                </v-text-field>
+
+                            </v-col>
+                        </v-row>
+
+                        <!-- Show correspondence -->
+                        <v-row class="d-flex justify-center">
+                            <v-col cols="auto">
+                                <v-switch v-model="show_corespondece" hide-details inset color="success"></v-switch>
+                            </v-col>
+
+                            <v-col cols="auto" class="d-flex align-center">
+                                Correspodence address same as residence address
+                            </v-col>
+                        </v-row>
+                        <!-- Show correspondence -->
+
+
+                        <!-- Button submit -->
+                        <span>
+                            <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                                Fill all required fields first
+                            </v-tooltip>
+                            <span>
+                                <v-btn :disabled="!form" :loading="loading" block color="success" size="large"
+                                    type="submit">
+                                    Create
+                                </v-btn>
+                            </span>
+                        </span>
+                        <!-- Button submit -->
+
+                    </v-container>
+                </v-form>
+
                 <form action="" method="post" class="border rounded-3 p-3" @submit.prevent="createUser">
-
-                    <!-- Username field visible only when editing existing user -->
-                    <div v-if="username !== null" class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            Username
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" disabled aria-label="username"
-                                aria-describedby="username" v-model="username"
-                                :class="{ 'border border-danger': dataError && dataError['username'] }">
-                        </div>
-                    </div>
-                    <!-- Username field visible only when editing existing user -->
-
-
-                    <!-- First name -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            First name
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="first_name"
-                                aria-describedby="first_name" v-model="firstName" @input="updateUsername"
-                                :class="{ 'border border-danger': dataError && dataError['first_name'] }">
-                        </div>
-                    </div>
-                    <!-- First name -->
-
-
-                    <!-- Last name -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            Last name
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="last_name"
-                                aria-describedby="last_name" v-model="lastName" @input="updateUsername"
-                                :class="{ 'border border-danger': dataError && dataError['last_name'] }">
-                        </div>
-                    </div>
-                    <!-- Last name -->
-
-
-                    <!-- Email -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            Email
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="email" class="form-control rounded-0 rounded-end" aria-label="email"
-                                aria-describedby="email" v-model="email"
-                                :class="{ 'border border-danger': dataError && dataError['email'] }">
-                        </div>
-                    </div>
-                    <!-- Email -->
-
-
-                    <!-- Phone number -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            Phone number
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="phone" class="form-control rounded-0 rounded-end" aria-label="phone"
-                                aria-describedby="phone" v-model="phone"
-                                :class="{ 'border border-danger': dataError && dataError['phone'] }">
-                        </div>
-                    </div>
-
-                    <!-- Phone number -->
-
-
-                    <!-- PESEL / NIP -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            PESEL / NIP
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="identity"
-                                aria-describedby="identity" v-model="identity"
-                                :class="{ 'border border-danger': dataError && dataError['identity'] }">
-                        </div>
-                    </div>
-                    <!-- PESEL / NIP -->
-
-
-                    <!-- Dane rozliczeniowe i zdrowotne -->
-                    <div class="border border-2 p-2 text-center my-5 fw-bolder shadow">
-                        Tax and health information
-                    </div>
-
-
-                    <!-- Tax office name -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            Tax office name
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="tax_name"
-                                aria-describedby="tax_name" v-model="taxName"
-                                :class="{ 'border border-danger': dataError && dataError['taxName'] }">
-                        </div>
-                    </div>
-                    <!-- Tax office name -->
-
-
-                    <!-- Tax office address -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            Tax office address
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="tax_address"
-                                aria-describedby="tax_address" v-model="tax_address"
-                                :class="{ 'border border-danger': dataError && dataError['tax_address'] }">
-                        </div>
-                    </div>
-                    <!-- Tax office address -->
-
-
-                    <!-- NFZ branch -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            NFZ branch
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="nfz"
-                                aria-describedby="nfz" v-model="nfz"
-                                :class="{ 'border border-danger': dataError && dataError['nfz'] }">
-                        </div>
-                    </div>
-                    <!-- NFZ branch -->
-
-
-                    <!-- Bank Account Number -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            Bank Account Number
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="bank_account"
-                                aria-describedby="bank_account" v-model="bankAccount"
-                                :class="{ 'border border-danger': dataError && dataError['bankAccount'] }">
-                        </div>
-                    </div>
-                    <!-- Bank Account Number -->
-
-
-
-                    <div class="border border-2 p-2 text-center my-5 fw-bolder shadow">
-                        Residence address
-                    </div>
-
-
-
-                    <!-- Residence address Country -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            Country
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="res_country"
-                                aria-describedby="res_country" v-model="resCountry"
-                                :class="{ 'border border-danger': dataError && dataError['resCountry'] }">
-                        </div>
-                    </div>
-                    <!-- Residence address Country -->
-
-
-                    <!-- Residence address City -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            City
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="res_city"
-                                aria-describedby="res_city" v-model="resCity"
-                                :class="{ 'border border-danger': dataError && dataError['resCity'] }">
-                        </div>
-                    </div>
-                    <!-- Residence address City -->
-
-
-                    <!-- Residence address State -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            State
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="res_state"
-                                aria-describedby="res_state" v-model="resState"
-                                :class="{ 'border border-danger': dataError && dataError['resState'] }">
-                        </div>
-                    </div>
-                    <!-- Residence address State -->
-
-
-                    <!-- Residence address Street -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            Street
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="res_street"
-                                aria-describedby="res_street" v-model="resStreet"
-                                :class="{ 'border border-danger': dataError && dataError['resStreet'] }">
-                        </div>
-                    </div>
-                    <!-- Residence address Street -->
-
-
-                    <div class="input-group mb-3 gx-0">
-
-                        <!-- Residence address Home number -->
-                        <div class="input-group">
-                            <div
-                                class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                Home
-                            </div>
-                            <div class="col-4 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end me-2"
-                                    aria-label="res_homeNumber" aria-describedby="res_homeNumber" v-model="resHomeNumber"
-                                    :class="{ 'border border-danger': dataError && dataError['resHomeNumber'] }">
-                            </div>
-                            <!-- Residence address Home number -->
-
-
-                            <!-- Residence address Apartament number -->
-                            <div
-                                class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                Apartament
-                            </div>
-                            <div class="col-4 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end"
-                                    aria-label="res_apartamentNumber" aria-describedby="res_apartamentNumber"
-                                    v-model="resApartamentNumber"
-                                    :class="{ 'border border-danger': dataError && dataError['resApartamentNumber'] }">
-                            </div>
-                            <!-- Residence address Apartament number -->
-                        </div>
-
-                    </div>
-
-
-                    <!-- Residence Zip code -->
-                    <div class="input-group mb-3">
-                        <div
-                            class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                            Zip code
-                        </div>
-                        <div class="col-9 d-flex align-items-center">
-                            <input type="text" class="form-control rounded-0 rounded-end" aria-label="res_zipCode"
-                                aria-describedby="res_zipCode" v-model="resZipCode"
-                                :class="{ 'border border-danger': dataError && dataError['resZipCode'] }">
-                        </div>
-                    </div>
-                    <!-- Residence Zip code -->
-
-
 
                     <div class="form-check form-switch" id="switch1">
                         <input class="form-check-input toggleSwitch" type="checkbox" v-model="show_corespondece_form">
@@ -557,8 +378,8 @@
 
 
                     <div class="text-center">
-                        <button v-if="user_role === null" type="button" class="btn btn-success shadow" @click="createUser"
-                            :disabled="!isFormValid" :class="{ 'btn-outline-danger': !isFormValid }">
+                        <button v-if="user_role === null" type="submit" class="btn btn-success shadow" @click="createUser"
+                            :disabled="!form" :class="{ 'btn-outline-danger': !isFormValid }">
                             <span class="d-flex align-items-center">
                                 Create
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -662,43 +483,43 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            password: '',
-            password2: '',
-            username: '',
+            // password: '',
+            // password2: '',
+            // username: '',
 
-            firstName: '',
-            lastName: '',
-            email: '',
-            phone: '',
-            identity: '',
-            taxName: '',
-            tax_address: '',
-            nfz: '',
-            bankAccount: '',
+            // firstName: '',
+            // lastName: '',
+            // email: '',
+            // phone: '',
+            // identity: '',
+            // taxName: '',
+            // tax_address: '',
+            // nfz: '',
+            // bankAccount: '',
 
-            resCountry: '',
-            resCity: '',
-            resState: '',
-            resStreet: '',
-            resHomeNumber: '',
-            resApartamentNumber: '',
-            resZipCode: '',
+            // resCountry: '',
+            // resCity: '',
+            // resState: '',
+            // resStreet: '',
+            // resHomeNumber: '',
+            // resApartamentNumber: '',
+            // resZipCode: '',
 
-            corCountry: '',
-            corCity: '',
-            corState: '',
-            corStreet: '',
-            corHomeNumber: '',
-            corApartamentNumber: '',
-            corZipCode: '',
+            // corCountry: '',
+            // corCity: '',
+            // corState: '',
+            // corStreet: '',
+            // corHomeNumber: '',
+            // corApartamentNumber: '',
+            // corZipCode: '',
 
-            regCountry: '',
-            regCity: '',
-            regState: '',
-            regStreet: '',
-            regHomeNumber: '',
-            regApartamentNumber: '',
-            regZipCode: '',
+            // regCountry: '',
+            // regCity: '',
+            // regState: '',
+            // regStreet: '',
+            // regHomeNumber: '',
+            // regApartamentNumber: '',
+            // regZipCode: '',
 
 
             fetched_data: {},
@@ -709,28 +530,118 @@ export default {
 
             user_role: null,
 
+            basicInfoInputs: [
+                {
+                    name: 'Username',
+                    model: 'username',
+                    readonly: true,
+                    hint: 'Username is generated automatically',
+                },
+                {
+                    name: 'First name',
+                    model: 'first_name',
+                    required: true,
+
+                },
+                {
+                    name: 'Last name',
+                    model: 'last_name',
+                    required: true,
+
+                },
+                {
+                    name: 'Email',
+                    model: 'email',
+                    required: true,
+
+                },
+                {
+                    name: 'Phone number',
+                    model: 'phone',
+                    required: true,
+
+                },
+                {
+                    name: 'PESEL/NIP',
+                    model: 'identity',
+                    required: true,
+
+                },
+            ],
+
+            taxAndHealth: [
+                {
+                    name: 'Tax office name',
+                    model: 'tax_name',
+                    required: true,
+                },
+                {
+                    name: 'Tax office address',
+                    model: 'tax_address',
+                    required: true,
+                },
+                {
+                    name: 'NFZ branch',
+                    model: 'nfz',
+                    required: true,
+                },
+                {
+                    name: 'Bank Account Number',
+                    model: 'bank_account',
+                    required: true,
+                },
+            ],
+
+            residenceAddress: [
+                {
+                    name: 'Country',
+                    model: 'residence_country',
+                    required: true,
+                },
+                {
+                    name: 'City',
+                    model: 'residence_city',
+                    required: true,
+                },
+                {
+                    name: 'State',
+                    model: 'residence_state',
+                    required: true,
+                },
+                {
+                    name: 'Street',
+                    model: 'residence_street',
+                    required: true,
+                },
+                {
+                    name: 'Home',
+                    model: 'residence_home_number',
+                    required: true,
+                },
+                {
+                    name: 'Apartament',
+                    model: 'residence_apartament_number',
+                    required: true,
+                },
+                {
+                    name: 'Zip code',
+                    model: 'residence_zip_code',
+                    required: true,
+                },
+            ],
+
+            show_corespondece: false,
+
+            form: false,
+            loading: false,
+            input_data: {},
+
         };
     },
 
     computed: {
-        isFormValid() {
-            return (
-                this.firstName &&
-                this.lastName &&
-                this.email &&
-                this.phone &&
-                this.identity &&
-                this.taxName &&
-                this.tax_address &&
-                this.nfz &&
-                this.bankAccount &&
-                this.resCountry &&
-                this.resCity &&
-                this.resState &&
-                this.resStreet &&
-                this.resHomeNumber &&
-                this.resZipCode
-            );
+        allInputs() {
+            return [...this.basicInfoInputs, ...this.taxAndHealth, ...this.residenceAddress];
         },
     },
 
@@ -758,6 +669,32 @@ export default {
 
 
     methods: {
+        onSubmit() {
+            if (!this.form) return;
+
+            this.loading = true;
+            setTimeout(() => (this.loading = false), 2000)
+
+            this.getDataFromInputs();
+
+            // this.loading = false;
+        },
+        required(v) {
+            return !!v || 'Field is required';
+        },
+
+        getDataFromInputs() {
+            for (const field of this.allInputs) {
+                if (typeof this.input_data[field.model] === 'string') {
+                    this.input_data[field.model] = this.input_data[field.model].trim();
+                }
+                if (!this.input_data[field.model]) {
+                    this.input_data[field.model] = null;
+                }
+            }
+            console.log(JSON.stringify(this.input_data, null, 2));
+        },
+
         generateRandomDigits() {
             return Math.floor(100 + Math.random() * 900);
         },
@@ -911,7 +848,7 @@ export default {
 
             localStorage.removeItem('username');
             localStorage.removeItem('user_role');
-            
+
             // Set input data
             this.username = response.data.username;
 
@@ -1004,8 +941,13 @@ export default {
         },
 
         goBack() {
-            this.$root.changeCurrentComponent('ModifyUserComponent');
-        }
+            if (this.user_role === null) {
+                this.$root.changeCurrentComponent('AddUserComponent');
+            } else {
+                this.$root.changeCurrentComponent('ModifyUserComponent');
+            }
+        },
+
     }
 };
 </script>
@@ -1036,5 +978,20 @@ export default {
 .form-check-input:checked+.form-check-label::after {
     left: 24px;
     transition: left 0.5s;
+}
+
+.filled-star::before {
+    content: '\2605';
+    color: #ff0000;
+    font-weight: bold;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}
+
+.filled-star-example::before {
+    content: '\2605';
+    color: #ff0000;
+    font-weight: bold;
 }
 </style>
