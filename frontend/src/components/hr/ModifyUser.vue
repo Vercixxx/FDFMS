@@ -69,7 +69,6 @@
 
 
       <form role="search" method="POST" action="" @submit.prevent="search">
-        {{ theme }}
         <div class="input-group">
 
           <input class="form-control " type="search" placeholder="Search" aria-label="Search" v-model="query">
@@ -83,7 +82,6 @@
           </button>
 
         </div>
-        <p class="fw-light">{{ page_flip.count }} records</p>
       </form>
 
     </div>
@@ -92,33 +90,7 @@
 
 
 
-    <!-- Pagination -->
-    <div class="d-flex justify-content-center mb-4">
 
-      <!-- Button previous -->
-      <button type="button" class="btn btn-outline-secondary" @click="previousPage" :disabled="!page_flip.previous">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left"
-          viewBox="0 0 16 16">
-          <path
-            d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-        </svg>
-      </button>
-
-      <!-- Current page -->
-      <p class="fw-bolder mx-2">Page {{ currentPage + 1 }}</p>
-
-      <!-- Button next -->
-      <button type="button" class="btn btn-outline-secondary " @click="nextPage" :disabled="!page_flip.next">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right"
-          viewBox="0 0 16 16">
-          <path
-            d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-        </svg>
-      </button>
-
-    </div>
-
-    <!-- Pagination -->
 
     <!-- Table -->
     <div v-if="users.length === 0" class="text-danger fs-2">
@@ -126,8 +98,7 @@
     </div>
 
     <div v-else class="table-responsive">
-      <table
-        :class="{ 'table table-hover table-striped': !theme, 'table table-hover table-striped table-dark ': theme }">
+      <table :class="{ 'table table-hover table-striped': !theme, 'table table-hover table-striped table-dark ': theme }">
         <thead>
           <tr class="text-center">
             <th v-for="column in columns" :key="column.attribute">
@@ -147,6 +118,8 @@
         <tbody class="table-group-divider">
           <tr v-for="user in users" :key="user.id" class="text-center align-middle "
             :class="{ 'text-decoration-line-through': user.is_active === 'false' ? false : !user.is_active }">
+
+
             <td v-for="column in columns" :key="column.attribute">
 
               <!-- Mapping "is_active" -->
@@ -181,6 +154,15 @@
 
             </td>
             <td>
+              <!-- Button show info -->
+              <v-btn color="primary" variant="plain" class="mr-1" @click="userDetails(user.username, user.user_role)">
+                <span class="material-symbols-outlined d-flex">
+                  preview
+                </span>
+                <v-tooltip activator="parent" location="top">Show user details</v-tooltip>
+              </v-btn>
+              <!-- Button show info -->
+
               <!-- Button status -->
               <button class="btn btn-outline-info m-1"
                 @click="changeStateConfirm(user.username, user.user_role, user.is_active)"
@@ -212,141 +194,179 @@
       </table>
     </div>
 
+    <!-- Under table -->
+    <!-- Pagination -->
+    <v-row class="my-2">
+      <v-col cols="5">
+        <span class="fw-lighter border rounded-3 p-2"> Finded {{ page_flip.count }} records</span>
+      </v-col>
 
-    <!-- Confirmation modal -->
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal"
-      id="confirm_modal_button" style="display: none;">
-    </button>
 
-    <!-- Modal -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header d-flex justify-content-between">
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red" class="bi bi-exclamation-triangle"
-              viewBox="0 0 16 16">
-              <path
-                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-              <path
-                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-            </svg>
-            <h1 class="modal-title fs-5" id="confirmModalLabel">
-              Caution
-            </h1>
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red" class="bi bi-exclamation-triangle"
-              viewBox="0 0 16 16">
-              <path
-                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-              <path
-                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-            </svg>
+      <v-col cols="6" class="d-flex align-items-center">
+
+        <!-- Button previous -->
+        <button type="button" class="btn btn-outline-secondary " @click="previousPage" :disabled="!page_flip.previous">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left"
+            viewBox="0 0 16 16">
+            <path
+              d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+          </svg>
+        </button>
+
+        <!-- Current page -->
+        <p class="fw-bolder mx-2 text-center mt-3">Page {{ currentPage + 1 }}</p>
+
+
+        <!-- Button next -->
+        <button type="button" class="btn btn-outline-secondary" @click="nextPage" :disabled="!page_flip.next">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right"
+            viewBox="0 0 16 16">
+            <path
+              d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+          </svg>
+        </button>
+
+      </v-col>
+
+
+
+    </v-row>
+    <!-- Pagination -->
+    <!-- Under table -->
+
+
+    <!-- Dialaogs section -->
+
+    <!-- Delete user dialog -->
+    <v-dialog v-model="dialogDelete" width="400">
+      <v-card>
+        <div class="text-warning text-h6 text-md-h5 text-lg-h4">
+
+          <div class="d-flex justify-content-between align-items-center px-4 pt-4">
+            <span class="material-symbols-outlined">
+              warning
+            </span>
+            <span>
+              Warning
+            </span>
+            <span class="material-symbols-outlined">
+              warning
+            </span>
           </div>
-          <div class="modal-body text-danger fs-5">
-            <p>
-              You are trying to delete {{ usernameDelete }}, this operation is <span class="fw-bold">irreversible</span>.
-              Are you sure?
-            </p>
-          </div>
-          <div class="modal-footer d-flex justify-content-center">
-            <button type="button" class="btn btn-outline-secondary fs-5 w-25" data-bs-dismiss="modal">No</button>
-            <button type="button" class="btn btn-danger fs-5 w-25" data-bs-dismiss="modal"
-              @click="deleteUser(usernameDelete)">Yes</button>
-          </div>
+          <hr>
         </div>
-      </div>
-    </div>
-    <!-- Confirmation modal -->
 
-    <!-- Message modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ErrorModal" id="hiddenButton"
-      style="display: none;">
-    </button>
-    <div class="modal fade" id="ErrorModal" tabindex="-1" aria-labelledby="ErrorModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="ErrorModalLabel">
-              <p v-if="dataError">Error</p>
-              <p v-else>Success</p>
-            </h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body text-center text-danger">
-            <div v-if="dataError">
-              <p> {{ dataError }}</p>
-            </div>
-            <div v-if="dataSuccess">
-              <p class="text-success">{{ dataSuccess }}
-              </p>
-            </div>
+        <div class="pa-3" align="center">
 
-
-          </div>
-
-        </div>
-      </div>
-    </div>
-    <!-- Message modal -->
-
-    <!-- Change state active modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#StateModal" id="state_modal"
-      style="display: none;">
-    </button>
-    <div class="modal fade" id="StateModal" tabindex="-1" aria-labelledby="StateModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header d-flex justify-content-between">
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red" class="bi bi-exclamation-triangle"
-              viewBox="0 0 16 16">
-              <path
-                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-              <path
-                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-            </svg>
-            <h1 class="modal-title fs-5" id="confirmModalLabel">
-              Caution
-            </h1>
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red" class="bi bi-exclamation-triangle"
-              viewBox="0 0 16 16">
-              <path
-                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-              <path
-                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-            </svg>
-          </div>
-          <div class="modal-body text-center">
-
-            <div>
-              This operation will change active state of
-              <span class='fw-bolder'>
-                {{ change_state.username }}
-              </span>
-              from
-              <span v-if="change_state.state === true"> active </span>
-              <span v-else> not active </span>
-              to
-              <span v-if="change_state.state === true"> not active </span>
-              <span v-else> active </span>
-              <p class="text-warning fs-4">Are you sure?</p>
-
-            </div>
-
-          </div>
-
-          <div class="modal-footer d-flex justify-content-center">
-
-            <button type="button" class="btn btn-secondary w-25 me-2 fs-4" data-bs-dismiss="modal">No</button>
-            <button type="button" class="btn btn-danger w-25 fs-4" data-bs-dismiss="modal"
-              @click="changeState(change_state.username)">Yes</button>
-
-          </div>
+          You are trying to delete
+          <span class='fw-bolder'>
+            {{ usernameDelete }}
+          </span>
+          , this operation is <span class="fw-bold">irreversible</span>.
+          Are you sure?
 
         </div>
-      </div>
-    </div>
-    <!-- Change state active modal -->
+        <hr>
 
+        <div class="justify-center d-flex align-items-center mb-3">
+          <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
+          <v-btn width="150" @click="deleteUser(usernameDelete)" color="red">Yes</v-btn>
+        </div>
+
+      </v-card>
+    </v-dialog>
+    <!-- Delete user dialog -->
+
+    <!-- Change state of user dialog -->
+    <v-dialog v-model="dialogState" width="400">
+      <v-card>
+        <div class="text-warning text-h6 text-md-h5 text-lg-h4">
+
+          <div class="d-flex justify-content-between align-items-center px-4 pt-4">
+            <span class="material-symbols-outlined">
+              warning
+            </span>
+            <span>
+              Warning
+            </span>
+            <span class="material-symbols-outlined">
+              warning
+            </span>
+          </div>
+          <hr>
+        </div>
+
+        <div class="pa-3" align="center">
+
+          This operation will change active state of
+          <span class='fw-bolder'>
+            {{ change_state.username }}
+          </span>
+          from
+          <span v-if="change_state.state === true" class="text-success"> active </span>
+          <span v-else class="text-danger"> not active </span>
+          to
+          <span v-if="change_state.state === true" class="text-danger"> not active </span>
+          <span v-else class="text-success"> active </span>
+          Are you sure?
+
+        </div>
+        <hr>
+
+        <div class="justify-center d-flex align-items-center mb-3">
+          <v-btn variant="outlined" width="150" class="mr-5" @click="dialogState = false">No</v-btn>
+          <v-btn width="150" @click="changeState(change_state.username)" color="red">Yes</v-btn>
+        </div>
+
+      </v-card>
+    </v-dialog>
+    <!-- Change state of user dialog -->
+
+
+    <!-- dialog -->
+    <v-dialog v-model="UserDetailsDialog" width="auto">
+      <v-card>
+        <v-card-text>
+          <v-table>
+            <thead>
+              <tr>
+                <th class="text-left">
+                  Name
+                </th>
+                <th class="text-left">
+                  Value
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(value, key) in userDetailData" :key="key">
+                <td>{{ key }}</td>
+                <td>{{ value }}</td>
+              </tr>
+            </tbody>
+          </v-table>
+
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" block @click="UserDetailsDialog = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- dialog -->
+
+    <!-- Dialaogs section -->
+
+    <!-- Snackbar -->
+    <v-snackbar v-model="alert" :timeout="3000" location="bottom" color="success">
+      {{ snackContent }}
+      <template v-slot:actions>
+        <v-btn color="pink" variant="text" @click="alert = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+
+    <!-- Snackbar -->
 
 
   </div>
@@ -385,7 +405,14 @@ export default {
         user_role: '',
         state: '',
       },
-      theme: false, 
+      theme: false,
+      UserDetailsDialog: false,
+      userDetailData: {},
+      alert: false,
+      snackContent: '',
+
+      dialogState: false,
+      dialogDelete: false,
     };
   },
 
@@ -419,6 +446,18 @@ export default {
 
     const theme = useTheme();
     this.theme = theme.global.current.value.dark;
+
+
+    // Check for messages
+    const message = localStorage.getItem('message');
+    if (message) {
+      this.snackContent = message;
+      this.$nextTick(() => {
+        this.alert = true;
+      });
+      localStorage.removeItem('message');
+    }
+
   },
 
 
@@ -559,8 +598,8 @@ export default {
 
 
     deleteConfirm(username) {
-      this.usernameDelete = username
-      document.getElementById('confirm_modal_button').click();
+      this.usernameDelete = username;
+      this.dialogDelete = true;
     },
 
     async deleteUser() {
@@ -591,16 +630,13 @@ export default {
 
       switch (user_role) {
         case 'HR':
-          this.$parent.showAddHrComponent()
+          this.$root.changeCurrentComponent('AddHrComponent');
           break;
 
         case 'Asset':
-          this.$parent.showAddAssetComponent()
+          this.$root.changeCurrentComponent('AddAssetComponent');
           break;
       }
-
-
-
     },
 
     search() {
@@ -611,18 +647,26 @@ export default {
       this.loadUsers();
     },
 
+
     changeStateConfirm(username, user_role, state) {
       this.change_state.username = username;
       this.change_state.user_role = user_role;
       this.change_state.state = state;
-      document.getElementById('state_modal').click();
+      this.dialogState = true;
     },
+
 
     async changeState(username) {
       const response = await axios.put(`api/users/change-state/${username}/`)
-      console.log(response)
+      this.dialogState = false;
       this.reloadComponent()
 
+    },
+
+    async userDetails(username, role) {
+      const response = await axios.get(`api/users/get/${username}/${role}/`);
+      this.userDetailData = response.data;
+      this.UserDetailsDialog = true;
     },
 
 

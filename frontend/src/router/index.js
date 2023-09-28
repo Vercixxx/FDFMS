@@ -1,20 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 // My imports
-// import Login from '../components/Login.vue'
 import { isAuthenticated } from '../auth-guard';
-
-// hr
-import { hrRoutes } from './hrRoutes'
 
 // Views
 import Login from '../views/LoginView.vue'
-// import AssetView from '../views/AssetView.vue'
-import Dashboard from '../views/ClientsViewEx.vue'
-// import PayrollView from '../views/PayrollView.vue'
-// import ManagerView from '../views/ManagerView.vue'
-// import DriverView from '../views/DriverView.vue'
-// import AdministratorView from '../views/AssetView.vue'
+import Dashboard from '../views/MainPage.vue'
+
 
 
 
@@ -24,8 +16,6 @@ const routes = [
     name: 'Login',
     component: Login
   },
-
-
 
   {
     path: '/dashboard',
@@ -40,35 +30,6 @@ const routes = [
     },
   },
 
-
-  // Driver
-  // {
-  //   path: '/driver',
-  //   name: 'Driver',
-  //   component: DriverView,
-  //   beforeEnter: (to, from, next) => {
-  //     if (!isAuthenticated()) {
-  //       next('/')
-  //     } else {
-  //       next();
-  //     }
-  //   },
-  // },
-
-  // Administrator
-  // {
-  //   path: '/admin',
-  //   name: 'Administrator',
-  //   component: AdministratorView,
-  //   beforeEnter: (to, from, next) => {
-  //     if (!isAuthenticated()) {
-  //       next('/')
-  //     } else {
-  //       next();
-  //     }
-  //   },
-  // },
-  ...hrRoutes,
 ]
 
 
