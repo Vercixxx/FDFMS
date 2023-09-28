@@ -5,21 +5,21 @@
             <v-row justify="space-between">
 
                 <v-col align="start">
-                        <!-- Title -->
-                        <p class="display-5 fst-italic mb-4 px-2">
-                            <span class="fw-bold">F</span>ood
-                            <span class="fw-bold">D</span>elivery
-                            <span class="fw-bold">F</span>leet
-                            <span class="fw-bold">M</span>anagement
-                            <span class="fw-bold">S</span>ystem
-                            - Log in
-                        </p>
-                        <!-- Title -->
+                    <!-- Title -->
+                    <p class="display-5 fst-italic mb-4 px-2">
+                        <span class="fw-bold">F</span>ood
+                        <span class="fw-bold">D</span>elivery
+                        <span class="fw-bold">F</span>leet
+                        <span class="fw-bold">M</span>anagement
+                        <span class="fw-bold">S</span>ystem
+                        - Log in
+                    </p>
+                    <!-- Title -->
                 </v-col>
 
                 <v-col cols="3" class="d-flex align-center justify-end">
 
-                    <v-btn :style="{ display: actualTheme ? 'none' : 'block' }" @click="toggleTheme" variant="plain"> 
+                    <v-btn :style="{ display: actualTheme ? 'none' : 'block' }" @click="toggleTheme" variant="plain">
                         <span class="material-symbols-outlined">
                             dark_mode
                         </span>
@@ -46,8 +46,8 @@
 
                         <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
                             <v-form v-model="form" @submit.prevent="onSubmit">
-                                <v-text-field v-model="username" placeholder="Username" :readonly="loading"
-                                    :rules="[required]" class="mb-2" clearable density="compact">
+                                <v-text-field v-model="username" ref="usernameInput" placeholder="Username"
+                                    :readonly="loading" :rules="[required]" class="mb-2" clearable density="compact">
 
                                     <template v-slot:prepend>
                                         <v-icon>
@@ -59,7 +59,7 @@
 
                                 </v-text-field>
 
-                                <v-text-field v-model="password" :readonly="loading" :rules="[required]"
+                                <v-text-field v-model="password" ref="passwordInput" :readonly="loading" :rules="[required]"
                                     placeholder="Password" density="compact" :type="passwordVisible ? 'text' : 'password'">
                                     <template v-slot:prepend>
                                         <v-icon>
@@ -97,16 +97,12 @@
                                         </label>
                                     </div>
 
-                                    <a href="#" class="link-danger link-offset-2 text-decoration-none">
-                                        Forgot password
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                            class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd"
-                                                d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z" />
-                                            <path
-                                                d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z" />
-                                        </svg>
-                                    </a>
+                                    <v-btn variant="plain" size="x-small" @click="passwordRecoverDialog = true">
+                                        <span class="material-symbols-outlined">
+                                            restart_alt
+                                        </span>
+                                        Forgot password?
+                                    </v-btn>
                                 </div>
 
                                 <br>
@@ -123,10 +119,10 @@
                 </v-row>
             </v-container>
 
-            <v-snackbar v-model="alert" :timeout="3000" location="top" color="warning">
-                {{ errorContent }}
+            <v-snackbar v-model="alert" :timeout="3000" location="top" color="orange-darken-4">
+                <span class="fs-5">{{ errorContent }}</span>
                 <template v-slot:actions>
-                    <v-btn color="pink" variant="text" @click="alert = false">
+                    <v-btn variant="tonal" @click="alert = false">
                         Close
                     </v-btn>
                 </template>
@@ -134,7 +130,43 @@
 
 
 
+            <!-- Password recovery -->
+            <v-dialog v-model="passwordRecoverDialog" width="400">
+                <v-card>
+                    <v-card-text>
+                        <p>Type your email below</p>
+                        <v-text-field v-model="emailPasswordRecover" density="compact" hide-details="auto"
+                            label="Email address" placeholder="example@example.com" type="email" class="mb-3">
+                            
+                            <template v-slot:prepend>
+                                <v-icon>
+                                    <span class="material-symbols-outlined">
+                                        mail
+                                    </span>
+                                </v-icon>
+                            </template>
 
+                        </v-text-field>
+                        <v-btn block color="success" @click="passwordReset()">Recover password</v-btn>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn color="primary" block @click="passwordRecoverDialog = false">Close</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
+            <v-dialog v-model="passwordRecoverDialogConfirm" width="auto">
+                <v-card>
+                    <v-card-text>
+                        Email has been sent to {{ emailPasswordRecover }}. Please check your email box (mail might be in
+                        spam).
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn color="primary" block @click="passwordRecoverDialogConfirm = false">Close</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <!-- Password recovery -->
 
         </v-main>
 
@@ -172,6 +204,9 @@ export default {
         alert: false,
         errorContent: '',
 
+        emailPasswordRecover: '',
+        passwordRecoverDialog: false,
+        passwordRecoverDialogConfirm: false,
 
     }),
 
@@ -179,6 +214,19 @@ export default {
         passwordIcon() {
             return this.passwordVisible ? this.eyeIcon : this.eyeOffIcon;
         },
+    },
+
+    mounted() {
+        const cookie_username = Cookies.get('username');
+        const cookie_password = Cookies.get('password');
+
+        if (cookie_username && cookie_password) {
+            this.$refs.usernameInput.value = cookie_username;
+            this.$refs.passwordInput.value = cookie_password;
+
+            this.$refs.usernameInput.dispatchEvent(new Event('input'));
+            this.$refs.passwordInput.dispatchEvent(new Event('input'));
+        }
     },
 
     methods: {
@@ -195,6 +243,12 @@ export default {
             return !!v || 'Field is required'
         },
 
+        passwordReset() {
+            this.passwordRecoverDialog = false;
+            this.passwordRecoverDialogConfirm = true;
+
+        },
+
 
 
         async login() {
@@ -209,12 +263,8 @@ export default {
             };
 
             const response = await axios.post('api/v1/login/', data)
-            console.log(response.data)
 
             if (response.data.error) {
-                this.isButtonDisabled = false;
-                this.dataError = response.data.error;
-
                 // alert
                 this.errorContent = response.data.error;
                 this.alert = true;
