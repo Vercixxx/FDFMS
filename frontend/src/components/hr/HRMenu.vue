@@ -1,6 +1,4 @@
 <template>
-
-
     <v-list-item>
         <v-btn block @click="handleButtonClick('HomeComponent')">
             <span class="material-symbols-outlined">
@@ -54,9 +52,53 @@ export default {
                         },
                     ],
                 },
-                { name: 'Statistics' },
-                { name: 'HR data' },
-                { name: 'Messages' },
+
+                {
+                    name: 'Statistics',
+                    options: [
+                        {
+                            name: 'Drivers statistics',
+                            click: 'AddUserComponent',
+                            icon: '<span class="material-symbols-outlined">add</span>',
+                        },
+                        {
+                            name: 'Managers statistics',
+                            click: 'ModifyUserComponent',
+                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                        },
+                    ],
+                },
+
+                {
+                    name: 'Hr data',
+                    options: [
+                        {
+                            name: 'Overtime',
+                            click: 'AddUserComponent',
+                            icon: '<span class="material-symbols-outlined">add</span>',
+                        },
+                        {
+                            name: 'Vacation',
+                            click: 'ModifyUserComponent',
+                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                        },
+                    ],
+                },
+                {
+                    name: 'Messages',
+                    options: [
+                        {
+                            name: 'Create',
+                            click: 'AddUserComponent',
+                            icon: '<span class="material-symbols-outlined">add</span>',
+                        },
+                        {
+                            name: 'Show log',
+                            click: 'ModifyUserComponent',
+                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                        },
+                    ],
+                },
             ]
 
         };

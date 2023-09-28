@@ -69,22 +69,22 @@ export default {
             const selectedRole = document.querySelector('input[name="vbtn-radio"]:checked').value;
             switch (selectedRole) {
                 case 'HR':
-                    this.$parent.showAddHrComponent();
+                    this.$root.changeCurrentComponent('AddHrComponent');
                     break;
                 case 'Payroll':
-                    this.$parent.showAddPayrollComponent();
+                    this.$root.changeCurrentComponent('AddPayrollComponent');
                     break;
                 case 'Asset':
-                    this.$parent.showAddAssetComponent();
+                    this.$root.changeCurrentComponent('AddAssetComponent');
                     break;
                 case 'Client':
-                    this.$parent.showAddClientComponent();
+                    this.$root.changeCurrentComponent('AddClientComponent');
                     break;
                 case 'Manager':
-                    this.$parent.showAddManagerComponent();
+                    this.$root.changeCurrentComponent('AddManagerComponent');
                     break;
                 case 'Driver':
-                    this.$parent.showAddDriverComponent();
+                    this.$root.changeCurrentComponent('AddDriverComponent');
                     break;
                 default:
                     break

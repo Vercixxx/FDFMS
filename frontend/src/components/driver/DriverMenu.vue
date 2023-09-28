@@ -1,6 +1,4 @@
 <template>
-
-
     <v-list-item>
         <v-btn block @click="handleButtonClick('HomeComponent')">
             <span class="material-symbols-outlined">
@@ -40,18 +38,18 @@ export default {
         return {
             buttons: [
                 {
-                    name: 'restaurants',
+                    name: 'Cars',
                     options: [
-                        {
-                            name: 'add',
-                            click: 'ClientsAddClientComponent',
-                            icon: '<span class="material-symbols-outlined">add</span>',
-                        },
-                        {
-                            name: 'modify',
-                            click: 'ClientsModifyClientComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
-                        },
+                        // {
+                        //     name: 'add',
+                        //     click: 'AddUserComponent',
+                        //     icon: '<span class="material-symbols-outlined">add</span>',
+                        // },
+                        // {
+                        //     name: 'modify',
+                        //     click: 'ModifyUserComponent',
+                        //     icon: ' <span class="material-symbols-outlined">edit</span>',
+                        // },
                     ],
                 },
             ]

@@ -29,7 +29,7 @@
                     <!-- Log out -->
                     <v-col cols="4" align="end">
                         <v-col cols="auto">
-                            <v-dialog transition="dialog-top-transition" width="auto">
+                            <v-dialog transition="dialog-top-transition" width="400">
                                 <template v-slot:activator="{ props }">
                                     <v-btn v-bind="props" variant="tonal">
                                         <span class="material-symbols-outlined">
@@ -40,36 +40,31 @@
                                 </template>
                                 <template v-slot:default="{ isActive }">
                                     <v-card>
-                                        <v-toolbar>
-                                            <v-row no-gutters class="text-warning">
-                                                <!-- Lewa skrajna kolumna -->
-                                                <v-col cols="2" class="text-start">
-                                                    <span class="material-symbols-outlined">
-                                                        warning
-                                                    </span>
-                                                </v-col>
+                                        <div class="text-warning text-h6 text-md-h5 text-lg-h4">
 
-                                                <!-- Środkowa kolumna -->
-                                                <v-col cols="8"
-                                                    class="text-center d-flex align-items-center justify-content-center fs-4">
-                                                    <div>Logout</div>
-                                                </v-col>
-
-                                                <!-- Prawa skrajna kolumna -->
-                                                <v-col cols="2" class="text-end">
-                                                    <span class="material-symbols-outlined">
-                                                        warning
-                                                    </span>
-                                                </v-col>
-                                            </v-row>
-                                        </v-toolbar>
-                                        <v-card-text>
-                                            <div class="text-h2 pa-12">Are you sure?</div>
-                                        </v-card-text>
-                                        <v-card-actions class="justify-center">
-                                            <v-btn variant="outlined" @click="isActive.value = false">No</v-btn>
-                                            <v-btn variant="outlined" @click="logout" color="red">Yes</v-btn>
-                                        </v-card-actions>
+                                            <div class="d-flex justify-content-between align-items-center px-4 pt-4">
+                                                <span class="material-symbols-outlined">
+                                                    warning
+                                                </span>
+                                                <span>
+                                                    Logout
+                                                </span>
+                                                <span class="material-symbols-outlined">
+                                                    warning
+                                                </span>
+                                            </div>
+                                            <hr>
+                                        </div>
+                                        
+                                        <div class="h2 text-h6 text-md-h5 text-lg-h4" align="center">
+                                            Are you sure?
+                                        </div>
+                                        <hr>
+                                        
+                                        <div class="justify-center d-flex align-items-center mb-3">
+                                            <v-btn variant="outlined" width="150" class="mr-5" @click="isActive.value = false">No</v-btn>
+                                            <v-btn  width="150" @click="logout" color="red">Yes</v-btn>
+                                        </div>
                                     </v-card>
                                 </template>
                             </v-dialog>
@@ -136,7 +131,7 @@
 import { useTheme } from 'vuetify'
 import { drawer, closeDrawer } from '../store/store.js';
 import useEventsBus from '../plugins/eventBus.js'
-const {emit}=useEventsBus()
+const { emit } = useEventsBus()
 
 const toggleDrawer = () => {
     drawer.value = !drawer.value
@@ -148,7 +143,7 @@ let actualTheme = theme.global.current.value.dark
 function toggleTheme() {
     theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
     actualTheme = theme.global.current.value.dark
-    emit('theme',actualTheme)
+    emit('theme', actualTheme)
 }
 
 </script>
@@ -163,6 +158,7 @@ const NonReactiveHome = markRaw(Home);
 // Home components
 
 // Navigation Bars
+import AdminNav from '../components/admin/AdminMenu.vue'
 import ClientsNav from "../components/clients/ClientsMenu.vue"
 import HRNav from "../components/hr/HRMenu.vue"
 // Navigation Bars
@@ -170,6 +166,12 @@ import HRNav from "../components/hr/HRMenu.vue"
 // HR
 import AddUser from '../components/hr/AddUser.vue';
 import ModifyUser from '../components/hr/ModifyUser.vue';
+import HrUser from '../components/hr/users/AddHr.vue';
+import PayrollUser from '../components/hr/users/AddPayroll.vue';
+import AssetUser from '../components/hr/users/AddAsset.vue';
+import ClientUser from '../components/hr/users/AddClient.vue';
+import ManagerUser from '../components/hr/users/AddManager.vue';
+import DriverUser from '../components/hr/users/AddDriver.vue';
 // HR
 
 // Clients
@@ -198,6 +200,13 @@ export default {
                 this[functionName]();
             }
         };
+
+        // Check for messages
+        const message = localStorage.getItem('message');
+        if (message) {
+            console.log(message);
+            localStorage.removeItem('message');
+        }
     },
 
 
@@ -220,7 +229,7 @@ export default {
                 case "Clients":
                     return ClientsNav;
                 case "HR":
-                    return HRNav;
+                    return AdminNav;
 
                 default:
                     return null;
@@ -239,12 +248,31 @@ export default {
         ModifyUserComponent() {
             this.currentComponent = ModifyUser
         },
+        AddHrComponent() {
+            this.currentComponent = HrUser;
+        },
+        AddPayrollComponent() {
+            this.currentComponent = PayrollUser;
+        },
+        AddAssetComponent() {
+            this.currentComponent = AssetUser;
+        },
+        AddClientComponent() {
+            this.currentComponent = ClientUser;
+        },
+        AddManagerComponent() {
+            this.currentComponent = ManagerUser;
+        },
+        AddDriverComponent() {
+            this.currentComponent = DriverUser;
+        },
+
 
         // Clients
-        AddClientComponent() {
+        ClientsAddClientComponent() {
             this.currentComponent = AddClient
         },
-        ModifyClientComponent() {
+        ClientsModifyClientComponent() {
             this.currentComponent = ShowClients
         },
 
