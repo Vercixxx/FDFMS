@@ -76,13 +76,13 @@
                             <!-- Country and City -->
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                    v-model="selectedCountry" @update:search="getCities">
+                                    v-model="resSelectedCountry" @update:search="getCities('residence')">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6">
-                                <v-autocomplete label="State" :items="citiesList" variant="outlined" v-model="selectedCity"
-                                    :disabled="selectedCountry === ''">
+                                <v-autocomplete label="State" :items="resCitiesList" variant="outlined"
+                                    v-model="resSelectedState" :disabled="resSelectedCountry === ''">
                                 </v-autocomplete>
                             </v-col>
                             <!-- Country and City -->
@@ -122,6 +122,21 @@
                         <span :style="{ display: show_corespondece ? 'none' : 'block' }">
                             <p align="center" class="text-h6 text-md-h5 text-lg-h4">Correspondence address</p>
                             <v-row>
+
+                                <!-- Country and City -->
+                                <v-col cols="12" sm="6">
+                                    <v-autocomplete label="Country" :items="allCountries" variant="outlined"
+                                        v-model="corSelectedCountry" @update:search="getCities('correspodence')">
+                                    </v-autocomplete>
+                                </v-col>
+
+                                <v-col cols="12" sm="6">
+                                    <v-autocomplete label="State" :items="corCitiesList" variant="outlined"
+                                        v-model="corSelectedState" :disabled="corSelectedCountry === ''">
+                                    </v-autocomplete>
+                                </v-col>
+                                <!-- Country and City -->
+
                                 <v-col cols="12" sm="6" v-for="input in correspodenceAddress" :key="input.name">
 
                                     <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
@@ -160,6 +175,21 @@
                         <span :style="{ display: show_registered ? 'none' : 'block' }">
                             <p align="center" class="text-h6 text-md-h5 text-lg-h4">Registered address</p>
                             <v-row>
+
+                                <!-- Country and City -->
+                                <v-col cols="12" sm="6">
+                                    <v-autocomplete label="Country" :items="allCountries" variant="outlined"
+                                        v-model="regSelectedCountry" @update:search="getCities('registered')">
+                                    </v-autocomplete>
+                                </v-col>
+
+                                <v-col cols="12" sm="6">
+                                    <v-autocomplete label="State" :items="regCitiesList" variant="outlined"
+                                        v-model="regSelectedState" :disabled="regSelectedCountry === ''">
+                                    </v-autocomplete>
+                                </v-col>
+                                <!-- Country and City -->
+
                                 <v-col cols="12" sm="6" v-for="input in registeredAddress" :key="input.name">
 
                                     <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
@@ -200,78 +230,9 @@
                 </v-form>
 
 
-
-
-
-
-
-
-
             </div>
 
         </div>
-
-        <!-- Message modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ErrorModal" id="hiddenButton"
-            style="display: none;">
-        </button>
-        <div class="modal fade" id="ErrorModal" tabindex="-1" aria-labelledby="ErrorModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <!-- Error -->
-                    <div v-if="dataError" class="modal-header d-flex justify-content-between">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red"
-                            class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-                            <path
-                                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-                            <path
-                                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-                        </svg>
-                        <h1 class="modal-title fs-5 text-danger" id="confirmModalLabel">
-                            Error
-                        </h1>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red"
-                            class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-                            <path
-                                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-                            <path
-                                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-                        </svg>
-                    </div>
-                    <!-- Error -->
-
-                    <!-- Success -->
-                    <div v-else class="modal-header">
-                        <h1 class="modal-title fs-5" id="ErrorModalLabel">
-                            <p>Success!</p>
-                        </h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <!-- Success -->
-
-                    <div class="modal-body text-center text-danger">
-                        <div v-for="(messages, field) in dataError" :key="field">
-                            <p v-for="message in messages" :key="message">{{ field }} - {{ message }}</p>
-                        </div>
-
-                        <div v-if="dataCorrect">
-                            <p class="text-success">
-                                Succesfully created {{ dataCorrect.username }} account
-                            </p>
-                        </div>
-
-
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary fs-5 w-25" data-bs-dismiss="modal">
-                            Ok
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <!-- Message modal -->
 
 
         <!-- Message -->
@@ -313,11 +274,6 @@ import { useTheme } from 'vuetify'
 export default {
     data() {
         return {
-
-
-            fetched_data: {},
-            dataError: null,
-            dataCorrect: null,
 
             user_role: null,
 
@@ -384,21 +340,11 @@ export default {
             ],
 
             residenceAddress: [
-                // {
-                //     name: 'Country',
-                //     model: 'residence_country',
-                //     required: true,
-                // },
                 {
                     name: 'City',
                     model: 'residence_city',
                     required: true,
                 },
-                // {
-                //     name: 'State',
-                //     model: 'residence_state',
-                //     required: true,
-                // },
                 {
                     name: 'Street',
                     model: 'residence_street',
@@ -423,18 +369,8 @@ export default {
 
             correspodenceAddress: [
                 {
-                    name: 'Country',
-                    model: 'correspodence_country',
-                    required: false,
-                },
-                {
                     name: 'City',
                     model: 'correspodence_city',
-                    required: false,
-                },
-                {
-                    name: 'State',
-                    model: 'correspodence_state',
                     required: false,
                 },
                 {
@@ -461,18 +397,8 @@ export default {
 
             registeredAddress: [
                 {
-                    name: 'Country',
-                    model: 'registered_country',
-                    required: false,
-                },
-                {
                     name: 'City',
                     model: 'registered_city',
-                    required: false,
-                },
-                {
-                    name: 'State',
-                    model: 'registered_state',
                     required: false,
                 },
                 {
@@ -512,9 +438,18 @@ export default {
             successContent: '',
 
             allCountries: [],
-            selectedCountry: '',
-            citiesList: [],
-            selectedCity: '',
+
+            resSelectedCountry: '',
+            corSelectedCountry: '',
+            regSelectedCountry: '',
+
+            resCitiesList: [],
+            corCitiesList: [],
+            regCitiesList: [],
+
+            resSelectedState: '',
+            corSelectedState: '',
+            regSelectedState: '',
 
 
         };
@@ -596,6 +531,15 @@ export default {
                     const fieldCor = this.correspodenceAddress[i];
                     this.input_data[fieldCor.model] = this.input_data[fieldRes.model];
                 }
+                // Adding country and state
+                this.input_data['correspondence_country'] = this.resSelectedCountry;
+                this.input_data['correspondence_state'] = this.resSelectedState;
+
+            }
+            else {
+                // Adding country and state
+                this.input_data['correspondence_country'] = this.corSelectedCountry;
+                this.input_data['correspondence_state'] = this.corSelectedState;
             }
         },
 
@@ -606,12 +550,25 @@ export default {
                     const fieldReg = this.registeredAddress[i];
                     this.input_data[fieldReg.model] = this.input_data[fieldRes.model];
                 }
+                // Adding country and state
+                this.input_data['registered_country'] = this.resSelectedCountry;
+                this.input_data['registered_state'] = this.resSelectedState;
+
+            }
+            else {
+                // Adding country and state
+                this.input_data['registered_country'] = this.regSelectedCountry;
+                this.input_data['registered_state'] = this.regSelectedState;
             }
         },
 
         getDataFromInputs() {
             this.copyResidenceToCorrespondence();
             this.copyResidenceToRegistered();
+
+            // Check correspodence switch
+
+
             for (const field of this.allInputs) {
                 if (typeof this.input_data[field.model] === 'string') {
                     this.input_data[field.model] = this.input_data[field.model].trim();
@@ -620,7 +577,12 @@ export default {
                     this.input_data[field.model] = null;
                 }
             }
-            // console.log(JSON.stringify(this.input_data, null, 2));
+
+            // Adding country and state
+            this.input_data['residence_country'] = this.resSelectedCountry;
+            this.input_data['residence_state'] = this.resSelectedState;
+
+            console.log(JSON.stringify(this.input_data, null, 2));
         },
         generateUsername() {
             let firstName = '';
@@ -652,10 +614,27 @@ export default {
             this.allCountries = response.data;
         },
 
-        async getCities() {
-            const response = await axios.get(`api/users/get-cities/${this.selectedCountry}/`);
-            this.citiesList = response.data;
-            console.log(response.data);
+        async getCities(country) {
+            const propertyMap = {
+                residence: this.resSelectedCountry,
+                correspodence: this.corSelectedCountry,
+                registered: this.regSelectedCountry,
+            };
+
+            const choosen_country = propertyMap[country];
+            const response = await axios.get(`api/users/get-cities/${choosen_country}/`);
+
+            switch (country) {
+                case ('residence'):
+                    this.resCitiesList = response.data
+                    break;
+                case ('correspodence'):
+                    this.corCitiesList = response.data
+                    break;
+                case ('registered'):
+                    this.regCitiesList = response.data
+                    break;
+            }
         },
 
 
@@ -665,13 +644,12 @@ export default {
 
             const response = await axios.post('api/create/', this.input_data);
 
-            console.log("Response data below xd")
-            console.log(response)
+            console.log(response);
 
             if (response.data.message) {
-                this.successContent = response.data,
-                    this.alertSuccess = true,
-                    this.resetForm();
+                localStorage.setItem('message', response.data);
+                this.$root.changeCurrentComponent('AddHrComponent');
+
             }
             else {
                 this.errorContent = response.data;
