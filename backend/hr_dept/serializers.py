@@ -78,7 +78,7 @@ class AddHRUserSerializer(serializers.ModelSerializer):
 
 
     def save(self):
-        request_data = self.initial_data  # Używamy initial_data, aby uzyskać dane z zapytania
+        request_data = self.initial_data
         account_data = {
             'user_role': 'HR',
             'email': self.validated_data.get('email', None),

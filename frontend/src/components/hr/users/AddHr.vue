@@ -1,5 +1,7 @@
 <template>
-    <div>
+    <v-app class="grey--text text--darken-2">
+
+        <!-- image="https://picsum.photos/1920/1080?random" -->
         <div class="containter m-2 p-2 d-flex justify-content-center">
             <div class="col-12 col-md-9">
 
@@ -23,7 +25,8 @@
 
 
                 <v-form v-model="form" @submit.prevent="onSubmit">
-                    <v-container class=" mb-5 bg-green-lighten-5 rounded-xl elevation-5">
+                    <v-container class=" mb-5  rounded-xl elevation-5"
+                        :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
 
                         <div class="fw-light">
                             <span class="filled-star-example"></span> - field required
@@ -69,6 +72,21 @@
 
                         <p align="center" class="text-h6 text-md-h5 text-lg-h4">Residence address</p>
                         <v-row>
+
+                            <!-- Country and City -->
+                            <v-col cols="12" sm="6">
+                                <v-autocomplete label="Country" :items="allCountries" variant="outlined"
+                                    v-model="selectedCountry" @update:search="getCities">
+                                </v-autocomplete>
+                            </v-col>
+
+                            <v-col cols="12" sm="6">
+                                <v-autocomplete label="State" :items="citiesList" variant="outlined" v-model="selectedCity"
+                                    :disabled="selectedCountry === ''">
+                                </v-autocomplete>
+                            </v-col>
+                            <!-- Country and City -->
+
                             <v-col cols="12" sm="6" v-for="input in residenceAddress" :key="input.name">
 
                                 <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
@@ -100,14 +118,78 @@
                         <!-- Show correspondence -->
 
 
+                        <!-- Correspondence address -->
+                        <span :style="{ display: show_corespondece ? 'none' : 'block' }">
+                            <p align="center" class="text-h6 text-md-h5 text-lg-h4">Correspondence address</p>
+                            <v-row>
+                                <v-col cols="12" sm="6" v-for="input in correspodenceAddress" :key="input.name">
+
+                                    <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
+                                        :readonly="input.readonly || false" :hint="input.hint || undefined"
+                                        :rules="input.required ? [required] : []">
+
+                                        <!-- Star sign -->
+                                        <template v-slot:append-inner>
+                                            <div v-if="input.required" class="filled-star">
+                                            </div>
+                                        </template>
+                                        <!-- Star sign -->
+
+                                    </v-text-field>
+
+                                </v-col>
+                            </v-row>
+                        </span>
+                        <!-- Correspondence address -->
+
+
+                        <!-- Show Registered -->
+                        <v-row class="d-flex justify-center">
+                            <v-col cols="auto">
+                                <v-switch v-model="show_registered" hide-details inset color="success"></v-switch>
+                            </v-col>
+
+                            <v-col cols="auto" class="d-flex align-center">
+                                Registered address same as residence address
+                            </v-col>
+                        </v-row>
+                        <!-- Show Registered -->
+
+
+                        <!-- Registered address -->
+                        <span :style="{ display: show_registered ? 'none' : 'block' }">
+                            <p align="center" class="text-h6 text-md-h5 text-lg-h4">Registered address</p>
+                            <v-row>
+                                <v-col cols="12" sm="6" v-for="input in registeredAddress" :key="input.name">
+
+                                    <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
+                                        :readonly="input.readonly || false" :hint="input.hint || undefined"
+                                        :rules="input.required ? [required] : []">
+
+                                        <!-- Star sign -->
+                                        <template v-slot:append-inner>
+                                            <div v-if="input.required" class="filled-star">
+                                            </div>
+                                        </template>
+                                        <!-- Star sign -->
+
+                                    </v-text-field>
+
+                                </v-col>
+                            </v-row>
+                        </span>
+                        <!-- Registered address -->
+
+
+
                         <!-- Button submit -->
                         <span>
                             <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
                                 Fill all required fields first
                             </v-tooltip>
                             <span>
-                                <v-btn :disabled="!form" :loading="loading" block color="success" size="large"
-                                    type="submit">
+                                <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
+                                    @click="createUser">
                                     Create
                                 </v-btn>
                             </span>
@@ -117,297 +199,14 @@
                     </v-container>
                 </v-form>
 
-                <form action="" method="post" class="border rounded-3 p-3" @submit.prevent="createUser">
-
-                    <div class="form-check form-switch" id="switch1">
-                        <input class="form-check-input toggleSwitch" type="checkbox" v-model="show_corespondece_form">
-                        <div class="fs-6 ms-2 fw-semibold mx-auto p-2">
-                            Correspodence address same as residence address
-                        </div>
-                        <div class="slider" :class="{ active: show_corespondece_form }"></div>
-                    </div>
-
-
-                    <!-- Correspodence address form -->
-                    <div :style="{ display: show_corespondece_form ? 'none' : 'block' }">
-
-                        <div class="border border-2 p-2 text-center my-5 fw-bolder shadow">
-                            Addres for correspodence
-                        </div>
-
-
-                        <!-- Correspodence address Country -->
-                        <div class="input-group mb-3">
-                            <div
-                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                Country
-                            </div>
-                            <div class="col-9 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="cor_country"
-                                    aria-describedby="cor_country" v-model="corCountry"
-                                    :class="{ 'border border-danger': dataError && dataError['corCountry'] }">
-                            </div>
-                        </div>
-                        <!-- Correspodence address Country -->
-
-
-                        <!-- Correspodence address City -->
-                        <div class="input-group mb-3">
-                            <div
-                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                City
-                            </div>
-                            <div class="col-9 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="cor_city"
-                                    aria-describedby="cor_city" v-model="corCity"
-                                    :class="{ 'border border-danger': dataError && dataError['corCity'] }">
-                            </div>
-                        </div>
-                        <!-- Correspodence address City -->
-
-
-                        <!-- Correspodence address State -->
-                        <div class="input-group mb-3">
-                            <div
-                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                State
-                            </div>
-                            <div class="col-9 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="cor_state"
-                                    aria-describedby="cor_state" v-model="corState"
-                                    :class="{ 'border border-danger': dataError && dataError['corState'] }">
-                            </div>
-                        </div>
-                        <!-- Correspodence address State -->
-
-
-                        <!-- Correspodence address Street -->
-                        <div class="input-group mb-3">
-                            <div
-                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                Street
-                            </div>
-                            <div class="col-9 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="cor_street"
-                                    aria-describedby="cor_street" v-model="corStreet"
-                                    :class="{ 'border border-danger': dataError && dataError['corStreet'] }">
-                            </div>
-                        </div>
-                        <!-- Correspodence address Street -->
-
-
-                        <div class="input-group mb-3 gx-0">
-
-                            <!-- Correspodence address Home number -->
-                            <div class="input-group">
-                                <div
-                                    class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                    Home
-                                </div>
-                                <div class="col-4 d-flex align-items-center">
-                                    <input type="text" class="form-control rounded-0 rounded-end me-2"
-                                        aria-label="cor_homeNumber" aria-describedby="cor_homeNumber"
-                                        v-model="corHomeNumber"
-                                        :class="{ 'border border-danger': dataError && dataError['corHomeNumber'] }">
-                                </div>
-                                <!-- Correspodence address Home number -->
-
-
-                                <!-- Correspodence address Apartament number -->
-                                <div
-                                    class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                    Apartament
-                                </div>
-                                <div class="col-4 d-flex align-items-center">
-                                    <input type="text" class="form-control rounded-0 rounded-end"
-                                        aria-label="cor_apartamentNumber" aria-describedby="cor_apartamentNumber"
-                                        v-model="corApartamentNumber"
-                                        :class="{ 'border border-danger': dataError && dataError['corApartamentNumber'] }">
-                                </div>
-                                <!-- Correspodence address Apartament number -->
-                            </div>
-
-                        </div>
-
-
-                        <!-- Correspodence Zip code -->
-                        <div class="input-group mb-3">
-                            <div
-                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                Zip code
-                            </div>
-                            <div class="col-9 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="cor_zipCode"
-                                    aria-describedby="cor_zipCode" v-model="corZipCode"
-                                    :class="{ 'border border-danger': dataError && dataError['corZipCode'] }">
-                            </div>
-                        </div>
-                        <!-- Correspodence Zip code -->
-
-                    </div>
-                    <!-- Correspodence address form -->
 
 
 
 
 
-                    <div class="form-check form-switch" id="switch2">
-                        <input class="form-check-input toggleSwitch" type="checkbox" v-model="show_registered_form">
-                        <div class="fs-6 ms-2 text-wrap fw-semibold mx-auto p-2">
-                            Registered address same as residence address
-                        </div>
-                        <div class="slider" :class="{ active: show_registered_form }"></div>
-                    </div>
-
-                    <!-- Registered address form -->
-                    <div :style="{ display: show_registered_form ? 'none' : 'block' }">
-
-                        <div class="border border-2 p-2 text-center my-5 fw-bolder shadow">
-                            Registered address
-                        </div>
 
 
-                        <!-- Registered address Country -->
-                        <div class="input-group mb-3">
-                            <div
-                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                Country
-                            </div>
-                            <div class="col-9 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="reg_country"
-                                    aria-describedby="reg_country" v-model="regCountry"
-                                    :class="{ 'border border-danger': dataError && dataError['regCountry'] }">
-                            </div>
-                        </div>
-                        <!-- Registered address Country -->
 
-
-                        <!-- Registered address City -->
-                        <div class="input-group mb-3">
-                            <div
-                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                City
-                            </div>
-                            <div class="col-9 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="reg_city"
-                                    aria-describedby="reg_city" v-model="regCity"
-                                    :class="{ 'border border-danger': dataError && dataError['regCity'] }">
-                            </div>
-                        </div>
-                        <!-- Registered address City -->
-
-
-                        <!-- Registered address State -->
-                        <div class="input-group mb-3">
-                            <div
-                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                State
-                            </div>
-                            <div class="col-9 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="reg_state"
-                                    aria-describedby="reg_state" v-model="regState"
-                                    :class="{ 'border border-danger': dataError && dataError['regState'] }">
-                            </div>
-                        </div>
-                        <!-- Registered address State -->
-
-
-                        <!-- Registered address Street -->
-                        <div class="input-group mb-3">
-                            <div
-                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                Street
-                            </div>
-                            <div class="col-9 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="reg_street"
-                                    aria-describedby="reg_street" v-model="regStreet"
-                                    :class="{ 'border border-danger': dataError && dataError['regStreet'] }">
-                            </div>
-                        </div>
-                        <!-- Registered address Street -->
-
-
-                        <div class="input-group mb-3 gx-0">
-
-                            <!-- Registered address Home number -->
-                            <div class="input-group">
-                                <div
-                                    class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                    Home
-                                </div>
-                                <div class="col-4 d-flex align-items-center">
-                                    <input type="text" class="form-control rounded-0 rounded-end me-2"
-                                        aria-label="reg_homeNumber" aria-describedby="reg_homeNumber"
-                                        v-model="regHomeNumber"
-                                        :class="{ 'border border-danger': dataError && dataError['regHomeNumber'] }">
-                                </div>
-                                <!-- Registered address Home number -->
-
-
-                                <!-- Registered address Apartament number -->
-                                <div
-                                    class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                    Apartament
-                                </div>
-                                <div class="col-4 d-flex align-items-center">
-                                    <input type="text" class="form-control rounded-0 rounded-end"
-                                        aria-label="reg_apartamentNumber" aria-describedby="reg_apartamentNumber"
-                                        v-model="regApartamentNumber"
-                                        :class="{ 'border border-danger': dataError && dataError['regApartamentNumber'] }">
-                                </div>
-                                <!-- Registered address Apartament number -->
-                            </div>
-
-                        </div>
-
-
-                        <!-- Registered Zip code -->
-                        <div class="input-group mb-3">
-                            <div
-                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
-                                Zip code
-                            </div>
-                            <div class="col-9 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="reg_zipCode"
-                                    aria-describedby="reg_zipCode" v-model="regZipCode"
-                                    :class="{ 'border border-danger': dataError && dataError['regZipCode'] }">
-                            </div>
-                        </div>
-                        <!-- Registered Zip code -->
-                    </div>
-
-
-                    <div class="text-center">
-                        <button v-if="user_role === null" type="submit" class="btn btn-success shadow" @click="createUser"
-                            :disabled="!form" :class="{ 'btn-outline-danger': !isFormValid }">
-                            <span class="d-flex align-items-center">
-                                Create
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                    class="bi bi-person-add ms-2" viewBox="0 0 16 16">
-                                    <path
-                                        d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0Zm-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
-                                    <path
-                                        d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z" />
-                                </svg>
-                            </span>
-                        </button>
-
-
-                        <!-- Button when editing existing user -->
-                        <button v-else type="button" class="btn btn-success shadow" @click="updateUser">
-                            <span class="d-flex align-items-center">
-                                Save
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                    class="bi bi-floppy ms-2" viewBox="0 0 16 16">
-                                    <path d="M11 2H9v3h2V2Z" />
-                                    <path
-                                        d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0ZM1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5Zm3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4v4.5ZM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5V15Z" />
-                                </svg>
-                            </span>
-                        </button>
-                        <!-- Button when editing existing user -->
-                    </div>
-                </form>
             </div>
 
         </div>
@@ -474,59 +273,51 @@
         </div>
         <!-- Message modal -->
 
-    </div>
+
+        <!-- Message -->
+        <v-snackbar v-model="alertSuccess" :timeout="3000" location="top" color="success">
+            <p class="fs-6" v-for="(content, field) in successContent" :key="name">
+                {{ field }} : {{ content.join(', ') }}
+            </p>
+            <template v-slot:actions>
+                <v-btn variant="tonal" @click="alertSuccess = false">
+                    Close
+                </v-btn>
+            </template>
+        </v-snackbar>
+
+        <!-- Error -->
+        <v-snackbar v-model="alert" :timeout="3000" location="top" color="orange-darken-4">
+            <p class="fs-6" v-for="(content, field) in errorContent" :key="name">
+                {{ field }} : {{ content.join(', ') }}
+            </p>
+            <template v-slot:actions>
+                <v-btn variant="tonal" @click="alert = false">
+                    Close
+                </v-btn>
+            </template>
+        </v-snackbar>
+        <!-- Error -->
+        <!-- Message -->
+
+
+    </v-app>
 </template>
 
 <script>
 import axios from 'axios';
+import useEventsBus from '../../../plugins/eventBus.js'
+import { ref, watch } from "vue";
+import { useTheme } from 'vuetify'
 
 export default {
     data() {
         return {
-            // password: '',
-            // password2: '',
-            // username: '',
-
-            // firstName: '',
-            // lastName: '',
-            // email: '',
-            // phone: '',
-            // identity: '',
-            // taxName: '',
-            // tax_address: '',
-            // nfz: '',
-            // bankAccount: '',
-
-            // resCountry: '',
-            // resCity: '',
-            // resState: '',
-            // resStreet: '',
-            // resHomeNumber: '',
-            // resApartamentNumber: '',
-            // resZipCode: '',
-
-            // corCountry: '',
-            // corCity: '',
-            // corState: '',
-            // corStreet: '',
-            // corHomeNumber: '',
-            // corApartamentNumber: '',
-            // corZipCode: '',
-
-            // regCountry: '',
-            // regCity: '',
-            // regState: '',
-            // regStreet: '',
-            // regHomeNumber: '',
-            // regApartamentNumber: '',
-            // regZipCode: '',
 
 
             fetched_data: {},
             dataError: null,
             dataCorrect: null,
-            show_corespondece_form: true,
-            show_registered_form: true,
 
             user_role: null,
 
@@ -563,7 +354,7 @@ export default {
                 },
                 {
                     name: 'PESEL/NIP',
-                    model: 'identity',
+                    model: 'pesel_nip',
                     required: true,
 
                 },
@@ -572,12 +363,12 @@ export default {
             taxAndHealth: [
                 {
                     name: 'Tax office name',
-                    model: 'tax_name',
+                    model: 'tax_office_name',
                     required: true,
                 },
                 {
                     name: 'Tax office address',
-                    model: 'tax_address',
+                    model: 'tax_office_address',
                     required: true,
                 },
                 {
@@ -587,27 +378,27 @@ export default {
                 },
                 {
                     name: 'Bank Account Number',
-                    model: 'bank_account',
+                    model: 'bank_account_number',
                     required: true,
                 },
             ],
 
             residenceAddress: [
-                {
-                    name: 'Country',
-                    model: 'residence_country',
-                    required: true,
-                },
+                // {
+                //     name: 'Country',
+                //     model: 'residence_country',
+                //     required: true,
+                // },
                 {
                     name: 'City',
                     model: 'residence_city',
                     required: true,
                 },
-                {
-                    name: 'State',
-                    model: 'residence_state',
-                    required: true,
-                },
+                // {
+                //     name: 'State',
+                //     model: 'residence_state',
+                //     required: true,
+                // },
                 {
                     name: 'Street',
                     model: 'residence_street',
@@ -621,7 +412,7 @@ export default {
                 {
                     name: 'Apartament',
                     model: 'residence_apartament_number',
-                    required: true,
+                    required: false,
                 },
                 {
                     name: 'Zip code',
@@ -630,18 +421,108 @@ export default {
                 },
             ],
 
-            show_corespondece: false,
+            correspodenceAddress: [
+                {
+                    name: 'Country',
+                    model: 'correspodence_country',
+                    required: false,
+                },
+                {
+                    name: 'City',
+                    model: 'correspodence_city',
+                    required: false,
+                },
+                {
+                    name: 'State',
+                    model: 'correspodence_state',
+                    required: false,
+                },
+                {
+                    name: 'Street',
+                    model: 'correspodence_street',
+                    required: false,
+                },
+                {
+                    name: 'Home',
+                    model: 'correspodence_home_number',
+                    required: false,
+                },
+                {
+                    name: 'Apartament',
+                    model: 'correspodence_apartament_number',
+                    required: false,
+                },
+                {
+                    name: 'Zip code',
+                    model: 'correspodence_zip_code',
+                    required: false,
+                },
+            ],
+
+            registeredAddress: [
+                {
+                    name: 'Country',
+                    model: 'registered_country',
+                    required: false,
+                },
+                {
+                    name: 'City',
+                    model: 'registered_city',
+                    required: false,
+                },
+                {
+                    name: 'State',
+                    model: 'registered_state',
+                    required: false,
+                },
+                {
+                    name: 'Street',
+                    model: 'registered_street',
+                    required: false,
+                },
+                {
+                    name: 'Home',
+                    model: 'registered_home_number',
+                    required: false,
+                },
+                {
+                    name: 'Apartament',
+                    model: 'registered_apartament_number',
+                    required: false,
+                },
+                {
+                    name: 'Zip code',
+                    model: 'registered_zip_code',
+                    required: false,
+                },
+            ],
+
+            show_corespondece: true,
+            show_registered: true,
 
             form: false,
             loading: false,
             input_data: {},
+            theme: true,
+
+            alert: false,
+            errorContent: '',
+
+            alertSuccess: false,
+            successContent: '',
+
+            allCountries: [],
+            selectedCountry: '',
+            citiesList: [],
+            selectedCity: '',
+
 
         };
     },
 
     computed: {
         allInputs() {
-            return [...this.basicInfoInputs, ...this.taxAndHealth, ...this.residenceAddress];
+            return [...this.basicInfoInputs, ...this.taxAndHealth, ...this.residenceAddress, ...this.correspodenceAddress, ...this.registeredAddress];
         },
     },
 
@@ -665,7 +546,32 @@ export default {
             // Correspodence and Register forms
 
         }
+
+        // Dark mode
+        const { bus } = useEventsBus();
+
+        watch(
+            () => bus.value.get('theme'),
+            (val) => {
+                const [themeBus] = val ?? [];
+                this.theme = themeBus;
+            }
+        );
+
+        const theme = useTheme();
+        this.theme = theme.global.current.value.dark;
+
+        // Get all Countries
+        this.getCountries();
+
+
     },
+
+    watch: {
+        'input_data.first_name': 'generateUsername',
+        'input_data.last_name': 'generateUsername',
+    },
+
 
 
     methods: {
@@ -683,7 +589,29 @@ export default {
             return !!v || 'Field is required';
         },
 
+        copyResidenceToCorrespondence() {
+            if (this.show_corespondece) {
+                for (let i = 0; i < this.residenceAddress.length; i++) {
+                    const fieldRes = this.residenceAddress[i];
+                    const fieldCor = this.correspodenceAddress[i];
+                    this.input_data[fieldCor.model] = this.input_data[fieldRes.model];
+                }
+            }
+        },
+
+        copyResidenceToRegistered() {
+            if (this.show_registered) {
+                for (let i = 0; i < this.residenceAddress.length; i++) {
+                    const fieldRes = this.residenceAddress[i];
+                    const fieldReg = this.registeredAddress[i];
+                    this.input_data[fieldReg.model] = this.input_data[fieldRes.model];
+                }
+            }
+        },
+
         getDataFromInputs() {
+            this.copyResidenceToCorrespondence();
+            this.copyResidenceToRegistered();
             for (const field of this.allInputs) {
                 if (typeof this.input_data[field.model] === 'string') {
                     this.input_data[field.model] = this.input_data[field.model].trim();
@@ -692,153 +620,69 @@ export default {
                     this.input_data[field.model] = null;
                 }
             }
-            console.log(JSON.stringify(this.input_data, null, 2));
+            // console.log(JSON.stringify(this.input_data, null, 2));
         },
+        generateUsername() {
+            let firstName = '';
+            let lastName = '';
+
+            if (this.input_data.first_name) {
+                firstName = this.input_data.first_name.slice(0, 3).toLowerCase();
+            }
+            if (this.input_data.last_name) {
+                lastName = this.input_data.last_name.slice(0, 3).toLowerCase();
+            }
+
+            let randomDigits = '';
+
+            if (this.input_data.first_name && this.input_data.first_name.length >= 3 && this.input_data.last_name && this.input_data.last_name.length >= 3) {
+                randomDigits = this.generateRandomDigits();
+            }
+
+            this.input_data.username = `${firstName}${lastName}${randomDigits}`;
+        },
+
 
         generateRandomDigits() {
             return Math.floor(100 + Math.random() * 900);
         },
-        updateUsername() {
-            if (this.user_role === null) {
-                const firstThreeChars = this.firstName.slice(0, 3).toLowerCase();
-                const lastThreeChars = this.lastName.slice(0, 3).toLowerCase();
-                const randomDigits = this.generateRandomDigits();
-                this.username = firstThreeChars + lastThreeChars + randomDigits;
-            }
-        },
-        generatePassword() {
-            const length = 8;
-            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=";
-            let result = '';
 
-            for (let i = 0; i < length; i++) {
-                const randomIndex = Math.floor(Math.random() * charset.length);
-                result += charset.charAt(randomIndex);
-            }
-            this.password = result;
-            this.password2 = result;
+        async getCountries() {
+            const response = await axios.get("api/users/get-countries/");
+            this.allCountries = response.data;
         },
+
+        async getCities() {
+            const response = await axios.get(`api/users/get-cities/${this.selectedCountry}/`);
+            this.citiesList = response.data;
+            console.log(response.data);
+        },
+
+
         async createUser() {
-            this.generatePassword()
 
-            const fetched_data = {
-                first_name: this.firstName,
-                last_name: this.lastName,
-                email: this.email,
-                phone: this.phone,
-                username: this.username,
-                password: this.password,
-                password2: this.password2,
-                user_role: 'HR',
+            this.input_data['user_role'] = 'HR'
 
-                pesel_nip: this.identity,
-                tax_office_name: this.taxName,
-                tax_office_address: this.tax_address,
-                nfz: this.nfz,
-                bank_account_number: this.bankAccount,
-                residence_country: this.resCountry,
-                residence_city: this.resCity,
-                residence_state: this.resState,
-                residence_street: this.resStreet,
-                residence_home_number: this.resHomeNumber,
-                residence_apartament_number: this.resApartamentNumber,
-                residence_zip_code: this.resZipCode,
-            }
+            const response = await axios.post('api/create/', this.input_data);
 
-            //Corespondence addres
-            if (this.show_corespondece_form) {
-                fetched_data.correspondence_country = this.resCountry;
-                fetched_data.correspondence_city = this.resCity;
-                fetched_data.correspondence_state = this.resState;
-                fetched_data.correspondence_street = this.resStreet;
-                fetched_data.correspondence_home_number = this.resHomeNumber;
-                fetched_data.correspondence_apartament_number = this.resApartamentNumber;
-                fetched_data.correspondence_zip_code = this.resZipCode;
-            }
-            else {
-                fetched_data.correspondence_country = this.corCountry;
-                fetched_data.correspondence_city = this.corCity;
-                fetched_data.correspondence_state = this.corState;
-                fetched_data.correspondence_street = this.corStreet;
-                fetched_data.correspondence_home_number = this.corHomeNumber;
-                fetched_data.correspondence_apartament_number = this.corApartamentNumber;
-                fetched_data.correspondence_zip_code = this.corZipCode;
-            }
-
-            //Registered addres
-            if (this.show_registered_form) {
-                fetched_data.registered_country = this.resCountry;
-                fetched_data.registered_city = this.resCity;
-                fetched_data.registered_state = this.resState;
-                fetched_data.registered_street = this.resStreet;
-                fetched_data.registered_home_number = this.resHomeNumber;
-                fetched_data.registered_apartament_number = this.resApartamentNumber;
-                fetched_data.registered_zip_code = this.resZipCode;
-            }
-            else {
-                fetched_data.registered_country = this.regCountry;
-                fetched_data.registered_city = this.regCity;
-                fetched_data.registered_state = this.regState;
-                fetched_data.registered_street = this.regStreet;
-                fetched_data.registered_home_number = this.regHomeNumber;
-                fetched_data.registered_apartament_number = this.regApartamentNumber;
-                fetched_data.registered_zip_code = this.regZipCode;
-            }
-
-            console.log(fetched_data)
-            this.dataError = ''
-            const response = await axios.post('api/create/', fetched_data);
-
+            console.log("Response data below xd")
+            console.log(response)
 
             if (response.data.message) {
-                this.dataCorrect = response.data;
-                document.getElementById('hiddenButton').click();
-                this.resetForm();
+                this.successContent = response.data,
+                    this.alertSuccess = true,
+                    this.resetForm();
             }
             else {
-                this.dataError = response.data;
-                document.getElementById('hiddenButton').click();
+                this.errorContent = response.data;
+                this.alert = true;
             }
 
         },
         resetForm() {
-            this.password = '';
-            this.password2 = '';
-            this.username = '';
-
-            this.firstName = '';
-            this.lastName = '';
-            this.email = '';
-            this.phone = '';
-            this.identity = '';
-            this.taxName = '';
-            this.tax_address = '';
-            this.nfz = '';
-            this.bankAccount = '';
-
-            this.resCountry = '';
-            this.resCity = '';
-            this.resState = '';
-            this.resStreet = '';
-            this.resHomeNumber = '';
-            this.resApartamentNumber = '';
-            this.resZipCode = '';
-
-            this.corCountry = '';
-            this.corCity = '';
-            this.corState = '';
-            this.corStreet = '';
-            this.corHomeNumber = '';
-            this.corApartamentNumber = '';
-            this.corZipCode = '';
-
-            this.regCountry = '';
-            this.regCity = '';
-            this.regState = '';
-            this.regStreet = '';
-            this.regHomeNumber = '';
-            this.regApartamentNumber = '';
-            this.regZipCode = '';
+            for (const field of this.allInputs) {
+                this.input_data[field.model] = '';
+            }
         },
 
         async getUserData(username, user_role) {
@@ -952,40 +796,13 @@ export default {
 };
 </script>
 
-<style scoped>
-.container {
-    text-align: center;
-}
-
-.form-switch {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;
-}
-
-.form-check-input:checked {
-    background-color: #0d6efd;
-    transition: background-color 0.5s;
-
-}
-
-.form-check-input:checked+.form-check-label::before {
-    background-color: #fff;
-    transition: background-color 0.5s;
-}
-
-.form-check-input:checked+.form-check-label::after {
-    left: 24px;
-    transition: left 0.5s;
-}
-
+<style >
 .filled-star::before {
     content: '\2605';
     color: #ff0000;
     font-weight: bold;
     position: absolute;
-    top: 4px;
+    top: 3px;
     right: 4px;
 }
 

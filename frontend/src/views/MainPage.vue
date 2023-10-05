@@ -2,14 +2,14 @@
     <v-app>
         <v-layout class="rounded rounded-md">
             <!-- image="https://picsum.photos/1920/1080?random" -->
-            <v-app-bar app :elevation="3" class="bg-success">
+            <v-app-bar app :elevation="3" class="bg-blue-accent-3">
 
 
                 <v-row align="center" no-gutters>
 
                     <!-- Menu button -->
-                    <v-col cols="1" align="start">
-                        <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="ml-1">
+                    <v-col cols="auto" align="start">
+                        <v-app-bar-nav-icon @click.stop="drawer = !drawer">
                             <span class="material-symbols-outlined">
                                 menu
                             </span>
@@ -20,54 +20,102 @@
 
                     <!-- Title -->
                     <v-col class="text-start">
-                        <p class="text-h6 font-weight-bold">FDFMS - {{ userData.user_role }} Management console</p>
+                        FDFMS
+                        <!-- <p class="text-h6 font-weight-bold">FDFMS - {{ userData.user_role }} Management console</p> -->
                     </v-col>
 
                     <!-- Title -->
 
 
                     <!-- Log out -->
-                    <v-col cols="4" align="end">
+                    <v-col cols="auto" align="end">
                         <v-col cols="auto">
-                            <v-dialog transition="dialog-top-transition" width="400">
+
+                            <v-btn :ripple="false" variant="plain">
+                                <span :style="{ display: actualTheme ? 'none' : 'block' }" @click="toggleTheme" role="button">
+                                    <span class="material-symbols-outlined">
+                                        dark_mode
+                                    </span>
+                                </span>
+                                <span :style="{ display: actualTheme ? 'block' : 'none' }" @click="toggleTheme" role="button">
+                                    <span class="material-symbols-outlined">
+                                        light_mode
+                                    </span>
+                                </span>
+                            </v-btn>
+
+
+
+
+
+                            <v-btn variant="text">
+                                <span class="material-symbols-outlined">
+                                    search
+                                </span>
+                            </v-btn>
+
+
+                            <v-menu transition="slide-x-transition">
                                 <template v-slot:activator="{ props }">
-                                    <v-btn v-bind="props" variant="tonal">
+                                    <v-btn v-bind="props">
                                         <span class="material-symbols-outlined">
-                                            logout
+                                            account_circle
                                         </span>
-                                        Logout
                                     </v-btn>
                                 </template>
-                                <template v-slot:default="{ isActive }">
-                                    <v-card>
-                                        <div class="text-warning text-h6 text-md-h5 text-lg-h4">
 
-                                            <div class="d-flex justify-content-between align-items-center px-4 pt-4">
-                                                <span class="material-symbols-outlined">
-                                                    warning
-                                                </span>
-                                                <span>
-                                                    Logout
-                                                </span>
-                                                <span class="material-symbols-outlined">
-                                                    warning
-                                                </span>
-                                            </div>
-                                            <hr>
-                                        </div>
-                                        
-                                        <div class="h2 text-h6 text-md-h5 text-lg-h4" align="center">
-                                            Are you sure?
-                                        </div>
-                                        <hr>
-                                        
-                                        <div class="justify-center d-flex align-items-center mb-3">
-                                            <v-btn variant="outlined" width="150" class="mr-5" @click="isActive.value = false">No</v-btn>
-                                            <v-btn  width="150" @click="logout" color="red">Yes</v-btn>
-                                        </div>
-                                    </v-card>
-                                </template>
-                            </v-dialog>
+                                <v-list class="p-0">
+                                    <v-list-item class="p-0">
+                                        <v-btn block variant="flat">Profile</v-btn>
+                                    </v-list-item>
+
+                                    <v-list-item class="p-0">
+                                        <v-dialog transition="dialog-top-transition" width="400">
+                                            <template v-slot:activator="{ props }">
+                                                <v-btn v-bind="props" block variant="flat">
+                                                    <span class="material-symbols-outlined">
+                                                        logout
+                                                    </span>
+                                                </v-btn>
+                                            </template>
+                                            <template v-slot:default="{ isActive }">
+                                                <v-card>
+                                                    <div class="text-warning text-h6 text-md-h5 text-lg-h4">
+
+                                                        <div
+                                                            class="d-flex justify-content-between align-items-center px-4 pt-4">
+                                                            <span class="material-symbols-outlined">
+                                                                warning
+                                                            </span>
+                                                            <span>
+                                                                Logout
+                                                            </span>
+                                                            <span class="material-symbols-outlined">
+                                                                warning
+                                                            </span>
+                                                        </div>
+                                                        <hr>
+                                                    </div>
+
+                                                    <div class="h2 text-h6 text-md-h5 text-lg-h4" align="center">
+                                                        Are you sure?
+                                                    </div>
+                                                    <hr>
+
+                                                    <div class="justify-center d-flex align-items-center mb-3">
+                                                        <v-btn variant="outlined" width="150" class="mr-5"
+                                                            @click="isActive.value = false">No</v-btn>
+                                                        <v-btn width="150" @click="logout" color="red">Yes</v-btn>
+                                                    </div>
+                                                </v-card>
+                                            </template>
+                                        </v-dialog>
+                                    </v-list-item>
+
+                                </v-list>
+                            </v-menu>
+
+
                         </v-col>
 
                     </v-col>
@@ -84,31 +132,16 @@
             <v-navigation-drawer app v-model="drawer" location="left" temporary>
                 <!-- image="https://picsum.photos/1920/1080?random" -->
                 <v-list density="compact" nav>
-                    <v-list-item :title="`${userData.first_name} ${userData.last_name}`"
-                        :subtitle="userData.email"></v-list-item>
+                    <p class="fw-bold text-center fs-5">FDFMS</p>
+                    <p class="fw-lighter">Food Delivery Fleet Management System</p>
 
                     <v-divider></v-divider>
 
+                    <p class="text-center fw-bolder">Menu</p>
                     <component :is="getNavigationComponent(userData.user_role)" />
 
                 </v-list>
 
-                <template v-slot:append>
-                    <div class="d-flex align-center justify-center">
-                        <v-btn block :style="{ display: actualTheme ? 'none' : 'block' }" @click="toggleTheme"
-                            variant="plain">
-                            <span class="material-symbols-outlined">
-                                dark_mode
-                            </span>
-                        </v-btn>
-                        <v-btn block :style="{ display: actualTheme ? 'block' : 'none' }" @click="toggleTheme"
-                            variant="plain">
-                            <span class="material-symbols-outlined">
-                                light_mode
-                            </span>
-                        </v-btn>
-                    </div>
-                </template>
 
             </v-navigation-drawer>
             <!-- Menu -->
@@ -188,6 +221,8 @@ export default {
             drawer: false,
             group: null,
             darkModeEnabled: true,
+
+
 
 
         };
