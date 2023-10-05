@@ -1,19 +1,19 @@
 <template>
-    <div id="app">
+    <v-app>
+
         <div class="text-center">
             <h1>Add new user </h1>
         </div>
 
-        <v-form>
-            <v-card class="d-flex justify-center pa-3">
-                <v-btn v-for="button in buttons" :key="button.name" @click="setrole(button.component)" color="success mx-2">
+        <v-card title="Choose user role" variant="tonal">
+            <v-card-item class="d-flex justify-center pa-3">
+                <v-btn v-for="button in buttons" :key="button.name" @click="setrole(button.component)" color="success mx-2" variant="tonal">
                     {{ button.name }}
                 </v-btn>
-            </v-card>
-        </v-form>
+            </v-card-item>
+        </v-card>
 
-
-    </div>
+    </v-app>
 </template>
   
 <script>

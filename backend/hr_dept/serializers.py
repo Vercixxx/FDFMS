@@ -60,7 +60,9 @@ class HRUserSerializer(serializers.ModelSerializer):
                   'residence_street', 
                   'residence_home_number', 
                   'residence_apartament_number', 
-                  'residence_zip_code']
+                  'residence_zip_code',
+
+                  ]
         
 class AddHRUserSerializer(serializers.ModelSerializer):
     

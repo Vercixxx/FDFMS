@@ -40,16 +40,51 @@ export default {
                 {
                     name: 'Cars',
                     options: [
-                        // {
-                        //     name: 'add',
-                        //     click: 'AddUserComponent',
-                        //     icon: '<span class="material-symbols-outlined">add</span>',
-                        // },
-                        // {
-                        //     name: 'modify',
-                        //     click: 'ModifyUserComponent',
-                        //     icon: ' <span class="material-symbols-outlined">edit</span>',
-                        // },
+                        {
+                            name: 'Daily report',
+                            click: 'AddUserComponent',
+                            icon: '<span class="material-symbols-outlined">add</span>',
+                        },
+                        {
+                            name: 'Add car damage',
+                            click: 'ModifyUserComponent',
+                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                        },
+                        {
+                            name: 'Show car damage',
+                            click: 'ModifyUserComponent',
+                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                        },
+                    ],
+                },
+                {
+                    name: 'Schedule',
+                    options: [
+                        {
+                            name: 'Show my shifts',
+                            click: 'AddUserComponent',
+                            icon: '<span class="material-symbols-outlined">add</span>',
+                        },
+                        {
+                            name: 'Sign up for shift',
+                            click: 'ModifyUserComponent',
+                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                        },
+                    ],
+                },
+                {
+                    name: 'Work',
+                    options: [
+                        {
+                            name: 'Statut',
+                            click: 'AddUserComponent',
+                            icon: '<span class="material-symbols-outlined">add</span>',
+                        },
+                        {
+                            name: 'Contracts',
+                            click: 'ModifyUserComponent',
+                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                        },
                     ],
                 },
             ]

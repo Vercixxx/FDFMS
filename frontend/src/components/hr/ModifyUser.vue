@@ -7,12 +7,70 @@
     <div class="text-center mb-5 d-flex justify-content-between">
 
       <div class="p-2">
+
+        <!-- User role -->
+        <span>
+
+          <div>
+            <v-btn disabled class="rounded-s-xl rounded-0">
+              User role
+            </v-btn>
+            <v-btn id="role-activator" variant="tonal" class="rounded-e-xl rounded-0"
+              :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+              {{ selectedRole }}
+            </v-btn>
+          </div>
+
+          <v-menu activator="#role-activator">
+            <v-list>
+              <v-list-item v-for="option in userRoleList" :key="option.name" :value="option.property">
+                <v-list-item-title>{{ option.name }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+
+        </span>
+        <!-- User role -->
+        
+        <!-- User status -->
+        <span>
+
+          <div>
+
+            <v-btn disabled class="rounded-s-xl rounded-0">
+              User status
+            </v-btn>
+
+            <v-btn id="status-activator" variant="tonal" class="rounded-e-xl rounded-0"
+              :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+
+              {{ selectedActive }}
+            </v-btn>
+
+          </div>
+          <v-menu activator="#status-activator">
+
+            <v-list>
+              <v-list-item v-for="option in userStatusList" :key="option.name" :value="option.property">
+                <v-list-item-title>{{ option.name }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+
+          </v-menu>
+
+        </span>
+        <!-- User status -->
+
+
+
+
+<!-- 
         <div class="btn-group dropdown mx-2">
           <span class="input-group-text rounded-0 rounded-start rounded-s-xl" id="basic-addon1"
             :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">User role</span>
 
           <button type="button" class="btn btn-outline-secondary dropdown-toggle rounded-e-xl" data-bs-toggle="dropdown"
-            aria-expanded="false">
+            aria-expanded="false" :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3 border-2': theme }">
             {{ selectedRole }}
           </button>
           <ul class="dropdown-menu">
@@ -38,12 +96,13 @@
 
 
 
+
         <div class="btn-group dropdown mx-2">
           <span class="input-group-text rounded-0 rounded-start rounded-s-xl" id="basic-addon1"
             :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">User status</span>
 
           <button type="button" class="btn btn-outline-secondary dropdown-toggle rounded-e-xl" data-bs-toggle="dropdown"
-            aria-expanded="false">
+            aria-expanded="false" :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3 border-2': theme }">
 
             <span v-if="selectedActive === 'True'">Yes</span>
             <span v-else-if="selectedActive === 'False'">No</span>
@@ -57,7 +116,7 @@
             <li @click="selectedActive = 'True'; loadUsers();"><a class="dropdown-item ">Active</a></li>
             <li @click="selectedActive = 'False'; loadUsers();"><a class="dropdown-item ">Not active</a></li>
           </ul>
-        </div>
+        </div> -->
 
 
 
@@ -100,7 +159,7 @@
       No records.
     </div>
 
-    <div v-else class="table-responsive">
+    <div v-else class="table-responsive mt-10">
       <table :class="{ 'table table-hover table-striped': !theme, 'table table-hover table-striped table-dark ': theme }">
         <thead>
           <tr class="text-center">
@@ -128,31 +187,28 @@
               <!-- Mapping "is_active" -->
               <span v-if="column.attribute === 'is_active'">
 
-                <!-- SVG when user is active -->
-                <svg v-if="user[column.attribute]" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="green"
-                  class="bi bi-check-lg" viewBox="0 0 16 16">
-                  <path
-                    d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
-                </svg>
+                <!-- Icon when user is active -->
+                <span v-if="user[column.attribute]" class="material-symbols-outlined" style="color:green">
+                  check
+                </span>
 
-                <!-- SVG when user is not active -->
-                <svg v-else xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="red" class="bi bi-x-lg"
-                  viewBox="0 0 16 16">
-                  <path
-                    d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
-                </svg>
+                <!-- Icon when user is not active -->
+                <span v-else class="material-symbols-outlined" style="color:red">
+                  check_indeterminate_small
+                </span>
 
+              </span>
 
+              <span v-else-if="column.attribute === 'date_joined'">
+                {{ user[column.attribute].substring(0, 10) }}
               </span>
               <!-- other columns -->
 
               <span v-else>
                 <span v-if="user[column.attribute] !== null">{{ user[column.attribute] }}</span>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-x"
-                  viewBox="0 0 16 16">
-                  <path
-                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 1 1 .708.708L8.707 8l2.647 2.646a.5.5 0 1 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                </svg>
+                <span v-else class="material-symbols-outlined">
+                  check_indeterminate_small
+                </span>
               </span>
 
             </td>
@@ -201,33 +257,28 @@
     <!-- Pagination -->
     <v-row class="my-2">
       <v-col cols="5">
-        <span class="fw-lighter border rounded-3 p-2"> Finded {{ page_flip.count }} records</span>
+        <span class="fw-lighter border rounded-3 p-2"> {{ page_flip.count }} records</span>
       </v-col>
 
 
       <v-col cols="6" class="d-flex align-items-center">
 
         <!-- Button previous -->
-        <button type="button" class="btn btn-outline-secondary " @click="previousPage" :disabled="!page_flip.previous">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left"
-            viewBox="0 0 16 16">
-            <path
-              d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-          </svg>
-        </button>
+        <v-btn :disabled="!page_flip.previous" @click="previousPage" variant="plain">
+          <span class="material-symbols-outlined">
+            arrow_back_ios
+          </span>
+        </v-btn>
 
         <!-- Current page -->
         <p class="fw-bolder mx-2 text-center mt-3">Page {{ currentPage + 1 }}</p>
 
-
         <!-- Button next -->
-        <button type="button" class="btn btn-outline-secondary" @click="nextPage" :disabled="!page_flip.next">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right"
-            viewBox="0 0 16 16">
-            <path
-              d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-          </svg>
-        </button>
+        <v-btn :disabled="!page_flip.next" @click="nextPage" variant="plain">
+          <span class="material-symbols-outlined">
+            arrow_forward_ios
+          </span>
+        </v-btn>
 
       </v-col>
 
@@ -379,7 +430,7 @@
 
 
 <script>
-import axios from 'axios';
+import axios, { all } from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
 import { ref, watch } from "vue";
 import { useTheme } from 'vuetify'
@@ -416,6 +467,51 @@ export default {
 
       dialogState: false,
       dialogDelete: false,
+
+      userRoleList: [
+        {
+          name: 'All',
+          property: 'all',
+        },
+        {
+          name: 'HR',
+          property: 'true',
+        },
+        {
+          name: 'Asset',
+          property: 'false',
+        },
+        {
+          name: 'Payroll',
+          property: 'false',
+        },
+        {
+          name: 'Clients',
+          property: 'false',
+        },
+        {
+          name: 'Manager',
+          property: 'false',
+        },
+        {
+          name: 'Driver',
+          property: 'false',
+        },
+      ],
+      userStatusList: [
+        {
+          name: 'All',
+          property: 'all',
+        },
+        {
+          name: 'Active',
+          property: 'true',
+        },
+        {
+          name: 'Not active',
+          property: 'false',
+        },
+      ]
     };
   },
 
@@ -591,6 +687,7 @@ export default {
           { label: 'Email', attribute: 'email' },
           { label: 'User role', attribute: 'user_role' },
           { label: 'Active', attribute: 'is_active' },
+          { label: 'Joined', attribute: 'date_joined' },
 
         ],
 
@@ -691,4 +788,5 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   appearance: none;
   margin: 0;
-}</style>
+}
+</style>

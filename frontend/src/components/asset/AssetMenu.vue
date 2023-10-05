@@ -75,26 +75,6 @@ export default {
                     ],
                 },
                 {
-                    name: 'Cars management/stat?',
-                    options: [
-                        {
-                            name: 'add',
-                            click: 'AddUserComponent',
-                            icon: '<span class="material-symbols-outlined">add</span>',
-                        },
-                        {
-                            name: 'modify',
-                            click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
-                        },
-                        {
-                            name: 'Transfer cars',
-                            click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
-                        },
-                    ],
-                },
-                {
                     name: 'Messages',
                     options: [
                         {
