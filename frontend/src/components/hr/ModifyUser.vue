@@ -8,9 +8,10 @@
 
       <div class="p-2">
         <div class="btn-group dropdown mx-2">
-          <span class="input-group-text rounded-0 rounded-start" id="basic-addon1">User role</span>
+          <span class="input-group-text rounded-0 rounded-start rounded-s-xl" id="basic-addon1"
+            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">User role</span>
 
-          <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
+          <button type="button" class="btn btn-outline-secondary dropdown-toggle rounded-e-xl" data-bs-toggle="dropdown"
             aria-expanded="false">
             {{ selectedRole }}
           </button>
@@ -38,9 +39,10 @@
 
 
         <div class="btn-group dropdown mx-2">
-          <span class="input-group-text rounded-0 rounded-start" id="basic-addon1">User status</span>
+          <span class="input-group-text rounded-0 rounded-start rounded-s-xl" id="basic-addon1"
+            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">User status</span>
 
-          <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
+          <button type="button" class="btn btn-outline-secondary dropdown-toggle rounded-e-xl" data-bs-toggle="dropdown"
             aria-expanded="false">
 
             <span v-if="selectedActive === 'True'">Yes</span>
@@ -60,9 +62,11 @@
 
 
         <div class="btn-group mx-2">
-          <input type="number" name="" id="" class="form-control rounded-0 rounded-start w-25 no-spinners text-center"
-            v-model="users_per_site" @keyup.enter="loadUsers">
-          <span class="input-group-text rounded-0 rounded-end" id="basic-addon1">Users per site</span>
+          <input type="number" name="" id="" class="form-control w-25 no-spinners text-center rounded-0 rounded-s-xl"
+            v-model="users_per_site" @keyup.enter="loadUsers"
+            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+          <span class="input-group-text rounded-0 rounded-e-xl" id="basic-addon1"
+            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">Users per site</span>
         </div>
 
       </div>
@@ -71,14 +75,13 @@
       <form role="search" method="POST" action="" @submit.prevent="search">
         <div class="input-group">
 
-          <input class="form-control " type="search" placeholder="Search" aria-label="Search" v-model="query">
+          <input class="form-control rounded-s-xl " type="search" placeholder="Search" aria-label="Search" v-model="query"
+            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3 text-white boreder-0': theme }">
           <button type="button" class="btn btn-outline-success d-flex align-items-center px-3" @click="search">
 
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search me-2"
-              viewBox="0 0 16 16">
-              <path
-                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-            </svg>
+            <span class="material-symbols-outlined">
+              search
+            </span>
           </button>
 
         </div>
@@ -378,7 +381,7 @@
 <script>
 import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
-import { ref, watch } from "vue"; // Importuj funkcję watch
+import { ref, watch } from "vue";
 import { useTheme } from 'vuetify'
 
 export default {
@@ -606,8 +609,9 @@ export default {
       try {
         const response = await axios.delete('api/users/delete/' + this.usernameDelete + '/');
         this.usernameDelete = '';
+        this.dialogDelete = false;
         this.reloadComponent()
-        console.log(response)
+
 
         if (response.status == 204) {
           this.dataSuccess = 'Success!';
@@ -687,5 +691,4 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   appearance: none;
   margin: 0;
-}
-</style>
+}</style>

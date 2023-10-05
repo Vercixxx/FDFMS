@@ -2,8 +2,9 @@
 # Auth
 from django.contrib.auth import authenticate, get_user_model
 
-# Password Auth
-from django.shortcuts import get_object_or_404, render
+# Password 
+import secrets
+import string
 
 
 from django.http import JsonResponse
@@ -102,7 +103,8 @@ class GlobalDictionaries:
         if dictionary:
             return dictionary.get(key)
             
-        
+      
+  
 
 class GUViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -188,26 +190,39 @@ class AddUser(APIView):
     
     def post(self, request):
         user_role = request.data.get('user_role')
-
+        
+        # Password generating
+        generated_password = self.generate_password()
+        request.data['password'] = generated_password
+        request.data['password2'] = generated_password
 
         serializer_class = GlobalDictionaries.get_serializer('AddUserSerializers', user_role) 
 
         serializer = serializer_class(data=request.data)
         data = {}
         
+
+        
         if serializer.is_valid():
             account = serializer.save()
             data['message'] = 'Succesfully registered a new User'
             data['username'] = account.username
             
-            user_model = account.__class__
-            user = user_model.objects.get(username=account.username)
+            # user_model = account.__class__
+            # user = user_model.objects.get(username=account.username)
+            
+            print("Created ", account.username, " with password: ", generated_password)
             
         
         else:
             data = serializer.errors
             
         return JsonResponse(data)
+    
+    def generate_password(self):
+        characters = string.ascii_letters + string.digits + string.punctuation
+        password = ''.join(secrets.choice(characters) for _ in range(8))
+        return password
     
 
 class getUser(APIView):
@@ -254,3 +269,21 @@ class ChangeUserState(APIView):
         user.is_active = not user.is_active
         user.save()
         return JsonResponse({'message' : 'Changed successfully'}, status=200)
+    
+    
+    
+class GetAllCountries(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(safe, request):
+        countries = [choice[0] for choice in GeneralUser.COUNTRY_CHOICES]
+        return JsonResponse(countries, safe=False)
+    
+class GetCities(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(safe, request, selected_country):
+        if(selected_country == "Poland"):
+            countries = [choice[0] for choice in GeneralUser.POLAND_STATE_CHOICES]
+            
+        return JsonResponse(countries, safe=False)
