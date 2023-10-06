@@ -23,7 +23,7 @@ class GeneralUser(AbstractUser):
     
     phone = models.CharField(max_length=25, blank=True, null=True)
     
-    # User rank
+    # Country Choices
     COUNTRY_CHOICES = (
         ('Poland', 'Poland'),
         )

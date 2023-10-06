@@ -1,8 +1,8 @@
 <template>
     <v-app>
-        <v-layout class="rounded rounded-md">
-            <!-- image="https://picsum.photos/1920/1080?random" -->
-            <v-app-bar app :elevation="3" class="bg-blue-accent-3">
+        <v-layout class="rounded rounded-md" >
+            
+            <v-app-bar app :elevation="3" class="bg-blue-accent-3" image="https://picsum.photos/1920/1080?random">
 
 
                 <v-row align="center" no-gutters>
