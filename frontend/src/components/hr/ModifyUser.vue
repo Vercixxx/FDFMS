@@ -6,65 +6,76 @@
     <!-- Search bar section -->
     <div class="text-center mb-5 d-flex justify-content-between">
 
-      <div class="p-2">
 
-        <!-- User role -->
-        <span>
+      <!-- User role -->
+      <span>
 
-          <div>
-            <v-btn disabled class="rounded-s-xl rounded-0">
-              User role
-            </v-btn>
-            <v-btn id="role-activator" variant="tonal" class="rounded-e-xl rounded-0"
-              :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
-              {{ selectedRole }}
-            </v-btn>
-          </div>
+        <div class="btn-group dropdown mx-2">
+          <v-btn disabled class="rounded-s-xl rounded-0"
+            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+            User role
+          </v-btn>
+          <v-btn id="role-activator" variant="tonal" class="rounded-e-xl rounded-0"
+            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+            {{ selectedRole }}
+            <span class="material-symbols-outlined">
+              arrow_drop_down
+            </span>
+          </v-btn>
+        </div>
 
-          <v-menu activator="#role-activator">
-            <v-list>
-              <v-list-item v-for="option in userRoleList" :key="option.name" :value="option.property">
-                <v-list-item-title>{{ option.name }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+        <v-menu activator="#role-activator">
+          <v-list>
+            <v-list-item v-for="option in userRoleList" :key="option.name" :value="option.property"
+              @click="chooseRole(option.property)">
+              <v-list-item-title>{{ option.name }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
-        </span>
-        <!-- User role -->
-        
-        <!-- User status -->
-        <span>
+      </span>
+      <!-- User role -->
 
-          <div>
+      <!-- User status -->
+      <span>
 
-            <v-btn disabled class="rounded-s-xl rounded-0">
-              User status
-            </v-btn>
+        <div class="btn-group dropdown mx-2">
 
-            <v-btn id="status-activator" variant="tonal" class="rounded-e-xl rounded-0"
-              :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+          <v-btn disabled class="rounded-s-xl rounded-0"
+            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+            User status
+          </v-btn>
 
-              {{ selectedActive }}
-            </v-btn>
+          <v-btn id="status-activator" variant="tonal" class="rounded-e-xl rounded-0"
+            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
 
-          </div>
-          <v-menu activator="#status-activator">
+            <span v-if="selectedActive === 'True'">Active</span>
+            <span v-else-if="selectedActive === 'False'">Not active</span>
+            <span v-else>All</span>
+            <span class="material-symbols-outlined">
+              arrow_drop_down
+            </span>
+          </v-btn>
 
-            <v-list>
-              <v-list-item v-for="option in userStatusList" :key="option.name" :value="option.property">
-                <v-list-item-title>{{ option.name }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
+        </div>
+        <v-menu activator="#status-activator">
 
-          </v-menu>
+          <v-list>
+            <v-list-item v-for="option in userStatusList" :key="option.name" :value="option.property"
+              @click="chooseStatus(option.property)">
+              <v-list-item-title>{{ option.name }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
 
-        </span>
-        <!-- User status -->
+        </v-menu>
+
+      </span>
+      <!-- User status -->
 
 
 
 
-<!-- 
+      <!-- 
         <div class="btn-group dropdown mx-2">
           <span class="input-group-text rounded-0 rounded-start rounded-s-xl" id="basic-addon1"
             :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">User role</span>
@@ -120,15 +131,15 @@
 
 
 
-        <div class="btn-group mx-2">
-          <input type="number" name="" id="" class="form-control w-25 no-spinners text-center rounded-0 rounded-s-xl"
-            v-model="users_per_site" @keyup.enter="loadUsers"
-            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
-          <span class="input-group-text rounded-0 rounded-e-xl" id="basic-addon1"
-            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">Users per site</span>
-        </div>
-
+      <div class="btn-group mx-2">
+        <input type="number" name="" id="" class="form-control w-25 no-spinners text-center rounded-0 rounded-s-xl"
+          v-model="users_per_site" @keyup.enter="loadUsers"
+          :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+        <span class="input-group-text rounded-0 rounded-e-xl" id="basic-addon1"
+          :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">Users per site</span>
       </div>
+
+
 
 
       <form role="search" method="POST" action="" @submit.prevent="search">
@@ -471,45 +482,45 @@ export default {
       userRoleList: [
         {
           name: 'All',
-          property: 'all',
+          property: 'All',
         },
         {
           name: 'HR',
-          property: 'true',
+          property: 'HR',
         },
         {
           name: 'Asset',
-          property: 'false',
+          property: 'Asset',
         },
         {
           name: 'Payroll',
-          property: 'false',
+          property: 'Payroll',
         },
         {
           name: 'Clients',
-          property: 'false',
+          property: 'Clients',
         },
         {
           name: 'Manager',
-          property: 'false',
+          property: 'Manager',
         },
         {
           name: 'Driver',
-          property: 'false',
+          property: 'Driver',
         },
       ],
       userStatusList: [
         {
           name: 'All',
-          property: 'all',
+          property: 'All',
         },
         {
           name: 'Active',
-          property: 'true',
+          property: 'True',
         },
         {
           name: 'Not active',
-          property: 'false',
+          property: 'False',
         },
       ]
     };
@@ -595,6 +606,18 @@ export default {
     nextPage() {
       this.currentPage += 1;
       this.loadUsers();
+    },
+
+    chooseRole(role) {
+      this.selectedRole = role;
+      this.defineColumnsByUserRole();
+      this.loadUsers();
+    },
+
+    chooseStatus(status) {
+      console.log(status);
+      this.selectedActive = status;
+      this.loadUsers()
     },
 
     defineColumnsByUserRole() {
@@ -788,5 +811,4 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   appearance: none;
   margin: 0;
-}
-</style>
+}</style>
