@@ -582,7 +582,7 @@ export default {
             this.input_data['residence_country'] = this.resSelectedCountry;
             this.input_data['residence_state'] = this.resSelectedState;
 
-            console.log(JSON.stringify(this.input_data, null, 2));
+            // console.log(JSON.stringify(this.input_data, null, 2));
         },
         generateUsername() {
             let firstName = '';
@@ -641,6 +641,7 @@ export default {
         async createUser() {
 
             this.input_data['user_role'] = 'HR'
+            console.log(this.input_data)
 
             const response = await axios.post('api/create/', this.input_data);
 
@@ -648,7 +649,7 @@ export default {
 
             if (response.data.message) {
                 localStorage.setItem('message', response.data);
-                this.$root.changeCurrentComponent('AddHrComponent');
+                this.$root.changeCurrentComponent('AddUserComponent');
 
             }
             else {

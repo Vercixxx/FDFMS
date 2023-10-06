@@ -122,7 +122,6 @@ class AddHRUserSerializer(serializers.ModelSerializer):
         password2 = self.validated_data['password2']
         
         
-        
         if password != password2:
             raise serializers.ValidationError({'password': 'Passwords do not match'})
         

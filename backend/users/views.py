@@ -190,6 +190,7 @@ class AddUser(APIView):
     
     def post(self, request):
         user_role = request.data.get('user_role')
+        print("Data z funkcji: ", request.data)
         
         # Password generating
         generated_password = self.generate_password()
@@ -202,18 +203,10 @@ class AddUser(APIView):
         data = {}
         
 
-        
         if serializer.is_valid():
             account = serializer.save()
-            data['message'] = 'Succesfully registered a new User'
-            data['username'] = account.username
-            
-            # user_model = account.__class__
-            # user = user_model.objects.get(username=account.username)
-            
+            data['message'] = f'Succesfully registered {account.username}'
             print("Created ", account.username, " with password: ", generated_password)
-            
-        
         else:
             data = serializer.errors
             

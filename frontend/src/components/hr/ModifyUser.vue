@@ -6,76 +6,80 @@
     <!-- Search bar section -->
     <div class="text-center mb-5 d-flex justify-content-between">
 
+      <div>
+        <!-- User role -->
+        <span>
 
-      <!-- User role -->
-      <span>
+          <div class="btn-group dropdown mx-2">
+            <v-btn disabled class="rounded-s-xl rounded-0"
+              :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+              User role
+            </v-btn>
+            <v-btn id="role-activator" variant="tonal" class="rounded-e-xl rounded-0"
+              :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
 
-        <div class="btn-group dropdown mx-2">
-          <v-btn disabled class="rounded-s-xl rounded-0"
-            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
-            User role
-          </v-btn>
-          <v-btn id="role-activator" variant="tonal" class="rounded-e-xl rounded-0"
-            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
-            {{ selectedRole }}
-            <span class="material-symbols-outlined">
-              arrow_drop_down
-            </span>
-          </v-btn>
-        </div>
+              {{ selectedRole }}
 
-        <v-menu activator="#role-activator">
-          <v-list>
-            <v-list-item v-for="option in userRoleList" :key="option.name" :value="option.property"
-              @click="chooseRole(option.property)">
-              <v-list-item-title>{{ option.name }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+              <span class="material-symbols-outlined">
+                arrow_drop_down
+              </span>
+            </v-btn>
+          </div>
 
-      </span>
-      <!-- User role -->
+          <v-menu activator="#role-activator">
+            <v-list>
+              <v-list-item v-for="option in userRoleList" :key="option.name" :value="option.property"
+                @click="chooseRole(option.property)">
+                <v-list-item-title>
+                  {{ option.name }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
 
-      <!-- User status -->
-      <span>
+        </span>
+        <!-- User role -->
 
-        <div class="btn-group dropdown mx-2">
+        <!-- User status -->
+        <span>
 
-          <v-btn disabled class="rounded-s-xl rounded-0"
-            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
-            User status
-          </v-btn>
+          <div class="btn-group dropdown mx-2">
 
-          <v-btn id="status-activator" variant="tonal" class="rounded-e-xl rounded-0"
-            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+            <v-btn disabled class="rounded-s-xl rounded-0"
+              :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+              User status
+            </v-btn>
 
-            <span v-if="selectedActive === 'True'">Active</span>
-            <span v-else-if="selectedActive === 'False'">Not active</span>
-            <span v-else>All</span>
-            <span class="material-symbols-outlined">
-              arrow_drop_down
-            </span>
-          </v-btn>
+            <v-btn id="status-activator" variant="tonal" class="rounded-e-xl rounded-0"
+              :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
 
-        </div>
-        <v-menu activator="#status-activator">
+              <span v-if="selectedActive === 'True'">Active</span>
+              <span v-else-if="selectedActive === 'False'">Not active</span>
+              <span v-else>All</span>
+              <span class="material-symbols-outlined">
+                arrow_drop_down
+              </span>
+            </v-btn>
 
-          <v-list>
-            <v-list-item v-for="option in userStatusList" :key="option.name" :value="option.property"
-              @click="chooseStatus(option.property)">
-              <v-list-item-title>{{ option.name }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
+          </div>
+          <v-menu activator="#status-activator">
 
-        </v-menu>
+            <v-list>
+              <v-list-item v-for="option in userStatusList" :key="option.name" :value="option.property"
+                @click="chooseStatus(option.property)">
+                <v-list-item-title>{{ option.name }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
 
-      </span>
-      <!-- User status -->
+          </v-menu>
+
+        </span>
+        <!-- User status -->
 
 
 
 
-      <!-- 
+        <!-- 
         <div class="btn-group dropdown mx-2">
           <span class="input-group-text rounded-0 rounded-start rounded-s-xl" id="basic-addon1"
             :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">User role</span>
@@ -131,15 +135,15 @@
 
 
 
-      <div class="btn-group mx-2">
-        <input type="number" name="" id="" class="form-control w-25 no-spinners text-center rounded-0 rounded-s-xl"
-          v-model="users_per_site" @keyup.enter="loadUsers"
-          :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
-        <span class="input-group-text rounded-0 rounded-e-xl" id="basic-addon1"
-          :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">Users per site</span>
+        <div class="btn-group mx-2">
+          <input type="number" name="" id="" class="form-control w-25 no-spinners text-center rounded-0 rounded-s-xl"
+            v-model="users_per_site" @keyup.enter="loadUsers"
+            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+          <span class="input-group-text rounded-0 rounded-e-xl" id="basic-addon1"
+            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">Users per site</span>
+        </div>
+
       </div>
-
-
 
 
       <form role="search" method="POST" action="" @submit.prevent="search">
@@ -175,17 +179,9 @@
         <thead>
           <tr class="text-center">
             <th v-for="column in columns" :key="column.attribute">
-              <span v-if="column.label === 'Active'" class="text-info">
-                {{ column.label }}
-                <span class="material-symbols-outlined align-middle">
-                  block
-                </span>
-              </span>
-              <span v-else>
-                {{ column.label }}
-              </span>
+              {{ column.label }}
             </th>
-            <th>Action</th>
+            <th class="text-success">Action</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
@@ -196,8 +192,9 @@
             <td v-for="column in columns" :key="column.attribute">
 
               <!-- Mapping "is_active" -->
-              <span v-if="column.attribute === 'is_active'">
-
+              <v-btn variant="plain" v-if="column.attribute === 'is_active'" role='button'
+                @click="changeStateConfirm(user.username, user.user_role, user.is_active)">
+                <v-tooltip activator="parent" location="top">Click to change status</v-tooltip>
                 <!-- Icon when user is active -->
                 <span v-if="user[column.attribute]" class="material-symbols-outlined" style="color:green">
                   check
@@ -208,11 +205,21 @@
                   check_indeterminate_small
                 </span>
 
-              </span>
+              </v-btn>
 
               <span v-else-if="column.attribute === 'date_joined'">
                 {{ user[column.attribute].substring(0, 10) }}
               </span>
+
+              <v-btn variant="plain" v-else-if="column.attribute === 'email'" v-ripple="{ class: 'text-success' }" @click="copyElement(user[column.attribute])">
+
+                  <v-tooltip activator="parent" location="top">
+                    Click email to copy
+                  </v-tooltip>
+                  {{ user[column.attribute] }}
+      
+              </v-btn>
+
               <!-- other columns -->
 
               <span v-else>
@@ -225,23 +232,13 @@
             </td>
             <td>
               <!-- Button show info -->
-              <v-btn color="primary" variant="plain" class="mr-1" @click="userDetails(user.username, user.user_role)">
+              <button class="btn btn-outline-info m-1" @click="userDetails(user.username, user.user_role)">
                 <span class="material-symbols-outlined d-flex">
                   preview
                 </span>
                 <v-tooltip activator="parent" location="top">Show user details</v-tooltip>
-              </v-btn>
-              <!-- Button show info -->
-
-              <!-- Button status -->
-              <button class="btn btn-outline-info m-1"
-                @click="changeStateConfirm(user.username, user.user_role, user.is_active)"
-                :class="{ 'btn-outline-danger': user.is_active === 'false' ? false : !user.is_active }">
-                <span class="material-symbols-outlined d-flex">
-                  block
-                </span>
-                <v-tooltip activator="parent" location="top">Change active status</v-tooltip>
               </button>
+              <!-- Button show info -->
 
               <!-- Button edit -->
               <button class="btn btn-outline-success m-1" @click="editUser(user.username, user.user_role)">
@@ -406,7 +403,15 @@
             <tbody>
               <tr v-for="(value, key) in userDetailData" :key="key">
                 <td>{{ key }}</td>
-                <td>{{ value }}</td>
+                <td v-if="value === null">
+                  <span class="material-symbols-outlined">
+                    check_indeterminate_small
+                  </span>
+                </td>
+                <td v-else>
+                  {{ value }}
+                </td>
+
               </tr>
             </tbody>
           </v-table>
@@ -597,6 +602,16 @@ export default {
       catch (error) {
         console.error('Error when fetching', error);
       }
+    },
+
+    copyElement(content) {
+      const textarea = document.createElement('textarea');
+      textarea.value = content;
+      textarea.style.position = 'fixed';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
     },
 
     previousPage() {
@@ -791,6 +806,8 @@ export default {
       const response = await axios.get(`api/users/get/${username}/${role}/`);
       this.userDetailData = response.data;
       this.UserDetailsDialog = true;
+      console.log(this.userDetailData)
+
     },
 
 
@@ -811,4 +828,5 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   appearance: none;
   margin: 0;
-}</style>
+}
+</style>
