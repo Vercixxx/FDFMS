@@ -4,9 +4,9 @@
     <p class="p-2 fw-bolder fs-5">Filters</p>
 
     <!-- Search bar section -->
-    <div class="text-center mb-5 d-flex justify-content-between">
+    <v-row class="mb-5 d-flex justify-content-between">
 
-      <div>
+      <v-col cols="auto">
         <!-- User role -->
         <span>
 
@@ -76,92 +76,16 @@
         </span>
         <!-- User status -->
 
+      </v-col>
 
+      <v-col cols="5">
+        <!-- Search bar -->
+        <v-text-field variant="solo-filled" v-model="search2" label="Search" class="px-1" prepend-icon="mdi-magnify"
+          hide-actions clearable/>
+        <!-- Search bar -->
+      </v-col>
 
-
-        <!-- 
-        <div class="btn-group dropdown mx-2">
-          <span class="input-group-text rounded-0 rounded-start rounded-s-xl" id="basic-addon1"
-            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">User role</span>
-
-          <button type="button" class="btn btn-outline-secondary dropdown-toggle rounded-e-xl" data-bs-toggle="dropdown"
-            aria-expanded="false" :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3 border-2': theme }">
-            {{ selectedRole }}
-          </button>
-          <ul class="dropdown-menu">
-            <li @click="selectedRole = 'All'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item fw-bolder ">All</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li @click="selectedRole = 'HR'; loadUsers(); defineColumnsByUserRole();"><a class="dropdown-item ">HR</a>
-            </li>
-            <li @click="selectedRole = 'Asset'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item ">Asset</a></li>
-            <li @click="selectedRole = 'Payroll'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item ">Payroll</a></li>
-            <li @click="selectedRole = 'Clients'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item ">Clients</a></li>
-            <li @click="selectedRole = 'Manager'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item ">Manager</a></li>
-            <li @click="selectedRole = 'Driver'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item ">Driver</a></li>
-          </ul>
-        </div>
-
-
-
-
-        <div class="btn-group dropdown mx-2">
-          <span class="input-group-text rounded-0 rounded-start rounded-s-xl" id="basic-addon1"
-            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">User status</span>
-
-          <button type="button" class="btn btn-outline-secondary dropdown-toggle rounded-e-xl" data-bs-toggle="dropdown"
-            aria-expanded="false" :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3 border-2': theme }">
-
-            <span v-if="selectedActive === 'True'">Yes</span>
-            <span v-else-if="selectedActive === 'False'">No</span>
-            <span v-else>All</span>
-          </button>
-          <ul class="dropdown-menu">
-            <li @click="selectedActive = 'All'; loadUsers();"><a class="dropdown-item fw-bolder ">All</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li @click="selectedActive = 'True'; loadUsers();"><a class="dropdown-item ">Active</a></li>
-            <li @click="selectedActive = 'False'; loadUsers();"><a class="dropdown-item ">Not active</a></li>
-          </ul>
-        </div> -->
-
-
-
-        <div class="btn-group mx-2">
-          <input type="number" name="" id="" class="form-control w-25 no-spinners text-center rounded-0 rounded-s-xl"
-            v-model="users_per_site" @keyup.enter="loadUsers"
-            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
-          <span class="input-group-text rounded-0 rounded-e-xl" id="basic-addon1"
-            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">Users per site</span>
-        </div>
-
-      </div>
-
-
-      <form role="search" method="POST" action="" @submit.prevent="search">
-        <div class="input-group">
-
-          <input class="form-control rounded-s-xl " type="search" placeholder="Search" aria-label="Search" v-model="query"
-            :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3 text-white boreder-0': theme }">
-          <button type="button" class="btn btn-outline-success d-flex align-items-center px-3" @click="search">
-
-            <span class="material-symbols-outlined">
-              search
-            </span>
-          </button>
-
-        </div>
-      </form>
-
-    </div>
+    </v-row>
 
     <!-- End of search bar section -->
 
@@ -169,132 +93,88 @@
 
 
 
+
     <!-- Table -->
-    <div v-if="users.length === 0" class="text-danger fs-2">
-      No records.
-    </div>
-
-    <div v-else class="table-responsive mt-10">
-      <table :class="{ 'table table-hover table-striped': !theme, 'table table-hover table-striped table-dark ': theme }">
-        <thead>
-          <tr class="text-center">
-            <th v-for="column in columns" :key="column.attribute">
-              {{ column.label }}
-            </th>
-            <th class="text-success">Action</th>
-          </tr>
-        </thead>
-        <tbody class="table-group-divider">
-          <tr v-for="user in users" :key="user.id" class="text-center align-middle "
-            :class="{ 'text-decoration-line-through': user.is_active === 'false' ? false : !user.is_active }">
+    <v-data-table :headers="allHeaders" :items="users" :search="search2" class="elevation-1" item-value="id"
+      v-model:items-per-page="itemsPerPage" hover no-data-text="No data">
 
 
-            <td v-for="column in columns" :key="column.attribute">
-
-              <!-- Mapping "is_active" -->
-              <v-btn variant="plain" v-if="column.attribute === 'is_active'" role='button'
-                @click="changeStateConfirm(user.username, user.user_role, user.is_active)">
-                <v-tooltip activator="parent" location="top">Click to change status</v-tooltip>
-                <!-- Icon when user is active -->
-                <span v-if="user[column.attribute]" class="material-symbols-outlined" style="color:green">
-                  check
-                </span>
-
-                <!-- Icon when user is not active -->
-                <span v-else class="material-symbols-outlined" style="color:red">
-                  check_indeterminate_small
-                </span>
-
-              </v-btn>
-
-              <span v-else-if="column.attribute === 'date_joined'">
-                {{ user[column.attribute].substring(0, 10) }}
-              </span>
-
-              <v-btn variant="plain" v-else-if="column.attribute === 'email'" v-ripple="{ class: 'text-success' }" @click="copyElement(user[column.attribute])">
-
-                  <v-tooltip activator="parent" location="top">
-                    Click email to copy
-                  </v-tooltip>
-                  {{ user[column.attribute] }}
-      
-              </v-btn>
-
-              <!-- other columns -->
-
-              <span v-else>
-                <span v-if="user[column.attribute] !== null">{{ user[column.attribute] }}</span>
-                <span v-else class="material-symbols-outlined">
-                  check_indeterminate_small
-                </span>
-              </span>
-
-            </td>
-            <td>
-              <!-- Button show info -->
-              <button class="btn btn-outline-info m-1" @click="userDetails(user.username, user.user_role)">
-                <span class="material-symbols-outlined d-flex">
-                  preview
-                </span>
-                <v-tooltip activator="parent" location="top">Show user details</v-tooltip>
-              </button>
-              <!-- Button show info -->
-
-              <!-- Button edit -->
-              <button class="btn btn-outline-success m-1" @click="editUser(user.username, user.user_role)">
-                <span class="material-symbols-outlined d-flex">
-                  edit
-                </span>
-                <v-tooltip activator="parent" location="top">Edit</v-tooltip>
-              </button>
-
-              <!-- Button delete -->
-              <button class="btn btn-outline-danger m-1" @click="deleteConfirm(user.username)">
-                <span class="material-symbols-outlined d-flex">
-                  delete
-                </span>
-                <v-tooltip activator="parent" location="top">Delete</v-tooltip>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Under table -->
-    <!-- Pagination -->
-    <v-row class="my-2">
-      <v-col cols="5">
-        <span class="fw-lighter border rounded-3 p-2"> {{ page_flip.count }} records</span>
-      </v-col>
 
 
-      <v-col cols="6" class="d-flex align-items-center">
+      <!-- Maping is active -->
+      <template #item.is_active="{ item }">
 
-        <!-- Button previous -->
-        <v-btn :disabled="!page_flip.previous" @click="previousPage" variant="plain">
-          <span class="material-symbols-outlined">
-            arrow_back_ios
+        <v-btn variant="plain"
+          @click="changeStateConfirm(item.columns.username, item.columns.user_role, item.columns.is_active)">
+          <v-tooltip activator="parent" location="top">Click to change status</v-tooltip>
+
+          <span v-if="item.columns.is_active" class="material-symbols-outlined" style="color:green">
+            check
+          </span>
+
+          <span v-else class="material-symbols-outlined" style="color:red">
+            check_indeterminate_small
           </span>
         </v-btn>
 
-        <!-- Current page -->
-        <p class="fw-bolder mx-2 text-center mt-3">Page {{ currentPage + 1 }}</p>
+      </template>
+      <!-- Maping is active -->
 
-        <!-- Button next -->
-        <v-btn :disabled="!page_flip.next" @click="nextPage" variant="plain">
-          <span class="material-symbols-outlined">
-            arrow_forward_ios
-          </span>
+
+      <!-- Email -->
+      <template v-slot:item.email="{ item }">
+
+        <v-btn variant="plain" v-ripple="{ class: 'text-success' }" @click="copyElement(item.columns.email)">
+
+          {{ item.columns.email }}
+
+          <v-tooltip activator="parent" location="top">
+            Click email to copy
+          </v-tooltip>
+
         </v-btn>
+      </template>
+      <!-- Email -->
 
-      </v-col>
 
 
+      <!-- Buttons -->
+      <template v-slot:item.action="{ item }">
+        <!-- Button show info -->
+        <v-btn variant="plain" color="blue" @click="userDetails(item.columns.username, item.columns.user_role)">
+          <span class="material-symbols-outlined">
+            description
+          </span>
+          <v-tooltip activator="parent" location="top">Show user details</v-tooltip>
+        </v-btn>
+        <!-- Button show info -->
 
-    </v-row>
-    <!-- Pagination -->
-    <!-- Under table -->
+
+        <!-- Button edit -->
+        <v-btn variant="plain" color="green" @click="editUser(item.columns.username, item.columns.user_role)">
+          <span class="material-symbols-outlined d-flex">
+            edit
+          </span>
+          <v-tooltip activator="parent" location="top">Edit</v-tooltip>
+        </v-btn>
+        <!-- Button edit -->
+
+
+        <!-- Button delete -->
+        <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.username)">
+          <span class="material-symbols-outlined d-flex">
+            delete
+          </span>
+          <v-tooltip activator="parent" location="top">Delete</v-tooltip>
+        </v-btn>
+        <!-- Button delete -->
+      </template>
+      <!-- Buttons -->
+
+
+    </v-data-table>
+    <!-- Table -->
+
 
 
     <!-- Dialaogs section -->
@@ -443,13 +323,17 @@
 </template>
   
 
-
+<script setup>
+import { VDataTable } from 'vuetify/labs/VDataTable'
+</script>
 
 <script>
 import axios, { all } from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
 import { ref, watch } from "vue";
 import { useTheme } from 'vuetify'
+import { VDataTable } from 'vuetify/labs/VDataTable'
+import { resolveDirective } from 'vue';
 
 export default {
   name: 'App',
@@ -480,6 +364,9 @@ export default {
       userDetailData: {},
       alert: false,
       snackContent: '',
+
+      search2: '',
+      itemsPerPage: 25,
 
       dialogState: false,
       dialogDelete: false,
@@ -527,7 +414,22 @@ export default {
           name: 'Not active',
           property: 'False',
         },
-      ]
+      ],
+      allHeaders: [
+        {
+          title: 'Username',
+          align: 'center',
+          sortable: false,
+          key: 'username',
+        },
+        { title: 'Email', align: 'center', key: 'email', sortable: false },
+        { title: 'User role', align: 'center', key: 'user_role', sortable: false },
+        { title: 'Active', align: 'center', key: 'is_active', sortable: false },
+        { title: 'Joined', align: 'center', key: 'date_joined' },
+        { title: 'Actions', align: 'center', key: 'action', sortable: false },
+
+      ],
+
     };
   },
 
@@ -603,6 +505,7 @@ export default {
         console.error('Error when fetching', error);
       }
     },
+
 
     copyElement(content) {
       const textarea = document.createElement('textarea');
