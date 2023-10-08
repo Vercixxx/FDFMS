@@ -137,7 +137,7 @@
                         <p>Type your email below</p>
                         <v-text-field v-model="emailPasswordRecover" density="compact" hide-details="auto"
                             label="Email address" placeholder="example@example.com" type="email" class="mb-3">
-                            
+
                             <template v-slot:prepend>
                                 <v-icon>
                                     <span class="material-symbols-outlined">
@@ -198,6 +198,7 @@ export default {
         password: null,
         passwordVisible: false,
         loading: false,
+        atempt: 0,
 
         rememberMe: false,
 
@@ -262,37 +263,48 @@ export default {
 
             };
 
-            const response = await axios.post('api/v1/login/', data)
+            try {
+                const response = await axios.post('api/v1/login/', data)
 
-            if (response.data.error) {
-                // alert
-                this.errorContent = response.data.error;
-                this.alert = true;
-                this.loading = false;
-            }
-            else {
-                // Authentication was successfull
+                if (response.data.error) {
+                    // alert
+                    this.errorContent = response.data.error;
+                    this.alert = true;
+                    this.loading = false;
+                }
+                else {
+                    // Authentication was successfull
 
-                // Vuex
-                this.$store.dispatch('setResponseData', response.data.data);
+                    // Vuex
+                    this.$store.dispatch('setResponseData', response.data.data);
 
-                this.$store.commit('setAccessToken', response.data.jwt.access);
-                this.$store.commit('setRefreshToken', response.data.jwt.refresh);
+                    this.$store.commit('setAccessToken', response.data.jwt.access);
+                    this.$store.commit('setRefreshToken', response.data.jwt.refresh);
 
-                axios.defaults.headers.common['Authorization'] = `JWT ${response.data.jwt.access}`;
+                    axios.defaults.headers.common['Authorization'] = `JWT ${response.data.jwt.access}`;
 
 
-                // check if remeber_me is checked
-                const checkbox = document.getElementById("remember_me_checkbox");
-                if (checkbox.checked) {
-                    Cookies.set('username', username, { expires: new Date('9999-12-31') });
-                    Cookies.set('password', password, { expires: new Date('9999-12-31') });
+                    // check if remeber_me is checked
+                    const checkbox = document.getElementById("remember_me_checkbox");
+                    if (checkbox.checked) {
+                        Cookies.set('username', username, { expires: new Date('9999-12-31') });
+                        Cookies.set('password', password, { expires: new Date('9999-12-31') });
+
+                    }
+
+                    this.$router.push('/dashboard');
 
                 }
-
-                this.$router.push('/dashboard');
-
             }
+            catch (error) {
+                if (error.message === "Network Error") {
+                    this.errorContent = "Server Error. Please try again.";
+                    this.alert = true;
+                    this.loading = false;
+                }
+            }
+
+
         },
 
 
