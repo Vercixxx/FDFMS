@@ -11,12 +11,11 @@
         <span>
 
           <div class="btn-group dropdown mx-2">
-            <v-btn disabled class="rounded-s-xl rounded-0"
-              :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+            <v-btn disabled class="rounded-s-xl rounded-0" :class="{ 'text-black': !theme, 'text-white': theme }">
               User role
             </v-btn>
             <v-btn id="role-activator" variant="tonal" class="rounded-e-xl rounded-0"
-              :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+              :class="{ 'text-black': !theme, 'text-white': theme }">
 
               {{ selectedRole }}
 
@@ -45,13 +44,12 @@
 
           <div class="btn-group dropdown mx-2">
 
-            <v-btn disabled class="rounded-s-xl rounded-0"
-              :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+            <v-btn disabled class="rounded-s-xl rounded-0" :class="{ 'text-black': !theme, 'text-white': theme }">
               User status
             </v-btn>
 
             <v-btn id="status-activator" variant="tonal" class="rounded-e-xl rounded-0"
-              :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+              :class="{ 'text-black': !theme, 'text-white': theme }">
 
               <span v-if="selectedActive === 'True'">Active</span>
               <span v-else-if="selectedActive === 'False'">Not active</span>
@@ -80,8 +78,9 @@
 
       <v-col cols="5">
         <!-- Search bar -->
-        <v-text-field variant="solo-filled" v-model="search2" label="Search" class="px-1" prepend-icon="mdi-magnify"
-          hide-actions clearable/>
+        <v-text-field variant="solo-filled" v-model="searchInput" @keydown.enter="searchTable = searchInput"
+          label="Search" class="px-1" prepend-inner-icon="mdi-magnify" hide-actions clearable
+          hint="Press enter to search" />
         <!-- Search bar -->
       </v-col>
 
@@ -90,14 +89,55 @@
     <!-- End of search bar section -->
 
 
-
-
-
-
     <!-- Table -->
-    <v-data-table :headers="allHeaders" :items="users" :search="search2" class="elevation-1" item-value="id"
-      v-model:items-per-page="itemsPerPage" hover no-data-text="No data">
+    <v-data-table :headers="headers" :items="users" :search="searchTable" :loading="tableLoading"
+      class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover
+      select-strategy="all" show-current-page>
 
+
+      <!-- {{ column.key }} -->
+      <!-- <template v-slot:item="{ item }">
+        <tr class="text-center">
+          <td v-for="column in headers" :key="column.key">
+
+
+            <span v-if="item.columns[column.key] === null" class="text-danger">
+              <span class="material-symbols-outlined">
+                block
+              </span>
+            </span>
+
+
+            <span v-else>
+              {{ item.columns[column.key] }}
+            </span>
+
+          </td>
+        </tr>
+      </template> -->
+
+
+
+      <!-- No data -->
+      <template v-slot:no-data>
+        <p class="text-h4 pa-5">
+          <span class="material-symbols-outlined">
+            database
+          </span>
+          No data
+        </p>
+      </template>
+      <!-- No data -->
+
+
+
+      <!-- Actions label -->
+      <template v-slot:column.action="{ column }">
+        <span class="text-success">
+          {{ column.title }}
+        </span>
+      </template>
+      <!-- Actions label -->
 
 
 
@@ -118,7 +158,19 @@
         </v-btn>
 
       </template>
-      <!-- Maping is active -->
+
+
+      <!-- <template v-for="item in users" v-slot:[`item.${item}`]>
+        asdhdfghdfgh -->
+      <!-- <div v-for="(value, key) in item" :key="key">
+        
+          {{ item.columns.username }}
+        </div> -->
+      <!-- </template> -->
+
+
+
+
 
 
       <!-- Email -->
@@ -150,6 +202,7 @@
         <!-- Button show info -->
 
 
+
         <!-- Button edit -->
         <v-btn variant="plain" color="green" @click="editUser(item.columns.username, item.columns.user_role)">
           <span class="material-symbols-outlined d-flex">
@@ -158,6 +211,7 @@
           <v-tooltip activator="parent" location="top">Edit</v-tooltip>
         </v-btn>
         <!-- Button edit -->
+
 
 
         <!-- Button delete -->
@@ -310,13 +364,23 @@
     <v-snackbar v-model="alert" :timeout="3000" location="bottom" color="success">
       {{ snackContent }}
       <template v-slot:actions>
-        <v-btn color="pink" variant="text" @click="alert = false">
+        <v-btn @click="alert = false">
           Close
         </v-btn>
       </template>
     </v-snackbar>
-
     <!-- Snackbar -->
+
+    <!-- Snackbar Error -->
+    <v-snackbar v-model="alertError" :timeout="3000" location="bottom" color="danger">
+      {{ snackErrorContent }}
+      <template v-slot:actions>
+        <v-btn @click="alertError = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <!-- Snackbar Error -->
 
 
   </div>
@@ -341,14 +405,13 @@ export default {
   data() {
     return {
       users: [],
-      columns: [],
-      currentPage: 0,
+
+
       users_per_site: 20,
       page_flip: {
       },
       query: '',
-      dataError: null,
-      dataSuccess: null,
+
 
       selectedRole: 'All',
       selectedActive: 'All',
@@ -362,11 +425,17 @@ export default {
       theme: false,
       UserDetailsDialog: false,
       userDetailData: {},
+
       alert: false,
       snackContent: '',
 
-      search2: '',
+      alertError: false,
+      snackErrorContent: '',
+
+      searchInput: '',
+      searchTable: '',
       itemsPerPage: 25,
+      rowNumber: 1,
 
       dialogState: false,
       dialogDelete: false,
@@ -415,19 +484,113 @@ export default {
           property: 'False',
         },
       ],
-      allHeaders: [
-        {
-          title: 'Username',
-          align: 'center',
-          sortable: false,
-          key: 'username',
-        },
-        { title: 'Email', align: 'center', key: 'email', sortable: false },
-        { title: 'User role', align: 'center', key: 'user_role', sortable: false },
-        { title: 'Active', align: 'center', key: 'is_active', sortable: false },
-        { title: 'Joined', align: 'center', key: 'date_joined' },
-        { title: 'Actions', align: 'center', key: 'action', sortable: false },
 
+      tableLoading: true,
+
+      allHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'USER ROLE', align: 'center', key: 'user_role', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+      DriverHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'COUNTRY', align: 'center', key: 'residence_country', sortable: false },
+        { title: 'STATE', align: 'center', key: 'residence_state', sortable: false },
+        { title: 'ZIP', align: 'center', key: 'residence_zip_code', sortable: false },
+        { title: 'CITY', align: 'center', key: 'residence_city', sortable: false },
+        { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
+        { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
+        { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+      AssetHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'COUNTRY', align: 'center', key: 'residence_country', sortable: false },
+        { title: 'STATE', align: 'center', key: 'residence_state', sortable: false },
+        { title: 'ZIP', align: 'center', key: 'residence_zip_code', sortable: false },
+        { title: 'CITY', align: 'center', key: 'residence_city', sortable: false },
+        { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
+        { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
+        { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+      HRHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'COUNTRY', align: 'center', key: 'residence_country', sortable: false },
+        { title: 'STATE', align: 'center', key: 'residence_state', sortable: false },
+        { title: 'ZIP', align: 'center', key: 'residence_zip_code', sortable: false },
+        { title: 'CITY', align: 'center', key: 'residence_city', sortable: false },
+        { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
+        { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
+        { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+      ManagerHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'COUNTRY', align: 'center', key: 'residence_country', sortable: false },
+        { title: 'STATE', align: 'center', key: 'residence_state', sortable: false },
+        { title: 'ZIP', align: 'center', key: 'residence_zip_code', sortable: false },
+        { title: 'CITY', align: 'center', key: 'residence_city', sortable: false },
+        { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
+        { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
+        { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+      PayrollHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'COUNTRY', align: 'center', key: 'residence_country', sortable: false },
+        { title: 'STATE', align: 'center', key: 'residence_state', sortable: false },
+        { title: 'ZIP', align: 'center', key: 'residence_zip_code', sortable: false },
+        { title: 'CITY', align: 'center', key: 'residence_city', sortable: false },
+        { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
+        { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
+        { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+      ClientsHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'COUNTRY', align: 'center', key: 'residence_country', sortable: false },
+        { title: 'STATE', align: 'center', key: 'residence_state', sortable: false },
+        { title: 'ZIP', align: 'center', key: 'residence_zip_code', sortable: false },
+        { title: 'CITY', align: 'center', key: 'residence_city', sortable: false },
+        { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
+        { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
+        { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
 
     };
@@ -435,19 +598,33 @@ export default {
 
 
   created() {
-    this.loadUsers();
-    this.defineColumnsByUserRole();
-    // check for messages in local storage
-    if (localStorage.getItem('message')) {
-      const message = localStorage.getItem('message');
-      console.log(message);
-      localStorage.removeItem('message');
-      //   this.dataError = message;
-      //   document.getElementById('hiddenButton').click();
-      // this.dataError = message;
-      //       document.getElementById('hiddenButton').click();
+    this.reloadComponent();
+  },
 
-    };
+  computed: {
+    headers() {
+      if (this.selectedRole === 'All') {
+        return this.allHeaders;
+      }
+      else if (this.selectedRole === 'Driver') {
+        return this.DriverHeaders;
+      }
+      else if (this.selectedRole === 'HR') {
+        return this.HRHeaders;
+      }
+      else if (this.selectedRole === 'Asset') {
+        return this.AssetHeaders;
+      }
+      else if (this.selectedRole === 'Payroll') {
+        return this.PayrollHeaders;
+      }
+      else if (this.selectedRole === 'Clients') {
+        return this.ClientsHeaders;
+      }
+      else if (this.selectedRole === 'Manager') {
+        return this.ManagerHeaders;
+      }
+    },
   },
 
   mounted() {
@@ -463,19 +640,8 @@ export default {
 
     const theme = useTheme();
     this.theme = theme.global.current.value.dark;
-
-
-    // Check for messages
-    const message = localStorage.getItem('message');
-    if (message) {
-      this.snackContent = message;
-      this.$nextTick(() => {
-        this.alert = true;
-      });
-      localStorage.removeItem('message');
-    }
-
   },
+
 
 
   methods: {
@@ -491,8 +657,6 @@ export default {
           }
         });
 
-        console.log(response.data)
-
         this.page_flip = {
           count: response.data.count,
           next: response.data.next,
@@ -500,11 +664,21 @@ export default {
         }
 
         this.users = response.data.results;
+        console.log(response.data.results);
+
+        // Add number for each row
+        this.users.forEach((user, index) => {
+          user.rownumber = index + 1;
+        });
+
+        this.tableLoading = false;
       }
       catch (error) {
-        console.error('Error when fetching', error);
+        this.snackErrorContent = `Error, please try again`;
+        this.alertError = true;
       }
     },
+
 
 
     copyElement(content) {
@@ -517,124 +691,14 @@ export default {
       document.body.removeChild(textarea);
     },
 
-    previousPage() {
-      this.currentPage -= 1;
-      this.loadUsers();
-    },
-    nextPage() {
-      this.currentPage += 1;
-      this.loadUsers();
-    },
-
     chooseRole(role) {
       this.selectedRole = role;
-      this.defineColumnsByUserRole();
-      this.loadUsers();
+      this.reloadComponent();
     },
 
     chooseStatus(status) {
-      console.log(status);
       this.selectedActive = status;
-      this.loadUsers()
-    },
-
-    defineColumnsByUserRole() {
-      const columnDefinitions = {
-        Driver: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'Phone Number', attribute: 'phone' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Country', attribute: 'residence_country' },
-          { label: 'City', attribute: 'residence_city' },
-          { label: 'Zip code', attribute: 'residence_zip_code' },
-          { label: 'State', attribute: 'residence_state' },
-          { label: 'Street', attribute: 'residence_street' },
-          { label: 'Home number', attribute: 'residence_home_number' },
-          { label: 'Apartament', attribute: 'residence_apartament_number' },
-        ],
-        Asset: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'Phone Number', attribute: 'phone' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Country', attribute: 'residence_country' },
-          { label: 'City', attribute: 'residence_city' },
-          { label: 'Zip code', attribute: 'residence_zip_code' },
-          { label: 'State', attribute: 'residence_state' },
-          { label: 'Street', attribute: 'residence_street' },
-          { label: 'Home number', attribute: 'residence_home_number' },
-          { label: 'Apartament', attribute: 'residence_apartament_number' },
-
-        ],
-        HR: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'Phone Number', attribute: 'phone' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Country', attribute: 'residence_country' },
-          { label: 'City', attribute: 'residence_city' },
-          { label: 'Zip code', attribute: 'residence_zip_code' },
-          { label: 'State', attribute: 'residence_state' },
-          { label: 'Street', attribute: 'residence_street' },
-          { label: 'Home number', attribute: 'residence_home_number' },
-          { label: 'Apartament', attribute: 'residence_apartament_number' },
-
-        ],
-        Manager: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'Phone Number', attribute: 'phone' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Country', attribute: 'residence_country' },
-          { label: 'City', attribute: 'residence_city' },
-          { label: 'Zip code', attribute: 'residence_zip_code' },
-          { label: 'State', attribute: 'residence_state' },
-          { label: 'Street', attribute: 'residence_street' },
-          { label: 'Home number', attribute: 'residence_home_number' },
-          { label: 'Apartament', attribute: 'residence_apartament_number' },
-
-        ],
-        Payroll: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'Phone Number', attribute: 'phone' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Country', attribute: 'residence_country' },
-          { label: 'City', attribute: 'residence_city' },
-          { label: 'Zip code', attribute: 'residence_zip_code' },
-          { label: 'State', attribute: 'residence_state' },
-          { label: 'Street', attribute: 'residence_street' },
-          { label: 'Home number', attribute: 'residence_home_number' },
-          { label: 'Apartament', attribute: 'residence_apartament_number' },
-
-        ],
-        Clients: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'Phone Number', attribute: 'phone' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Country', attribute: 'residence_country' },
-          { label: 'City', attribute: 'residence_city' },
-          { label: 'Zip code', attribute: 'residence_zip_code' },
-          { label: 'State', attribute: 'residence_state' },
-          { label: 'Street', attribute: 'residence_street' },
-          { label: 'Home number', attribute: 'residence_home_number' },
-          { label: 'Apartament', attribute: 'residence_apartament_number' },
-
-        ],
-        All: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'User role', attribute: 'user_role' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Joined', attribute: 'date_joined' },
-
-        ],
-
-      };
-
-      this.columns = columnDefinitions[this.selectedRole] || [];
+      this.reloadComponent();
     },
 
 
@@ -646,23 +710,26 @@ export default {
     async deleteUser() {
       try {
         const response = await axios.delete('api/users/delete/' + this.usernameDelete + '/');
+        const delUsername = this.usernameDelete;
         this.usernameDelete = '';
         this.dialogDelete = false;
         this.reloadComponent()
 
 
         if (response.status == 204) {
-          this.dataSuccess = 'Success!';
-          document.getElementById('hiddenButton').click();
+          this.snackContent = `Successfully deleted ${delUsername}`;
+          this.alert = true;
         }
         else {
-          console.log('Error')
-          this.loadUsers();
+          this.snackErrorContent = `Error, please try again`;
+          this.alertError = true;
+          this.reloadComponent()
         }
 
       }
       catch (error) {
-        console.error('Error when fetching', error);
+        this.snackErrorContent = `Error, please try again`;
+        this.alertError = true;
       }
     },
 
@@ -679,10 +746,6 @@ export default {
           this.$root.changeCurrentComponent('AddAssetComponent');
           break;
       }
-    },
-
-    search() {
-      this.loadUsers();
     },
 
     reloadComponent() {
@@ -702,6 +765,8 @@ export default {
       const response = await axios.put(`api/users/change-state/${username}/`)
       this.dialogState = false;
       this.reloadComponent()
+      this.snackContent = `Successfully changed state of ${username}`;
+      this.alert = true;
 
     },
 
@@ -709,7 +774,6 @@ export default {
       const response = await axios.get(`api/users/get/${username}/${role}/`);
       this.userDetailData = response.data;
       this.UserDetailsDialog = true;
-      console.log(this.userDetailData)
 
     },
 

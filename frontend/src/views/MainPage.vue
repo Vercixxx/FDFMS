@@ -1,8 +1,8 @@
 <template>
     <v-app>
-        <v-layout class="rounded rounded-md" >
-            
-            <v-app-bar app :elevation="3" class="bg-blue-accent-3" image="https://picsum.photos/1920/1080?random">
+        <v-layout class="rounded rounded-md">
+
+            <v-app-bar app :elevation="3" class="">
 
 
                 <v-row align="center" no-gutters>
@@ -32,12 +32,14 @@
                         <v-col cols="auto">
 
                             <v-btn :ripple="false" variant="plain">
-                                <span :style="{ display: actualTheme ? 'none' : 'block' }" @click="toggleTheme" role="button">
+                                <span :style="{ display: actualTheme ? 'none' : 'block' }" @click="toggleTheme"
+                                    role="button">
                                     <span class="material-symbols-outlined">
                                         dark_mode
                                     </span>
                                 </span>
-                                <span :style="{ display: actualTheme ? 'block' : 'none' }" @click="toggleTheme" role="button">
+                                <span :style="{ display: actualTheme ? 'block' : 'none' }" @click="toggleTheme"
+                                    role="button">
                                     <span class="material-symbols-outlined">
                                         light_mode
                                     </span>
@@ -65,6 +67,14 @@
                                 </template>
 
                                 <v-list class="p-0">
+                                    <v-list-item class="p-0">
+
+                                        <v-list-item-title class="text-center">
+                                            Hi, {{ userData.username }}
+                                        </v-list-item-title>
+
+                                    </v-list-item>
+
                                     <v-list-item class="p-0">
                                         <v-btn block variant="flat">Profile</v-btn>
                                     </v-list-item>
@@ -129,9 +139,10 @@
 
 
             <!-- Menu -->
-            <v-navigation-drawer app v-model="drawer" location="left" temporary>
+            <v-navigation-drawer app v-model="drawer" location="left" temporary
+                :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }">
                 <!-- image="https://picsum.photos/1920/1080?random" -->
-                <v-list density="compact" nav>
+                <v-list density="compact" nav class="pa-3">
                     <p class="fw-bold text-center fs-5">FDFMS</p>
                     <p class="fw-lighter">Food Delivery Fleet Management System</p>
 
@@ -148,7 +159,7 @@
 
 
             <!-- Content -->
-            <v-main>
+            <v-main :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }">
                 <!-- content -->
                 <div class="cointainter m-2 p-2">
                     <component :is="currentComponent"></component>
@@ -156,7 +167,45 @@
                 <!-- content -->
             </v-main>
             <!-- Content -->
+
+
+
+
+
+
+            <!-- Snackbar -->
+            <v-snackbar v-model="alert" :timeout="3000" location="bottom" color="success">
+                {{ snackContent }}
+                <template v-slot:actions>
+                    <v-btn @click="alert = false">
+                        Close
+                    </v-btn>
+                </template>
+            </v-snackbar>
+            <!-- Snackbar -->
+
+
         </v-layout>
+
+
+        <v-sheet app class="fixed-bottom elevation-5" >
+            <div class="pa-1 bg-grey-darken-3 text-center w-100 ">
+
+                <div class="d-flex justify-content-evenly">
+                    <div v-for="social in socials" :key="social.id" @click="">
+                        <a :href="social.link" target="_blank"
+                            class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                            <v-icon :icon="social.icon" />
+                        </a>
+
+                    </div>
+                </div>
+
+                {{ new Date().getFullYear() }} — Krzysztof Służałek
+            </div>
+        </v-sheet>
+
+
     </v-app>
 </template>
 
@@ -222,9 +271,21 @@ export default {
             group: null,
             darkModeEnabled: true,
 
+            alert: false,
+            snackContent: '',
 
-
-
+            socials: [
+                {
+                    id: 1,
+                    icon: 'mdi-github',
+                    link: 'https://github.com/Vercixxx'
+                },
+                {
+                    id: 2,
+                    icon: 'mdi-linkedin',
+                    link: 'https://www.linkedin.com/in/krzysztof-sluzalek/'
+                },
+            ]
         };
     },
 
@@ -239,7 +300,8 @@ export default {
         // Check for messages
         const message = localStorage.getItem('message');
         if (message) {
-            console.log(message);
+            this.snackContent = message;
+            this.alert = true;
             localStorage.removeItem('message');
         }
     },
@@ -251,9 +313,6 @@ export default {
             this.$vuetify.theme.dark = this.darkModeEnabled;
         },
 
-        logoutConfirmFunc() {
-            document.getElementById('confirmLogoutButton').click();
-        },
 
         async logout() {
             this.$store.commit('resetState');
@@ -310,11 +369,6 @@ export default {
         ClientsModifyClientComponent() {
             this.currentComponent = ShowClients
         },
-
-
-
-
-
 
 
 
