@@ -1,19 +1,16 @@
 <template>
-    <v-app>
+    <div class="text-center">
+        <h1>Add new user </h1>
+    </div>
 
-        <div class="text-center">
-            <h1>Add new user </h1>
-        </div>
-
-        <v-card title="Choose user role" variant="tonal">
-            <v-card-item class="d-flex justify-center pa-3">
-                <v-btn v-for="button in buttons" :key="button.name" @click="setrole(button.component)" color="success mx-2" variant="tonal">
-                    {{ button.name }}
-                </v-btn>
-            </v-card-item>
-        </v-card>
-
-    </v-app>
+    <v-card title="Choose user role" variant="tonal">
+        <v-card-item class="d-flex justify-center pa-3">
+            <v-btn v-for="button in buttons" :key="button.name" :loading="loading" @click="setrole(button.component)"
+                color="success mx-2" variant="tonal">
+                {{ button.name }}
+            </v-btn>
+        </v-card-item>
+    </v-card>
 </template>
   
 <script>
@@ -24,6 +21,9 @@ export default {
 
     data() {
         return {
+
+            loading: false,
+
             buttons: [
                 {
                     name: 'HR',
@@ -55,6 +55,7 @@ export default {
 
     methods: {
         setrole(role) {
+            this.loading = true;
             this.$root.changeCurrentComponent(role);
         }
 

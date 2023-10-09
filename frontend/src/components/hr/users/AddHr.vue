@@ -1,274 +1,260 @@
 <template>
-    <v-app class="grey--text text--darken-2">
+    <!-- image="https://picsum.photos/1920/1080?random" -->
+    <div class="containter m-2 p-2 d-flex justify-content-center">
+        <div class="col-12 col-md-9">
 
-        <!-- image="https://picsum.photos/1920/1080?random" -->
-        <div class="containter m-2 p-2 d-flex justify-content-center">
-            <div class="col-12 col-md-9">
-
-                <div class="d-flex justify-content-between mb-5">
-                    <div>
-                        <button type="button" class="btn btn-outline-primary mb-3 " @click="goBack">
-                            <span class="d-flex align-items-center">
-                                <span class="material-symbols-outlined">
-                                    arrow_back
-                                </span>
-                                Back
+            <div class="d-flex justify-content-between mb-5">
+                <div>
+                    <button type="button" class="btn btn-outline-primary mb-3 " @click="goBack">
+                        <span class="d-flex align-items-center">
+                            <span class="material-symbols-outlined">
+                                arrow_back
                             </span>
-                        </button>
-                    </div>
-                    <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new HR user</div>
-                    <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit user</div>
-                    <div></div>
-
+                            Back
+                        </span>
+                    </button>
                 </div>
+                <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new HR user</div>
+                <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit user</div>
+                <div></div>
+
+            </div>
 
 
 
-                <v-form v-model="form" @submit.prevent="onSubmit">
-                    <v-container class=" mb-5  rounded-xl elevation-5"
-                        :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-3': theme }">
+            <v-form v-model="form" @submit.prevent="onSubmit">
+                <v-container class=" mb-5  rounded-xl elevation-5"
+                    :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-4': theme }">
 
-                        <div class="fw-light">
-                            <span class="filled-star-example"></span> - field required
-                        </div>
+                    <div class="fw-light">
+                        <span class="filled-star-example"></span> - field required
+                    </div>
 
-                        <p align="center" class="text-h6 text-md-h5 text-lg-h4">Basic info</p>
-                        <v-row>
-                            <v-col cols="12" sm="6" v-for="input in basicInfoInputs" :key="input.name">
-                                <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
-                                    :readonly="input.readonly || false" :hint="input.hint || undefined"
-                                    :rules="input.required ? [required] : []">
+                    <p align="center" class="text-h6 text-md-h5 text-lg-h4">Basic info</p>
+                    <v-row>
+                        <v-col cols="12" sm="6" v-for="input in basicInfoInputs" :key="input.name">
+                            <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
+                                :readonly="input.readonly || false" :hint="input.hint || undefined" :rules="input.rules">
 
-                                    <!-- Star sign -->
-                                    <template v-slot:append-inner>
-                                        <div v-if="input.required" class="filled-star">
-                                        </div>
-                                    </template>
-                                    <!-- Star sign -->
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <span v-if="input.required" class="filled-star">
+                                    </span>
+                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
+                                </template>
+                                <!-- Icons -->
+                                
+                            </v-text-field>
+                        </v-col>
+                    </v-row>
 
-                                </v-text-field>
-                            </v-col>
-                        </v-row>
+                    <p align="center" class="text-h6 text-md-h5 text-lg-h4">Tax, Health and Bank account info</p>
+                    <v-row>
+                        <v-col cols="12" sm="6" v-for="input in taxAndHealth" :key="input.name">
 
-                        <p align="center" class="text-h6 text-md-h5 text-lg-h4">Tax, Health and Bank account info</p>
-                        <v-row>
-                            <v-col cols="12" sm="6" v-for="input in taxAndHealth" :key="input.name">
+                            <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
+                                :readonly="input.readonly || false" :hint="input.hint || undefined" :rules="input.rules">
 
-                                <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
-                                    :readonly="input.readonly || false" :hint="input.hint || undefined"
-                                    :rules="input.required ? [required] : []">
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <span v-if="input.required" class="filled-star">
+                                    </span>
+                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
+                                </template>
+                                <!-- Icons -->
 
-                                    <!-- Star sign -->
-                                    <template v-slot:append-inner>
-                                        <div v-if="input.required" class="filled-star">
-                                        </div>
-                                    </template>
-                                    <!-- Star sign -->
+                            </v-text-field>
 
-                                </v-text-field>
+                        </v-col>
+                    </v-row>
 
-                            </v-col>
-                        </v-row>
+                    <p align="center" class="text-h6 text-md-h5 text-lg-h4">Residence address</p>
+                    <v-row>
 
-                        <p align="center" class="text-h6 text-md-h5 text-lg-h4">Residence address</p>
+                        <!-- Country and City -->
+                        <v-col cols="12" sm="6">
+                            <v-autocomplete label="Country" :items="allCountries" variant="outlined"
+                                v-model="resSelectedCountry" @update:search="getCities('residence')">
+                            </v-autocomplete>
+                        </v-col>
+
+                        <v-col cols="12" sm="6">
+                            <v-autocomplete label="State" :items="resCitiesList" variant="outlined"
+                                v-model="resSelectedState" :disabled="resSelectedCountry === ''">
+                            </v-autocomplete>
+                        </v-col>
+                        <!-- Country and City -->
+
+                        <v-col cols="12" sm="6" v-for="input in residenceAddress" :key="input.name">
+
+                            <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
+                                :readonly="input.readonly || false" :hint="input.hint || undefined" :rules="input.rules">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <span v-if="input.required" class="filled-star">
+                                    </span>
+                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
+                                </template>
+                                <!-- Icons -->
+
+                            </v-text-field>
+
+                        </v-col>
+                    </v-row>
+
+                    <!-- Show correspondence -->
+                    <v-row class="d-flex justify-center">
+                        <v-col cols="auto">
+                            <v-switch v-model="show_corespondece" hide-details inset color="success"></v-switch>
+                        </v-col>
+
+                        <v-col cols="auto" class="d-flex align-center">
+                            Correspodence address same as residence address
+                        </v-col>
+                    </v-row>
+                    <!-- Show correspondence -->
+
+
+                    <!-- Correspondence address -->
+                    <span :style="{ display: show_corespondece ? 'none' : 'block' }">
+                        <p align="center" class="text-h6 text-md-h5 text-lg-h4">Correspondence address</p>
                         <v-row>
 
                             <!-- Country and City -->
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                    v-model="resSelectedCountry" @update:search="getCities('residence')">
+                                    v-model="corSelectedCountry" @update:search="getCities('correspodence')">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6">
-                                <v-autocomplete label="State" :items="resCitiesList" variant="outlined"
-                                    v-model="resSelectedState" :disabled="resSelectedCountry === ''">
+                                <v-autocomplete label="State" :items="corCitiesList" variant="outlined"
+                                    v-model="corSelectedState" :disabled="corSelectedCountry === ''">
                                 </v-autocomplete>
                             </v-col>
                             <!-- Country and City -->
 
-                            <v-col cols="12" sm="6" v-for="input in residenceAddress" :key="input.name">
+                            <v-col cols="12" sm="6" v-for="input in correspodenceAddress" :key="input.name">
 
                                 <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
                                     :readonly="input.readonly || false" :hint="input.hint || undefined"
-                                    :rules="input.required ? [required] : []">
+                                    :rules="input.rules">
 
-                                    <!-- Star sign -->
-                                    <template v-slot:append-inner>
-                                        <div v-if="input.required" class="filled-star">
-                                        </div>
-                                    </template>
-                                    <!-- Star sign -->
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <span v-if="input.required" class="filled-star">
+                                    </span>
+                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
+                                </template>
+                                <!-- Icons -->
+
+
 
                                 </v-text-field>
 
                             </v-col>
                         </v-row>
+                    </span>
+                    <!-- Correspondence address -->
 
-                        <!-- Show correspondence -->
-                        <v-row class="d-flex justify-center">
-                            <v-col cols="auto">
-                                <v-switch v-model="show_corespondece" hide-details inset color="success"></v-switch>
+
+                    <!-- Show Registered -->
+                    <v-row class="d-flex justify-center">
+                        <v-col cols="auto">
+                            <v-switch v-model="show_registered" hide-details inset color="success"></v-switch>
+                        </v-col>
+
+                        <v-col cols="auto" class="d-flex align-center">
+                            Registered address same as residence address
+                        </v-col>
+                    </v-row>
+                    <!-- Show Registered -->
+
+
+                    <!-- Registered address -->
+                    <span :style="{ display: show_registered ? 'none' : 'block' }">
+                        <p align="center" class="text-h6 text-md-h5 text-lg-h4">Registered address</p>
+                        <v-row>
+
+                            <!-- Country and City -->
+                            <v-col cols="12" sm="6">
+                                <v-autocomplete label="Country" :items="allCountries" variant="outlined"
+                                    v-model="regSelectedCountry" @update:search="getCities('registered')">
+                                </v-autocomplete>
                             </v-col>
 
-                            <v-col cols="auto" class="d-flex align-center">
-                                Correspodence address same as residence address
+                            <v-col cols="12" sm="6">
+                                <v-autocomplete label="State" :items="regCitiesList" variant="outlined"
+                                    v-model="regSelectedState" :disabled="regSelectedCountry === ''">
+                                </v-autocomplete>
                             </v-col>
-                        </v-row>
-                        <!-- Show correspondence -->
+                            <!-- Country and City -->
 
+                            <v-col cols="12" sm="6" v-for="input in registeredAddress" :key="input.name">
 
-                        <!-- Correspondence address -->
-                        <span :style="{ display: show_corespondece ? 'none' : 'block' }">
-                            <p align="center" class="text-h6 text-md-h5 text-lg-h4">Correspondence address</p>
-                            <v-row>
+                                <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
+                                    :readonly="input.readonly || false" :hint="input.hint || undefined"
+                                    :rules="input.rules">
 
-                                <!-- Country and City -->
-                                <v-col cols="12" sm="6">
-                                    <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                        v-model="corSelectedCountry" @update:search="getCities('correspodence')">
-                                    </v-autocomplete>
-                                </v-col>
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <span v-if="input.required" class="filled-star">
+                                    </span>
+                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
+                                </template>
+                                <!-- Icons -->
 
-                                <v-col cols="12" sm="6">
-                                    <v-autocomplete label="State" :items="corCitiesList" variant="outlined"
-                                        v-model="corSelectedState" :disabled="corSelectedCountry === ''">
-                                    </v-autocomplete>
-                                </v-col>
-                                <!-- Country and City -->
+                                </v-text-field>
 
-                                <v-col cols="12" sm="6" v-for="input in correspodenceAddress" :key="input.name">
-
-                                    <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
-                                        :readonly="input.readonly || false" :hint="input.hint || undefined"
-                                        :rules="input.required ? [required] : []">
-
-                                        <!-- Star sign -->
-                                        <template v-slot:append-inner>
-                                            <div v-if="input.required" class="filled-star">
-                                            </div>
-                                        </template>
-                                        <!-- Star sign -->
-
-                                    </v-text-field>
-
-                                </v-col>
-                            </v-row>
-                        </span>
-                        <!-- Correspondence address -->
-
-
-                        <!-- Show Registered -->
-                        <v-row class="d-flex justify-center">
-                            <v-col cols="auto">
-                                <v-switch v-model="show_registered" hide-details inset color="success"></v-switch>
-                            </v-col>
-
-                            <v-col cols="auto" class="d-flex align-center">
-                                Registered address same as residence address
                             </v-col>
                         </v-row>
-                        <!-- Show Registered -->
-
-
-                        <!-- Registered address -->
-                        <span :style="{ display: show_registered ? 'none' : 'block' }">
-                            <p align="center" class="text-h6 text-md-h5 text-lg-h4">Registered address</p>
-                            <v-row>
-
-                                <!-- Country and City -->
-                                <v-col cols="12" sm="6">
-                                    <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                        v-model="regSelectedCountry" @update:search="getCities('registered')">
-                                    </v-autocomplete>
-                                </v-col>
-
-                                <v-col cols="12" sm="6">
-                                    <v-autocomplete label="State" :items="regCitiesList" variant="outlined"
-                                        v-model="regSelectedState" :disabled="regSelectedCountry === ''">
-                                    </v-autocomplete>
-                                </v-col>
-                                <!-- Country and City -->
-
-                                <v-col cols="12" sm="6" v-for="input in registeredAddress" :key="input.name">
-
-                                    <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
-                                        :readonly="input.readonly || false" :hint="input.hint || undefined"
-                                        :rules="input.required ? [required] : []">
-
-                                        <!-- Star sign -->
-                                        <template v-slot:append-inner>
-                                            <div v-if="input.required" class="filled-star">
-                                            </div>
-                                        </template>
-                                        <!-- Star sign -->
-
-                                    </v-text-field>
-
-                                </v-col>
-                            </v-row>
-                        </span>
-                        <!-- Registered address -->
+                    </span>
+                    <!-- Registered address -->
 
 
 
-                        <!-- Button submit -->
+                    <!-- Button submit -->
+                    <span>
+                        <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                            Fill all required fields first
+                        </v-tooltip>
                         <span>
-                            <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
-                                Fill all required fields first
-                            </v-tooltip>
-                            <span>
-                                <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
-                                    @click="createUser">
-                                    Create
-                                </v-btn>
-                            </span>
+                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
+                                @click="createUser">
+                                Create
+                            </v-btn>
                         </span>
-                        <!-- Button submit -->
+                    </span>
+                    <!-- Button submit -->
 
-                    </v-container>
-                </v-form>
-
-
-            </div>
+                </v-container>
+            </v-form>
 
         </div>
 
+    </div>
 
-        <!-- Message -->
-        <v-snackbar v-model="alertSuccess" :timeout="3000" location="top" color="success">
-            <p class="fs-6" v-for="(content, field) in successContent" :key="name">
-                {{ field }} : {{ content.join(', ') }}
-            </p>
-            <template v-slot:actions>
-                <v-btn variant="tonal" @click="alertSuccess = false">
-                    Close
-                </v-btn>
-            </template>
-        </v-snackbar>
-
-        <!-- Error -->
-        <v-snackbar v-model="alert" :timeout="3000" location="top" color="orange-darken-4">
-            <p class="fs-6" v-for="(content, field) in errorContent" :key="name">
-                {{ field }} : {{ content.join(', ') }}
-            </p>
-            <template v-slot:actions>
-                <v-btn variant="tonal" @click="alert = false">
-                    Close
-                </v-btn>
-            </template>
-        </v-snackbar>
-        <!-- Error -->
-        <!-- Message -->
-
-
-    </v-app>
+    <!-- Error -->
+    <v-snackbar v-model="alert" :timeout="3000" location="top" color="orange-darken-4">
+        <p class="fs-6" v-for="(content, field) in errorContent" :key="name">
+            {{ field }} : {{ content.join(', ') }}
+        </p>
+        <template v-slot:actions>
+            <v-btn variant="tonal" @click="alert = false">
+                Close
+            </v-btn>
+        </template>
+    </v-snackbar>
+    <!-- Error -->
+    <!-- Message -->
 </template>
 
 <script>
 import axios from 'axios';
 import useEventsBus from '../../../plugins/eventBus.js'
 import { ref, watch } from "vue";
+const { emit } = useEventsBus()
 import { useTheme } from 'vuetify'
 
 export default {
@@ -283,35 +269,64 @@ export default {
                     model: 'username',
                     readonly: true,
                     hint: 'Username is generated automatically',
+                    icon: 'mdi-lock',
                 },
                 {
                     name: 'First name',
                     model: 'first_name',
                     required: true,
+                    icon: 'mdi-account',
+                    rules: [
+                        v => !!v || 'First name is required',
+                        v => (v && v.length >= 3) || 'First name must containt at least 3 characters',
+                        v => /^[a-zA-Z]+$/.test(v) || 'First name can only contain letters',
+                    ],
+
 
                 },
                 {
                     name: 'Last name',
                     model: 'last_name',
                     required: true,
+                    icon: 'mdi-account',
+                    rules: [
+                        v => !!v || 'Last name is required',
+                        v => (v.length >= 3) || 'Last name name must containt at least 3 characters',
+                        v => /^[a-zA-Z]+$/.test(v) || 'Last name can only contain letters',
+                    ]
 
                 },
                 {
                     name: 'Email',
                     model: 'email',
                     required: true,
+                    icon: 'mdi-email',
+                    rules: [
+                        v => !!v || 'Email is required',
+                        v => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v) || 'Invalid email address',
+                    ]
 
                 },
                 {
                     name: 'Phone number',
                     model: 'phone',
                     required: true,
+                    icon: 'mdi-phone',
+                    rules: [
+                        v => !!v || 'Phone number is required',
+                        v => /^[0-9+ -]+$/.test(v) || 'Only numbers, "+" and "-" are allowed',
+                    ]
 
                 },
                 {
                     name: 'PESEL/NIP',
                     model: 'pesel_nip',
                     required: true,
+                    icon: 'mdi-identifier',
+                    rules: [
+                        v => !!v || 'PESEL/NIP is required',
+                        v => /^[0-9]+$/.test(v) || 'Only digits are allowed',
+                    ]
 
                 },
             ],
@@ -321,21 +336,35 @@ export default {
                     name: 'Tax office name',
                     model: 'tax_office_name',
                     required: true,
+                    rules: [
+                        v => !!v || 'Tax office name is required',
+                    ]
                 },
                 {
                     name: 'Tax office address',
                     model: 'tax_office_address',
                     required: true,
+                    rules: [
+                        v => !!v || 'Tax office address is required',
+                    ]
                 },
                 {
                     name: 'NFZ branch',
                     model: 'nfz',
                     required: true,
+                    rules: [
+                        v => !!v || 'NFZ branch is required',
+                    ]
                 },
                 {
                     name: 'Bank Account Number',
                     model: 'bank_account_number',
                     required: true,
+                    icon: 'mdi-card-account-details',
+                    rules: [
+                        v => !!v || 'Bank Account Number is required',
+                        v => /^[0-9]+$/.test(v) || 'Only digits are allowed',
+                    ]
                 },
             ],
 
@@ -344,26 +373,51 @@ export default {
                     name: 'City',
                     model: 'residence_city',
                     required: true,
+                    icon: 'mdi-map-marker',
+                    rules: [
+                        v => !!v || 'City is required',
+                        v => (v.length >= 3) || 'City name must containt at least 3 characters',
+                        v => /^[a-zA-Z]+$/.test(v) || 'City can only contain letters',
+                    ]
                 },
                 {
                     name: 'Street',
                     model: 'residence_street',
                     required: true,
+                    icon: 'mdi-map-marker',
+                    rules: [
+                        v => !!v || 'Street is required',
+                        v => /^[a-zA-Z0-9]+$/.test(v) || 'Only letters and numbers are allowed',
+                    ]
                 },
                 {
                     name: 'Home',
                     model: 'residence_home_number',
                     required: true,
+                    icon: 'mdi-home',
+                    rules: [
+                        v => !!v || 'Street is required',
+                        v => /^[a-zA-Z0-9]+$/.test(v) || 'Only letters and numbers are allowed',
+                    ]
                 },
                 {
                     name: 'Apartament',
                     model: 'residence_apartament_number',
-                    required: false,
+                    icon: 'mdi-home',
+                    rules: [
+                        v => !!v || 'Street is required',
+                        v => /^[a-zA-Z0-9]+$/.test(v) || 'Only letters and numbers are allowed',
+                    ]
                 },
                 {
                     name: 'Zip code',
                     model: 'residence_zip_code',
                     required: true,
+                    icon: 'mdi-earth',
+                    rules: [
+                        v => !!v || 'Field is required',
+                        v => /^[0-9-]+$/.test(v) || 'Only numbers and "-" are allowed',
+                    ]
                 },
             ],
 
@@ -433,9 +487,6 @@ export default {
 
             alert: false,
             errorContent: '',
-
-            alertSuccess: false,
-            successContent: '',
 
             allCountries: [],
 
@@ -510,6 +561,7 @@ export default {
 
 
     methods: {
+
         onSubmit() {
             if (!this.form) return;
 
@@ -565,9 +617,6 @@ export default {
         getDataFromInputs() {
             this.copyResidenceToCorrespondence();
             this.copyResidenceToRegistered();
-
-            // Check correspodence switch
-
 
             for (const field of this.allInputs) {
                 if (typeof this.input_data[field.model] === 'string') {
@@ -641,6 +690,7 @@ export default {
         async createUser() {
 
             this.input_data['user_role'] = 'HR'
+            console.log("Ponizej jest data wysylane na serwer ")
             console.log(this.input_data)
 
             const response = await axios.post('api/create/', this.input_data);
@@ -648,7 +698,10 @@ export default {
             console.log(response);
 
             if (response.data.message) {
-                localStorage.setItem('message', response.data);
+
+                emit('message', '');
+                localStorage.setItem('message', response.data.message);
+
                 this.$root.changeCurrentComponent('AddUserComponent');
 
             }
@@ -756,7 +809,7 @@ export default {
             // Send put request
             const response2 = await axios.put(`api/users/save/${this.username}/${this.user_role}/`, fetched_data);
             const message = `Successfully updated ${this.username}`;
-            localStorage.setItem('message', message)
+            // localStorage.setItem('message', message)
 
 
             // Finish
@@ -778,11 +831,11 @@ export default {
 <style >
 .filled-star::before {
     content: '\2605';
-    color: #ff0000;
+    color: #ff6666;
     font-weight: bold;
     position: absolute;
-    top: 3px;
-    right: 4px;
+    left: 3px;
+    top: 0px;
 }
 
 .filled-star-example::before {

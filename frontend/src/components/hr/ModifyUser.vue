@@ -160,18 +160,6 @@
       </template>
 
 
-      <!-- <template v-for="item in users" v-slot:[`item.${item}`]>
-        asdhdfghdfgh -->
-      <!-- <div v-for="(value, key) in item" :key="key">
-        
-          {{ item.columns.username }}
-        </div> -->
-      <!-- </template> -->
-
-
-
-
-
 
       <!-- Email -->
       <template v-slot:item.email="{ item }">
