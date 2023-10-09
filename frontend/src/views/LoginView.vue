@@ -19,16 +19,19 @@
 
                 <v-col cols="3" class="d-flex align-center justify-end">
 
-                    <v-btn :style="{ display: actualTheme ? 'none' : 'block' }" @click="toggleTheme" variant="plain">
-                        <span class="material-symbols-outlined">
-                            dark_mode
+                    <v-btn :ripple="false" variant="plain">
+                        <span :style="{ display: actualTheme ? 'none' : 'block' }" @click="toggleTheme" role="button">
+                            <span class="material-symbols-outlined">
+                                dark_mode
+                            </span>
+                        </span>
+                        <span :style="{ display: actualTheme ? 'block' : 'none' }" @click="toggleTheme" role="button">
+                            <span class="material-symbols-outlined">
+                                light_mode
+                            </span>
                         </span>
                     </v-btn>
-                    <v-btn :style="{ display: actualTheme ? 'block' : 'none' }" @click="toggleTheme" variant="plain">
-                        <span class="material-symbols-outlined">
-                            light_mode
-                        </span>
-                    </v-btn>
+
 
 
                 </v-col>

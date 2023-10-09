@@ -20,8 +20,19 @@
 
                     <!-- Title -->
                     <v-col class="text-start">
-                        FDFMS
-                        <!-- <p class="text-h6 font-weight-bold">FDFMS - {{ userData.user_role }} Management console</p> -->
+
+                        <div>
+
+                            <span v-for="component in path" :key="component.name">
+
+                                <v-btn :disabled="component.disabled" variant="plain"
+                                    @click="changeComponent(component.component)">
+                                    {{ component.name }}
+                                </v-btn>
+                                /
+                            </span>
+                        </div>
+
                     </v-col>
 
                     <!-- Title -->
@@ -172,7 +183,6 @@
 
 
 
-
             <!-- Snackbar -->
             <v-snackbar v-model="alert" :timeout="3000" location="bottom" color="success">
                 {{ snackContent }}
@@ -187,21 +197,19 @@
 
         </v-layout>
 
-
-        <v-sheet app class="fixed-bottom elevation-5" >
+        <v-sheet app class="elevation-4">
             <div class="pa-1 bg-grey-darken-3 text-center w-100 ">
 
-                <div class="d-flex justify-content-evenly">
-                    <div v-for="social in socials" :key="social.id" @click="">
-                        <a :href="social.link" target="_blank"
-                            class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
-                            <v-icon :icon="social.icon" />
-                        </a>
 
-                    </div>
-                </div>
+                <span v-for="social in socials" :key="social.id" class="pa-3">
+                    <a :href="social.link" target="_blank"
+                        class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                        <v-icon :icon="social.icon" />
+                    </a>
+                </span>
 
                 {{ new Date().getFullYear() }} — Krzysztof Służałek
+
             </div>
         </v-sheet>
 
@@ -213,6 +221,7 @@
 import { useTheme } from 'vuetify'
 import { drawer, closeDrawer } from '../store/store.js';
 import useEventsBus from '../plugins/eventBus.js'
+import { ref, watch } from "vue";
 const { emit } = useEventsBus()
 
 const toggleDrawer = () => {
@@ -233,6 +242,7 @@ function toggleTheme() {
 
 <script>
 import { markRaw } from 'vue';
+import useEventsBus from '../plugins/eventBus.js'
 
 // Home components
 import Home from '../components/Home.vue';
@@ -266,6 +276,12 @@ export default {
         return {
             userData: this.$store.getters.responseData,
             currentComponent: NonReactiveHome,
+            path: [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                }
+            ],
             confirmLogout: null,
             drawer: false,
             group: null,
@@ -297,13 +313,13 @@ export default {
             }
         };
 
-        // Check for messages
-        const message = localStorage.getItem('message');
-        if (message) {
-            this.snackContent = message;
-            this.alert = true;
-            localStorage.removeItem('message');
-        }
+        const { bus } = useEventsBus();
+        watch(
+            () => bus.value.get('message'),
+            (val) => {
+                this.showSnackBar();
+            }
+        );
     },
 
 
@@ -318,6 +334,8 @@ export default {
             this.$store.commit('resetState');
             this.$router.push('/');
         },
+
+
         getNavigationComponent(userRole) {
             switch (userRole) {
                 case "Clients":
@@ -330,34 +348,200 @@ export default {
             }
         },
 
+        changeComponent(name) {
+            this.$root.changeCurrentComponent(name);
+        },
+
 
         HomeComponent() {
             this.currentComponent = NonReactiveHome;
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'NonReactiveHome',
+                    disabled: true,
+                },
+
+            ];
         },
 
         // HR
         AddUserComponent() {
-            this.currentComponent = AddUser
+            this.currentComponent = AddUser;
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Users",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Add User',
+                    component: 'AddUserComponent',
+                    disabled: true,
+                },
+            ];
         },
         ModifyUserComponent() {
-            this.currentComponent = ModifyUser
+            this.currentComponent = ModifyUser;
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Users",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Show users',
+                    component: 'ModifyUserComponent',
+                    disabled: true,
+                },
+            ];
         },
         AddHrComponent() {
             this.currentComponent = HrUser;
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Users",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Add User',
+                    component: 'AddUserComponent',
+                },
+                {
+                    name: 'Add HR User',
+                    component: 'AddHrComponent',
+                    disabled: true,
+                },
+            ];
         },
         AddPayrollComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Users",
+                    component: '',
+                    disabled: true,
+
+                },
+                {
+                    name: 'Add User',
+                    component: 'AddUserComponent',
+                },
+                {
+                    name: 'Add Payroll user',
+                    component: 'AddPayrollComponent',
+                    disabled: true,
+                },
+            ]
             this.currentComponent = PayrollUser;
         },
         AddAssetComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Users",
+                    component: '',
+                    disabled: true,
+
+                },
+                {
+                    name: 'Add User',
+                    component: 'AddUserComponent',
+                },
+                {
+                    name: 'Add Payroll user',
+                    component: 'AddAssetComponent',
+                    disabled: true,
+                },
+            ]
             this.currentComponent = AssetUser;
         },
         AddClientComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Users",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Add User',
+                    component: 'AddUserComponent',
+                },
+                {
+                    name: 'Add Client User',
+                    component: 'AddClientComponent',
+                    disabled: true,
+                },
+            ];
             this.currentComponent = ClientUser;
         },
         AddManagerComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Users",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Add User',
+                    component: 'AddUserComponent',
+                },
+                {
+                    name: 'Add Manager User',
+                    component: 'AddManagerComponent',
+                    disabled: true,
+                },
+            ];
             this.currentComponent = ManagerUser;
         },
         AddDriverComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Users",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Add User',
+                    component: 'AddUserComponent',
+                },
+                {
+                    name: 'Add Driver User',
+                    component: 'AddDriverComponent',
+                    disabled: true,
+                },
+            ];
             this.currentComponent = DriverUser;
         },
 
@@ -371,13 +555,25 @@ export default {
         },
 
 
+        showSnackBar() {
+            const messageFromLocalStorage = localStorage.getItem('message');
+            this.snackContent = messageFromLocalStorage;
+            this.alert = true;
+            localStorage.removeItem('message')
+        },
+
+
+
 
     },
+
 
 
     watch: {
         group() {
             this.drawer = false
+
+
         },
     },
 
