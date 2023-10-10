@@ -32,7 +32,7 @@ const vuetify = createVuetify({
     directives,
 
     theme: {
-        defaultTheme: 'light',
+        defaultTheme: 'dark',
 
        
      

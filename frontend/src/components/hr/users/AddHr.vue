@@ -30,7 +30,13 @@
                         <span class="filled-star-example"></span> - field required
                     </div>
 
-                    <p align="center" class="text-h6 text-md-h5 text-lg-h4">Basic info</p>
+
+
+                    <v-divider :thickness="3" :class="theme ? 'border-opacity-75 rounded-xl mt-10':'border-opacity-50 rounded-xl mt-10'" :color="theme ? '':'info'"></v-divider>
+                    <p align="center" class="text-h4 text-md-h5 text-lg-h5">Basic info</p>
+                    <v-divider :thickness="3" :class="theme ? 'border-opacity-75 rounded-xl mb-10':'border-opacity-50 rounded-xl mb-10'" :color="theme ? '':'info'"></v-divider>
+
+
                     <v-row>
                         <v-col cols="12" sm="6" v-for="input in basicInfoInputs" :key="input.name">
                             <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
@@ -43,12 +49,16 @@
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
-                                
+
                             </v-text-field>
                         </v-col>
                     </v-row>
 
-                    <p align="center" class="text-h6 text-md-h5 text-lg-h4">Tax, Health and Bank account info</p>
+                    <v-divider :thickness="3" :class="theme ? 'border-opacity-75 rounded-xl mt-10':'border-opacity-50 rounded-xl mt-10'" :color="theme ? '':'info'"></v-divider>
+                    <p align="center" class="text-h4 text-md-h5 text-lg-h5">Tax, Health and Bank account info</p>
+                    <v-divider :thickness="3" :class="theme ? 'border-opacity-75 rounded-xl mb-10':'border-opacity-50 rounded-xl mb-10'" :color="theme ? '':'info'"></v-divider>
+
+
                     <v-row>
                         <v-col cols="12" sm="6" v-for="input in taxAndHealth" :key="input.name">
 
@@ -68,7 +78,12 @@
                         </v-col>
                     </v-row>
 
-                    <p align="center" class="text-h6 text-md-h5 text-lg-h4">Residence address</p>
+
+                    <v-divider :thickness="3" :class="theme ? 'border-opacity-75 rounded-xl mt-10':'border-opacity-50 rounded-xl mt-10'" :color="theme ? '':'info'"></v-divider>
+                    <p align="center" class="text-h4 text-md-h5 text-lg-h5">Addresses</p>
+                    <v-divider :thickness="3" :class="theme ? 'border-opacity-75 rounded-xl mb-10':'border-opacity-50 rounded-xl mb-10'" :color="theme ? '':'info'"></v-divider>
+
+                    <p align="center" class="text-h6 text-md-h5 text-lg-h5" >Residence address</p>
                     <v-row>
 
                         <!-- Country and City -->
@@ -103,8 +118,9 @@
                         </v-col>
                     </v-row>
 
+                   
                     <!-- Show correspondence -->
-                    <v-row class="d-flex justify-center">
+                    <v-row class="d-flex justify-center my-5">
                         <v-col cols="auto">
                             <v-switch v-model="show_corespondece" hide-details inset color="success"></v-switch>
                         </v-col>
@@ -118,7 +134,9 @@
 
                     <!-- Correspondence address -->
                     <span :style="{ display: show_corespondece ? 'none' : 'block' }">
-                        <p align="center" class="text-h6 text-md-h5 text-lg-h4">Correspondence address</p>
+
+                        <p align="center" class="text-h4 text-md-h5 text-lg-h5">Correspondence address</p>
+
                         <v-row>
 
                             <!-- Country and City -->
@@ -141,13 +159,14 @@
                                     :readonly="input.readonly || false" :hint="input.hint || undefined"
                                     :rules="input.rules">
 
-                                <!-- Icons -->
-                                <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
-                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
-                                </template>
-                                <!-- Icons -->
+                                    <!-- Icons -->
+                                    <template v-slot:append-inner>
+                                        <span v-if="input.required" class="filled-star">
+                                        </span>
+                                        <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon
+                                        }}</v-icon>
+                                    </template>
+                                    <!-- Icons -->
 
 
 
@@ -160,7 +179,7 @@
 
 
                     <!-- Show Registered -->
-                    <v-row class="d-flex justify-center">
+                    <v-row class="d-flex justify-center my-5">
                         <v-col cols="auto">
                             <v-switch v-model="show_registered" hide-details inset color="success"></v-switch>
                         </v-col>
@@ -174,7 +193,7 @@
 
                     <!-- Registered address -->
                     <span :style="{ display: show_registered ? 'none' : 'block' }">
-                        <p align="center" class="text-h6 text-md-h5 text-lg-h4">Registered address</p>
+                        <p align="center" class="text-h4 text-md-h5 text-lg-h5">Registered address</p>
                         <v-row>
 
                             <!-- Country and City -->
@@ -197,13 +216,14 @@
                                     :readonly="input.readonly || false" :hint="input.hint || undefined"
                                     :rules="input.rules">
 
-                                <!-- Icons -->
-                                <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
-                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
-                                </template>
-                                <!-- Icons -->
+                                    <!-- Icons -->
+                                    <template v-slot:append-inner>
+                                        <span v-if="input.required" class="filled-star">
+                                        </span>
+                                        <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon
+                                        }}</v-icon>
+                                    </template>
+                                    <!-- Icons -->
 
                                 </v-text-field>
 
@@ -220,8 +240,7 @@
                             Fill all required fields first
                         </v-tooltip>
                         <span>
-                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
-                                @click="createUser">
+                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit" class="mt-10 mb-5">
                                 Create
                             </v-btn>
                         </span>
@@ -336,24 +355,30 @@ export default {
                     name: 'Tax office name',
                     model: 'tax_office_name',
                     required: true,
+                    icon: 'mdi-bank',
                     rules: [
-                        v => !!v || 'Tax office name is required',
+
+                        v => /^[a-zA-Z 0-9]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
                     name: 'Tax office address',
                     model: 'tax_office_address',
                     required: true,
+                    icon: 'mdi-bank',
                     rules: [
                         v => !!v || 'Tax office address is required',
+                        v => /^[a-zA-Z 0-9]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
                     name: 'NFZ branch',
                     model: 'nfz',
                     required: true,
+                    icon: 'mdi-bank',
                     rules: [
                         v => !!v || 'NFZ branch is required',
+                        v => /^[a-zA-Z 0-9]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
@@ -377,7 +402,7 @@ export default {
                     rules: [
                         v => !!v || 'City is required',
                         v => (v.length >= 3) || 'City name must containt at least 3 characters',
-                        v => /^[a-zA-Z]+$/.test(v) || 'City can only contain letters',
+                        v => /^[a-zA-Z-]+$/.test(v) || 'City can only contain letters',
                     ]
                 },
                 {
@@ -405,7 +430,6 @@ export default {
                     model: 'residence_apartament_number',
                     icon: 'mdi-home',
                     rules: [
-                        v => !!v || 'Street is required',
                         v => /^[a-zA-Z0-9]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
@@ -424,28 +448,33 @@ export default {
             correspodenceAddress: [
                 {
                     name: 'City',
-                    model: 'correspodence_city',
+                    model: 'correspondence_city',
                     required: false,
+                    icon: 'mdi-map-marker',
                 },
                 {
                     name: 'Street',
-                    model: 'correspodence_street',
+                    model: 'correspondence_street',
                     required: false,
+                    icon: 'mdi-map-marker',
                 },
                 {
                     name: 'Home',
-                    model: 'correspodence_home_number',
+                    model: 'correspondence_home_number',
                     required: false,
+                    icon: 'mdi-home',
                 },
                 {
                     name: 'Apartament',
-                    model: 'correspodence_apartament_number',
+                    model: 'correspondence_apartament_number',
                     required: false,
+                    icon: 'mdi-home',
                 },
                 {
                     name: 'Zip code',
-                    model: 'correspodence_zip_code',
+                    model: 'correspondence_zip_code',
                     required: false,
+                    icon: 'mdi-earth',
                 },
             ],
 
@@ -454,26 +483,31 @@ export default {
                     name: 'City',
                     model: 'registered_city',
                     required: false,
+                    icon: 'mdi-map-marker',
                 },
                 {
                     name: 'Street',
                     model: 'registered_street',
                     required: false,
+                    icon: 'mdi-map-marker',
                 },
                 {
                     name: 'Home',
                     model: 'registered_home_number',
                     required: false,
+                    icon: 'mdi-home',
                 },
                 {
                     name: 'Apartament',
                     model: 'registered_apartament_number',
                     required: false,
+                    icon: 'mdi-home',
                 },
                 {
                     name: 'Zip code',
                     model: 'registered_zip_code',
                     required: false,
+                    icon: 'mdi-earth',
                 },
             ],
 
@@ -566,11 +600,9 @@ export default {
             if (!this.form) return;
 
             this.loading = true;
-            setTimeout(() => (this.loading = false), 2000)
+            this.createUser();
 
-            this.getDataFromInputs();
 
-            // this.loading = false;
         },
         required(v) {
             return !!v || 'Field is required';
@@ -688,16 +720,15 @@ export default {
 
 
         async createUser() {
+            this.getDataFromInputs();
 
             this.input_data['user_role'] = 'HR'
-            console.log("Ponizej jest data wysylane na serwer ")
-            console.log(this.input_data)
 
             const response = await axios.post('api/create/', this.input_data);
 
             console.log(response);
 
-            if (response.data.message) {
+            if (response.status === 200) {
 
                 emit('message', '');
                 localStorage.setItem('message', response.data.message);
@@ -706,7 +737,7 @@ export default {
 
             }
             else {
-                this.errorContent = response.data;
+                this.errorContent = response.message;
                 this.alert = true;
             }
 
@@ -841,6 +872,6 @@ export default {
 .filled-star-example::before {
     content: '\2605';
     color: #ff0000;
-    font-weight: bold;
+
 }
 </style>

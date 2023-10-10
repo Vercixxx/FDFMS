@@ -1,16 +1,20 @@
 <template>
-    <div class="text-center">
-        <h1>Add new user </h1>
+    <div class="text-center text-h4">
+        Add new user
     </div>
 
-    <v-card title="Choose user role" variant="tonal">
-        <v-card-item class="d-flex justify-center pa-3">
-            <v-btn v-for="button in buttons" :key="button.name" :loading="loading" @click="setrole(button.component)"
-                color="success mx-2" variant="tonal">
-                {{ button.name }}
-            </v-btn>
-        </v-card-item>
-    </v-card>
+    <div>
+
+        <p class="text-h5">
+            Choose user role
+        </p>
+
+        <v-btn block v-for="button in buttons" :key="button.name" :loading="loading" @click="setrole(button.component)"
+            class="my-4 pa-6 text-h5 rounded-xl bg-teal-darken-3"  variant="elevated" style="letter-spacing:7px !important">
+            {{ button.name }}
+        </v-btn>
+
+    </div>
 </template>
   
 <script>

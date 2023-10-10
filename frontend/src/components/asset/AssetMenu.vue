@@ -44,12 +44,12 @@ export default {
                     options: [
                         {
                             name: 'add',
-                            click: 'AddUserComponent',
+                            click: 'AddCarsComponent',
                             icon: '<span class="material-symbols-outlined">add</span>',
                         },
                         {
                             name: 'modify',
-                            click: 'ModifyUserComponent',
+                            click: 'ShowCarsComponent',
                             icon: ' <span class="material-symbols-outlined">edit</span>',
                         },
                     ],
