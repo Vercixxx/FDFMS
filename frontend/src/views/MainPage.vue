@@ -2,7 +2,7 @@
     <v-app>
         <v-layout class="rounded rounded-md">
 
-            <v-app-bar app :elevation="3" class="">
+            <v-app-bar app :elevation="3" class="bg-teal-darken-2">
 
 
                 <v-row align="center" no-gutters>
@@ -42,20 +42,10 @@
                     <v-col cols="auto" align="end">
                         <v-col cols="auto">
 
-                            <v-btn :ripple="false" variant="plain">
-                                <span :style="{ display: actualTheme ? 'none' : 'block' }" @click="toggleTheme"
-                                    role="button">
-                                    <span class="material-symbols-outlined">
-                                        dark_mode
-                                    </span>
-                                </span>
-                                <span :style="{ display: actualTheme ? 'block' : 'none' }" @click="toggleTheme"
-                                    role="button">
-                                    <span class="material-symbols-outlined">
-                                        light_mode
-                                    </span>
-                                </span>
+                            <v-btn :ripple="false" variant="plain"
+                                :icon="actualTheme ? 'mdi-weather-night' : 'mdi-white-balance-sunny'" @click="toggleTheme">
                             </v-btn>
+
 
 
 
@@ -154,12 +144,17 @@
                 :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }">
                 <!-- image="https://picsum.photos/1920/1080?random" -->
                 <v-list density="compact" nav class="pa-3">
-                    <p class="fw-bold text-center fs-5">FDFMS</p>
-                    <p class="fw-lighter">Food Delivery Fleet Management System</p>
+                    <v-row>
+                        <v-col cols="auto">
+                            <v-icon icon="mdi-truck-fast" class="text-h3" />
+                        </v-col>
+                        <v-col class="text-h5">
+                            FDFMS
+                        </v-col>
+                    </v-row>
 
                     <v-divider></v-divider>
 
-                    <p class="text-center fw-bolder">Menu</p>
                     <component :is="getNavigationComponent(userData.user_role)" />
 
                 </v-list>
@@ -270,6 +265,14 @@ import DriverUser from '../components/hr/users/AddDriver.vue';
 import AddClient from '../components/clients/AddClient.vue';
 import ShowClients from '../components/clients/ShowClients.vue';
 // Clients
+
+
+// Asset
+import ShowCars from '../components/asset/ShowCars.vue';
+import AddCar from '../components/asset/AddCar.vue';
+// Asset
+
+
 
 export default {
     data() {
@@ -553,6 +556,27 @@ export default {
         ClientsModifyClientComponent() {
             this.currentComponent = ShowClients
         },
+
+
+        // Assets
+        AddCarsComponent() {
+            this.currentComponent = AddCar;
+        },
+        ShowCarsComponent() {
+            this.currentComponent = ShowCars;
+        },
+        // Assets
+
+
+
+
+
+
+
+
+
+
+
 
 
         showSnackBar() {

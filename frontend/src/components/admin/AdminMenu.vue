@@ -1,6 +1,6 @@
 <template>
-    <div class="border mb-3" v-for="menu in menus" :key="menu.name">
-        <p class="text-center text-danger fs-5 fw-bold">{{ menu.name }}</p>
+    <div class="mb-15" v-for="menu in menus" :key="menu.name">
+        <p class="text-center">{{ menu.name }}</p>
         <component :is="menu.menu"></component>
     </div>
 </template>
