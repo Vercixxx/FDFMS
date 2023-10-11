@@ -46,13 +46,13 @@
 
 
 
-        <v-list-item class="mx-auto pa-12" max-width="448" rounded="lg" align="center" justify="center">
+        <v-list-item class="mx-auto pa-12" max-width="700" rounded="lg" align="center" justify="center">
             <v-row>
-                <v-col cols="2">
-                    <v-icon icon="mdi-truck-fast" class="text-h2" />
+                <v-col cols="3">
+                    <v-icon icon="mdi-truck-fast" class="text-h1" />
                 </v-col>
-                <v-col>
-                    <span class="fw-bold">F</span>ood
+                <v-col class="text-h4">
+                    <span class="fw-bold ">F</span>ood
                     <span class="fw-bold">D</span>elivery
                     <span class="fw-bold">F</span>leet
                     <span class="fw-bold">M</span>anagement
@@ -71,9 +71,9 @@
                 <v-row align="center" justify="center">
                     <v-col cols="12" sm="8" md="6">
 
-                        <v-card class="mx-auto " elevation="8" max-width="448" rounded="lg">
+                        <v-card class="mx-auto pa-5" elevation="8" max-width="520" rounded="lg">
 
-                            <v-row justify="end" class="pa-4">
+                            <v-row justify="end" class="mb-4">
                                 <v-btn :ripple="false" variant="plain"
                                     :icon="actualTheme ? 'mdi-weather-night' : 'mdi-white-balance-sunny'"
                                     @click="toggleTheme">
@@ -306,8 +306,6 @@ export default {
 
                     axios.defaults.headers.common['Authorization'] = `JWT ${response.data.jwt.access}`;
 
-
-                    // check if remeber_me is checked
 
                     // if (rememberMe) {
                     //     Cookies.set('username', username, { expires: new Date('9999-12-31') });

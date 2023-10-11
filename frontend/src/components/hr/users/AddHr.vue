@@ -32,9 +32,13 @@
 
 
 
-                    <v-divider :thickness="3" :class="theme ? 'border-opacity-75 rounded-xl mt-10':'border-opacity-50 rounded-xl mt-10'" :color="theme ? '':'info'"></v-divider>
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mt-10' : 'border-opacity-50 rounded-xl mt-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
                     <p align="center" class="text-h4 text-md-h5 text-lg-h5">Basic info</p>
-                    <v-divider :thickness="3" :class="theme ? 'border-opacity-75 rounded-xl mb-10':'border-opacity-50 rounded-xl mb-10'" :color="theme ? '':'info'"></v-divider>
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mb-10' : 'border-opacity-50 rounded-xl mb-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
 
 
                     <v-row>
@@ -54,9 +58,13 @@
                         </v-col>
                     </v-row>
 
-                    <v-divider :thickness="3" :class="theme ? 'border-opacity-75 rounded-xl mt-10':'border-opacity-50 rounded-xl mt-10'" :color="theme ? '':'info'"></v-divider>
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mt-10' : 'border-opacity-50 rounded-xl mt-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
                     <p align="center" class="text-h4 text-md-h5 text-lg-h5">Tax, Health and Bank account info</p>
-                    <v-divider :thickness="3" :class="theme ? 'border-opacity-75 rounded-xl mb-10':'border-opacity-50 rounded-xl mb-10'" :color="theme ? '':'info'"></v-divider>
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mb-10' : 'border-opacity-50 rounded-xl mb-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
 
 
                     <v-row>
@@ -79,24 +87,29 @@
                     </v-row>
 
 
-                    <v-divider :thickness="3" :class="theme ? 'border-opacity-75 rounded-xl mt-10':'border-opacity-50 rounded-xl mt-10'" :color="theme ? '':'info'"></v-divider>
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mt-10' : 'border-opacity-50 rounded-xl mt-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
                     <p align="center" class="text-h4 text-md-h5 text-lg-h5">Addresses</p>
-                    <v-divider :thickness="3" :class="theme ? 'border-opacity-75 rounded-xl mb-10':'border-opacity-50 rounded-xl mb-10'" :color="theme ? '':'info'"></v-divider>
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mb-10' : 'border-opacity-50 rounded-xl mb-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
 
-                    <p align="center" class="text-h6 text-md-h5 text-lg-h5" >Residence address</p>
+                    <p align="center" class="text-h6 text-md-h5 text-lg-h5">Residence address</p>
                     <v-row>
 
                         <!-- Country and City -->
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                v-model="resSelectedCountry" @update:search="getCities('residence')">
+                                v-model="resSelectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
                             </v-autocomplete>
                         </v-col>
 
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="State" :items="resCitiesList" variant="outlined"
-                                v-model="resSelectedState" :disabled="resSelectedCountry === ''">
+                                v-model="resSelectedState" :disabled="resSelectedCountry === ''" :rules="fieldRequired">
                             </v-autocomplete>
+                            
                         </v-col>
                         <!-- Country and City -->
 
@@ -118,7 +131,9 @@
                         </v-col>
                     </v-row>
 
-                   
+
+                    
+                    
                     <!-- Show correspondence -->
                     <v-row class="d-flex justify-center my-5">
                         <v-col cols="auto">
@@ -133,7 +148,7 @@
 
 
                     <!-- Correspondence address -->
-                    <span :style="{ display: show_corespondece ? 'none' : 'block' }">
+                    <span v-if="!show_corespondece">
 
                         <p align="center" class="text-h4 text-md-h5 text-lg-h5">Correspondence address</p>
 
@@ -142,14 +157,15 @@
                             <!-- Country and City -->
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                    v-model="corSelectedCountry" @update:search="getCities('correspodence')">
+                                    v-model="corSelectedCountry" @update:search="getCities('correspodence')" :rules="show_corespondece ?  [] : fieldRequired">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="State" :items="corCitiesList" variant="outlined"
-                                    v-model="corSelectedState" :disabled="corSelectedCountry === ''">
+                                    v-model="corSelectedState" :disabled="corSelectedCountry === ''" :rules="show_corespondece ?  [] : fieldRequired">
                                 </v-autocomplete>
+                                
                             </v-col>
                             <!-- Country and City -->
 
@@ -157,18 +173,18 @@
 
                                 <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
                                     :readonly="input.readonly || false" :hint="input.hint || undefined"
-                                    :rules="input.rules">
+                                    :rules="show_corespondece ? [] : input.rules">
 
                                     <!-- Icons -->
                                     <template v-slot:append-inner>
-                                        <span v-if="input.required" class="filled-star">
+                                        <span v-if="!show_corespondece && input.required" class="filled-star">
                                         </span>
                                         <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon
                                         }}</v-icon>
                                     </template>
                                     <!-- Icons -->
 
-
+                                    
 
                                 </v-text-field>
 
@@ -192,21 +208,22 @@
 
 
                     <!-- Registered address -->
-                    <span :style="{ display: show_registered ? 'none' : 'block' }">
+                    <span v-if="!show_registered">
                         <p align="center" class="text-h4 text-md-h5 text-lg-h5">Registered address</p>
                         <v-row>
 
                             <!-- Country and City -->
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                    v-model="regSelectedCountry" @update:search="getCities('registered')">
+                                    v-model="regSelectedCountry" @update:search="getCities('registered')" :rules="show_registered ?  [] : fieldRequired">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="State" :items="regCitiesList" variant="outlined"
-                                    v-model="regSelectedState" :disabled="regSelectedCountry === ''">
+                                    v-model="regSelectedState" :disabled="regSelectedCountry === ''" :rules="show_registered ?  [] : fieldRequired">
                                 </v-autocomplete>
+                                
                             </v-col>
                             <!-- Country and City -->
 
@@ -214,11 +231,11 @@
 
                                 <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
                                     :readonly="input.readonly || false" :hint="input.hint || undefined"
-                                    :rules="input.rules">
+                                    :rules="show_registered ? [] : input.rules">
 
                                     <!-- Icons -->
                                     <template v-slot:append-inner>
-                                        <span v-if="input.required" class="filled-star">
+                                        <span v-if="!show_registered && input.required" class="filled-star">
                                         </span>
                                         <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon
                                         }}</v-icon>
@@ -240,7 +257,8 @@
                             Fill all required fields first
                         </v-tooltip>
                         <span>
-                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit" class="mt-10 mb-5">
+                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
+                                class="mt-10 mb-5">
                                 Create
                             </v-btn>
                         </span>
@@ -412,7 +430,7 @@ export default {
                     icon: 'mdi-map-marker',
                     rules: [
                         v => !!v || 'Street is required',
-                        v => /^[a-zA-Z0-9]+$/.test(v) || 'Only letters and numbers are allowed',
+                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
@@ -421,7 +439,7 @@ export default {
                     required: true,
                     icon: 'mdi-home',
                     rules: [
-                        v => !!v || 'Street is required',
+                        v => !!v || 'Home is required',
                         v => /^[a-zA-Z0-9]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
@@ -430,7 +448,7 @@ export default {
                     model: 'residence_apartament_number',
                     icon: 'mdi-home',
                     rules: [
-                        v => /^[a-zA-Z0-9]+$/.test(v) || 'Only letters and numbers are allowed',
+                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
@@ -439,7 +457,7 @@ export default {
                     required: true,
                     icon: 'mdi-earth',
                     rules: [
-                        v => !!v || 'Field is required',
+                        v => !!v || 'Zip code is required',
                         v => /^[0-9-]+$/.test(v) || 'Only numbers and "-" are allowed',
                     ]
                 },
@@ -449,32 +467,51 @@ export default {
                 {
                     name: 'City',
                     model: 'correspondence_city',
-                    required: false,
                     icon: 'mdi-map-marker',
+                    required: true,
+                    rules: [
+                        v => !!v || 'City is required',
+                        v => (v.length >= 3) || 'City name must containt at least 3 characters',
+                        v => /^[a-zA-Z-]+$/.test(v) || 'City can only contain letters',
+                    ]
                 },
                 {
                     name: 'Street',
                     model: 'correspondence_street',
-                    required: false,
                     icon: 'mdi-map-marker',
+                    required: true,
+                    rules: [
+                        v => !!v || 'Street is required',
+                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
+                    ]
                 },
                 {
                     name: 'Home',
                     model: 'correspondence_home_number',
-                    required: false,
                     icon: 'mdi-home',
+                    required: true,
+                    rules: [
+                        v => !!v || 'Home is required',
+                        v => /^[a-zA-Z0-9]+$/.test(v) || 'Only letters and numbers are allowed',
+                    ]
                 },
                 {
                     name: 'Apartament',
                     model: 'correspondence_apartament_number',
-                    required: false,
                     icon: 'mdi-home',
+                    rules: [
+                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
+                    ]
                 },
                 {
                     name: 'Zip code',
                     model: 'correspondence_zip_code',
-                    required: false,
                     icon: 'mdi-earth',
+                    required: true,
+                    rules: [
+                        v => !!v || 'Zip code is required',
+                        v => /^[0-9-]+$/.test(v) || 'Only numbers and "-" are allowed',
+                    ]
                 },
             ],
 
@@ -482,32 +519,51 @@ export default {
                 {
                     name: 'City',
                     model: 'registered_city',
-                    required: false,
                     icon: 'mdi-map-marker',
+                    required: true,
+                    rules: [
+                        v => !!v || 'City is required',
+                        v => (v.length >= 3) || 'City name must containt at least 3 characters',
+                        v => /^[a-zA-Z-]+$/.test(v) || 'City can only contain letters',
+                    ]
                 },
                 {
                     name: 'Street',
                     model: 'registered_street',
-                    required: false,
                     icon: 'mdi-map-marker',
+                    required: true,
+                    rules: [
+                        v => !!v || 'Street is required',
+                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
+                    ]
                 },
                 {
                     name: 'Home',
                     model: 'registered_home_number',
-                    required: false,
                     icon: 'mdi-home',
+                    required: true,
+                    rules: [
+                        v => !!v || 'Home is required',
+                        v => /^[a-zA-Z0-9]+$/.test(v) || 'Only letters and numbers are allowed',
+                    ]
                 },
                 {
                     name: 'Apartament',
                     model: 'registered_apartament_number',
-                    required: false,
                     icon: 'mdi-home',
+                    rules: [
+                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
+                    ]
                 },
                 {
                     name: 'Zip code',
                     model: 'registered_zip_code',
-                    required: false,
                     icon: 'mdi-earth',
+                    required: true,
+                    rules: [
+                        v => !!v || 'Zip code is required',
+                        v => /^[0-9-]+$/.test(v) || 'Only numbers and "-" are allowed',
+                    ]
                 },
             ],
 
@@ -535,6 +591,8 @@ export default {
             resSelectedState: '',
             corSelectedState: '',
             regSelectedState: '',
+
+            fieldRequired: [v => !!v || 'Field is required',],
 
 
         };

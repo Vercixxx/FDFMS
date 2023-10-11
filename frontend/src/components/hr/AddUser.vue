@@ -3,29 +3,34 @@
         Add new user
     </div>
 
-    <div>
+    <v-sheet class="pa-5 mt-4 rounded-lg" :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-4': theme }">
 
-        <p class="text-h5">
+        <p class="text-h4">
             Choose user role
         </p>
 
-        <v-btn block v-for="button in buttons" :key="button.name" :loading="loading" @click="setrole(button.component)"
-            class="my-4 pa-6 text-h5 rounded-xl bg-teal-darken-3"  variant="elevated" style="letter-spacing:7px !important">
-            {{ button.name }}
-        </v-btn>
+        <div>
+            <v-btn v-for="button in buttons" :key="button.name" :loading="loading" @click="setrole(button.component)"
+                class="my-4 text-h5 rounded-x bg-teal-darken-3 mx-2" variant="elevated" style="letter-spacing:7px !important">
+                {{ button.name }}
+            </v-btn>
+        </div>
 
-    </div>
+    </v-sheet>
 </template>
   
 <script>
 import axios from 'axios';
+import useEventsBus from '../../plugins/eventBus.js'
+import { watch } from "vue";
+import { useTheme } from 'vuetify'
 
 export default {
     name: 'App',
 
     data() {
         return {
-
+            theme: true,
             loading: false,
 
             buttons: [
@@ -63,7 +68,23 @@ export default {
             this.$root.changeCurrentComponent(role);
         }
 
-    }
+    },
+
+    mounted() {
+        // Dark mode
+        const { bus } = useEventsBus();
+
+        watch(
+            () => bus.value.get('theme'),
+            (val) => {
+                const [themeBus] = val ?? [];
+                this.theme = themeBus;
+            }
+        );
+
+        const theme = useTheme();
+        this.theme = theme.global.current.value.dark;
+    },
 
 };
 </script>
