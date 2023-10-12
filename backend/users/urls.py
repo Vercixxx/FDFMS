@@ -38,6 +38,10 @@ urlpatterns = [
     path('api/users/change-state/<str:username>/', views.ChangeUserState.as_view(), name="change-user-state"),
     
 
+    # Get All Countries
+    path('api/users/get-countries/', views.GetAllCountries.as_view(), name="get-countries"),
 
+    # Get Cities for Given Country
+    path("api/users/get-cities/<str:selected_country>/", views.GetCities.as_view(), name="get-cities"),
 
 ]
