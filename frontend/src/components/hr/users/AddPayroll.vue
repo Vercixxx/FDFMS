@@ -3,7 +3,7 @@
         <div class="col-12 col-md-9">
 
             <div class="d-flex justify-content-between mb-5">
-                <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger">
+                <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
                     Back
                 </v-btn>
 
@@ -622,9 +622,13 @@ export default {
     mounted() {
         this.username = localStorage.getItem('username')
 
+
         if (this.username !== null) {
             this.user_role = localStorage.getItem('user_role')
             this.getUserData(this.username, this.user_role);
+
+            localStorage.removeItem('username');
+            localStorage.removeItem('user_role');
 
             this.editing = true;
 
@@ -633,6 +637,7 @@ export default {
             // Correspodence and Register forms
 
         }
+
 
         // Dark mode
         const { bus } = useEventsBus();
@@ -745,7 +750,6 @@ export default {
             this.input_data['residence_country'] = this.resSelectedCountry;
             this.input_data['residence_state'] = this.resSelectedState;
 
-            // console.log(JSON.stringify(this.input_data, null, 2));
         },
         generateUsername() {
             let firstName = '';
@@ -808,8 +812,6 @@ export default {
 
             const response = await axios.post('api/create/', this.input_data);
 
-            console.log(response);
-
             if (response.status === 200) {
 
                 const messageData = {
@@ -871,8 +873,7 @@ export default {
                 };
 
                 localStorage.setItem('message', JSON.stringify(messageData));
-                localStorage.removeItem('username');
-                localStorage.removeItem('user_role');
+
                 emit('message', '');
                 this.loading = false;
                 this.$root.changeCurrentComponent('ModifyUserComponent');
@@ -885,7 +886,9 @@ export default {
                 };
                 localStorage.setItem('message', JSON.stringify(messageData));
                 emit('message', '');
+
             }
+
 
         },
 
