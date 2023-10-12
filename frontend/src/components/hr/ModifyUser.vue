@@ -4,359 +4,389 @@
     <p class="p-2 fw-bolder fs-5">Filters</p>
 
     <!-- Search bar section -->
-    <div class="text-center mb-5 d-flex justify-content-between">
+    <v-row class="mb-5 d-flex justify-content-between">
 
-      <div class="p-2">
-        <div class="btn-group dropdown mx-2">
-          <span class="input-group-text rounded-0 rounded-start" id="basic-addon1">User role</span>
+      <v-col cols="auto">
+        <!-- User role -->
+        <span>
 
-          <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
-            aria-expanded="false">
-            {{ selectedRole }}
-          </button>
-          <ul class="dropdown-menu">
-            <li @click="selectedRole = 'All'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item fw-bolder ">All</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li @click="selectedRole = 'HR'; loadUsers(); defineColumnsByUserRole();"><a class="dropdown-item ">HR</a>
-            </li>
-            <li @click="selectedRole = 'Asset'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item ">Asset</a></li>
-            <li @click="selectedRole = 'Payroll'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item ">Payroll</a></li>
-            <li @click="selectedRole = 'Clients'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item ">Clients</a></li>
-            <li @click="selectedRole = 'Manager'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item ">Manager</a></li>
-            <li @click="selectedRole = 'Driver'; loadUsers(); defineColumnsByUserRole();"><a
-                class="dropdown-item ">Driver</a></li>
-          </ul>
-        </div>
+          <div class="btn-group dropdown mx-2">
+            <v-btn disabled class="rounded-s-xl rounded-0" :class="{ 'text-black': !theme, 'text-white': theme }">
+              User role
+            </v-btn>
+            <v-btn id="role-activator" variant="tonal" class="rounded-e-xl rounded-0"
+              :class="{ 'text-black': !theme, 'text-white': theme }">
 
+              {{ selectedRole }}
 
+              <span class="material-symbols-outlined">
+                arrow_drop_down
+              </span>
+            </v-btn>
+          </div>
 
-        <div class="btn-group dropdown mx-2">
-          <span class="input-group-text rounded-0 rounded-start" id="basic-addon1">User status</span>
+          <v-menu activator="#role-activator">
+            <v-list>
+              <v-list-item v-for="option in userRoleList" :key="option.name" :value="option.property"
+                @click="chooseRole(option.property)">
+                <v-list-item-title>
+                  {{ option.name }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
 
-          <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
-            aria-expanded="false">
+        </span>
+        <!-- User role -->
 
-            <span v-if="selectedActive === 'True'">Yes</span>
-            <span v-else-if="selectedActive === 'False'">No</span>
-            <span v-else>All</span>
-          </button>
-          <ul class="dropdown-menu">
-            <li @click="selectedActive = 'All'; loadUsers();"><a class="dropdown-item fw-bolder ">All</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li @click="selectedActive = 'True'; loadUsers();"><a class="dropdown-item ">Active</a></li>
-            <li @click="selectedActive = 'False'; loadUsers();"><a class="dropdown-item ">Not active</a></li>
-          </ul>
-        </div>
+        <!-- User status -->
+        <span>
 
+          <div class="btn-group dropdown mx-2">
 
+            <v-btn disabled class="rounded-s-xl rounded-0" :class="{ 'text-black': !theme, 'text-white': theme }">
+              User status
+            </v-btn>
 
-        <div class="btn-group mx-2">
-          <input type="number" name="" id="" class="form-control rounded-0 rounded-start w-25 no-spinners text-center"
-            v-model="users_per_site" @keyup.enter="loadUsers">
-          <span class="input-group-text rounded-0 rounded-end" id="basic-addon1">Users per site</span>
-        </div>
+            <v-btn id="status-activator" variant="tonal" class="rounded-e-xl rounded-0"
+              :class="{ 'text-black': !theme, 'text-white': theme }">
 
-      </div>
+              <span v-if="selectedActive === 'True'">Active</span>
+              <span v-else-if="selectedActive === 'False'">Not active</span>
+              <span v-else>All</span>
+              <span class="material-symbols-outlined">
+                arrow_drop_down
+              </span>
+            </v-btn>
 
+          </div>
+          <v-menu activator="#status-activator">
 
-      <form role="search" method="POST" action="" @submit.prevent="search">
+            <v-list>
+              <v-list-item v-for="option in userStatusList" :key="option.name" :value="option.property"
+                @click="chooseStatus(option.property)">
+                <v-list-item-title>{{ option.name }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
 
-        <div class="input-group">
+          </v-menu>
 
-          <input class="form-control " type="search" placeholder="Search" aria-label="Search" v-model="query">
-          <button type="button" class="btn btn-outline-success d-flex align-items-center px-3" @click="search">
+        </span>
+        <!-- User status -->
 
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search me-2"
-              viewBox="0 0 16 16">
-              <path
-                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-            </svg>
-          </button>
+      </v-col>
 
-        </div>
-        <p class="fw-light">{{ page_flip.count }} records</p>
-      </form>
+      <v-col cols="5">
+        <!-- Search bar -->
+        <v-text-field variant="solo-filled" v-model="searchInput" @keydown.enter="searchTable = searchInput"
+          label="Search" class="px-1" prepend-inner-icon="mdi-magnify" hide-actions clearable
+          hint="Press enter to search" />
+        <!-- Search bar -->
+      </v-col>
 
-    </div>
+    </v-row>
 
     <!-- End of search bar section -->
 
 
-
-    <!-- Pagination -->
-    <div class="d-flex justify-content-center mb-4">
-
-      <!-- Button previous -->
-      <button type="button" class="btn btn-outline-secondary" @click="previousPage" :disabled="!page_flip.previous">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left"
-          viewBox="0 0 16 16">
-          <path
-            d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-        </svg>
-      </button>
-
-      <!-- Current page -->
-      <p class="fw-bolder mx-2">Page {{ currentPage + 1 }}</p>
-
-      <!-- Button next -->
-      <button type="button" class="btn btn-outline-secondary " @click="nextPage" :disabled="!page_flip.next">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right"
-          viewBox="0 0 16 16">
-          <path
-            d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-        </svg>
-      </button>
-
-    </div>
-
-    <!-- Pagination -->
-
-
     <!-- Table -->
-    <div v-if="users.length === 0" class="text-danger fs-2">
-      No records.
-    </div>
+    <v-data-table :headers="headers" :items="users" :search="searchTable" :loading="tableLoading"
+      class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover
+      select-strategy="all" show-current-page>
 
-    <div v-else class="table-responsive">
-      <table class="table table-hover table-striped">
-        <thead>
-          <tr class="text-center">
-            <th v-for="column in columns" :key="column.attribute">
-              <span v-if="column.label === 'Active'" class="text-info">
-                {{ column.label }}
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning"
-                  viewBox="0 0 16 16">
-                  <path
-                    d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1H6.374z" />
-                </svg>
+
+      <!-- {{ column.key }} -->
+      <!-- <template v-slot:item="{ item }">
+        <tr class="text-center">
+          <td v-for="column in headers" :key="column.key">
+
+
+            <span v-if="item.columns[column.key] === null" class="text-danger">
+              <span class="material-symbols-outlined">
+                block
               </span>
-              <span v-else>
-                {{ column.label }}
-              </span>
-            </th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody class="table-group-divider">
-          <tr v-for="user in users" :key="user.id" class="text-center align-middle "  :class="{ 'text-decoration-line-through': user.is_active === 'false' ? false : !user.is_active }">
-            <td v-for="column in columns" :key="column.attribute">
-
-              <!-- Mapping "is_active" -->
-              <span v-if="column.attribute === 'is_active'">
-
-                <!-- SVG when user is active -->
-                <svg v-if="user[column.attribute]" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="green"
-                  class="bi bi-check-lg" viewBox="0 0 16 16">
-                  <path
-                    d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
-                </svg>
-
-                <!-- SVG when user is not active -->
-                <svg v-else xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="red" class="bi bi-x-lg"
-                  viewBox="0 0 16 16">
-                  <path
-                    d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
-                </svg>
+            </span>
 
 
-              </span>
-              <!-- other columns -->
+            <span v-else>
+              {{ item.columns[column.key] }}
+            </span>
 
-              <span v-else>
-                <span v-if="user[column.attribute] !== null">{{ user[column.attribute] }}</span>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-x"
-                  viewBox="0 0 16 16">
-                  <path
-                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 1 1 .708.708L8.707 8l2.647 2.646a.5.5 0 1 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                </svg>
-              </span>
-
-            </td>
-            <td>
-              <!-- Button status -->
-              <button class="btn btn-outline-info m-1"
-                @click="changeStateConfirm(user.username, user.user_role, user.is_active)" :class="{ 'btn-outline-danger': user.is_active === 'false' ? false : !user.is_active }">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning" 
-                  viewBox="0 0 16 16">
-                  <path
-                    d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1H6.374z" />
-                </svg>
-              </button>
-
-              <!-- Button edit -->
-              <button class="btn btn-outline-success m-1" @click="editUser(user.username, user.user_role)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil"
-                  viewBox="0 0 16 16">
-                  <path
-                    d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
-                </svg>
-              </button>
-
-              <!-- Button delete -->
-              <button class="btn btn-outline-danger m-1" @click="deleteConfirm(user.username)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3"
-                  viewBox="0 0 16 16">
-                  <path
-                    d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                </svg>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+          </td>
+        </tr>
+      </template> -->
 
 
-    <!-- Confirmation modal -->
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal"
-      id="confirm_modal_button" style="display: none;">
-    </button>
 
-    <!-- Modal -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header d-flex justify-content-between">
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red" class="bi bi-exclamation-triangle"
-              viewBox="0 0 16 16">
-              <path
-                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-              <path
-                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-            </svg>
-            <h1 class="modal-title fs-5" id="confirmModalLabel">
-              Caution
-            </h1>
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red" class="bi bi-exclamation-triangle"
-              viewBox="0 0 16 16">
-              <path
-                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-              <path
-                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-            </svg>
+      <!-- No data -->
+      <template v-slot:no-data>
+        <p class="text-h4 pa-5">
+          <span class="material-symbols-outlined">
+            database
+          </span>
+          No data
+        </p>
+      </template>
+      <!-- No data -->
+
+
+
+      <!-- Actions label -->
+      <template v-slot:column.action="{ column }">
+        <span class="text-success">
+          {{ column.title }}
+        </span>
+      </template>
+      <!-- Actions label -->
+
+
+
+      <!-- Maping is active -->
+      <template #item.is_active="{ item }">
+
+        <v-btn variant="plain"
+          @click="changeStateConfirm(item.columns.username, item.columns.user_role, item.columns.is_active)">
+          <v-tooltip activator="parent" location="top">Click to change status</v-tooltip>
+
+          <span v-if="item.columns.is_active" class="material-symbols-outlined" style="color:green">
+            check
+          </span>
+
+          <span v-else class="material-symbols-outlined" style="color:red">
+            check_indeterminate_small
+          </span>
+        </v-btn>
+
+      </template>
+
+
+
+      <!-- Email -->
+      <template v-slot:item.email="{ item }">
+
+        <v-btn variant="plain" v-ripple="{ class: 'text-success' }" @click="copyElement(item.columns.email)">
+
+          {{ item.columns.email }}
+
+          <v-tooltip activator="parent" location="top">
+            Click email to copy
+          </v-tooltip>
+
+        </v-btn>
+      </template>
+      <!-- Email -->
+
+
+
+      <!-- Buttons -->
+      <template v-slot:item.action="{ item }">
+        <!-- Button show info -->
+        <v-btn variant="plain" color="blue" @click="userDetails(item.columns.username, item.columns.user_role)">
+          <span class="material-symbols-outlined">
+            description
+          </span>
+          <v-tooltip activator="parent" location="top">Show user details</v-tooltip>
+        </v-btn>
+        <!-- Button show info -->
+
+
+
+        <!-- Button edit -->
+        <v-btn variant="plain" color="green" @click="editUser(item.columns.username, item.columns.user_role)">
+          <span class="material-symbols-outlined d-flex">
+            edit
+          </span>
+          <v-tooltip activator="parent" location="top">Edit</v-tooltip>
+        </v-btn>
+        <!-- Button edit -->
+
+
+
+        <!-- Button delete -->
+        <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.username)">
+          <span class="material-symbols-outlined d-flex">
+            delete
+          </span>
+          <v-tooltip activator="parent" location="top">Delete</v-tooltip>
+        </v-btn>
+        <!-- Button delete -->
+      </template>
+      <!-- Buttons -->
+
+
+    </v-data-table>
+    <!-- Table -->
+
+
+
+    <!-- Dialaogs section -->
+
+    <!-- Delete user dialog -->
+    <v-dialog v-model="dialogDelete" width="400">
+      <v-card>
+        <div class="text-warning text-h6 text-md-h5 text-lg-h4">
+
+          <div class="d-flex justify-content-between align-items-center px-4 pt-4">
+            <span class="material-symbols-outlined">
+              warning
+            </span>
+            <span>
+              Warning
+            </span>
+            <span class="material-symbols-outlined">
+              warning
+            </span>
           </div>
-          <div class="modal-body text-danger fs-5">
-            <p>
-              You are trying to delete {{ usernameDelete }}, this operation is <span class="fw-bold">irreversible</span>.
-              Are you sure?
-            </p>
-          </div>
-          <div class="modal-footer d-flex justify-content-center">
-            <button type="button" class="btn btn-outline-secondary fs-5 w-25" data-bs-dismiss="modal">No</button>
-            <button type="button" class="btn btn-danger fs-5 w-25" data-bs-dismiss="modal"
-              @click="deleteUser(usernameDelete)">Yes</button>
-          </div>
+          <hr>
         </div>
-      </div>
-    </div>
-    <!-- Confirmation modal -->
 
-    <!-- Message modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ErrorModal" id="hiddenButton"
-      style="display: none;">
-    </button>
-    <div class="modal fade" id="ErrorModal" tabindex="-1" aria-labelledby="ErrorModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="ErrorModalLabel">
-              <p v-if="dataError">Error</p>
-              <p v-else>Success</p>
-            </h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body text-center text-danger">
-            <div v-if="dataError">
-              <p> {{ dataError }}</p>
-            </div>
-            <div v-if="dataSuccess">
-              <p class="text-success">{{ dataSuccess }}
-              </p>
-            </div>
+        <div class="pa-3" align="center">
 
-
-          </div>
+          You are trying to delete
+          <span class='fw-bolder'>
+            {{ usernameDelete }}
+          </span>
+          , this operation is <span class="fw-bold">irreversible</span>.
+          Are you sure?
 
         </div>
-      </div>
-    </div>
-    <!-- Message modal -->
+        <hr>
 
-    <!-- Change state active modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#StateModal" id="state_modal"
-      style="display: none;">
-    </button>
-    <div class="modal fade" id="StateModal" tabindex="-1" aria-labelledby="StateModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header d-flex justify-content-between">
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red" class="bi bi-exclamation-triangle"
-              viewBox="0 0 16 16">
-              <path
-                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-              <path
-                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-            </svg>
-            <h1 class="modal-title fs-5" id="confirmModalLabel">
-              Caution
-            </h1>
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red" class="bi bi-exclamation-triangle"
-              viewBox="0 0 16 16">
-              <path
-                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-              <path
-                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-            </svg>
+        <div class="justify-center d-flex align-items-center mb-3">
+          <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
+          <v-btn width="150" @click="deleteUser(usernameDelete)" color="red">Yes</v-btn>
+        </div>
+
+      </v-card>
+    </v-dialog>
+    <!-- Delete user dialog -->
+
+    <!-- Change state of user dialog -->
+    <v-dialog v-model="dialogState" width="400">
+      <v-card>
+        <div class="text-warning text-h6 text-md-h5 text-lg-h4">
+
+          <div class="d-flex justify-content-between align-items-center px-4 pt-4">
+            <span class="material-symbols-outlined">
+              warning
+            </span>
+            <span>
+              Warning
+            </span>
+            <span class="material-symbols-outlined">
+              warning
+            </span>
           </div>
-          <div class="modal-body text-center">
+          <hr>
+        </div>
 
-            <div>
-              This operation will change active state of
-              <span class='fw-bolder'>
-                {{ change_state.username }}
-              </span>
-              from
-              <span v-if="change_state.state === true"> active </span>
-              <span v-else> not active </span>
-              to
-              <span v-if="change_state.state === true"> not active </span>
-              <span v-else> active </span>
-              <p class="text-warning fs-4">Are you sure?</p>
+        <div class="pa-3" align="center">
 
-            </div>
-
-          </div>
-
-          <div class="modal-footer d-flex justify-content-center">
-
-            <button type="button" class="btn btn-secondary w-25 me-2 fs-4" data-bs-dismiss="modal">No</button>
-            <button type="button" class="btn btn-danger w-25 fs-4" data-bs-dismiss="modal" @click="changeState(change_state.username)">Yes</button>
-
-          </div>
+          This operation will change active state of
+          <span class='fw-bolder'>
+            {{ change_state.username }}
+          </span>
+          from
+          <span v-if="change_state.state === true" class="text-success"> active </span>
+          <span v-else class="text-danger"> not active </span>
+          to
+          <span v-if="change_state.state === true" class="text-danger"> not active </span>
+          <span v-else class="text-success"> active </span>
+          Are you sure?
 
         </div>
-      </div>
-    </div>
-    <!-- Change state active modal -->
+        <hr>
 
+        <div class="justify-center d-flex align-items-center mb-3">
+          <v-btn variant="outlined" width="150" class="mr-5" @click="dialogState = false">No</v-btn>
+          <v-btn width="150" @click="changeState(change_state.username)" color="red">Yes</v-btn>
+        </div>
+
+      </v-card>
+    </v-dialog>
+    <!-- Change state of user dialog -->
+
+
+    <!-- dialog -->
+    <v-dialog v-model="UserDetailsDialog" width="auto">
+      <v-card>
+        <v-card-text>
+          <v-table>
+            <thead>
+              <tr>
+                <th class="text-left">
+                  Name
+                </th>
+                <th class="text-left">
+                  Value
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(value, key) in userDetailData" :key="key">
+                <td>{{ key }}</td>
+                <td v-if="value === null">
+                  <span class="material-symbols-outlined">
+                    check_indeterminate_small
+                  </span>
+                </td>
+                <td v-else>
+                  {{ value }}
+                </td>
+
+              </tr>
+            </tbody>
+          </v-table>
+
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" block @click="UserDetailsDialog = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- dialog -->
+
+    <!-- Dialaogs section -->
+
+    <!-- Snackbar -->
+    <v-snackbar v-model="alert" :timeout="3000" location="bottom" color="success">
+      {{ snackContent }}
+      <template v-slot:actions>
+        <v-btn @click="alert = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <!-- Snackbar -->
+
+    <!-- Snackbar Error -->
+    <v-snackbar v-model="alertError" :timeout="3000" location="bottom" color="danger">
+      {{ snackErrorContent }}
+      <template v-slot:actions>
+        <v-btn @click="alertError = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <!-- Snackbar Error -->
 
 
   </div>
 </template>
   
+
+<script setup>
+import { VDataTable } from 'vuetify/labs/VDataTable'
+</script>
+
 <script>
-import axios from 'axios';
-import { createPopper } from '@popperjs/core';
+import axios, { all } from 'axios';
+import useEventsBus from '../../plugins/eventBus.js'
+const { emit } = useEventsBus()
+import { ref, watch } from "vue";
+import { useTheme } from 'vuetify'
+import { VDataTable } from 'vuetify/labs/VDataTable'
+import { resolveDirective } from 'vue';
 
 export default {
   name: 'App',
@@ -364,14 +394,13 @@ export default {
   data() {
     return {
       users: [],
-      columns: [],
-      currentPage: 0,
+
+
       users_per_site: 20,
       page_flip: {
       },
       query: '',
-      dataError: null,
-      dataSuccess: null,
+
 
       selectedRole: 'All',
       selectedActive: 'All',
@@ -381,26 +410,228 @@ export default {
         username: '',
         user_role: '',
         state: '',
-      }
+      },
+      theme: false,
+      UserDetailsDialog: false,
+      userDetailData: {},
+
+      alert: false,
+      snackContent: '',
+
+      alertError: false,
+      snackErrorContent: '',
+
+      searchInput: '',
+      searchTable: '',
+      itemsPerPage: 25,
+      rowNumber: 1,
+
+      dialogState: false,
+      dialogDelete: false,
+
+      userRoleList: [
+        {
+          name: 'All',
+          property: 'All',
+        },
+        {
+          name: 'HR',
+          property: 'HR',
+        },
+        {
+          name: 'Asset',
+          property: 'Asset',
+        },
+        {
+          name: 'Payroll',
+          property: 'Payroll',
+        },
+        {
+          name: 'Clients',
+          property: 'Clients',
+        },
+        {
+          name: 'Manager',
+          property: 'Manager',
+        },
+        {
+          name: 'Driver',
+          property: 'Driver',
+        },
+      ],
+      userStatusList: [
+        {
+          name: 'All',
+          property: 'All',
+        },
+        {
+          name: 'Active',
+          property: 'True',
+        },
+        {
+          name: 'Not active',
+          property: 'False',
+        },
+      ],
+
+      tableLoading: true,
+
+      allHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'USER ROLE', align: 'center', key: 'user_role', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+      DriverHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'COUNTRY', align: 'center', key: 'residence_country', sortable: false },
+        { title: 'STATE', align: 'center', key: 'residence_state', sortable: false },
+        { title: 'ZIP', align: 'center', key: 'residence_zip_code', sortable: false },
+        { title: 'CITY', align: 'center', key: 'residence_city', sortable: false },
+        { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
+        { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
+        { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+      AssetHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'COUNTRY', align: 'center', key: 'residence_country', sortable: false },
+        { title: 'STATE', align: 'center', key: 'residence_state', sortable: false },
+        { title: 'ZIP', align: 'center', key: 'residence_zip_code', sortable: false },
+        { title: 'CITY', align: 'center', key: 'residence_city', sortable: false },
+        { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
+        { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
+        { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+      HRHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'COUNTRY', align: 'center', key: 'residence_country', sortable: false },
+        { title: 'STATE', align: 'center', key: 'residence_state', sortable: false },
+        { title: 'ZIP', align: 'center', key: 'residence_zip_code', sortable: false },
+        { title: 'CITY', align: 'center', key: 'residence_city', sortable: false },
+        { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
+        { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
+        { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+      ManagerHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'COUNTRY', align: 'center', key: 'residence_country', sortable: false },
+        { title: 'STATE', align: 'center', key: 'residence_state', sortable: false },
+        { title: 'ZIP', align: 'center', key: 'residence_zip_code', sortable: false },
+        { title: 'CITY', align: 'center', key: 'residence_city', sortable: false },
+        { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
+        { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
+        { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+      PayrollHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'COUNTRY', align: 'center', key: 'residence_country', sortable: false },
+        { title: 'STATE', align: 'center', key: 'residence_state', sortable: false },
+        { title: 'ZIP', align: 'center', key: 'residence_zip_code', sortable: false },
+        { title: 'CITY', align: 'center', key: 'residence_city', sortable: false },
+        { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
+        { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
+        { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+      ClientsHeaders: [
+        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
+        { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
+        { title: 'JOINED', align: 'center', key: 'date_joined' },
+        { title: 'COUNTRY', align: 'center', key: 'residence_country', sortable: false },
+        { title: 'STATE', align: 'center', key: 'residence_state', sortable: false },
+        { title: 'ZIP', align: 'center', key: 'residence_zip_code', sortable: false },
+        { title: 'CITY', align: 'center', key: 'residence_city', sortable: false },
+        { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
+        { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
+        { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+
     };
   },
 
 
   created() {
-    this.loadUsers();
-    this.defineColumnsByUserRole();
-    // check for messages in local storage
-    if (localStorage.getItem('message')) {
-      const message = localStorage.getItem('message');
-      console.log(message);
-      localStorage.removeItem('message');
-      //   this.dataError = message;
-      //   document.getElementById('hiddenButton').click();
-      // this.dataError = message;
-      //       document.getElementById('hiddenButton').click();
-
-    }
+    this.reloadComponent();
   },
+
+  computed: {
+    headers() {
+      if (this.selectedRole === 'All') {
+        return this.allHeaders;
+      }
+      else if (this.selectedRole === 'Driver') {
+        return this.DriverHeaders;
+      }
+      else if (this.selectedRole === 'HR') {
+        return this.HRHeaders;
+      }
+      else if (this.selectedRole === 'Asset') {
+        return this.AssetHeaders;
+      }
+      else if (this.selectedRole === 'Payroll') {
+        return this.PayrollHeaders;
+      }
+      else if (this.selectedRole === 'Clients') {
+        return this.ClientsHeaders;
+      }
+      else if (this.selectedRole === 'Manager') {
+        return this.ManagerHeaders;
+      }
+    },
+  },
+
+  mounted() {
+    const { bus } = useEventsBus();
+
+    watch(
+      () => bus.value.get('theme'),
+      (val) => {
+        const [themeBus] = val ?? [];
+        this.theme = themeBus;
+      }
+    );
+
+    const theme = useTheme();
+    this.theme = theme.global.current.value.dark;
+  },
+
+
 
   methods: {
     async loadUsers() {
@@ -415,8 +646,6 @@ export default {
           }
         });
 
-        console.log(response.data)
-
         this.page_flip = {
           count: response.data.count,
           next: response.data.next,
@@ -424,144 +653,91 @@ export default {
         }
 
         this.users = response.data.results;
+        console.log(response.data.results);
+
+        // Add number for each row
+        this.users.forEach((user, index) => {
+          user.rownumber = index + 1;
+        });
+
+        this.tableLoading = false;
       }
       catch (error) {
-        console.error('Error when fetching', error);
+        this.snackErrorContent = `Error, please try again`;
+        this.alertError = true;
       }
     },
 
-    previousPage() {
-      this.currentPage -= 1;
-      this.loadUsers();
+
+
+    copyElement(content) {
+      const textarea = document.createElement('textarea');
+      textarea.value = content;
+      textarea.style.position = 'fixed';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
     },
-    nextPage() {
-      this.currentPage += 1;
-      this.loadUsers();
+
+    chooseRole(role) {
+      this.selectedRole = role;
+      this.reloadComponent();
     },
 
-    defineColumnsByUserRole() {
-      const columnDefinitions = {
-        Driver: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'Phone Number', attribute: 'phone' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Country', attribute: 'residence_country' },
-          { label: 'City', attribute: 'residence_city' },
-          { label: 'Zip code', attribute: 'residence_zip_code' },
-          { label: 'State', attribute: 'residence_state' },
-          { label: 'Street', attribute: 'residence_street' },
-          { label: 'Home number', attribute: 'residence_home_number' },
-          { label: 'Apartament', attribute: 'residence_apartament_number' },
-        ],
-        Asset: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'Phone Number', attribute: 'phone' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Country', attribute: 'residence_country' },
-          { label: 'City', attribute: 'residence_city' },
-          { label: 'Zip code', attribute: 'residence_zip_code' },
-          { label: 'State', attribute: 'residence_state' },
-          { label: 'Street', attribute: 'residence_street' },
-          { label: 'Home number', attribute: 'residence_home_number' },
-          { label: 'Apartament', attribute: 'residence_apartament_number' },
-
-        ],
-        HR: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'Phone Number', attribute: 'phone' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Country', attribute: 'residence_country' },
-          { label: 'City', attribute: 'residence_city' },
-          { label: 'Zip code', attribute: 'residence_zip_code' },
-          { label: 'State', attribute: 'residence_state' },
-          { label: 'Street', attribute: 'residence_street' },
-          { label: 'Home number', attribute: 'residence_home_number' },
-          { label: 'Apartament', attribute: 'residence_apartament_number' },
-
-        ],
-        Manager: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'Phone Number', attribute: 'phone' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Country', attribute: 'residence_country' },
-          { label: 'City', attribute: 'residence_city' },
-          { label: 'Zip code', attribute: 'residence_zip_code' },
-          { label: 'State', attribute: 'residence_state' },
-          { label: 'Street', attribute: 'residence_street' },
-          { label: 'Home number', attribute: 'residence_home_number' },
-          { label: 'Apartament', attribute: 'residence_apartament_number' },
-
-        ],
-        Payroll: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'Phone Number', attribute: 'phone' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Country', attribute: 'residence_country' },
-          { label: 'City', attribute: 'residence_city' },
-          { label: 'Zip code', attribute: 'residence_zip_code' },
-          { label: 'State', attribute: 'residence_state' },
-          { label: 'Street', attribute: 'residence_street' },
-          { label: 'Home number', attribute: 'residence_home_number' },
-          { label: 'Apartament', attribute: 'residence_apartament_number' },
-
-        ],
-        Clients: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'Phone Number', attribute: 'phone' },
-          { label: 'Active', attribute: 'is_active' },
-          { label: 'Country', attribute: 'residence_country' },
-          { label: 'City', attribute: 'residence_city' },
-          { label: 'Zip code', attribute: 'residence_zip_code' },
-          { label: 'State', attribute: 'residence_state' },
-          { label: 'Street', attribute: 'residence_street' },
-          { label: 'Home number', attribute: 'residence_home_number' },
-          { label: 'Apartament', attribute: 'residence_apartament_number' },
-
-        ],
-        All: [
-          { label: 'Username', attribute: 'username' },
-          { label: 'Email', attribute: 'email' },
-          { label: 'User role', attribute: 'user_role' },
-          { label: 'Active', attribute: 'is_active' },
-
-        ],
-
-      };
-
-      this.columns = columnDefinitions[this.selectedRole] || [];
+    chooseStatus(status) {
+      this.selectedActive = status;
+      this.reloadComponent();
     },
 
 
     deleteConfirm(username) {
-      this.usernameDelete = username
-      document.getElementById('confirm_modal_button').click();
+      this.usernameDelete = username;
+      this.dialogDelete = true;
     },
 
     async deleteUser() {
       try {
         const response = await axios.delete('api/users/delete/' + this.usernameDelete + '/');
+        const delUsername = this.usernameDelete;
         this.usernameDelete = '';
+        this.dialogDelete = false;
         this.reloadComponent()
-        console.log(response)
+
 
         if (response.status == 204) {
-          this.dataSuccess = 'Success!';
-          document.getElementById('hiddenButton').click();
+          // Call message
+          const messageData = {
+            message: `Successfully deleted ${delUsername}`,
+            type: 'success'
+          };
+
+          localStorage.setItem('message', JSON.stringify(messageData));
+          emit('message', '');
+
         }
         else {
-          console.log('Error')
-          this.loadUsers();
+          const messageData = {
+            message: 'Error, please try again',
+            type: 'error'
+          };
+
+          localStorage.setItem('message', JSON.stringify(messageData));
+          emit('message', '');
+
+
+          this.reloadComponent()
         }
 
       }
       catch (error) {
-        console.error('Error when fetching', error);
+        const messageData = {
+          message: 'Error, please try again',
+          type: 'error'
+        };
+
+        localStorage.setItem('message', JSON.stringify(messageData));
+        emit('message', '');
       }
     },
 
@@ -571,42 +747,54 @@ export default {
 
       switch (user_role) {
         case 'HR':
-          this.$parent.showAddHrComponent()
+          this.$root.changeCurrentComponent('AddHrComponent');
           break;
 
         case 'Asset':
-          this.$parent.showAddAssetComponent()
+          this.$root.changeCurrentComponent('AddAssetComponent');
           break;
       }
-
-
-
-    },
-
-    search() {
-      this.loadUsers();
     },
 
     reloadComponent() {
       this.loadUsers();
     },
 
+
     changeStateConfirm(username, user_role, state) {
       this.change_state.username = username;
       this.change_state.user_role = user_role;
       this.change_state.state = state;
-      document.getElementById('state_modal').click();
+      this.dialogState = true;
     },
+
 
     async changeState(username) {
       const response = await axios.put(`api/users/change-state/${username}/`)
-      console.log(response)
+      this.dialogState = false;
       this.reloadComponent()
+
+      // Call message
+      const messageData = {
+        message: `Successfully changed state of ${username}`,
+        type: 'success'
+      };
+
+      localStorage.setItem('message', JSON.stringify(messageData));
+      emit('message', '');
+
+    },
+
+    async userDetails(username, role) {
+      const response = await axios.get(`api/users/get/${username}/${role}/`);
+      this.userDetailData = response.data;
+      this.UserDetailsDialog = true;
 
     },
 
 
   },
+
 };
 </script>
   

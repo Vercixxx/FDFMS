@@ -21,6 +21,9 @@ export default createStore({
       state.responseData = data;
     },
     setAccessToken(state, accessToken) {
+      if (!state.jwt) {
+        state.jwt = {};
+      }
       state.jwt.accessToken = accessToken;
     },
     setRefreshToken(state, refreshToken) {

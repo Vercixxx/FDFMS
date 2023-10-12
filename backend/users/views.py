@@ -2,8 +2,9 @@
 # Auth
 from django.contrib.auth import authenticate, get_user_model
 
-# Password Auth
-from django.shortcuts import get_object_or_404, render
+# Password 
+import secrets
+import string
 
 
 from django.http import JsonResponse
@@ -91,6 +92,7 @@ class GlobalDictionaries:
         },
         
         'UpdateUserSerializers': {
+            'HR': UpdateHRUser,
             'Asset': UpdateAssetUser,
             'Manager': UpdateRestManager,
         }
@@ -102,7 +104,8 @@ class GlobalDictionaries:
         if dictionary:
             return dictionary.get(key)
             
-        
+      
+  
 
 class GUViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -188,26 +191,32 @@ class AddUser(APIView):
     
     def post(self, request):
         user_role = request.data.get('user_role')
-
+        print("Data z funkcji: ", request.data)
+        
+        # Password generating
+        generated_password = self.generate_password()
+        request.data['password'] = generated_password
+        request.data['password2'] = generated_password
 
         serializer_class = GlobalDictionaries.get_serializer('AddUserSerializers', user_role) 
 
         serializer = serializer_class(data=request.data)
         data = {}
         
+
         if serializer.is_valid():
             account = serializer.save()
-            data['message'] = 'Succesfully registered a new User'
-            data['username'] = account.username
-            
-            user_model = account.__class__
-            user = user_model.objects.get(username=account.username)
-            
-        
+            data['message'] = f'Succesfully registered {account.username}'
+            print("Created ", account.username, " with password: ", generated_password)
         else:
             data = serializer.errors
             
         return JsonResponse(data)
+    
+    def generate_password(self):
+        characters = string.ascii_letters + string.digits + string.punctuation
+        password = ''.join(secrets.choice(characters) for _ in range(8))
+        return password
     
 
 class getUser(APIView):
@@ -231,18 +240,27 @@ class UpdateUser(APIView):
     
     def put(self, request, username, user_role):
         data = request.data
+
+        fields_to_check = ['username', 'email']
+
+        for field_name in fields_to_check:
+            if field_name in data:
+                field_value = data[field_name]
+
+                duplicate_exists = GeneralUser.objects.filter(**{field_name: field_value}).exclude(username=username, user_role=user_role).exists()
+                if duplicate_exists:
+                    return JsonResponse({'error': f'{field_name} is already taken. Please try another.'}, status=400) 
         
 
         user_model = GlobalDictionaries.get_serializer('UserModels', user_role)
         user = user_model.objects.get(username = username)
-    
         
         serializer_class = GlobalDictionaries.get_serializer('UpdateUserSerializers', user_role)
         serializer = serializer_class(user, data=data)
         
         if serializer.is_valid():
             serializer.update(user, data)  
-            return JsonResponse({'message' : 'success'},status=200)
+            return JsonResponse({'message' : 'Successfully updated'},status=200)
         
         else:
             return JsonResponse(serializer.errors, status=400)
@@ -254,3 +272,21 @@ class ChangeUserState(APIView):
         user.is_active = not user.is_active
         user.save()
         return JsonResponse({'message' : 'Changed successfully'}, status=200)
+    
+    
+    
+class GetAllCountries(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(safe, request):
+        countries = [choice[0] for choice in GeneralUser.COUNTRY_CHOICES]
+        return JsonResponse(countries, safe=False)
+    
+class GetCities(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(safe, request, selected_country):
+        if(selected_country == "Poland"):
+            countries = [choice[0] for choice in GeneralUser.POLAND_STATE_CHOICES]
+            
+        return JsonResponse(countries, safe=False)

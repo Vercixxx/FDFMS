@@ -132,12 +132,12 @@
                         <!-- Residence address Home number -->
                         <div class="input-group">
                             <div
-                                class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
                                 Home
                             </div>
-                            <div class="col-4 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end me-2"
-                                    aria-label="home_number" aria-describedby="home_number" v-model="home_number"
+                            <div class="col-3 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end me-2" aria-label="home_number"
+                                    aria-describedby="home_number" v-model="home_number"
                                     :class="{ 'border border-danger': dataError && dataError['home_number'] }">
                             </div>
                             <!-- Residence address Home number -->
@@ -145,13 +145,12 @@
 
                             <!-- Residence address Apartament number -->
                             <div
-                                class="col-2 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
+                                class="col-3 fw-bolder d-flex align-items-center justify-content-center border rounded-start bg-body-tertiary">
                                 Apartament
                             </div>
-                            <div class="col-4 d-flex align-items-center">
-                                <input type="text" class="form-control rounded-0 rounded-end"
-                                    aria-label="apartament_number" aria-describedby="apartament_number"
-                                    v-model="apartament_number"
+                            <div class="col-3 d-flex align-items-center">
+                                <input type="text" class="form-control rounded-0 rounded-end" aria-label="apartament_number"
+                                    aria-describedby="apartament_number" v-model="apartament_number"
                                     :class="{ 'border border-danger': dataError && dataError['apartament_number'] }">
                             </div>
                             <!-- Residence address Apartament number -->
@@ -197,20 +196,23 @@
                                     <div class="input-group w-75">
 
                                         <input class="form-control border-success" type="search"
-                                            placeholder="Search managers" aria-label="Search" v-model="query" @keyup.enter="getAllUsernames">
+                                            placeholder="Search managers" aria-label="Search" v-model="query"
+                                            @keyup.enter="getAllUsernames">
 
                                     </div>
                                 </form>
                                 <!-- search bar -->
 
 
-                                <!-- Users list -->
-                                <button v-for="username in managersUsernames" :key="username.username" type="button"
-                                    class="btn btn-outline-secondary w-75 mb-2" @click="toggleUser(username)"
-                                    :class="{ 'btn-secondary text-white': isSelected(username) }">
-                                    {{ username.username }}
-                                </button>
-                                <!-- Users list -->
+                                <div class="d-flex flex-column justify-content-center">
+                                    <!-- Users list -->
+                                    <button v-for="username in managersUsernames" :key="username.username" type="button"
+                                        class="btn btn-outline-secondary mb-2 fw-bolder" @click="toggleUser(username)"
+                                        :style="{ 'display': isSelected(username) ? 'none' : 'block' }">
+                                        {{ username.username }}
+                                    </button>
+                                    <!-- Users list -->
+                                </div>
 
 
                             </div>
@@ -222,11 +224,11 @@
                             <div class="border border-success border-2 rounded p-2" style="height: 40vh; overflow-y: auto;">
                                 <p class="fw-bolder fs5">Choosen managers</p>
                                 <hr>
-      
+
 
                                 <!-- Users list -->
                                 <button v-for="username in choosenUsernames" :key="username.username" type="button"
-                                    class="btn btn-success w-75 mb-2" @click="toggleUser(username)"
+                                    class="btn btn-success w-75 mb-2 fw-bolder" @click="toggleUser(username)"
                                     :class="{ '': isSelected(username) }">
                                     {{ username.username }}
                                 </button>
@@ -245,8 +247,9 @@
 
 
                     <div class="text-center">
-                        <button v-if="res_name === null" type="button" class="btn btn-success shadow" @click="test"
-                            :disabled="!isFormValid" :class="{ 'btn-outline-danger': !isFormValid }">
+                        <button v-if="res_name === null" type="button" class="btn btn-success shadow"
+                            @click="createRestaurant" :disabled="!isFormValid"
+                            :class="{ 'btn-outline-danger': !isFormValid }">
                             <span class="d-flex align-items-center">
                                 Create
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -279,15 +282,16 @@
 
         </div>
 
+
         <!-- Message modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ErrorModal" id="hiddenButton"
+        <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ErrorModal" id="hiddenButton"
             style="display: none;">
         </button>
         <div class="modal fade" id="ErrorModal" tabindex="-1" aria-labelledby="ErrorModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content">
+                <div class="modal-content"> -->
                     <!-- Error -->
-                    <div v-if="dataError" class="modal-header d-flex justify-content-between">
+                    <!-- <div v-if="dataError" class="modal-header d-flex justify-content-between">
                         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red"
                             class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
                             <path
@@ -305,26 +309,27 @@
                             <path
                                 d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
                         </svg>
-                    </div>
+                    </div> -->
                     <!-- Error -->
 
                     <!-- Success -->
-                    <div v-else class="modal-header">
+                    <!-- <div v-else class="modal-header">
                         <h1 class="modal-title fs-5" id="ErrorModalLabel">
                             <p>Success!</p>
                         </h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+                    </div> -->
                     <!-- Success -->
 
-                    <div class="modal-body text-center text-danger">
+
+                    <!-- <div class="modal-body text-center text-danger">
                         <div v-for="(messages, field) in dataError" :key="field">
                             <p v-for="message in messages" :key="message">{{ field }} - {{ message }}</p>
                         </div>
 
                         <div v-if="dataCorrect">
                             <p class="text-success">
-                                Succesfully created {{ dataCorrect.username }} account
+                                Succesfully created
                             </p>
                         </div>
 
@@ -338,14 +343,16 @@
 
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- Message modal -->
+
 
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+
 
 export default {
     data() {
@@ -377,9 +384,30 @@ export default {
 
     mounted() {
         this.getAllUsernames()
+        
     },
 
     methods: {
+        showAlert(alertClass, alertText) {
+            this.$root.showAlert(alertClass, alertText);
+        },
+        
+        isFormValid() {
+            return (
+                this.name &&
+                this.phone &&
+
+                this.country &&
+                this.city &&
+                this.state &&
+                this.street &&
+                this.home_number &&
+                this.apartament_number &&
+                this.zip_code
+            );
+
+        },
+
         async getAllUsernames() {
             const response = await axios.get('api/managers/get_username_all/', {
                 params: {
@@ -387,27 +415,71 @@ export default {
                 }
             });
 
-            this.managersUsernames = response.data
-            console.log(response)
+            this.managersUsernames = response.data.filter(username => !this.choosenUsernames.includes(username));
+
+            console.log(response);
 
         },
         toggleUser(user) {
             if (this.isSelected(user)) {
                 this.choosenUsernames = this.choosenUsernames.filter(u => u !== user);
-            } else {
+            } else if (!this.choosenUsernames.includes(user)) {
                 this.choosenUsernames.push(user);
             }
         },
+
         isSelected(user) {
-            return this.choosenUsernames.includes(user);
+            return this.choosenUsernames.some(u => u.username === user.username);
         },
 
-        test() {
-            console.log(this.choosenUsernames)
+        async createRestaurant() {
+            const userList = this.choosenUsernames.map(user => user.username);
+
+            const fetched_data = {
+                name: this.name,
+                phone: this.phone,
+
+                country: this.country,
+                city: this.city,
+                state: this.state,
+                street: this.street,
+                home_number: this.home_number,
+                apartament_number: this.apartament_number,
+                zip_code: this.zip_code,
+
+                managers: userList,
+            };
+
+            // post data
+            const response = await axios.post('api/restaurant/create/', fetched_data)
+
+            if (response.data.message) {
+                this.dataCorrect = response.data;
+                document.getElementById('hiddenButton').click();
+                this.resetForm();
+            }
+            else {
+                this.dataError = response.data;
+                document.getElementById('hiddenButton').click();
+            }
+
         },
 
+        resetForm() {
+            this.name = '';
+            this.phone = '';
+
+            this.country = '';
+            this.city = '';
+            this.state = '';
+            this.street = '';
+            this.home_number = '';
+            this.apartament_number = '';
+            this.zip_code = '';
+        },
 
     },
 
 }
 </script>
+
