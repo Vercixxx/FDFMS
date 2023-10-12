@@ -994,7 +994,10 @@ export default {
             };
 
             // Send put request
-            const response2 = await axios.put(`api/users/save/${this.username}/${this.user_role}/`, fetched_data)
+            console.log("ASDAGRFSE")
+            const response2 = await axios.put(`api/users/save/${this.username}/${this.user_role}/`, fetched_data);
+            const message = `Successfully updated ${this.username}`;
+            localStorage.setItem('message', message);
 
 
             // Finish
@@ -1002,7 +1005,7 @@ export default {
         },
 
         goBack() {
-            this.$parent.showModifyUserComponent()
+            this.$root.changeCurrentComponent('ModifyUserComponent');
         }
     }
 };

@@ -995,14 +995,15 @@ export default {
 
             // Send put request
             const response2 = await axios.put(`api/users/save/${this.username}/${this.user_role}/`, fetched_data)
-
+            const message = `Successfully updated ${this.username}`;
+            localStorage.setItem('message', message);
 
             // Finish
             this.goBack()
         },
 
         goBack() {
-            this.$parent.showModifyUserComponent()
+            this.$root.changeCurrentComponent('ModifyUserComponent');
         }
     }
 };

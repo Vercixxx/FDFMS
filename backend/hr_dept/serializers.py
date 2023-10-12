@@ -5,10 +5,46 @@ from django.contrib.auth.password_validation import validate_password
 from .models import HRUser
 from users.models import GeneralUser
 
+
+
+
 class GetHRUser(serializers.ModelSerializer):
     class Meta:
         model = HRUser
-        fields = '__all__'
+        fields = ['email', 
+                  'username', 
+                  'first_name', 
+                  'last_name', 
+                  'is_active', 
+                  'user_role', 
+                  'phone',
+                  'residence_country', 
+                  'residence_city', 
+                  'residence_state', 
+                  'residence_street', 
+                  'residence_home_number', 
+                  'residence_apartament_number', 
+                  'residence_zip_code',
+                  'registered_country', 
+                  'registered_city', 
+                  'registered_state', 
+                  'registered_street', 
+                  'registered_home_number', 
+                  'registered_apartament_number', 
+                  'registered_zip_code',
+                  'correspondence_country', 
+                  'correspondence_city', 
+                  'correspondence_state', 
+                  'correspondence_street', 
+                  'correspondence_home_number', 
+                  'correspondence_apartament_number', 
+                  'correspondence_zip_code',
+                  'bank_account_number',
+                  'pesel_nip',
+                  'tax_office_name',
+                  'tax_office_address',
+                  'nfz',
+                  ]
 
 class HRUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,7 +63,9 @@ class HRUserSerializer(serializers.ModelSerializer):
                   'residence_street', 
                   'residence_home_number', 
                   'residence_apartament_number', 
-                  'residence_zip_code']
+                  'residence_zip_code',
+
+                  ]
         
 class AddHRUserSerializer(serializers.ModelSerializer):
     
@@ -45,7 +83,7 @@ class AddHRUserSerializer(serializers.ModelSerializer):
 
 
     def save(self):
-        request_data = self.initial_data  # Używamy initial_data, aby uzyskać dane z zapytania
+        request_data = self.initial_data
         account_data = {
             'user_role': 'HR',
             'email': self.validated_data.get('email', None),
@@ -85,7 +123,6 @@ class AddHRUserSerializer(serializers.ModelSerializer):
     
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
-        
         
         
         if password != password2:
@@ -131,9 +168,7 @@ class UpdateHRUser(serializers.Serializer):
             'tax_office_address',
             'nfz',
         ]
-        extra_kwargs = {
-            'username' : {'validators' : [UniqueValidator(queryset=GeneralUser.objects.all(), message='This username is already in use.')]}
-        }
+
         
     def update(self, instance, validated_data):
         instance.email = validated_data.get('email', instance.email)

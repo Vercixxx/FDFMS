@@ -2,7 +2,6 @@
 import 'jquery';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap';
-import BootstrapVueNext from 'bootstrap-vue-next'
 
 import './axios'
 // My packages
@@ -13,7 +12,33 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import axios from 'axios';
+import mitt from 'mitt';
 
+
+
+// Vuetify
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import colors from 'vuetify/lib/util/colors'
+import '@mdi/font/css/materialdesignicons.css'
+
+
+
+
+const vuetify = createVuetify({
+    components,
+    directives,
+
+    theme: {
+        defaultTheme: 'dark',
+
+       
+     
+    },
+    
+  })
 
 // Access token refreshing
 function refreshAccessToken() {
@@ -41,7 +66,7 @@ setInterval(refreshAccessToken, 58 * 60 * 1000);
 // Access token refreshing
 
 
+createApp(App).use(store).use(router).use(vuetify).mount('#app')
 
-createApp(App).use(store).use(router).use(BootstrapVueNext).mount('#app')
 
 
