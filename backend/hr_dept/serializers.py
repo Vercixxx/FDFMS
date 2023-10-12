@@ -5,6 +5,9 @@ from django.contrib.auth.password_validation import validate_password
 from .models import HRUser
 from users.models import GeneralUser
 
+
+
+
 class GetHRUser(serializers.ModelSerializer):
     class Meta:
         model = HRUser
@@ -165,9 +168,7 @@ class UpdateHRUser(serializers.Serializer):
             'tax_office_address',
             'nfz',
         ]
-        extra_kwargs = {
-            'username' : {'validators' : [UniqueValidator(queryset=GeneralUser.objects.all(), message='This username is already in use.')]}
-        }
+
         
     def update(self, instance, validated_data):
         instance.email = validated_data.get('email', instance.email)

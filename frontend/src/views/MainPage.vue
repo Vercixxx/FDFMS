@@ -179,8 +179,8 @@
 
 
             <!-- Snackbar -->
-            <v-snackbar v-model="alert" :timeout="3000" location="bottom" color="success">
-                {{ snackContent }}
+            <v-snackbar v-model="alert" :timeout="3000" location="bottom" :color="snackContent.type">
+                {{ snackContent.message }}
                 <template v-slot:actions>
                     <v-btn @click="alert = false">
                         Close
@@ -581,7 +581,7 @@ export default {
 
         showSnackBar() {
             const messageFromLocalStorage = localStorage.getItem('message');
-            this.snackContent = messageFromLocalStorage;
+            this.snackContent = JSON.parse(messageFromLocalStorage);
             this.alert = true;
             localStorage.removeItem('message')
         },
