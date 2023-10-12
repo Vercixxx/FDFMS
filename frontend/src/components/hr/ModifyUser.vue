@@ -95,29 +95,6 @@
       select-strategy="all" show-current-page>
 
 
-      <!-- {{ column.key }} -->
-      <!-- <template v-slot:item="{ item }">
-        <tr class="text-center">
-          <td v-for="column in headers" :key="column.key">
-
-
-            <span v-if="item.columns[column.key] === null" class="text-danger">
-              <span class="material-symbols-outlined">
-                block
-              </span>
-            </span>
-
-
-            <span v-else>
-              {{ item.columns[column.key] }}
-            </span>
-
-          </td>
-        </tr>
-      </template> -->
-
-
-
       <!-- No data -->
       <template v-slot:no-data>
         <p class="text-h4 pa-5">
@@ -348,29 +325,6 @@
 
     <!-- Dialaogs section -->
 
-    <!-- Snackbar -->
-    <v-snackbar v-model="alert" :timeout="3000" location="bottom" color="success">
-      {{ snackContent }}
-      <template v-slot:actions>
-        <v-btn @click="alert = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
-    <!-- Snackbar -->
-
-    <!-- Snackbar Error -->
-    <v-snackbar v-model="alertError" :timeout="3000" location="bottom" color="danger">
-      {{ snackErrorContent }}
-      <template v-slot:actions>
-        <v-btn @click="alertError = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
-    <!-- Snackbar Error -->
-
-
   </div>
 </template>
   
@@ -386,7 +340,7 @@ const { emit } = useEventsBus()
 import { ref, watch } from "vue";
 import { useTheme } from 'vuetify'
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import { resolveDirective } from 'vue';
+
 
 export default {
   name: 'App',
@@ -411,20 +365,14 @@ export default {
         user_role: '',
         state: '',
       },
+
       theme: false,
       UserDetailsDialog: false,
       userDetailData: {},
 
-      alert: false,
-      snackContent: '',
-
-      alertError: false,
-      snackErrorContent: '',
-
       searchInput: '',
       searchTable: '',
       itemsPerPage: 25,
-      rowNumber: 1,
 
       dialogState: false,
       dialogDelete: false,
@@ -663,8 +611,14 @@ export default {
         this.tableLoading = false;
       }
       catch (error) {
-        this.snackErrorContent = `Error, please try again`;
-        this.alertError = true;
+        
+        const messageData = {
+          message: `Error, please try again`,
+          type: 'error'
+        };
+
+        localStorage.setItem('message', JSON.stringify(messageData));
+        emit('message', '');
       }
     },
 
@@ -750,8 +704,24 @@ export default {
           this.$root.changeCurrentComponent('AddHrComponent');
           break;
 
+        case 'Payroll':
+          this.$root.changeCurrentComponent('AddPayrollComponent');
+          break;
+
         case 'Asset':
           this.$root.changeCurrentComponent('AddAssetComponent');
+          break;
+
+        case 'Clients':
+          this.$root.changeCurrentComponent('AddClientComponent');
+          break;
+
+        case 'Manager':
+          this.$root.changeCurrentComponent('AddManagerComponent');
+          break;
+
+        case 'Driver':
+          this.$root.changeCurrentComponent('AddDriverComponent');
           break;
       }
     },
