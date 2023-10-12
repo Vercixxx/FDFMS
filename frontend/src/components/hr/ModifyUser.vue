@@ -382,6 +382,7 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 <script>
 import axios, { all } from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
+const { emit } = useEventsBus()
 import { ref, watch } from "vue";
 import { useTheme } from 'vuetify'
 import { VDataTable } from 'vuetify/labs/VDataTable'
@@ -705,19 +706,38 @@ export default {
 
 
         if (response.status == 204) {
-          this.snackContent = `Successfully deleted ${delUsername}`;
-          this.alert = true;
+          // Call message
+          const messageData = {
+            message: `Successfully deleted ${delUsername}`,
+            type: 'success'
+          };
+
+          localStorage.setItem('message', JSON.stringify(messageData));
+          emit('message', '');
+
         }
         else {
-          this.snackErrorContent = `Error, please try again`;
-          this.alertError = true;
+          const messageData = {
+            message: 'Error, please try again',
+            type: 'error'
+          };
+
+          localStorage.setItem('message', JSON.stringify(messageData));
+          emit('message', '');
+
+
           this.reloadComponent()
         }
 
       }
       catch (error) {
-        this.snackErrorContent = `Error, please try again`;
-        this.alertError = true;
+        const messageData = {
+          message: 'Error, please try again',
+          type: 'error'
+        };
+
+        localStorage.setItem('message', JSON.stringify(messageData));
+        emit('message', '');
       }
     },
 
@@ -753,8 +773,15 @@ export default {
       const response = await axios.put(`api/users/change-state/${username}/`)
       this.dialogState = false;
       this.reloadComponent()
-      this.snackContent = `Successfully changed state of ${username}`;
-      this.alert = true;
+
+      // Call message
+      const messageData = {
+        message: `Successfully changed state of ${username}`,
+        type: 'success'
+      };
+
+      localStorage.setItem('message', JSON.stringify(messageData));
+      emit('message', '');
 
     },
 

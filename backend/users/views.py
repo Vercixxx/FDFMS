@@ -92,6 +92,7 @@ class GlobalDictionaries:
         },
         
         'UpdateUserSerializers': {
+            'HR': UpdateHRUser,
             'Asset': UpdateAssetUser,
             'Manager': UpdateRestManager,
         }
@@ -239,18 +240,27 @@ class UpdateUser(APIView):
     
     def put(self, request, username, user_role):
         data = request.data
+
+        fields_to_check = ['username', 'email']
+
+        for field_name in fields_to_check:
+            if field_name in data:
+                field_value = data[field_name]
+
+                duplicate_exists = GeneralUser.objects.filter(**{field_name: field_value}).exclude(username=username, user_role=user_role).exists()
+                if duplicate_exists:
+                    return JsonResponse({'error': f'{field_name} is already taken. Please try another.'}, status=400) 
         
 
         user_model = GlobalDictionaries.get_serializer('UserModels', user_role)
         user = user_model.objects.get(username = username)
-    
         
         serializer_class = GlobalDictionaries.get_serializer('UpdateUserSerializers', user_role)
         serializer = serializer_class(user, data=data)
         
         if serializer.is_valid():
             serializer.update(user, data)  
-            return JsonResponse({'message' : 'success'},status=200)
+            return JsonResponse({'message' : 'Successfully updated'},status=200)
         
         else:
             return JsonResponse(serializer.errors, status=400)

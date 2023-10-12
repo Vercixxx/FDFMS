@@ -1,21 +1,14 @@
 <template>
-    <!-- image="https://picsum.photos/1920/1080?random" -->
     <div class="containter m-2 p-2 d-flex justify-content-center">
         <div class="col-12 col-md-9">
 
             <div class="d-flex justify-content-between mb-5">
-                <div>
-                    <button type="button" class="btn btn-outline-primary mb-3 " @click="goBack">
-                        <span class="d-flex align-items-center">
-                            <span class="material-symbols-outlined">
-                                arrow_back
-                            </span>
-                            Back
-                        </span>
-                    </button>
-                </div>
+                <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger">
+                    Back
+                </v-btn>
+
                 <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new HR user</div>
-                <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit user</div>
+                <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit {{ editUser.username }} user</div>
                 <div></div>
 
             </div>
@@ -109,7 +102,7 @@
                             <v-autocomplete label="State" :items="resCitiesList" variant="outlined"
                                 v-model="resSelectedState" :disabled="resSelectedCountry === ''" :rules="fieldRequired">
                             </v-autocomplete>
-                            
+
                         </v-col>
                         <!-- Country and City -->
 
@@ -132,10 +125,10 @@
                     </v-row>
 
 
-                    
-                    
+
+
                     <!-- Show correspondence -->
-                    <v-row class="d-flex justify-center my-5">
+                    <v-row class="d-flex justify-center my-5" v-if="!editing">
                         <v-col cols="auto">
                             <v-switch v-model="show_corespondece" hide-details inset color="success"></v-switch>
                         </v-col>
@@ -157,15 +150,17 @@
                             <!-- Country and City -->
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                    v-model="corSelectedCountry" @update:search="getCities('correspodence')" :rules="show_corespondece ?  [] : fieldRequired">
+                                    v-model="corSelectedCountry" @update:search="getCities('correspodence')"
+                                    :rules="show_corespondece ? [] : fieldRequired">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="State" :items="corCitiesList" variant="outlined"
-                                    v-model="corSelectedState" :disabled="corSelectedCountry === ''" :rules="show_corespondece ?  [] : fieldRequired">
+                                    v-model="corSelectedState" :disabled="corSelectedCountry === ''"
+                                    :rules="show_corespondece ? [] : fieldRequired">
                                 </v-autocomplete>
-                                
+
                             </v-col>
                             <!-- Country and City -->
 
@@ -184,7 +179,7 @@
                                     </template>
                                     <!-- Icons -->
 
-                                    
+
 
                                 </v-text-field>
 
@@ -195,7 +190,7 @@
 
 
                     <!-- Show Registered -->
-                    <v-row class="d-flex justify-center my-5">
+                    <v-row class="d-flex justify-center my-5" v-if="!editing">
                         <v-col cols="auto">
                             <v-switch v-model="show_registered" hide-details inset color="success"></v-switch>
                         </v-col>
@@ -215,15 +210,17 @@
                             <!-- Country and City -->
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                    v-model="regSelectedCountry" @update:search="getCities('registered')" :rules="show_registered ?  [] : fieldRequired">
+                                    v-model="regSelectedCountry" @update:search="getCities('registered')"
+                                    :rules="show_registered ? [] : fieldRequired">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="State" :items="regCitiesList" variant="outlined"
-                                    v-model="regSelectedState" :disabled="regSelectedCountry === ''" :rules="show_registered ?  [] : fieldRequired">
+                                    v-model="regSelectedState" :disabled="regSelectedCountry === ''"
+                                    :rules="show_registered ? [] : fieldRequired">
                                 </v-autocomplete>
-                                
+
                             </v-col>
                             <!-- Country and City -->
 
@@ -252,7 +249,7 @@
 
 
                     <!-- Button submit -->
-                    <span>
+                    <span v-if="!editing">
                         <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
                             Fill all required fields first
                         </v-tooltip>
@@ -264,6 +261,20 @@
                         </span>
                     </span>
                     <!-- Button submit -->
+
+                    <!-- Button submit when editing -->
+                    <span v-else>
+                        <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                            Fill all required fields first
+                        </v-tooltip>
+                        <span>
+                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
+                                class="mt-10 mb-5">
+                                Save
+                            </v-btn>
+                        </span>
+                    </span>
+                    <!-- Button submit when editing -->
 
                 </v-container>
             </v-form>
@@ -594,6 +605,9 @@ export default {
 
             fieldRequired: [v => !!v || 'Field is required',],
 
+            editing: false,
+            editUser: {},
+
 
         };
     },
@@ -608,22 +622,22 @@ export default {
     mounted() {
         this.username = localStorage.getItem('username')
 
+
         if (this.username !== null) {
             this.user_role = localStorage.getItem('user_role')
             this.getUserData(this.username, this.user_role);
 
-            // Correspodence and Register forms
-            var switch1 = document.getElementById("switch1");
-            var switch2 = document.getElementById("switch2");
+            this.editing = true;
 
-            switch1.style.display = 'none';
-            switch2.style.display = 'none';
-
-            this.show_corespondece_form = false;
-            this.show_registered_form = false;
+            this.show_corespondece = false;
+            this.show_registered = false;
             // Correspodence and Register forms
 
         }
+
+        localStorage.removeItem('username');
+        localStorage.removeItem('user_role');
+
 
         // Dark mode
         const { bus } = useEventsBus();
@@ -646,9 +660,18 @@ export default {
     },
 
     watch: {
-        'input_data.first_name': 'generateUsername',
-        'input_data.last_name': 'generateUsername',
+        'input_data.first_name': function (newVal, oldVal) {
+            if (!this.editing) {
+                this.generateUsername(newVal, oldVal);
+            }
+        },
+        'input_data.last_name': function (newVal, oldVal) {
+            if (!this.editing) {
+                this.generateUsername(newVal, oldVal);
+            }
+        },
     },
+
 
 
 
@@ -658,7 +681,13 @@ export default {
             if (!this.form) return;
 
             this.loading = true;
-            this.createUser();
+
+            if (!this.editing) {
+                this.createUser();
+            }
+            else {
+                this.updateUser();
+            }
 
 
         },
@@ -788,8 +817,14 @@ export default {
 
             if (response.status === 200) {
 
+                const messageData = {
+                    message: `Successfully added ${this.input_data.username}`,
+                    type: 'success'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
                 emit('message', '');
-                localStorage.setItem('message', response.data.message);
+
 
                 this.$root.changeCurrentComponent('AddUserComponent');
 
@@ -809,100 +844,59 @@ export default {
         async getUserData(username, user_role) {
 
             const response = await axios.get(`api/users/get/${username}/${user_role}`);
-            console.log(response.data);
+            this.editUser = response.data;
 
-            localStorage.removeItem('username');
-            localStorage.removeItem('user_role');
+            for (const field of this.allInputs) {
+                this.input_data[field.model] = this.editUser[field.model];
+            }
 
-            // Set input data
-            this.username = response.data.username;
+            // Country and States
+            this.resSelectedCountry = this.editUser['residence_country'];
+            this.corSelectedCountry = this.editUser['correspondence_country'];
+            this.regSelectedCountry = this.editUser['registered_country'];
 
-            this.firstName = response.data.first_name;
-            this.lastName = response.data.last_name;
-            this.email = response.data.email;
-            this.phone = response.data.phone;
-            this.identity = response.data.pesel_nip;
-            this.taxName = response.data.tax_office_name;
-            this.tax_address = response.data.tax_office_address;
-            this.nfz = response.data.nfz;
-            this.bankAccount = response.data.bank_account_number;
-
-            this.resCountry = response.data.residence_country;
-            this.resCity = response.data.residence_city;
-            this.resState = response.data.residence_state;
-            this.resStreet = response.data.residence_street;
-            this.resHomeNumber = response.data.residence_home_number;
-            this.resApartamentNumber = response.data.residence_apartament_number;
-            this.resZipCode = response.data.residence_zip_code;
-
-            this.corCountry = response.data.correspondence_country;
-            this.corCity = response.data.correspondence_city;
-            this.corState = response.data.correspondence_state;
-            this.corStreet = response.data.correspondence_street;
-            this.corHomeNumber = response.data.correspondence_home_number;
-            this.corApartamentNumber = response.data.correspondence_apartament_number;
-            this.corZipCode = response.data.correspondence_zip_code;
-
-            this.regCountry = response.data.registered_country;
-            this.regCity = response.data.registered_city;
-            this.regState = response.data.registered_state;
-            this.regStreet = response.data.registered_street;
-            this.regHomeNumber = response.data.registered_home_number;
-            this.regApartamentNumber = response.data.registered_apartament_number;
-            this.regZipCode = response.data.registered_zip_code;
-            // Set input data
-
-
+            this.resSelectedState = this.editUser['residence_state'];
+            this.corSelectedState = this.editUser['correspondence_state'];
+            this.regSelectedState = this.editUser['registered_state'];
         },
 
         async updateUser() {
             // Generate dict for sending
-            const fetched_data = {
-                first_name: this.firstName,
-                last_name: this.lastName,
-                email: this.email,
-                phone: this.phone,
-                username: this.username,
-                password: this.password,
+            this.input_data['user_role'] = 'HR'
+            const ready_data = this.input_data;
 
-                pesel_nip: this.identity,
-                tax_office_name: this.taxName,
-                tax_office_address: this.tax_address,
-                nfz: this.nfz,
-                bank_account_number: this.bankAccount,
-                residence_country: this.resCountry,
-                residence_city: this.resCity,
-                residence_state: this.resState,
-                residence_street: this.resStreet,
-                residence_home_number: this.resHomeNumber,
-                residence_apartament_number: this.resApartamentNumber,
-                residence_zip_code: this.resZipCode,
+            localStorage.setItem('username', this.input_data['username'])
+            localStorage.setItem('user_role', this.input_data['user_role'])
 
-                correspondence_country: this.corCountry,
-                correspondence_city: this.corCity,
-                correspondence_state: this.corState,
-                correspondence_street: this.corStreet,
-                correspondence_home_number: this.corHomeNumber,
-                correspondence_apartament_number: this.corApartamentNumber,
-                correspondence_zip_code: this.corZipCode,
-
-                registered_country: this.regCountry,
-                registered_city: this.regCity,
-                registered_state: this.regState,
-                registered_street: this.regStreet,
-                registered_home_number: this.regHomeNumber,
-                registered_apartament_number: this.regApartamentNumber,
-                registered_zip_code: this.regZipCode,
-            };
 
             // Send put request
-            const response2 = await axios.put(`api/users/save/${this.username}/${this.user_role}/`, fetched_data);
-            const message = `Successfully updated ${this.username}`;
-            // localStorage.setItem('message', message)
+            try {
+                const response = await axios.put(`api/users/save/${ready_data.username}/${ready_data.user_role}/`, ready_data);
+
+                const messageData = {
+                    message: `Successfully modified ${ready_data.username}`,
+                    type: 'success'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                localStorage.removeItem('username');
+                localStorage.removeItem('user_role');
+                emit('message', '');
+                this.loading = false;
+                this.$root.changeCurrentComponent('ModifyUserComponent');
+            }
+            catch (error) {
+                this.loading = false;
+                const messageData = {
+                    message: error.response.data.error,
+                    type: 'danger'
+                };
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+
+            }
 
 
-            // Finish
-            this.goBack()
         },
 
         goBack() {

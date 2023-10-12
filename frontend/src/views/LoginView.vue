@@ -87,7 +87,7 @@
 
                                     <!-- Username field -->
                                     <v-text-field v-model="username" variant="solo-filled" label="Username"
-                                        ref="usernameInput" :readonly="loading" :rules="[required]" class="mb-2" clearable
+                                        ref="usernameInput" :readonly="loading" :rules="usernameRules" class="mb-2" clearable
                                         density="compact" prepend-icon="mdi-account-tie">
                                     </v-text-field>
                                     <!-- Username field -->
@@ -105,7 +105,7 @@
 
                                     <!-- Password field -->
                                     <v-text-field v-model="password" variant="solo-filled" label="Password"
-                                        ref="passwordInput" :readonly="loading" :rules="[required]" density="compact"
+                                        ref="passwordInput" :readonly="loading" :rules="passwordRules" density="compact"
                                         :type="passwordVisible ? 'text' : 'password'" prepend-icon="mdi-key"
                                         :append-inner-icon="passwordVisible ? 'mdi-eye' : ' mdi-eye-off'"
                                         @click:append-inner="passwordVisible = !passwordVisible">
@@ -230,6 +230,17 @@ export default {
         passwordRecoverDialog: false,
         passwordRecoverDialogConfirm: false,
 
+        usernameRules: [
+            v => !!v || 'Username is required',
+            v => (v.length >= 3) || 'Username must containt at least 3 characters',
+            v => /^[a-zA-Z0-9]+$/.test(v) || 'Only letters and numbers are allowed',
+        ],
+
+        passwordRules: [
+            v => !!v || 'Password is required',
+            v => (v.length >= 4) || 'Password must containt at least 4 characters',
+        ],
+
     }),
 
     computed: {
@@ -253,16 +264,13 @@ export default {
 
     methods: {
         onSubmit() {
-            if (!this.form) return
-
+            if (!this.form) return;
             this.loading = true
+
             this.login()
 
         },
 
-        required(v) {
-            return !!v || 'Field is required'
-        },
 
         passwordReset() {
             this.passwordRecoverDialog = false;
