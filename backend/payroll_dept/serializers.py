@@ -45,7 +45,8 @@ class GetPayrollUser(serializers.ModelSerializer):
                   ]
         
         
-class PayrollUserSerializer(serializers.ModelSerializer):
+class PayrollSerializer(serializers.ModelSerializer):
+    date_joined = serializers.DateTimeField(format='%Y-%m-%d')
     class Meta:
         model = PayrollUser
         fields = ['email', 
@@ -62,7 +63,8 @@ class PayrollUserSerializer(serializers.ModelSerializer):
                   'residence_street', 
                   'residence_home_number', 
                   'residence_apartament_number', 
-                  'residence_zip_code']
+                  'residence_zip_code',
+                  'date_joined',]
 class AddPayrollUserSerializer(serializers.ModelSerializer):
     
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only = True)

@@ -142,7 +142,6 @@
             <!-- Menu -->
             <v-navigation-drawer app v-model="drawer" location="left" temporary
                 :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }">
-                <!-- image="https://picsum.photos/1920/1080?random" -->
                 <v-list density="compact" nav class="pa-3">
                     <v-row>
                         <v-col cols="auto">

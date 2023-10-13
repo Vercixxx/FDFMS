@@ -14,9 +14,9 @@ from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerialize
 from owner.serializers import AddOwnerSerializer
 from rest_manager.serializers import AddManagerSerializer, RestManagerSerializer, GetRestManager, UpdateRestManager
 from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer, GetAssetUser, UpdateAssetUser
-from clients_dept.serializers import AddClientsUserSerializer, GetClientsUser, UpdateClientsUser
+from clients_dept.serializers import AddClientsUserSerializer, ClientsSerializer, GetClientsUser, UpdateClientsUser
 from hr_dept.serializers import AddHRUserSerializer, HRUserSerializer, GetHRUser, UpdateHRUser
-from payroll_dept.serializers import AddPayrollUserSerializer, PayrollUser, GetPayrollUser, UpdatePayrollUser
+from payroll_dept.serializers import AddPayrollUserSerializer, PayrollSerializer, PayrollUser, GetPayrollUser, UpdatePayrollUser
 from driver.serializers import AddDriverSerializer, DriverSerializer, GetDriver, UpdateDriverUser
 from administrator.serializers import AddAdministratorSerializer, AdministratorSerializer, GetAdministrator, UpdateAdministrator
 
@@ -46,6 +46,8 @@ from payroll_dept.models import PayrollUser
 from driver.models import Driver
 from administrator.models import Administrator
 
+# DB
+from django.db.models import F
 
 class GlobalDictionaries:
     dicts = {
@@ -74,9 +76,9 @@ class GlobalDictionaries:
         'UserSerializers': {
             'Manager' : RestManagerSerializer,
             'Asset' : AssetSerializer,
-            'Clients' : AddClientsUserSerializer,
+            'Clients' : ClientsSerializer,
             'HR' : HRUserSerializer,
-            'Payroll' : AddPayrollUserSerializer,
+            'Payroll' : PayrollSerializer,
             'Driver' : DriverSerializer,
             'Administrator' : AdministratorSerializer,
         },
@@ -92,9 +94,13 @@ class GlobalDictionaries:
         },
         
         'UpdateUserSerializers': {
-            'HR': UpdateHRUser,
-            'Asset': UpdateAssetUser,
             'Manager': UpdateRestManager,
+            'Asset': UpdateAssetUser,
+            'Clients': UpdateClientsUser,
+            'HR': UpdateHRUser,
+            'Payroll': UpdatePayrollUser,
+            'Driver': UpdateDriverUser,
+            'Administrator': UpdateAdministrator,
         }
     }
         
@@ -134,6 +140,9 @@ class GUViewSet(viewsets.ModelViewSet):
             self.queryset = self.queryset.filter(is_active=True)
         elif status == 'False':
             self.queryset = self.queryset.filter(is_active=False)
+            
+        # Sort by date
+        self.queryset = self.queryset.order_by(F('date_joined').desc(nulls_last=True))
 
         
         
