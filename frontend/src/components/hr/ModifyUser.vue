@@ -1,96 +1,117 @@
 <template>
   <div>
 
-    <p class="p-2 fw-bolder fs-5">Filters</p>
+    <v-card elevation="1" class="pa-5 rounded-xl" color="teal-darken-2">
 
-    <!-- Search bar section -->
-    <v-row class="mb-5 d-flex justify-content-between">
+      <p class="p-2 fw-bolder text-h4">Filters</p>
 
-      <v-col cols="auto">
-        <!-- User role -->
-        <span>
+      <!-- Search bar section -->
+      <v-row class="mb-5 d-flex justify-content-between">
 
-          <div class="btn-group dropdown mx-2">
-            <v-btn disabled class="rounded-s-xl rounded-0" :class="{ 'text-black': !theme, 'text-white': theme }">
-              User role
-            </v-btn>
-            <v-btn id="role-activator" variant="tonal" class="rounded-e-xl rounded-0"
-              :class="{ 'text-black': !theme, 'text-white': theme }">
+        <v-col cols="auto">
+          <!-- User role -->
+          <span>
 
-              {{ selectedRole }}
+            <div class="btn-group dropdown mx-2">
 
-              <span class="material-symbols-outlined">
-                arrow_drop_down
-              </span>
-            </v-btn>
-          </div>
+              <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 text-white">
+                <span class="pr-2">User status - </span>
+                {{ selectedRole }}
 
-          <v-menu activator="#role-activator">
-            <v-list>
-              <v-list-item v-for="option in userRoleList" :key="option.name" :value="option.property"
-                @click="chooseRole(option.property)">
-                <v-list-item-title>
-                  {{ option.name }}
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+                <span class="material-symbols-outlined">
+                  arrow_drop_down
+                </span>
+              </v-btn>
+            </div>
 
-        </span>
-        <!-- User role -->
+            <v-menu activator="#role-activator">
+              <v-list>
+                <v-list-item v-for="option in userRoleList" :key="option.name" :value="option.property"
+                  @click="chooseRole(option.property)">
+                  <v-list-item-title>
+                    {{ option.name }}
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
 
-        <!-- User status -->
-        <span>
+          </span>
+          <!-- User role -->
 
-          <div class="btn-group dropdown mx-2">
+          <!-- User status -->
+          <span>
 
-            <v-btn disabled class="rounded-s-xl rounded-0" :class="{ 'text-black': !theme, 'text-white': theme }">
-              User status
-            </v-btn>
+            <div class="btn-group dropdown mx-2">
 
-            <v-btn id="status-activator" variant="tonal" class="rounded-e-xl rounded-0"
-              :class="{ 'text-black': !theme, 'text-white': theme }">
+              <v-btn id="status-activator" variant="tonal" class="rounded-xl rounded-0 text-white">
+                <span class="pr-2">User status - </span>
+                <span v-if="selectedActive === 'True'">Active</span>
+                <span v-else-if="selectedActive === 'False'">Not active</span>
+                <span v-else>All</span>
+                <span class="material-symbols-outlined">
+                  arrow_drop_down
+                </span>
+              </v-btn>
 
-              <span v-if="selectedActive === 'True'">Active</span>
-              <span v-else-if="selectedActive === 'False'">Not active</span>
-              <span v-else>All</span>
-              <span class="material-symbols-outlined">
-                arrow_drop_down
-              </span>
-            </v-btn>
+            </div>
+            <v-menu activator="#status-activator">
 
-          </div>
-          <v-menu activator="#status-activator">
+              <v-list>
+                <v-list-item v-for="option in userStatusList" :key="option.name" :value="option.property"
+                  @click="chooseStatus(option.property)">
+                  <v-list-item-title>{{ option.name }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
 
-            <v-list>
-              <v-list-item v-for="option in userStatusList" :key="option.name" :value="option.property"
-                @click="chooseStatus(option.property)">
-                <v-list-item-title>{{ option.name }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
+            </v-menu>
 
-          </v-menu>
+          </span>
+          <!-- User status -->
 
-        </span>
-        <!-- User status -->
+        </v-col>
 
+        <v-col cols="5">
+          <!-- Search bar -->
+          <v-text-field variant="solo-filled" v-model="searchInput" @keydown.enter="searchTable = searchInput"
+            label="Search" class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions clearable
+            hint="Press enter to search" />
+          <!-- Search bar -->
+        </v-col>
+
+      </v-row>
+
+      <!-- End of search bar section -->
+
+
+      <!-- Combobox columns selection -->
+      <v-col cols="12">
+        <v-expansion-panels>
+          <v-expansion-panel title="Choose columns" elevation="1">
+
+            <v-expansion-panel-text>
+
+              <v-combobox variant="outlined" v-model="selectedColumns" :items="avaliableColumns" label="Select columns"
+                prepend-icon="mdi-table-edit" multiple chips>
+
+              </v-combobox>
+            </v-expansion-panel-text>
+
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-col>
 
-      <v-col cols="5">
-        <!-- Search bar -->
-        <v-text-field variant="solo-filled" v-model="searchInput" @keydown.enter="searchTable = searchInput"
-          label="Search" class="px-1" prepend-inner-icon="mdi-magnify" hide-actions clearable
-          hint="Press enter to search" />
-        <!-- Search bar -->
-      </v-col>
+    </v-card>
 
-    </v-row>
+    <!-- Combobox columns selection -->
 
-    <!-- End of search bar section -->
+    <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
 
+    <div class="text-h3 ma-5">
+      Data
+    </div>
 
     <!-- Table -->
-    <v-data-table :headers="headers" :items="users" :search="searchTable" :loading="tableLoading"
+    <v-data-table :headers="updatedColumns" :items="users" :search="searchTable" :loading="tableLoading"
       class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover
       select-strategy="all" show-current-page>
 
@@ -324,7 +345,6 @@
     <!-- dialog -->
 
     <!-- Dialaogs section -->
-
   </div>
 </template>
   
@@ -377,6 +397,9 @@ export default {
       dialogState: false,
       dialogDelete: false,
 
+      selectedColumns: [],
+      avaliableColumns: [],
+
       userRoleList: [
         {
           name: 'All',
@@ -424,18 +447,19 @@ export default {
 
       tableLoading: true,
 
-      allHeaders: [
+      necessaryHeaders: [
         { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
         { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
-        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
         { title: 'USER ROLE', align: 'center', key: 'user_role', sortable: false },
+      ],
+
+      allHeaders: [
+        { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
         { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
         { title: 'JOINED', align: 'center', key: 'date_joined' },
         { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       DriverHeaders: [
-        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
-        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
         { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
         { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
@@ -450,8 +474,6 @@ export default {
         { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       AssetHeaders: [
-        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
-        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
         { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
         { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
@@ -466,8 +488,6 @@ export default {
         { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       HRHeaders: [
-        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
-        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
         { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
         { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
@@ -482,8 +502,6 @@ export default {
         { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       ManagerHeaders: [
-        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
-        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
         { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
         { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
@@ -498,8 +516,6 @@ export default {
         { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       PayrollHeaders: [
-        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
-        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
         { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
         { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
@@ -514,8 +530,6 @@ export default {
         { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       ClientsHeaders: [
-        { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
-        { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
         { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
         { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
@@ -533,36 +547,18 @@ export default {
     };
   },
 
+  computed: {
+    updatedColumns() {
+      return [...this.necessaryHeaders, ...this.selectedColumns];
+    },
+  },
 
   created() {
     this.reloadComponent();
+    this.chooseRole('All')
   },
 
-  computed: {
-    headers() {
-      if (this.selectedRole === 'All') {
-        return this.allHeaders;
-      }
-      else if (this.selectedRole === 'Driver') {
-        return this.DriverHeaders;
-      }
-      else if (this.selectedRole === 'HR') {
-        return this.HRHeaders;
-      }
-      else if (this.selectedRole === 'Asset') {
-        return this.AssetHeaders;
-      }
-      else if (this.selectedRole === 'Payroll') {
-        return this.PayrollHeaders;
-      }
-      else if (this.selectedRole === 'Clients') {
-        return this.ClientsHeaders;
-      }
-      else if (this.selectedRole === 'Manager') {
-        return this.ManagerHeaders;
-      }
-    },
-  },
+
 
   mounted() {
     const { bus } = useEventsBus();
@@ -608,10 +604,12 @@ export default {
           user.rownumber = index + 1;
         });
 
+
+
         this.tableLoading = false;
       }
       catch (error) {
-        
+
         const messageData = {
           message: `Error, please try again`,
           type: 'error'
@@ -636,6 +634,43 @@ export default {
 
     chooseRole(role) {
       this.selectedRole = role;
+
+      switch (role) {
+        case 'All':
+          this.selectedColumns = this.allHeaders;
+          this.avaliableColumns = this.allHeaders;
+          break;
+
+        case 'Driver':
+          this.selectedColumns = this.DriverHeaders;
+          this.avaliableColumns = this.DriverHeaders;
+          break;
+
+        case 'HR':
+          this.selectedColumns = this.HRHeaders;
+          this.avaliableColumns = this.HRHeaders;
+          break;
+
+        case 'Asset':
+          this.selectedColumns = this.AssetHeaders;
+          this.avaliableColumns = this.AssetHeaders;
+          break;
+
+        case 'Payroll':
+          this.selectedColumns = this.PayrollHeaders;
+          this.avaliableColumns = this.PayrollHeaders;
+          break;
+
+        case 'Clients':
+          this.selectedColumns = this.ClientsHeaders;
+          this.avaliableColumns = this.ClientsHeaders;
+          break;
+
+        case 'Manager':
+          this.selectedColumns = this.ManagerHeaders;
+          this.avaliableColumns = this.ManagerHeaders;
+          break;
+      }
       this.reloadComponent();
     },
 
