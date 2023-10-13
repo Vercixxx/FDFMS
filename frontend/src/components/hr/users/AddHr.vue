@@ -3,7 +3,7 @@
         <div class="col-12 col-md-9">
 
             <div class="d-flex justify-content-between mb-5">
-                <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger">
+                <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
                     Back
                 </v-btn>
 
@@ -627,6 +627,9 @@ export default {
             this.user_role = localStorage.getItem('user_role')
             this.getUserData(this.username, this.user_role);
 
+            localStorage.removeItem('username');
+            localStorage.removeItem('user_role');
+
             this.editing = true;
 
             this.show_corespondece = false;
@@ -634,9 +637,6 @@ export default {
             // Correspodence and Register forms
 
         }
-
-        localStorage.removeItem('username');
-        localStorage.removeItem('user_role');
 
 
         // Dark mode
@@ -750,7 +750,6 @@ export default {
             this.input_data['residence_country'] = this.resSelectedCountry;
             this.input_data['residence_state'] = this.resSelectedState;
 
-            // console.log(JSON.stringify(this.input_data, null, 2));
         },
         generateUsername() {
             let firstName = '';
@@ -813,8 +812,6 @@ export default {
 
             const response = await axios.post('api/create/', this.input_data);
 
-            console.log(response);
-
             if (response.status === 200) {
 
                 const messageData = {
@@ -865,9 +862,6 @@ export default {
             this.input_data['user_role'] = 'HR'
             const ready_data = this.input_data;
 
-            localStorage.setItem('username', this.input_data['username'])
-            localStorage.setItem('user_role', this.input_data['user_role'])
-
 
             // Send put request
             try {
@@ -879,8 +873,7 @@ export default {
                 };
 
                 localStorage.setItem('message', JSON.stringify(messageData));
-                localStorage.removeItem('username');
-                localStorage.removeItem('user_role');
+
                 emit('message', '');
                 this.loading = false;
                 this.$root.changeCurrentComponent('ModifyUserComponent');

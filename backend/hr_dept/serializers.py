@@ -47,6 +47,7 @@ class GetHRUser(serializers.ModelSerializer):
                   ]
 
 class HRUserSerializer(serializers.ModelSerializer):
+    date_joined = serializers.DateTimeField(format='%Y-%m-%d')
     class Meta:
         model = HRUser
         fields = ['email', 
@@ -64,6 +65,7 @@ class HRUserSerializer(serializers.ModelSerializer):
                   'residence_home_number', 
                   'residence_apartament_number', 
                   'residence_zip_code',
+                  'date_joined',
 
                   ]
         

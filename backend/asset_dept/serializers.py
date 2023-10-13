@@ -44,6 +44,7 @@ class GetAssetUser(serializers.ModelSerializer):
                   ]
 
 class AssetSerializer(serializers.ModelSerializer):
+    date_joined = serializers.DateTimeField(format='%Y-%m-%d')
     class Meta:
         model = AssetUser
         fields = ['email', 
@@ -60,7 +61,8 @@ class AssetSerializer(serializers.ModelSerializer):
                   'residence_street', 
                   'residence_home_number', 
                   'residence_apartament_number', 
-                  'residence_zip_code']
+                  'residence_zip_code',
+                  'date_joined',]
 
 
 class AddAssetUserSerializer(serializers.ModelSerializer):
