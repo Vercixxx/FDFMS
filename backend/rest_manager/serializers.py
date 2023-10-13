@@ -44,6 +44,7 @@ class GetRestManager(serializers.ModelSerializer):
                   ]
 
 class RestManagerSerializer(serializers.ModelSerializer):
+    date_joined = serializers.DateTimeField(format='%Y-%m-%d')
     class Meta:
         model = RestManager
         fields = ['email', 
@@ -60,7 +61,8 @@ class RestManagerSerializer(serializers.ModelSerializer):
                   'residence_street', 
                   'residence_home_number', 
                   'residence_apartament_number', 
-                  'residence_zip_code']
+                  'residence_zip_code',
+                  'date_joined',]
 
 
 class AddManagerSerializer(serializers.ModelSerializer):

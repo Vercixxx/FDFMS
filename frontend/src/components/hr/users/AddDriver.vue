@@ -83,41 +83,45 @@
 
                             <!-- Release date -->
                             <v-text-field variant="outlined" :value="formattedReleaseDate" v-model="ln_release"
-                            label="License number release date"  readonly
-                            @click="show_ln_release = !show_ln_release">
-                           
-                            <!-- Icons -->
-                            <template v-slot:append-inner>
-                                <span class="filled-star">
-                                </span>
+                                label="License number release date" readonly @click="show_ln_release = !show_ln_release"
+                                :rules="fieldRequired">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <span class="filled-star">
+                                    </span>
                                     <v-icon class="icon" style="opacity: 0.4;" icon="mdi-calendar"></v-icon>
                                 </template>
                                 <!-- Icons -->
                             </v-text-field>
-                            
+
                             <v-date-picker v-if="show_ln_release" ok-text="Select" v-model="ln_release"
                                 title="License number release date" view-mode="year" min="01-01-1960" :max="maxDate"
                                 color="success" @click:save="show_ln_release = !show_ln_release"
                                 @click:cancel="show_ln_release = !show_ln_release" class="mb-4"></v-date-picker>
                             <!-- Release date -->
+                        </v-col>
+
+                        <v-col cols="12" sm="12">
+
 
                             <!-- Expire date -->
                             <v-text-field variant="outlined" :value="formattedExpireDate" v-model="ln_expire"
-                            label="License number expire date"  readonly
-                            @click="show_ln_expire = !show_ln_expire">
-                            
-                            <!-- Icons -->
-                            <template v-slot:append-inner>
-                                <span class="filled-star">
-                                </span>
+                                label="License number expire date" readonly @click="show_ln_expire = !show_ln_expire"
+                                :rules="fieldRequired">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <span class="filled-star">
+                                    </span>
                                     <v-icon class="icon" style="opacity: 0.4;" icon="mdi-calendar"></v-icon>
                                 </template>
                                 <!-- Icons -->
                             </v-text-field>
-                            
+
                             <v-date-picker v-if="show_ln_expire" ok-text="Select" v-model="ln_expire"
                                 title="License number expire date" view-mode="year" min="01-01-1960" :max="maxDate"
-                                color="success" @click:save="show_ln_expire= !show_ln_expire"
+                                color="success" @click:save="show_ln_expire = !show_ln_expire"
                                 @click:cancel="show_ln_expire = !show_ln_expire" class="mb-4"></v-date-picker>
                             <!-- Expire date -->
 
@@ -498,7 +502,7 @@ export default {
                     rules: [
                         v => !!v || 'Published by code is required',
                         v => (v && v.length >= 3) || 'Published by must containt at least 3 characters',
-                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Published by can only contain letters, nubers and "-"',
+                        v => /^[a-zA-Z 0-9-]+$/.test(v) || 'Published by can only contain letters, nubers and "-"',
                     ],
 
                 },
@@ -906,7 +910,7 @@ export default {
             this.input_data['residence_country'] = this.resSelectedCountry;
             this.input_data['residence_state'] = this.resSelectedState;
 
-            
+
             // Additional fields for driver
             this.input_data['ln_release_date'] = this.formattedReleaseDate;
             this.input_data['ln_expire_date'] = this.formattedExpireDate;
