@@ -1,44 +1,140 @@
 <template>
     <div>
 
-        <div class="d-flex justify-content-between">
-            <div>
-                <h1>
-                    List of cars
-                </h1>
-            </div>
+        <v-card elevation="1" class="pa-5 rounded-xl" color="teal-darken-2">
 
-            <!-- Search bar -->
-            <form role="search" method="POST" action="" @submit.prevent="search">
+            <p class="p-2 fw-bolder text-h4">Options</p>
 
-                <div class="input-group">
+            <v-row>
+                <v-col cols="7">
+                    <!-- Combobox columns selection -->
 
-                    <input class="form-control " type="search" placeholder="Search" aria-label="Search" v-model="query">
-                    <button type="button" class="btn btn-outline-success d-flex align-items-center px-3" @click="search">
+                    <v-expansion-panels>
+                        <v-expansion-panel title="Choose columns" elevation="1">
 
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-search me-2" viewBox="0 0 16 16">
-                            <path
-                                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                        </svg>
-                    </button>
+                            <v-expansion-panel-text>
 
-                </div>
-                <p class="fw-light text-center">{{ page_flip.count }} records</p>
-            </form>
-            <!-- Search bar -->
+                                <v-combobox variant="outlined" v-model="selectedColumns" :items="avaliableColumns"
+                                    label="Select columns" prepend-icon="mdi-table-edit" multiple chips>
 
+                                </v-combobox>
+                            </v-expansion-panel-text>
+
+                        </v-expansion-panel>
+                    </v-expansion-panels>
+
+                    <!-- Combobox columns selection -->
+                </v-col>
+                <v-col cols="5">
+                    <!-- Search bar -->
+                    <v-text-field variant="solo-filled" v-model="searchInput" @keydown.enter="searchTable = searchInput"
+                        label="Search" class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions clearable
+                        hint="Press enter to search" />
+                    <!-- Search bar -->
+                </v-col>
+            </v-row>
+
+        </v-card>
+
+
+        <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
+
+        <div>
+            <h1>
+                List of cars
+            </h1>
         </div>
 
-
-
-
-
-
-
-
         <!-- Table -->
-        <div v-if="cars.length === 0" class="text-danger fs-2">
+        <v-data-table :headers="updatedColumns" :items="cars" :search="searchTable" :loading="tableLoading"
+            class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
+            show-current-page>
+
+
+
+            <!-- No data -->
+            <template v-slot:no-data>
+                <p class="text-h4 pa-5">
+                    <span class="material-symbols-outlined">
+                        database
+                    </span>
+                    No data
+                </p>
+            </template>
+            <!-- No data -->
+
+
+
+            <!-- Maping oc -->
+            <template #item.is_oc="{ item }">
+                <v-icon v-if="item.columns.is_oc" icon="mdi-check-bold" style="color:green"></v-icon>
+                <v-icon v-else icon="mdi-close-thick" style="color:red"></v-icon>
+            </template>
+            <!-- Maping oc -->
+
+            <!-- Maping ac -->
+            <template #item.is_ac="{ item }">
+                <v-icon v-if="item.columns.is_ac" icon="mdi-check-bold" style="color:green"></v-icon>
+                <v-icon v-else icon="mdi-close-thick" style="color:red"></v-icon>
+            </template>
+            <!-- Maping ac -->
+
+
+            <!-- Action column -->
+            <template v-slot:item.action="{ item }">
+                <!-- Button show info -->
+                <v-btn disabled variant="plain" color="blue"
+                    @click="userDetails(item.columns.username, item.columns.user_role)">
+                    <span class="material-symbols-outlined">
+                        description
+                    </span>
+                    <v-tooltip activator="parent" location="top">Show user details</v-tooltip>
+                </v-btn>
+                <!-- Button show info -->
+
+
+
+                <!-- Button edit -->
+                <v-btn disabled variant="plain" color="green"
+                    @click="editUser(item.columns.username, item.columns.user_role)">
+                    <span class="material-symbols-outlined d-flex">
+                        edit
+                    </span>
+                    <v-tooltip activator="parent" location="top">Edit</v-tooltip>
+                </v-btn>
+                <!-- Button edit -->
+
+
+
+                <!-- Button delete -->
+                <v-btn disabled variant="plain" color="red" @click="deleteConfirm(item.columns.username)">
+                    <span class="material-symbols-outlined d-flex">
+                        delete
+                    </span>
+                    <v-tooltip activator="parent" location="top">Delete</v-tooltip>
+                </v-btn>
+                <!-- Button delete -->
+            </template>
+            <!-- Buttons -->
+            <!-- Action column -->
+
+        </v-data-table>
+        <!-- Table -->
+
+
+    </div>
+
+
+
+
+
+<!-- 
+    <div> -->
+
+
+
+
+        <!-- <div v-if="cars.length === 0" class="text-danger fs-2">
             No records.
         </div>
 
@@ -55,7 +151,7 @@
                         <td v-for="column in columns" :key="column.attribute">
 
 
-                            <!-- true -->
+
                             <span v-if="car[column.attribute] === true">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="green"
                                     class="bi bi-check-lg" viewBox="0 0 16 16">
@@ -64,7 +160,7 @@
                                 </svg>
                             </span>
 
-                            <!-- false -->
+
                             <span v-else-if="car[column.attribute] === false">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="red" class="bi bi-x-lg"
                                     viewBox="0 0 16 16">
@@ -73,18 +169,18 @@
                                 </svg>
                             </span>
 
-                            <!-- null -->
+
                             <span v-else-if="car[column.attribute] === null">
 
                             </span>
 
-                            <!-- default -->
+
                             <span v-else>
                                 {{ car[column.attribute] }}
                             </span>
                         </td>
                         <td>
-                            <!-- Button edit -->
+
                             <button class="btn btn-outline-success m-3" @click="editCar(car.id)">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-pencil" viewBox="0 0 16 16">
@@ -93,7 +189,7 @@
                                 </svg>
                             </button>
 
-                            <!-- Button delete -->
+
                             <button class="btn btn-outline-danger" @click="deleteConfirm(car.vin)">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-trash3" viewBox="0 0 16 16">
@@ -109,13 +205,11 @@
 
 
 
-        <!-- Confirmation modal -->
-        <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal"
             id="confirm_modal_button" style="display: none;">
         </button>
 
-        <!-- Modal -->
+
         <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -140,8 +234,8 @@
                     </div>
                     <div class="modal-body text-danger fs-5">
                         <p>
-                            You are trying to delete car - <span class="fw-bolder">vin {{ delete_vin }}</span> this operation is <span
-                                class="fw-bold">irreversible</span>. Are you sure?
+                            You are trying to delete car - <span class="fw-bolder">vin {{ delete_vin }}</span> this
+                            operation is <span class="fw-bold">irreversible</span>. Are you sure?
                         </p>
                     </div>
                     <div class="modal-footer d-flex justify-content-center">
@@ -153,76 +247,17 @@
                 </div>
             </div>
         </div>
-        <!-- Confirmation modal -->
-
-
-        <!-- Message modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ErrorModal" id="hiddenButton"
-            style="display: none;">
-        </button>
-        <div class="modal fade" id="ErrorModal" tabindex="-1" aria-labelledby="ErrorModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <!-- Error -->
-                    <div v-if="dataError" class="modal-header d-flex justify-content-between  text-danger">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor"
-                            class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-                            <path
-                                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-                            <path
-                                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-                        </svg>
-                        <h1 class="modal-title fs-5" id="confirmModalLabel">
-                            Error
-                        </h1>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor"
-                            class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-                            <path
-                                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-                            <path
-                                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-                        </svg>
-                    </div>
-                    <!-- Error -->
-
-                    <!-- Success -->
-                    <div v-else class="modal-header">
-                        <h1 class="modal-title fs-5" id="ErrorModalLabel">
-                            <p>Success!</p>
-                        </h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <!-- Success -->
-
-                    <div class="modal-body text-center text-danger">
-                        <div v-for="(messages, field) in dataError" :key="field">
-                            <p v-for="message in messages" :key="message">{{ field }} - {{ message }}</p>
-                        </div>
-
-                        <div v-if="dataCorrect">
-                            <p class="text-success">
-                                Succesfully deleted
-                            </p>
-                        </div>
-
-
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary fs-5 w-25" data-bs-dismiss="modal">
-                            Ok
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <!-- Message modal -->
 
 
 
 
-    </div>
+    </div> -->
 </template>
+
+<script setup>
+import { VDataTable } from 'vuetify/labs/VDataTable'
+</script>
+
 
 <script>
 import axios from 'axios';
@@ -234,45 +269,51 @@ export default {
         return {
             cars: [],
             columns: [],
-            currentPage: 0,
-            cars_per_site: 20,
-            page_flip: {},
-            query: '',
-            dataError: null,
-            dataSuccess: null,
+            itemsPerPage: 25,
+            searchInput: '',
+            searchTable: '',
+            tableLoading: false,
+            selectedColumns: [],
+            avaliableColumns: [],
+
+
             delete_vin: '',
-            columns: [
-                { label: 'VIN', attribute: 'vin' },
-                { label: 'Brand', attribute: 'brand' },
-                { label: 'Model', attribute: 'model' },
-                { label: 'Color', attribute: 'color' },
-                { label: 'Production year', attribute: 'year_of_prod' },
-                { label: 'Mileage', attribute: 'mileage' },
-                { label: 'Engine capacity', attribute: 'engine_cap' },
-                { label: 'Engine power', attribute: 'engine_pow' },
-                { label: 'Transmission', attribute: 'transmission' },
-                { label: 'Insurance number', attribute: 'policy_number' },
-                { label: 'Insurance phone number', attribute: 'phone_policy_contact' },
-                { label: 'OC', attribute: 'is_oc' },
-                { label: 'AC', attribute: 'is_ac' },
+            necessaryHeaders: [
+                { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+                { title: 'VIN', key: 'vin', align: 'center', sortable: false },
             ],
+            columns: [
+                { title: 'Brand', key: 'brand', align: 'center', sortable: false },
+                { title: 'Model', key: 'model', align: 'center', sortable: false },
+                { title: 'Color', key: 'color', align: 'center', sortable: false },
+                { title: 'Production year', key: 'year_of_prod', align: 'center', sortable: false },
+                { title: 'Mileage', key: 'mileage', align: 'center', sortable: false },
+                { title: 'Engine capacity', key: 'engine_cap', align: 'center', sortable: false },
+                { title: 'Engine power', key: 'engine_pow', align: 'center', sortable: false },
+                { title: 'Transmission', key: 'transmission', align: 'center', sortable: false },
+                { title: 'Insurance number', key: 'policy_number', align: 'center', sortable: false },
+                { title: 'Insurance phone number', key: 'phone_policy_contact', align: 'center', sortable: false },
+                { title: 'OC', key: 'is_oc', align: 'center', sortable: false },
+                { title: 'AC', key: 'is_ac', align: 'center', sortable: false },
+                { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+            ],
+
+
 
         };
     },
 
+    computed: {
+        updatedColumns() {
+            return [...this.necessaryHeaders, ...this.selectedColumns];
+        },
+    },
+
     created() {
         this.loadCars();
-        // check for messages in local storage
-        if (localStorage.getItem('message')) {
-            const message = localStorage.getItem('message');
-            console.log(message);
-            localStorage.removeItem('message');
-            //   this.dataError = message;
-            //   document.getElementById('hiddenButton').click();
-            // this.dataError = message;
-            //       document.getElementById('hiddenButton').click();
 
-        }
+        this.selectedColumns = this.columns;
+        this.avaliableColumns = this.columns;
     },
 
     methods: {
@@ -285,16 +326,16 @@ export default {
                         search: this.query,
                     }
                 });
-                console.log(response)
-                console.log(response.data)
 
-                this.page_flip = {
-                    count: response.data.count,
-                    next: response.data.next,
-                    previous: response.data.previous,
-                }
+                this.cars = response.data;
 
-                this.cars = response.data.results;
+                // Add number for each row
+                this.cars.forEach((car, index) => {
+                    car.rownumber = index + 1;
+                });
+
+                this.tableLoading = false;
+
             }
             catch (error) {
                 console.error('Error when fetching', error);
@@ -328,7 +369,7 @@ export default {
                     this.loadcars();
                     this.dataSuccess = 'Success!'
                     document.getElementById('hiddenButton').click();
-                    
+
                 }
                 else {
                     this.loadcars();

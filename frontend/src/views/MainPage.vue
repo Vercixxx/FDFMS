@@ -550,18 +550,52 @@ export default {
 
         // Clients
         ClientsAddClientComponent() {
+
             this.currentComponent = AddClient
         },
         ClientsModifyClientComponent() {
+
             this.currentComponent = ShowClients
         },
 
 
         // Assets
         AddCarsComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Cars",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Add Car',
+                    component: '',
+                    disabled: true,
+                },
+            ];
             this.currentComponent = AddCar;
         },
         ShowCarsComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Cars",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Show Cars',
+                    component: '',
+                    disabled: true,
+                },
+            ];
             this.currentComponent = ShowCars;
         },
         // Assets
