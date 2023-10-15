@@ -99,10 +99,9 @@
           </v-expansion-panel>
         </v-expansion-panels>
       </v-col>
+      <!-- Combobox columns selection -->
 
     </v-card>
-
-    <!-- Combobox columns selection -->
 
     <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
 

@@ -3,13 +3,30 @@
         <div class="col-12 col-md-9">
 
             <div class="d-flex justify-content-between mb-5">
-                <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
-                    Back
-                </v-btn>
 
-                <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add Car</div>
+                <v-row class="text-h4" prepend-icon="mdi-car">
+                    <v-col cols="5">
+                        <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger"
+                            :variant="theme ? undefined : 'outlined'">
+                            Back
+                        </v-btn>
+                    </v-col>
+
+                    <v-col>
+                        <span v-if="!editing">
+                            Add Car
+                        </span>
+                        <span v-else>
+                            Edit Car
+                        </span>
+                        <v-icon icon="mdi-car"></v-icon>
+                    </v-col>
+
+                </v-row>
+
+                <!-- <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold" prepend-icon="mdi-car"></div>
                 <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit {{ editUser.username }}</div>
-                <div></div>
+                <div></div> -->
 
             </div>
 
@@ -51,7 +68,7 @@
                         </v-col>
 
                         <!-- Year of production -->
-                        <v-col cols="12" sm="12">
+                        <v-col cols="6" sm="6">
 
                             <v-text-field variant="outlined" :value="formattedExpireDate" v-model="firstRegistration"
                                 label="Year of production" readonly @click="showfirstRegistration = !showfirstRegistration"
@@ -67,13 +84,23 @@
                             </v-text-field>
 
                             <v-date-picker v-if="showfirstRegistration" ok-text="Select" v-model="firstRegistration"
-                                title="Year of production" view-mode="year" min="01-01-1960"
-                                color="success" @click:save="showfirstRegistration = !showfirstRegistration"
+                                title="Year of production" view-mode="year" min="01-01-1960" color="success"
+                                @click:save="showfirstRegistration = !showfirstRegistration"
                                 @click:cancel="showfirstRegistration = !showfirstRegistration" class="mb-4"></v-date-picker>
-    
+
                         </v-col>
                         <!-- Year of production -->
-                       
+
+                        <v-col cols="6" sm="6">
+                            <!-- Transmission -->
+                            <v-combobox variant="outlined" v-model="transmission" :items="avaliableTransmission"
+                                label="Select Transmission" prepend-inner-icon="mdi-car-shift-pattern"
+                                :rules="fieldRequired">
+
+                            </v-combobox>
+                            <!-- Transmission -->
+                        </v-col>
+
 
                     </v-row>
 
@@ -103,6 +130,18 @@
                             </v-text-field>
 
                         </v-col>
+
+                    </v-row>
+
+                    <v-row class="d-flex justify-center">
+                        <!-- OC and AC -->
+                        <v-col>
+                            <v-switch v-model="oc" label="Does car has OC" inset :color="oc ? 'green' : ''"></v-switch>
+                        </v-col>
+                        <v-col>
+                            <v-switch v-model="ac" label="Does car has AC" inset :color="ac ? 'green' : ''"></v-switch>
+                        </v-col>
+                        <!-- OC and AC -->
                     </v-row>
 
 
@@ -167,6 +206,7 @@ import { ref, watch } from "vue";
 const { emit } = useEventsBus()
 import { useTheme } from 'vuetify'
 import format from 'date-fns/format'
+import { drawer } from '../../store/store.js';
 
 export default {
     data() {
@@ -258,7 +298,7 @@ export default {
                     required: true,
                     icon: 'mdi-bank',
                     rules: [
-
+                        v => !!v || 'Policy number is required',
                         v => /^[a-zA-Z 0-9]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
@@ -268,11 +308,20 @@ export default {
                     required: true,
                     icon: 'mdi-bank',
                     rules: [
-                        v => !!v || 'Tax office address is required',
-                        v => /^[a-zA-Z 0-9]+$/.test(v) || 'Only letters and numbers are allowed',
+                        v => !!v || 'Insurance phone number address is required',
+                        v => /^[0-9+ -]+$/.test(v) || 'Only numbers, "+" and "-" are allowed',
                     ]
                 },
             ],
+
+            transmission: '',
+            avaliableTransmission: [
+                { title: 'Manual' },
+                { title: 'Automatic' },
+            ],
+
+            oc: true,
+            ac: true,
 
             firstRegistration: null,
             showfirstRegistration: false,
@@ -341,21 +390,6 @@ export default {
 
 
     },
-
-    watch: {
-        'input_data.first_name': function (newVal, oldVal) {
-            if (!this.editing) {
-                this.generateUsername(newVal, oldVal);
-            }
-        },
-        'input_data.last_name': function (newVal, oldVal) {
-            if (!this.editing) {
-                this.generateUsername(newVal, oldVal);
-            }
-        },
-    },
-
-
 
 
     methods: {
@@ -479,10 +513,11 @@ export default {
         },
 
         goBack() {
-            if (this.user_role === null) {
-                this.$root.changeCurrentComponent('AddUserComponent');
+            if (!this.editing) {
+                this.$root.changeCurrentComponent('HomeComponent');
+                drawer.value = !drawer.value;
             } else {
-                this.$root.changeCurrentComponent('ModifyUserComponent');
+                this.$root.changeCurrentComponent('ShowCarsComponent');
             }
         },
 
