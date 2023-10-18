@@ -24,10 +24,6 @@
 
                 </v-row>
 
-                <!-- <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold" prepend-icon="mdi-car"></div>
-                <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit {{ editUser.username }}</div>
-                <div></div> -->
-
             </div>
 
 
@@ -67,26 +63,15 @@
                             </v-text-field>
                         </v-col>
 
+
+
                         <!-- Year of production -->
                         <v-col cols="6" sm="6">
 
-                            <v-text-field variant="outlined" :value="formattedExpireDate" v-model="firstRegistration"
-                                label="Year of production" readonly @click="showfirstRegistration = !showfirstRegistration"
-                                :rules="fieldRequired">
+                            <v-combobox variant="outlined" v-model="year_of_prod" :items="avaliableYears"
+                                label="Year of production" prepend-inner-icon="mdi-calendar" :rules="fieldRequired">
 
-                                <!-- Icons -->
-                                <template v-slot:append-inner>
-                                    <span class="filled-star">
-                                    </span>
-                                    <v-icon class="icon" style="opacity: 0.4;" icon="mdi-calendar"></v-icon>
-                                </template>
-                                <!-- Icons -->
-                            </v-text-field>
-
-                            <v-date-picker v-if="showfirstRegistration" ok-text="Select" v-model="firstRegistration"
-                                title="Year of production" view-mode="year" min="01-01-1960" color="success"
-                                @click:save="showfirstRegistration = !showfirstRegistration"
-                                @click:cancel="showfirstRegistration = !showfirstRegistration" class="mb-4"></v-date-picker>
+                            </v-combobox>
 
                         </v-col>
                         <!-- Year of production -->
@@ -175,7 +160,6 @@
 
                 </v-container>
             </v-form>
-
         </div>
 
     </div>
@@ -211,8 +195,6 @@ import { drawer } from '../../store/store.js';
 export default {
     data() {
         return {
-
-            user_role: null,
 
             basicInfoInputs: [
                 {
@@ -264,13 +246,12 @@ export default {
                     required: true,
                     rules: [
                         v => !!v || 'Mileage is required',
-                        v => (v && v.length >= 1) || 'Mileage must containt at least 1 character',
                     ]
 
                 },
                 {
                     name: 'Engine capacity',
-                    model: 'capacity',
+                    model: 'engine_cap',
                     required: true,
                     rules: [
                         v => !!v || 'Engine capacity is required',
@@ -280,7 +261,7 @@ export default {
                 },
                 {
                     name: 'Engine power',
-                    model: 'power',
+                    model: 'engine_pow',
                     required: true,
                     rules: [
                         v => !!v || 'Engine power is required',
@@ -294,7 +275,7 @@ export default {
             insuranceInfo: [
                 {
                     name: 'Policy number',
-                    model: 'tax_office_name',
+                    model: 'policy_number',
                     required: true,
                     icon: 'mdi-bank',
                     rules: [
@@ -304,7 +285,7 @@ export default {
                 },
                 {
                     name: 'Insurance phone number',
-                    model: 'tax_office_address',
+                    model: 'phone_policy_contact',
                     required: true,
                     icon: 'mdi-bank',
                     rules: [
@@ -323,8 +304,6 @@ export default {
             oc: true,
             ac: true,
 
-            firstRegistration: null,
-            showfirstRegistration: false,
 
             form: false,
             loading: false,
@@ -337,7 +316,11 @@ export default {
             fieldRequired: [v => !!v || 'Field is required',],
 
             editing: false,
-            editUser: {},
+            editingCar: {},
+
+            carid: null,
+            year_of_prod: null,
+            avaliableYears: [],
 
 
         };
@@ -348,29 +331,16 @@ export default {
             return [...this.basicInfoInputs, ...this.insuranceInfo];
         },
 
-        formattedFirstRegistration() {
-            return this.firstRegistration ? format(this.firstRegistration, 'yyyy-M-d') : '';
-        },
     },
 
 
     mounted() {
-        this.username = localStorage.getItem('username')
+        this.carid = localStorage.getItem('carid')
 
-
-        if (this.username !== null) {
-            this.user_role = localStorage.getItem('user_role')
-            this.getUserData(this.username, this.user_role);
-
-            localStorage.removeItem('username');
-            localStorage.removeItem('user_role');
-
+        if (this.carid !== null) {
+            this.getCarData(this.carid);
+            localStorage.removeItem('carid');
             this.editing = true;
-
-            this.show_corespondece = false;
-            this.show_registered = false;
-            // Correspodence and Register forms
-
         }
 
 
@@ -388,6 +358,7 @@ export default {
         const theme = useTheme();
         this.theme = theme.global.current.value.dark;
 
+        this.yearsList();
 
     },
 
@@ -403,13 +374,23 @@ export default {
                 this.createCar();
             }
             else {
-                this.updateUser();
+                this.updateCar();
             }
 
 
         },
         required(v) {
             return !!v || 'Field is required';
+        },
+
+        yearsList() {
+            const currentYear = new Date().getFullYear();
+
+            const yearsList = this.avaliableYears;
+            for (let year = 1990; year <= currentYear; year++) {
+                yearsList.push(year);
+            }
+
         },
 
 
@@ -428,28 +409,35 @@ export default {
         async createCar() {
             this.getDataFromInputs();
 
-            this.input_data['user_role'] = 'HR'
+            this.input_data['year_of_prod'] = this.year_of_prod;
+            this.input_data['transmission'] = this.transmission.title;
+            this.input_data['is_oc'] = this.oc;
+            this.input_data['is_ac'] = this.ac;
 
-            const response = await axios.post('api/create/', this.input_data);
+            try {
 
-            if (response.status === 200) {
-
+                const response = await axios.post('api/car/create/', this.input_data);
                 const messageData = {
-                    message: `Successfully added ${this.input_data.username}`,
+                    message: response.data.message,
                     type: 'success'
                 };
 
                 localStorage.setItem('message', JSON.stringify(messageData));
                 emit('message', '');
 
-
-                this.$root.changeCurrentComponent('AddUserComponent');
-
+                
+                this.goBack()
             }
-            else {
-                this.errorContent = response.message;
-                this.alert = true;
+            catch (error) {
+                this.loading = false;
+                const messageData = {
+                    message: error.response.data.error,
+                    type: 'danger'
+                };
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
             }
+
 
         },
         resetForm() {
@@ -458,37 +446,40 @@ export default {
             }
         },
 
-        async getUserData(username, user_role) {
+        async getCarData(carid) {
 
-            const response = await axios.get(`api/users/get/${username}/${user_role}`);
-            this.editUser = response.data;
+            const response = await axios.get(`api/car/get/${carid}/`);
+            this.editingCar = response.data;
+            console.log(response.data);
 
             for (const field of this.allInputs) {
-                this.input_data[field.model] = this.editUser[field.model];
+                this.input_data[field.model] = this.editingCar[field.model];
             }
 
-            // Country and States
-            this.resSelectedCountry = this.editUser['residence_country'];
-            this.corSelectedCountry = this.editUser['correspondence_country'];
-            this.regSelectedCountry = this.editUser['registered_country'];
+            this.year_of_prod = this.editingCar['year_of_prod'];
+            this.transmission = this.editingCar['transmission'];
+            this.oc = this.editingCar['is_oc'];
+            this.ac = this.editingCar['is_ac'];
 
-            this.resSelectedState = this.editUser['residence_state'];
-            this.corSelectedState = this.editUser['correspondence_state'];
-            this.regSelectedState = this.editUser['registered_state'];
+
         },
 
-        async updateUser() {
+        async updateCar() {
             // Generate dict for sending
-            this.input_data['user_role'] = 'HR'
-            const ready_data = this.input_data;
+            this.input_data['year_of_prod'] = this.year_of_prod;
+            this.input_data['transmission'] = this.transmission.title;
+            this.input_data['is_oc'] = this.oc;
+            this.input_data['is_ac'] = this.ac;
+
+        
 
 
             // Send put request
             try {
-                const response = await axios.put(`api/users/save/${ready_data.username}/${ready_data.user_role}/`, ready_data);
+                const response = await axios.put(`api/car/edit/${this.editingCar.id}/`, this.input_data);
 
                 const messageData = {
-                    message: `Successfully modified ${ready_data.username}`,
+                    message: response.data.message,
                     type: 'success'
                 };
 
@@ -496,7 +487,7 @@ export default {
 
                 emit('message', '');
                 this.loading = false;
-                this.$root.changeCurrentComponent('ModifyUserComponent');
+                this.goBack()
             }
             catch (error) {
                 this.loading = false;

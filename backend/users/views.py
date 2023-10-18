@@ -200,7 +200,6 @@ class AddUser(APIView):
     
     def post(self, request):
         user_role = request.data.get('user_role')
-        print("Data z funkcji: ", request.data)
         
         # Password generating
         generated_password = self.generate_password()
