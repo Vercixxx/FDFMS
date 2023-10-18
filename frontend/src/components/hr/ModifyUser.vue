@@ -323,13 +323,21 @@
               <tr v-for="(value, key) in userDetailData" :key="key">
                 <td>{{ key }}</td>
                 <td v-if="value === null">
-                  <span class="material-symbols-outlined">
-                    check_indeterminate_small
-                  </span>
+                  <v-icon icon="mdi-minus-thick"></v-icon>
                 </td>
+
+                <td v-else-if="value === true">
+                  <v-icon icon="mdi-check-bold" style="color:green"></v-icon>
+                </td>
+
+                <td v-else-if="value === false">
+                  <v-icon icon="mdi-close-thick" style="color:red"></v-icon>
+                </td>
+
                 <td v-else>
                   {{ value }}
                 </td>
+
 
               </tr>
             </tbody>

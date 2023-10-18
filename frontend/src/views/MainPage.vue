@@ -2,7 +2,7 @@
     <v-app>
         <v-layout class="rounded rounded-md">
 
-            <v-app-bar app :elevation="3" class="bg-teal-darken-2">
+            <v-app-bar app :elevation="3" class="bg-teal-darken-2" @mouseover="drawer = true" @mouseout="drawer = false">
 
 
                 <v-row align="center" no-gutters>
@@ -140,8 +140,8 @@
 
 
             <!-- Menu -->
-            <v-navigation-drawer app v-model="drawer" location="left" temporary
-                :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }">
+            <v-navigation-drawer app v-model="drawer" location="left" 
+                :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }" @mouseover="drawer = true" @mouseout="drawer = false">
                 <v-list density="compact" nav class="pa-3">
                     <v-row>
                         <v-col cols="auto">

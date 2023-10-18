@@ -23,7 +23,7 @@
 
 
 <script>
-import { closeDrawer } from '../../store/store.js'
+import { drawer, closeDrawer } from '../../store/store.js'
 
 export default {
     data() {

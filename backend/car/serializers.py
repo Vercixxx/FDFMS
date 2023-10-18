@@ -30,9 +30,6 @@ class CreateCarSerializer(serializers.ModelSerializer):
             'is_ac',
             'phone_policy_contact',
         ]
-        extra_kwargs = {
-            'vin' : {'validators' : [UniqueValidator(queryset=Car.objects.all(), message='This vin number is already in use.')]}
-        }
         
     def save(self):
         request_data = self.initial_data 
@@ -77,10 +74,7 @@ class UpdateCarSerializer(serializers.Serializer):
             'is_ac',
             'phone_policy_contact',
         ]
-        extra_kwargs = {
-            'vin' : {'validators' : [UniqueValidator(queryset=Car.objects.all(), message='This vin number is already in use.')]}
-        }
-        
+
     def update(self, instance, validated_data):
         instance.vin = validated_data.get('vin', instance.vin)
         instance.brand = validated_data.get('brand', instance.brand)
@@ -96,7 +90,7 @@ class UpdateCarSerializer(serializers.Serializer):
         instance.is_ac = validated_data.get('is_ac', instance.is_ac)
         instance.phone_policy_contact = validated_data.get('phone_policy_contact', instance.phone_policy_contact)
 
-        instance.save()  # Zapisz zaktualizowany obiekt Car
+        instance.save()
         return instance
 
 

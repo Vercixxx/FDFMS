@@ -83,20 +83,18 @@
             <!-- Action column -->
             <template v-slot:item.action="{ item }">
                 <!-- Button show info -->
-                <v-btn disabled variant="plain" color="blue"
-                    @click="userDetails(item.columns.username, item.columns.user_role)">
+                <v-btn variant="plain" color="blue" @click="carDetailsFunct(item.columns.id)">
                     <span class="material-symbols-outlined">
                         description
                     </span>
-                    <v-tooltip activator="parent" location="top">Show user details</v-tooltip>
+                    <v-tooltip activator="parent" location="top">Show Car details</v-tooltip>
                 </v-btn>
                 <!-- Button show info -->
 
 
 
                 <!-- Button edit -->
-                <v-btn disabled variant="plain" color="green"
-                    @click="editUser(item.columns.username, item.columns.user_role)">
+                <v-btn variant="plain" color="green" @click="editCar(item.columns.id)">
                     <span class="material-symbols-outlined d-flex">
                         edit
                     </span>
@@ -107,7 +105,7 @@
 
 
                 <!-- Button delete -->
-                <v-btn disabled variant="plain" color="red" @click="deleteConfirm(item.columns.username)">
+                <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.id)">
                     <span class="material-symbols-outlined d-flex">
                         delete
                     </span>
@@ -125,133 +123,97 @@
     </div>
 
 
+    <!-- Dialaogs section -->
 
+    <!-- Delete car confirm -->
+    <v-dialog v-model="dialogDelete" width="400">
+        <v-card>
+            <div class="text-warning text-h6 text-md-h5 text-lg-h4">
 
-
-<!-- 
-    <div> -->
-
-
-
-
-        <!-- <div v-if="cars.length === 0" class="text-danger fs-2">
-            No records.
-        </div>
-
-        <div v-else class="table-responsive">
-            <table class="table table-hover table-striped">
-                <thead>
-                    <tr class="text-center">
-                        <th v-for="column in columns" :key="column.attribute">{{ column.label }}</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                    <tr v-for="car in cars" :key="car.vin" class="text-center align-middle">
-                        <td v-for="column in columns" :key="column.attribute">
-
-
-
-                            <span v-if="car[column.attribute] === true">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="green"
-                                    class="bi bi-check-lg" viewBox="0 0 16 16">
-                                    <path
-                                        d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
-                                </svg>
-                            </span>
-
-
-                            <span v-else-if="car[column.attribute] === false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="red" class="bi bi-x-lg"
-                                    viewBox="0 0 16 16">
-                                    <path
-                                        d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
-                                </svg>
-                            </span>
-
-
-                            <span v-else-if="car[column.attribute] === null">
-
-                            </span>
-
-
-                            <span v-else>
-                                {{ car[column.attribute] }}
-                            </span>
-                        </td>
-                        <td>
-
-                            <button class="btn btn-outline-success m-3" @click="editCar(car.id)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-pencil" viewBox="0 0 16 16">
-                                    <path
-                                        d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
-                                </svg>
-                            </button>
-
-
-                            <button class="btn btn-outline-danger" @click="deleteConfirm(car.vin)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-trash3" viewBox="0 0 16 16">
-                                    <path
-                                        d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-
-
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal"
-            id="confirm_modal_button" style="display: none;">
-        </button>
-
-
-        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header d-flex justify-content-between text-warning">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor"
-                            class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-                            <path
-                                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-                            <path
-                                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-                        </svg>
-                        <h1 class="modal-title fs-5" id="confirmModalLabel">
-                            Caution
-                        </h1>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor"
-                            class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-                            <path
-                                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-                            <path
-                                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-                        </svg>
-                    </div>
-                    <div class="modal-body text-danger fs-5">
-                        <p>
-                            You are trying to delete car - <span class="fw-bolder">vin {{ delete_vin }}</span> this
-                            operation is <span class="fw-bold">irreversible</span>. Are you sure?
-                        </p>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button type="button" class="btn btn-outline-secondary fs-5 w-25"
-                            data-bs-dismiss="modal">No</button>
-                        <button type="button" class="btn btn-danger fs-5 w-25" data-bs-dismiss="modal"
-                            @click="deleteCar(vin)">Yes</button>
-                    </div>
+                <div class="d-flex justify-content-between align-items-center px-4 pt-4">
+                    <span class="material-symbols-outlined">
+                        warning
+                    </span>
+                    <span>
+                        Warning
+                    </span>
+                    <span class="material-symbols-outlined">
+                        warning
+                    </span>
                 </div>
+                <hr>
             </div>
-        </div>
+
+            <div class="pa-3" align="center">
+
+                You are trying to delete car vin -
+                <span class='fw-bolder'>
+                    {{ deleteCarId }}
+                </span>
+                , this operation is <span class="fw-bold">irreversible</span>.
+                Are you sure?
+
+            </div>
+            <hr>
+
+            <div class="justify-center d-flex align-items-center mb-3">
+                <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
+                <v-btn width="150" @click="deleteCar(deleteCarId)" color="red">Yes</v-btn>
+            </div>
+
+        </v-card>
+    </v-dialog>
+    <!-- Delete car confirm -->
 
 
+    <!-- Dialog details -->
+    <v-dialog v-model="carDetailsDialog" width="auto">
+        <v-card>
+            <v-card-text>
+                <v-table>
+                    <thead>
+                        <tr>
+                            <th class="text-left">
+                                Name
+                            </th>
+                            <th class="text-left">
+                                Value
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(value, key) in carDetails" :key="key">
+                            <td>{{ key }}</td>
+                            <td v-if="value === null">
+                                <v-icon icon="mdi-minus-thick"></v-icon>
+                            </td>
 
+                            <td v-else-if="value === true">
+                                <v-icon icon="mdi-check-bold" style="color:green"></v-icon>
+                            </td>
 
-    </div> -->
+                            <td v-else-if="value === false">
+                                <v-icon icon="mdi-close-thick" style="color:red"></v-icon>
+                            </td>
+
+                            <td v-else>
+                                {{ value }}
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </v-table>
+
+            </v-card-text>
+            <v-card-actions>
+                <v-btn color="primary" block @click="carDetailsDialog = false">Close</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+    <!-- dialog -->
+
+    <!-- Dialog details -->
+
 </template>
 
 <script setup>
@@ -261,6 +223,8 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 
 <script>
 import axios from 'axios';
+import useEventsBus from '../../plugins/eventBus.js'
+const { emit } = useEventsBus()
 
 export default {
     name: 'App',
@@ -276,10 +240,16 @@ export default {
             selectedColumns: [],
             avaliableColumns: [],
 
+            dialogDelete: false,
+            deleteCarId: '',
 
-            delete_vin: '',
+            carDetailsDialog: false,
+            carDetails: [],
+
+
+
             necessaryHeaders: [
-                { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
+                { title: 'Id', align: 'center', sortable: false, key: 'id' },
                 { title: 'VIN', key: 'vin', align: 'center', sortable: false },
             ],
             columns: [
@@ -329,11 +299,6 @@ export default {
 
                 this.cars = response.data;
 
-                // Add number for each row
-                this.cars.forEach((car, index) => {
-                    car.rownumber = index + 1;
-                });
-
                 this.tableLoading = false;
 
             }
@@ -352,23 +317,28 @@ export default {
         },
 
 
-        deleteConfirm(vin) {
-            this.delete_vin = vin;
-            document.getElementById('confirm_modal_button').click();
+        deleteConfirm(carid) {
+            this.deleteCarId = carid;
+            this.dialogDelete = true;
         },
 
+
         async deleteCar() {
+            this.dialogDelete = false;
             try {
-                const response = await axios.delete(`api/car/delete/${this.delete_vin}`);
-
-
-                console.log(response)
+                const response = await axios.delete(`api/car/delete/${this.deleteCarId}`);
 
 
                 if (response.status === 204) {
-                    this.loadcars();
-                    this.dataSuccess = 'Success!'
-                    document.getElementById('hiddenButton').click();
+                    this.loadCars()
+
+                    const messageData = {
+                        message: `Successfully deleted car id - ${this.deleteCarId}`,
+                        type: 'success'
+                    };
+
+                    localStorage.setItem('message', JSON.stringify(messageData));
+                    emit('message', '');
 
                 }
                 else {
@@ -385,8 +355,8 @@ export default {
         },
 
         editCar(carid) {
-            localStorage.setItem('carid', carid)
-            this.$parent.AddCarComponent()
+            localStorage.setItem('carid', carid);
+            this.$root.changeCurrentComponent('AddCarsComponent');
         },
 
         search() {
@@ -395,6 +365,14 @@ export default {
 
         reloadComponent() {
             this.loadCars();
+        },
+
+        async carDetailsFunct(car_id) {
+            const response = await axios.get(`api/car/get/${car_id}/`);
+            console.log(response)
+            this.carDetails = response.data;
+            this.carDetailsDialog = true;
+
         },
 
 
