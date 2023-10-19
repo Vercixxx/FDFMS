@@ -486,7 +486,6 @@ export default {
                 localStorage.setItem('message', JSON.stringify(messageData));
 
                 emit('message', '');
-                this.loading = false;
                 this.goBack()
             }
             catch (error) {

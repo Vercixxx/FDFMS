@@ -4,7 +4,7 @@
         </v-list-item>
     </v-list>
 
-    <v-menu transition="scale-transition" v-for="button in buttons" :key="button.name">
+    <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name">
         <template v-slot:activator="{ props }">
             <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3">
                 {{ button.name }}

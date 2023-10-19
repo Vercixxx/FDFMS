@@ -1,4 +1,185 @@
 <template>
+    <div class="containter m-2 p-2 d-flex justify-content-center">
+        <div class="col-12 col-md-9">
+
+            <div class="d-flex justify-content-between mb-5">
+
+                <v-row class="text-h4">
+                    <v-col cols="5">
+                        <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger"
+                            :variant="theme ? undefined : 'outlined'">
+                            Back
+                        </v-btn>
+                    </v-col>
+
+                    <v-col>
+                        <span v-if="!editing">
+                            Add Restaurant
+                        </span>
+                        <span v-else>
+                            Edit Restaurant
+                        </span>
+                        <v-icon icon="mdi-silverware-fork-knife"></v-icon>
+                    </v-col>
+
+                </v-row>
+
+            </div>
+
+
+            <v-form v-model="form" @submit.prevent="onSubmit">
+                <v-container class=" mb-5  rounded-xl elevation-5"
+                    :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-4': theme }">
+
+                    <div class="fw-light">
+                        <span class="filled-star-example"></span> - field required
+                    </div>
+
+
+
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mt-10' : 'border-opacity-50 rounded-xl mt-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
+                    <p align="center" class="text-h4 text-md-h5 text-lg-h5">Basic info</p>
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mb-10' : 'border-opacity-50 rounded-xl mb-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
+
+
+                    <v-row>
+                        <v-col cols="12" sm="6" v-for="input in basicInfoInputs" :key="input.name">
+                            <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
+                                :readonly="input.readonly || false" :hint="input.hint || undefined" :rules="input.rules">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <span v-if="input.required" class="filled-star">
+                                    </span>
+                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
+                                </template>
+                                <!-- Icons -->
+
+                            </v-text-field>
+                        </v-col>
+                    </v-row>
+
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mt-10' : 'border-opacity-50 rounded-xl mt-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
+                    <p align="center" class="text-h4 text-md-h5 text-lg-h5">Tax, Health and Bank account info</p>
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mb-10' : 'border-opacity-50 rounded-xl mb-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
+
+
+                    <v-row>
+                        <v-col cols="12" sm="6" v-for="input in taxAndHealth" :key="input.name">
+
+                            <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
+                                :readonly="input.readonly || false" :hint="input.hint || undefined" :rules="input.rules">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <span v-if="input.required" class="filled-star">
+                                    </span>
+                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
+                                </template>
+                                <!-- Icons -->
+
+                            </v-text-field>
+
+                        </v-col>
+                    </v-row>
+
+
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mt-10' : 'border-opacity-50 rounded-xl mt-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
+                    <p align="center" class="text-h4 text-md-h5 text-lg-h5">Addresses</p>
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mb-10' : 'border-opacity-50 rounded-xl mb-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
+
+                    <p align="center" class="text-h6 text-md-h5 text-lg-h5">Residence address</p>
+                    <v-row>
+
+                        <!-- Country and City -->
+                        <v-col cols="12" sm="6">
+                            <v-autocomplete label="Country" :items="allCountries" variant="outlined"
+                                v-model="resSelectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
+                            </v-autocomplete>
+                        </v-col>
+
+                        <v-col cols="12" sm="6">
+                            <v-autocomplete label="State" :items="resCitiesList" variant="outlined"
+                                v-model="resSelectedState" :disabled="resSelectedCountry === ''" :rules="fieldRequired">
+                            </v-autocomplete>
+
+                        </v-col>
+                        <!-- Country and City -->
+
+                        <v-col cols="12" sm="6" v-for="input in residenceAddress" :key="input.name">
+
+                            <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
+                                :readonly="input.readonly || false" :hint="input.hint || undefined" :rules="input.rules">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <span v-if="input.required" class="filled-star">
+                                    </span>
+                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
+                                </template>
+                                <!-- Icons -->
+
+                            </v-text-field>
+
+                        </v-col>
+                    </v-row>
+
+
+                    <!-- Button submit -->
+                    <span v-if="!editing">
+                        <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                            Fill all required fields first
+                        </v-tooltip>
+                        <span>
+                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
+                                class="mt-10 mb-5">
+                                Create
+                            </v-btn>
+                        </span>
+                    </span>
+                    <!-- Button submit -->
+
+                    <!-- Button submit when editing -->
+                    <span v-else>
+                        <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                            Fill all required fields first
+                        </v-tooltip>
+                        <span>
+                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
+                                class="mt-10 mb-5">
+                                Save
+                            </v-btn>
+                        </span>
+                    </span>
+                    <!-- Button submit when editing -->
+
+                </v-container>
+            </v-form>
+
+
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+
     <div>
         <div class="containter m-2 p-2 d-flex justify-content-center">
             <div class="col-12 col-md-9">
@@ -283,75 +464,16 @@
         </div>
 
 
-        <!-- Message modal -->
-        <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ErrorModal" id="hiddenButton"
-            style="display: none;">
-        </button>
-        <div class="modal fade" id="ErrorModal" tabindex="-1" aria-labelledby="ErrorModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content"> -->
-                    <!-- Error -->
-                    <!-- <div v-if="dataError" class="modal-header d-flex justify-content-between">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red"
-                            class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-                            <path
-                                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-                            <path
-                                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-                        </svg>
-                        <h1 class="modal-title fs-5 text-danger" id="confirmModalLabel">
-                            Error
-                        </h1>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="red"
-                            class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-                            <path
-                                d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" />
-                            <path
-                                d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z" />
-                        </svg>
-                    </div> -->
-                    <!-- Error -->
-
-                    <!-- Success -->
-                    <!-- <div v-else class="modal-header">
-                        <h1 class="modal-title fs-5" id="ErrorModalLabel">
-                            <p>Success!</p>
-                        </h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div> -->
-                    <!-- Success -->
-
-
-                    <!-- <div class="modal-body text-center text-danger">
-                        <div v-for="(messages, field) in dataError" :key="field">
-                            <p v-for="message in messages" :key="message">{{ field }} - {{ message }}</p>
-                        </div>
-
-                        <div v-if="dataCorrect">
-                            <p class="text-success">
-                                Succesfully created
-                            </p>
-                        </div>
-
-
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary fs-5 w-25" data-bs-dismiss="modal">
-                            Ok
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        </div> -->
-        <!-- Message modal -->
-
 
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import useEventsBus from '../../plugins/eventBus.js'
+import { ref, watch } from "vue";
+const { emit } = useEventsBus()
+import { useTheme } from 'vuetify'
 
 
 export default {
@@ -360,51 +482,64 @@ export default {
             managersUsernames: [],
             choosenUsernames: [],
 
-            res_name: null,
-            query: '',
+            theme: true,
+            form: false,
+            loading: false,
+            editing: false,
 
-            isFormValid: true,
+            input_data: {},
 
-            name: '',
-            phone: '',
-            country: '',
-            city: '',
-            state: '',
-            street: '',
-            home_number: '',
-            apartament_number: '',
-            zip_code: '',
+            // Inputs definisions
+            basicInfoInputs: [
+                {
+                    name: 'Phone number',
+                    model: 'phone',
+                    required: true,
+                    icon: 'mdi-phone',
+                    rules: [
+                        v => !!v || 'Phone number is required',
+                        v => /^[0-9+ -]+$/.test(v) || 'Only numbers, "+" and "-" are allowed',
+                    ]
 
-            dataCorrect: '',
-            dataError: '',
+                },
+            ],
 
         }
     },
 
 
     mounted() {
+        // Dark mode
+        const { bus } = useEventsBus();
+
+        watch(
+            () => bus.value.get('theme'),
+            (val) => {
+                const [themeBus] = val ?? [];
+                this.theme = themeBus;
+            }
+        );
+
+        const theme = useTheme();
+        this.theme = theme.global.current.value.dark;
+
         this.getAllUsernames()
-        
+
     },
 
     methods: {
-        showAlert(alertClass, alertText) {
-            this.$root.showAlert(alertClass, alertText);
-        },
-        
-        isFormValid() {
-            return (
-                this.name &&
-                this.phone &&
+        onSubmit() {
+            if (!this.form) return;
 
-                this.country &&
-                this.city &&
-                this.state &&
-                this.street &&
-                this.home_number &&
-                this.apartament_number &&
-                this.zip_code
-            );
+            this.loading = true;
+
+            if (!this.editing) {
+                this.createUser();
+            }
+            else {
+                this.updateUser();
+            }
+
 
         },
 

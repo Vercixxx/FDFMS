@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from .models import Restaurant
+from .models import Restaurant, Brands
 from rest_manager.models import RestManager
 
 class CreateRestaurantSerializer(serializers.ModelSerializer):
@@ -43,3 +43,33 @@ class GetAllRestaurants(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
+
+
+
+# Brand serializers
+class CreateBrandSerializer(serializers.ModelSerializer):
+      
+    class Meta:
+        model = Brands
+        fields = '__all__'
+        
+    def save(self):
+        request_data = self.initial_data
+        brand_data = {
+            'name': self.validated_data.get('name', None),
+            'phone': self.validated_data.get('phone', None),
+            'country': request_data.get('country', None),
+            'city': request_data.get('city', None),
+            'state': request_data.get('state', None),
+            'street': request_data.get('street', None),
+            'home': request_data.get('home', None),
+            'apartament': request_data.get('apartament', None),
+            'zip': request_data.get('zip', None),
+
+        }
+        
+        brand = Brands(**brand_data)
+        brand.save()
+        return brand
+# Brand serializers

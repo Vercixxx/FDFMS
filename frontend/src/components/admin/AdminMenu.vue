@@ -20,18 +20,18 @@ export default {
             assetMenu: AssetMenu,
             hrMenu: HrMenu,
             menus: [
-                // {
-                //     name: 'HR menu',
-                //     menu: HrMenu
-                // },
+                {
+                    name: 'HR menu',
+                    menu: HrMenu
+                },
                 {
                     name: 'Asset menu',
                     menu: AssetMenu
                 },
-                // {
-                //     name: 'Clients menu',
-                //     menu: ClientsMenu
-                // },
+                {
+                    name: 'Clients menu',
+                    menu: ClientsMenu
+                },
                 // {
                 //     name: 'Payroll menu',
                 //     menu: PayrollMenu

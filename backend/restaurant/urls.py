@@ -18,6 +18,12 @@ urlpatterns = [
     
     # Get list of possible cities
     path('api/restaurants/unique_cities/', views.GetPossibleCities.as_view(), name='unique-cities'),
+    
+    
+    # Brands Brands Brands
+    
+    # Creating Brand
+    path('api/brands/create/', views.CreateBrand.as_view(), name="create-brand"),
 ]
 
     

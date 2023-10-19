@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from .models import Restaurant
 
 # Serializers
-from .serializers import CreateRestaurantSerializer, GetAllRestaurants
+from .serializers import CreateRestaurantSerializer, GetAllRestaurants, CreateBrandSerializer
 
 # Rest
 from rest_framework.permissions import IsAuthenticated
@@ -62,3 +62,21 @@ class DeleteRestaurant(DestroyAPIView):
     queryset = Restaurant.objects.all()
     serializer_class = GetAllRestaurants
     lookup_field = 'name'
+    
+    
+    
+    
+# Brand
+class CreateBrand(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data
+        serializer = CreateBrandSerializer(data=data)
+        
+        if serializer.is_valid():
+            brand = serializer.save()
+            return JsonResponse({'message' : f'Succesfully created {brand.name}'},status=200)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+# Brand
