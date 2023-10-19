@@ -2,14 +2,14 @@
     <v-app>
         <v-layout class="rounded rounded-md">
 
-            <v-app-bar app :elevation="3" class="bg-teal-darken-2" @mouseover="drawer = true" @mouseout="drawer = false">
+            <v-app-bar app :elevation="3" class="bg-teal-darken-2">
 
 
                 <v-row align="center" no-gutters>
 
                     <!-- Menu button -->
                     <v-col cols="auto" align="start">
-                        <v-app-bar-nav-icon @click.stop="drawer = !drawer">
+                        <v-app-bar-nav-icon @click.stop="drawer = !drawer" @mouseenter="drawer = true">
                             <span class="material-symbols-outlined">
                                 menu
                             </span>
@@ -34,7 +34,6 @@
                         </div>
 
                     </v-col>
-
                     <!-- Title -->
 
 
@@ -42,29 +41,25 @@
                     <v-col cols="auto" align="end">
                         <v-col cols="auto">
 
-                            <v-btn :ripple="false" variant="plain"
-                                :icon="actualTheme ? 'mdi-weather-night' : 'mdi-white-balance-sunny'" @click="toggleTheme">
-                            </v-btn>
-
-
-
-
-
-
-                            <v-btn variant="text">
-                                <span class="material-symbols-outlined">
-                                    search
-                                </span>
-                            </v-btn>
-
-
-                            <v-menu transition="slide-x-transition">
+                            <v-tooltip :text="actualTheme ? 'Enable light mode':'Enable dark mode'" location="bottom">
                                 <template v-slot:activator="{ props }">
-                                    <v-btn v-bind="props">
-                                        <span class="material-symbols-outlined">
-                                            account_circle
-                                        </span>
+                                    <v-btn :ripple="false" variant="plain" v-bind="props"
+                                        :icon="actualTheme ? 'mdi-weather-night' : 'mdi-white-balance-sunny'"
+                                        @click="toggleTheme">
+
                                     </v-btn>
+                                </template>
+                            </v-tooltip>
+
+
+
+
+                            <v-menu transition="slide-y-transition">
+                                <template v-slot:activator="{ props }">
+
+                                    <v-btn v-bind="props" ripple="false" variant="plain" icon="mdi-account-circle-outline">
+                                    </v-btn>
+
                                 </template>
 
                                 <v-list class="p-0">
@@ -77,16 +72,14 @@
                                     </v-list-item>
 
                                     <v-list-item class="p-0">
-                                        <v-btn block variant="flat">Profile</v-btn>
+                                        <v-btn disabled block variant="flat">Profile</v-btn>
                                     </v-list-item>
 
                                     <v-list-item class="p-0">
                                         <v-dialog transition="dialog-top-transition" width="400">
                                             <template v-slot:activator="{ props }">
-                                                <v-btn v-bind="props" block variant="flat">
-                                                    <span class="material-symbols-outlined">
-                                                        logout
-                                                    </span>
+                                                <v-btn v-bind="props" block variant="flat" append-icon="mdi-logout">
+                                                    Logout
                                                 </v-btn>
                                             </template>
                                             <template v-slot:default="{ isActive }">
@@ -140,8 +133,8 @@
 
 
             <!-- Menu -->
-            <v-navigation-drawer app v-model="drawer" location="left" 
-                :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }" @mouseover="drawer = true" @mouseout="drawer = false">
+            <v-navigation-drawer app v-model="drawer" location="left"
+                :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }">
                 <v-list density="compact" nav class="pa-3">
                     <v-row>
                         <v-col cols="auto">
@@ -164,7 +157,7 @@
 
 
             <!-- Content -->
-            <v-main :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }">
+            <v-main :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }" @click="drawer = false">
                 <!-- content -->
                 <div class="cointainter m-2 p-2">
                     <component :is="currentComponent"></component>
@@ -263,12 +256,14 @@ import DriverUser from '../components/hr/users/AddDriver.vue';
 // Clients
 import AddClient from '../components/clients/AddClient.vue';
 import ShowClients from '../components/clients/ShowClients.vue';
+import AddBrand from '../components/clients/AddBrand.vue';
+import ManageBrands from '../components/clients/ManageBrands.vue';
 // Clients
 
 
 // Asset
-import ShowCars from '../components/asset/ShowCars.vue';
 import AddCar from '../components/asset/AddCar.vue';
+import ShowCars from '../components/asset/ShowCars.vue';
 // Asset
 
 
@@ -549,13 +544,81 @@ export default {
 
 
         // Clients
-        ClientsAddClientComponent() {
-
-            this.currentComponent = AddClient
+        AddRestaurantComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Restaurant",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Add restaurant',
+                    component: 'AddUserComponent',
+                    disabled: true,
+                },
+            ],
+                this.currentComponent = AddClient
         },
-        ClientsModifyClientComponent() {
-
-            this.currentComponent = ShowClients
+        ManageRestaurantComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Restaurant",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Manage restaurants',
+                    component: 'AddUserComponent',
+                    disabled: true,
+                },
+            ],
+                this.currentComponent = ShowClients
+        },
+        AddBrandComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Brands",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Add brand',
+                    component: '',
+                    disabled: true,
+                },
+            ],
+                this.currentComponent = AddBrand
+        },
+        ManageBrandsComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Brands",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Manage brands',
+                    component: '',
+                    disabled: true,
+                },
+            ],
+                this.currentComponent = ManageBrands
         },
 
 
@@ -599,9 +662,6 @@ export default {
             this.currentComponent = ShowCars;
         },
         // Assets
-
-
-
 
 
 

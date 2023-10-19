@@ -74,31 +74,35 @@ class getCar(APIView):
         return JsonResponse(serializer.data, status=200)
         
         
-
 class EditCar(APIView):
     permission_classes = [IsAuthenticated]
     
     def put(self, request, id):
         data = request.data
-        
-        # Check for unique 
-        # fields_to_check = ['vin']
 
-        # for field_name in fields_to_check:
-        #     if field_name in data:
-        #         field_value = data[field_name]
+        try:
+            car = Car.objects.get(id=id)
 
-        #         duplicate_exists = Car.objects.filter(**{field_name: field_value}).exists()
-        #         if duplicate_exists:
-        #             return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400) 
+            fields_to_check = ['vin']
+
+            for field_name in fields_to_check:
+                if field_name in data:
+                    field_value = data[field_name]
+
+
+                    if field_value != getattr(car, field_name) and Car.objects.exclude(id=id).filter(**{field_name: field_value}).exists():
+                        return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400) 
         
         
-        car = Car.objects.get(id = id)
-        serializer = UpdateCarSerializer(car, data=data)
-        
-        if serializer.is_valid():
-            serializer.update(car, data)  
-            return JsonResponse({'message' : 'Success'},status=200)
-        
-        else:
-            return JsonResponse(serializer.errors, status=400)
+            car = Car.objects.get(id = id)
+            serializer = UpdateCarSerializer(car, data=data)
+            
+            if serializer.is_valid():
+                serializer.update(car, data)  
+                return JsonResponse({'message' : 'Success'},status=200)
+            
+            else:
+                return JsonResponse(serializer.errors, status=400)
+            
+        except Car.DoesNotExist:
+            return JsonResponse({'error': 'Samochód o podanym ID nie istnieje.'}, status=404)

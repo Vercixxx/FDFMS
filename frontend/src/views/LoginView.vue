@@ -47,17 +47,22 @@
 
 
         <v-list-item class="mx-auto pa-12" max-width="700" rounded="lg" align="center" justify="center">
+            
             <v-row>
-                <v-col cols="3">
+                <v-col cols="12">
                     <v-icon icon="mdi-truck-fast" class="text-h1" />
                 </v-col>
-                <v-col class="text-h4">
+            </v-row>
+
+            <v-row>
+                
+                <v-col class="text-h3">
                     <span class="fw-bold ">F</span>ood
                     <span class="fw-bold">D</span>elivery
                     <span class="fw-bold">F</span>leet
                     <span class="fw-bold">M</span>anagement
                     <span class="fw-bold">S</span>ystem
-                    - Log in
+                  
                 </v-col>
             </v-row>
         </v-list-item>
@@ -83,10 +88,10 @@
                             <div class="px-12 pb-12 pt-5">
 
 
-                                <v-form v-model="form" @submit.prevent="onSubmit">
+                                <v-form v-model="form" @submit.prevent="onSubmit"  class="text-h5">
 
                                     <!-- Username field -->
-                                    <v-text-field v-model="username" variant="solo-filled" label="Username"
+                                    <v-text-field v-model="username" variant="outlined" label="Username"
                                         ref="usernameInput" :readonly="loading" :rules="usernameRules" class="mb-2" clearable
                                         density="compact" prepend-icon="mdi-account-tie">
                                     </v-text-field>
@@ -104,7 +109,7 @@
                                     </div>
 
                                     <!-- Password field -->
-                                    <v-text-field v-model="password" variant="solo-filled" label="Password"
+                                    <v-text-field v-model="password" variant="outlined" label="Password"
                                         ref="passwordInput" :readonly="loading" :rules="passwordRules" density="compact"
                                         :type="passwordVisible ? 'text' : 'password'" prepend-icon="mdi-key"
                                         :append-inner-icon="passwordVisible ? 'mdi-eye' : ' mdi-eye-off'"
