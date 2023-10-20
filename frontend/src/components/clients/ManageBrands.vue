@@ -150,7 +150,7 @@
 
             <div class="justify-center d-flex align-items-center mb-3">
                 <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
-                <v-btn width="150" @click="deleteCar(deleteBrandId)" color="red">Yes</v-btn>
+                <v-btn width="150" @click="deleteBrand(deleteBrandId)" color="red">Yes</v-btn>
             </div>
 
         </v-card>
@@ -312,7 +312,7 @@ export default {
         async deleteBrand() {
             this.dialogDelete = false;
             try {
-                const response = await axios.delete(`api/brand/delete/${this.deleteBrandId}`);
+                const response = await axios.delete(`api/brands/delete/${this.deleteBrandId}`);
 
 
                 if (response.status === 204) {

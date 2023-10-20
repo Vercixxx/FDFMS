@@ -82,4 +82,28 @@ class GetBrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brands
         fields = '__all__'
+
+
+
+
+
+# Update brand
+class UpdateBrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brands
+        fields = '__all__'
+        
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.country = validated_data.get('country', instance.country)
+        instance.city = validated_data.get('city', instance.city)
+        instance.state = validated_data.get('state', instance.state)
+        instance.street = validated_data.get('street', instance.street)
+        instance.home = validated_data.get('home', instance.home)
+        instance.apartament = validated_data.get('apartament', instance.apartament)
+        instance.zip = validated_data.get('zip', instance.zip)
+    
+        instance.save()
+        return instance
 # Brand serializers

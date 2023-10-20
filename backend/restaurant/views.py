@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from .models import Restaurant, Brands
 
 # Serializers
-from .serializers import CreateRestaurantSerializer, GetAllRestaurants, CreateBrandSerializer, GetBrandSerializer
+from .serializers import CreateRestaurantSerializer, GetAllRestaurants, CreateBrandSerializer, GetBrandSerializer, UpdateBrandSerializer
 
 # Rest
 from rest_framework.permissions import IsAuthenticated
@@ -121,5 +121,55 @@ class GetBrands(APIView):
             serializer = GetBrandSerializer(all_brands, many=True)
             
         return JsonResponse(serializer.data, status=200, safe=False)
+    
+    
 
+
+
+# Deletion
+class DeleteBrands(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Brands.objects.all()
+    lookup_field = 'id'
+# Deletion
+
+
+
+
+
+# Updating brand
+class UpdateBrand(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, brandID):
+        data = request.data
+
+        try:
+            brand = Brands.objects.get(id=brandID)
+
+            fields_to_check = ['name']
+
+            for field_name in fields_to_check:
+                if field_name in data:
+                    field_value = data[field_name]
+
+                    if field_value != getattr(brand, field_name) and Brands.objects.exclude(id=brandID).filter(**{field_name: field_value}).exists():
+                        return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400) 
+        
+        
+            serializer = UpdateBrandSerializer(brand, data=data)
+            
+            if serializer.is_valid():
+                serializer.update(brand, data)  
+                return JsonResponse({'message' : 'Success'},status=200)
+            
+            else:
+                return JsonResponse(serializer.errors, status=400)
+            
+        except Brands.DoesNotExist:
+            return JsonResponse({'error': 'Brand does not exist.'}, status=404)
+        
+        
+        
+# Updating brand
 # Brand
