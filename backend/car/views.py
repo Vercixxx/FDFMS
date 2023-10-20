@@ -104,4 +104,4 @@ class EditCar(APIView):
                 return JsonResponse(serializer.errors, status=400)
             
         except Car.DoesNotExist:
-            return JsonResponse({'error': 'Samochód o podanym ID nie istnieje.'}, status=404)
+            return JsonResponse({'error': 'Car does not exist.'}, status=404)

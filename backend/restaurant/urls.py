@@ -29,7 +29,13 @@ urlpatterns = [
     path('api/brands/get-all/', views.GetBrands.as_view(), name='get-all-brands'),
     
     # Getting brand info
-    path('api/brands/get-info/<int:id>/', views.GetBrands.as_view(), name='get-all-brands'),
+    path('api/brands/get-info/<int:id>/', views.GetBrands.as_view(), name='get-existing-brands'),
+    
+    # Deleting brand
+    path('api/brands/delete/<int:id>/', views.DeleteBrands.as_view(), name='delete-brand'),
+    
+    # Updating Brand
+    path('api/brands/update/<int:brandID>/', views.UpdateBrand.as_view(), name='update-brand')
 ]
 
     
