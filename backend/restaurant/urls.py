@@ -24,6 +24,12 @@ urlpatterns = [
     
     # Creating Brand
     path('api/brands/create/', views.CreateBrand.as_view(), name="create-brand"),
+    
+    # Getting all brands
+    path('api/brands/get-all/', views.GetBrands.as_view(), name='get-all-brands'),
+    
+    # Getting brand info
+    path('api/brands/get-info/<int:id>/', views.GetBrands.as_view(), name='get-all-brands'),
 ]
 
     

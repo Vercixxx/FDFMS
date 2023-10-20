@@ -72,4 +72,14 @@ class CreateBrandSerializer(serializers.ModelSerializer):
         brand = Brands(**brand_data)
         brand.save()
         return brand
+    
+    
+    
+
+
+#Get brands
+class GetBrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brands
+        fields = '__all__'
 # Brand serializers

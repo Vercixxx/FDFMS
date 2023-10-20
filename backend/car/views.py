@@ -89,7 +89,6 @@ class EditCar(APIView):
                 if field_name in data:
                     field_value = data[field_name]
 
-
                     if field_value != getattr(car, field_name) and Car.objects.exclude(id=id).filter(**{field_name: field_value}).exists():
                         return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400) 
         
