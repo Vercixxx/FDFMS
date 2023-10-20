@@ -65,56 +65,51 @@
 
 
 
-            <!-- Maping oc -->
-            <template #item.is_oc="{ item }">
-                <v-icon v-if="item.columns.is_oc" icon="mdi-check-bold" style="color:green"></v-icon>
-                <v-icon v-else icon="mdi-close-thick" style="color:red"></v-icon>
+
+            <template #item="{ item }">
+                <tr>
+                    <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id" class="text-center">
+                        <span v-if="cell === null">
+                            <v-icon icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
+                        </span>
+                        <span v-else-if="cell === true">
+                            <v-icon icon="mdi-check-bold" style="color:green"></v-icon>
+                        </span>
+                        <span v-else-if="cell === false">
+                            <v-icon icon="mdi-close-thick" style="color:red"></v-icon>
+                        </span>
+                        <span v-else>
+                            {{ cell }}
+                        </span>
+
+                        <!-- Actions -->
+                        <template v-if="columnIndex === 'action'">
+                            <v-btn variant="plain" color="blue" @click="carDetailsFunct(item.columns.id)">
+                                <span class="material-symbols-outlined">
+                                    description
+                                </span>
+                                <v-tooltip activator="parent" location="top">Show car details</v-tooltip>
+                            </v-btn>
+
+                            <v-btn variant="plain" color="green" @click="editCar(item.columns.id)">
+                                <span class="material-symbols-outlined d-flex">
+                                    edit
+                                </span>
+                                <v-tooltip activator="parent" location="top">Edit</v-tooltip>
+                            </v-btn>
+
+                            <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.vin)">
+                                <span class="material-symbols-outlined d-flex">
+                                    delete
+                                </span>
+                                <v-tooltip activator="parent" location="top">Delete</v-tooltip>
+                            </v-btn>
+                        </template>
+                        <!-- Actions -->
+                    </td>
+                </tr>
             </template>
-            <!-- Maping oc -->
 
-            <!-- Maping ac -->
-            <template #item.is_ac="{ item }">
-                <v-icon v-if="item.columns.is_ac" icon="mdi-check-bold" style="color:green"></v-icon>
-                <v-icon v-else icon="mdi-close-thick" style="color:red"></v-icon>
-            </template>
-            <!-- Maping ac -->
-
-
-            <!-- Action column -->
-            <template v-slot:item.action="{ item }">
-                <!-- Button show info -->
-                <v-btn variant="plain" color="blue" @click="carDetailsFunct(item.columns.id)">
-                    <span class="material-symbols-outlined">
-                        description
-                    </span>
-                    <v-tooltip activator="parent" location="top">Show Car details</v-tooltip>
-                </v-btn>
-                <!-- Button show info -->
-
-
-
-                <!-- Button edit -->
-                <v-btn variant="plain" color="green" @click="editCar(item.columns.id)">
-                    <span class="material-symbols-outlined d-flex">
-                        edit
-                    </span>
-                    <v-tooltip activator="parent" location="top">Edit</v-tooltip>
-                </v-btn>
-                <!-- Button edit -->
-
-
-
-                <!-- Button delete -->
-                <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.id)">
-                    <span class="material-symbols-outlined d-flex">
-                        delete
-                    </span>
-                    <v-tooltip activator="parent" location="top">Delete</v-tooltip>
-                </v-btn>
-                <!-- Button delete -->
-            </template>
-            <!-- Buttons -->
-            <!-- Action column -->
 
         </v-data-table>
         <!-- Table -->
@@ -213,7 +208,6 @@
     <!-- dialog -->
 
     <!-- Dialog details -->
-
 </template>
 
 <script setup>

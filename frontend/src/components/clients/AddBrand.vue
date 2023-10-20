@@ -213,7 +213,7 @@ export default {
                     icon: 'mdi-map-marker',
                     rules: [
                         v => !!v || 'Street is required',
-                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
+                        v => /^[a-zA-Z0-9 -]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
@@ -363,7 +363,7 @@ export default {
                 localStorage.setItem('message', JSON.stringify(messageData));
 
                 emit('message', '');
-                // this.goBack()
+                this.goBack()
             }
             catch (error) {
                 this.loading = false;
