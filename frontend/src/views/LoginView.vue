@@ -1,51 +1,6 @@
 <template>
     <v-app>
-        <!-- <v-sheet class="rounded p-2 mt-2 mx-2 bg-teal-darken-2">
-
-            <v-row justify="space-between">
-
-                <v-col align="start">
-
-
-                    <p class="text-h4 fst-italic  px-2">
-                        <v-icon icon="mdi-truck-fast" />
-                        &nbsp
-                        <span class="fw-bold">F</span>ood
-                        <span class="fw-bold">D</span>elivery
-                        <span class="fw-bold">F</span>leet
-                        <span class="fw-bold">M</span>anagement
-                        <span class="fw-bold">S</span>ystem
-                        - Log in
-                    </p>
-              
-                </v-col>
-
-                <v-col cols="3" class="d-flex align-center justify-end">
-
-                    <v-btn :ripple="false" variant="plain">
-                        <span :style="{ display: actualTheme ? 'none' : 'block' }" @click="toggleTheme" role="button">
-                            <span class="material-symbols-outlined">
-                                dark_mode
-                            </span>
-                        </span>
-                        <span :style="{ display: actualTheme ? 'block' : 'none' }" @click="toggleTheme" role="button">
-                            <span class="material-symbols-outlined">
-                                light_mode
-                            </span>
-                        </span>
-                    </v-btn>
-
-
-
-                </v-col>
-            </v-row>
-
-
-        </v-sheet> -->
-
-
-
-
+       
         <v-list-item class="mx-auto pa-12" max-width="700" rounded="lg" align="center" justify="center">
             
             <v-row>
@@ -102,7 +57,7 @@
                                         class="text-subtitle-1 text-medium-emphasis d-flex align-end justify-space-between">
                                         &nbsp
 
-                                        <v-btn variant="plain" size="x-small" @click="passwordRecoverDialog = true"
+                                        <v-btn disabled variant="plain" size="x-small" @click="passwordRecoverDialog = true"
                                             class="text-cyan-darken-4" prepend-icon="mdi-restore">
                                             Forgot password?
                                         </v-btn>
@@ -123,7 +78,7 @@
                                     <v-row class="d-flex align-end justify-space-between">
 
 
-                                        <v-checkbox v-model="rememberMe" hide-details label="Remember me"
+                                        <v-checkbox disabled v-model="rememberMe" hide-details label="Remember me"
                                             class="text-cyan-darken-4">
                                         </v-checkbox>
 

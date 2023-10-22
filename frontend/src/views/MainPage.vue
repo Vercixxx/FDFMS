@@ -243,7 +243,6 @@ import HRNav from "../components/hr/HRMenu.vue"
 // Navigation Bars
 
 // HR
-import AddUser from '../components/hr/AddUser.vue';
 import ModifyUser from '../components/hr/ModifyUser.vue';
 import HrUser from '../components/hr/users/AddHr.vue';
 import PayrollUser from '../components/hr/users/AddPayroll.vue';
@@ -363,25 +362,6 @@ export default {
         },
 
         // HR
-        AddUserComponent() {
-            this.currentComponent = AddUser;
-            this.path = [
-                {
-                    name: "Home",
-                    component: 'HomeComponent',
-                },
-                {
-                    name: "Users",
-                    component: '',
-                    disabled: true,
-                },
-                {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
-                    disabled: true,
-                },
-            ];
-        },
         ModifyUserComponent() {
             this.currentComponent = ModifyUser;
             this.path = [
@@ -414,10 +394,6 @@ export default {
                     disabled: true,
                 },
                 {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
-                },
-                {
                     name: 'Add HR User',
                     component: 'AddHrComponent',
                     disabled: true,
@@ -435,10 +411,6 @@ export default {
                     component: '',
                     disabled: true,
 
-                },
-                {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
                 },
                 {
                     name: 'Add Payroll user',
@@ -461,10 +433,6 @@ export default {
 
                 },
                 {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
-                },
-                {
                     name: 'Add Payroll user',
                     component: 'AddAssetComponent',
                     disabled: true,
@@ -482,10 +450,6 @@ export default {
                     name: "Users",
                     component: '',
                     disabled: true,
-                },
-                {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
                 },
                 {
                     name: 'Add Client User',
@@ -507,10 +471,6 @@ export default {
                     disabled: true,
                 },
                 {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
-                },
-                {
                     name: 'Add Manager User',
                     component: 'AddManagerComponent',
                     disabled: true,
@@ -528,10 +488,6 @@ export default {
                     name: "Users",
                     component: '',
                     disabled: true,
-                },
-                {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
                 },
                 {
                     name: 'Add Driver User',
