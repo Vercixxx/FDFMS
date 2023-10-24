@@ -27,7 +27,7 @@
                     </template>
                     <v-list density="compact" nav>
                         <v-list-item v-for="option in buttonAdd" :key="option.name" :prepend-icon="option.icon"
-                            :title="option.name" @click="handleButtonClick(option)">
+                            :title="option.name" @click="addUserButtonClick(option)">
                         </v-list-item>
                     </v-list>
                 </v-menu>
@@ -66,6 +66,9 @@
 
 <script>
 import { closeDrawer } from '../../store/store.js'
+import useEventsBus from '../../plugins/eventBus.js'
+import { ref, watch } from "vue";
+const { emit } = useEventsBus()
 
 export default {
     data() {
@@ -164,8 +167,22 @@ export default {
     methods: {
         handleButtonClick(option) {
             closeDrawer();
-            this.$root.changeCurrentComponent(option.click);
+            this.$root.changeCurrentComponent(option.name);
         },
+
+        addUserButtonClick(option) {
+            if(option.name === 'Driver') {
+                closeDrawer();
+                this.$root.changeCurrentComponent('AddDriverComponent');
+            }
+            else {
+                closeDrawer();
+                localStorage.setItem('addingRole', option.name);
+                emit('forceReload', '');
+                this.$root.changeCurrentComponent('AddUserComponent');
+            }
+        },
+
         manageUsersClick() {
             closeDrawer();
             this.$root.changeCurrentComponent('ModifyUserComponent');

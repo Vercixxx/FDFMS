@@ -741,29 +741,16 @@ export default {
       localStorage.setItem('username', username)
       localStorage.setItem('user_role', user_role)
 
+      this.$root.changeCurrentComponent('AddUserComponent');
+
+
       switch (user_role) {
-        case 'HR':
-          this.$root.changeCurrentComponent('AddHrComponent');
-          break;
-
-        case 'Payroll':
-          this.$root.changeCurrentComponent('AddPayrollComponent');
-          break;
-
-        case 'Asset':
-          this.$root.changeCurrentComponent('AddAssetComponent');
-          break;
-
-        case 'Clients':
-          this.$root.changeCurrentComponent('AddClientComponent');
-          break;
-
-        case 'Manager':
-          this.$root.changeCurrentComponent('AddManagerComponent');
-          break;
-
         case 'Driver':
           this.$root.changeCurrentComponent('AddDriverComponent');
+          break;
+
+        default:
+          this.$root.changeCurrentComponent('AddUserComponent');
           break;
       }
     },
