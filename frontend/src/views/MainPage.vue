@@ -41,7 +41,7 @@
                     <v-col cols="auto" align="end">
                         <v-col cols="auto">
 
-                            <v-tooltip :text="actualTheme ? 'Enable light mode':'Enable dark mode'" location="bottom">
+                            <v-tooltip :text="actualTheme ? 'Enable light mode' : 'Enable dark mode'" location="bottom">
                                 <template v-slot:activator="{ props }">
                                     <v-btn :ripple="false" variant="plain" v-bind="props"
                                         :icon="actualTheme ? 'mdi-weather-night' : 'mdi-white-balance-sunny'"
@@ -159,7 +159,7 @@
             <!-- Content -->
             <v-main :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }" @click="drawer = false">
                 <!-- content -->
-                <div class="cointainter m-2 p-2">
+                <div class="cointainter m-2 p-2" :key="forceReload">
                     <component :is="currentComponent"></component>
                 </div>
                 <!-- content -->
@@ -243,6 +243,7 @@ import HRNav from "../components/hr/HRMenu.vue"
 // Navigation Bars
 
 // HR
+import AddUser from '../components/hr/users/AddUser.vue';
 import ModifyUser from '../components/hr/ModifyUser.vue';
 import HrUser from '../components/hr/users/AddHr.vue';
 import PayrollUser from '../components/hr/users/AddPayroll.vue';
@@ -286,6 +287,8 @@ export default {
             alert: false,
             snackContent: '',
 
+            forceReload: 0,
+
             socials: [
                 {
                     id: 1,
@@ -311,9 +314,14 @@ export default {
 
         const { bus } = useEventsBus();
         watch(
-            () => bus.value.get('message'),
-            (val) => {
-                this.showSnackBar();
+            () => [bus.value.get('message'), bus.value.get('forceReload')],
+            ([message, forceReload]) => {
+                if (message) {
+                    this.showSnackBar();
+                }
+                if (forceReload) {
+                    this.forceReload+=1;
+                }
             }
         );
     },
@@ -362,6 +370,25 @@ export default {
         },
 
         // HR
+        AddUserComponent() {
+            this.currentComponent = AddUser;
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Users",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Add user',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+        },
         ModifyUserComponent() {
             this.currentComponent = ModifyUser;
             this.path = [
@@ -513,7 +540,7 @@ export default {
                 },
                 {
                     name: 'Add restaurant',
-                    component: 'AddUserComponent',
+                    component: '',
                     disabled: true,
                 },
             ],
@@ -532,7 +559,7 @@ export default {
                 },
                 {
                     name: 'Manage restaurants',
-                    component: 'AddUserComponent',
+                    component: '',
                     disabled: true,
                 },
             ],

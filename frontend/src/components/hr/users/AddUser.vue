@@ -2,11 +2,13 @@
     <div class="containter m-2 p-2 d-flex justify-content-center">
         <div class="col-12 col-md-9">
 
-            <div class="d-flex justify-content-between mb-5">
+            <v-btn v-if="editing" @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
+                    Back
+            </v-btn>
+
+            <div class="d-flex justify-center mb-5">
                 <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new {{ addingRole }} user</div>
                 <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit {{ editUser.username }} user</div>
-                <div></div>
-
             </div>
 
 
@@ -620,6 +622,7 @@ export default {
     mounted() {
         // Check for user class
         this.addingRole = localStorage.getItem('addingRole');
+        localStorage.removeItem('addingRole');
 
         this.username = localStorage.getItem('username');
 
@@ -752,6 +755,8 @@ export default {
             this.input_data['residence_state'] = this.resSelectedState;
 
         },
+
+
         generateUsername() {
             let firstName = '';
             let lastName = '';
@@ -809,7 +814,7 @@ export default {
         async createUser() {
             this.getDataFromInputs();
 
-            this.input_data['user_role'] = 'Asset'
+            this.input_data['user_role'] = this.addingRole;
 
             const response = await axios.post('api/create/', this.input_data);
 
@@ -833,11 +838,7 @@ export default {
             }
 
         },
-        resetForm() {
-            for (const field of this.allInputs) {
-                this.input_data[field.model] = '';
-            }
-        },
+
 
         async getUserData(username, user_role) {
 
@@ -860,7 +861,7 @@ export default {
 
         async updateUser() {
             // Generate dict for sending
-            this.input_data['user_role'] = 'Asset'
+            this.input_data['user_role'] = this.addingRole;
             const ready_data = this.input_data;
 
 
@@ -892,6 +893,14 @@ export default {
 
 
         },
+
+
+
+        // Go back
+        goBack() {
+            this.$root.changeCurrentComponent('ModifyUserComponent');
+        },
+        // Go back
 
     }
 };
