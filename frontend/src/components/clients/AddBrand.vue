@@ -69,7 +69,7 @@
 
                     <v-row>
 
-                        <!-- Country and City -->
+                        <!-- Country and State -->
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
                                 v-model="selectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
@@ -82,7 +82,7 @@
                             </v-autocomplete>
 
                         </v-col>
-                        <!-- Country and City -->
+                        <!-- Country and State -->
 
                         <v-col cols="12" sm="6" v-for="input in residenceAddress" :key="input.name">
 

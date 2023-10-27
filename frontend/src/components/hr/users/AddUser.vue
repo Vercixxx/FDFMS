@@ -2,12 +2,14 @@
     <div class="containter m-2 p-2 d-flex justify-content-center">
         <div class="col-12 col-md-9">
 
-            <v-btn v-if="editing" @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
-                    Back
+            <v-btn v-if="editing" @click="goBack" prepend-icon="mdi-undo" color="danger"
+                :variant="theme ? undefined : 'outlined'">
+                Back
             </v-btn>
 
             <div class="d-flex justify-center mb-5">
-                <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new {{ addingRole }} user</div>
+                <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new {{ addingRole }} user
+                </div>
                 <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit {{ editUser.username }} user</div>
             </div>
 
@@ -18,7 +20,7 @@
                     :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-4': theme }">
 
                     <div class="fw-light">
-                        <span class="filled-star-example"></span> - field required
+                        <v-icon icon="mdi-star" color="red" style="font-size:medium;"></v-icon> - field required
                     </div>
 
 
@@ -39,8 +41,8 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -66,8 +68,8 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -89,20 +91,22 @@
                     <p align="center" class="text-h6 text-md-h5 text-lg-h5">Residence address</p>
                     <v-row>
 
-                        <!-- Country and City -->
+                        <!-- Country and State -->
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
                                 v-model="resSelectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
+
                             </v-autocomplete>
+
                         </v-col>
 
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="State" :items="resCitiesList" variant="outlined"
-                                v-model="resSelectedState" :disabled="resSelectedCountry === ''" :rules="fieldRequired">
+                                v-model="resSelectedState" :disabled="resSelectedCountry === null" :rules="fieldRequired">
                             </v-autocomplete>
 
                         </v-col>
-                        <!-- Country and City -->
+                        <!-- Country and State -->
 
                         <v-col cols="12" sm="6" v-for="input in residenceAddress" :key="input.name">
 
@@ -111,8 +115,8 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -155,7 +159,7 @@
 
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="State" :items="corCitiesList" variant="outlined"
-                                    v-model="corSelectedState" :disabled="corSelectedCountry === ''"
+                                    v-model="corSelectedState" :disabled="corSelectedCountry === null"
                                     :rules="show_corespondece ? [] : fieldRequired">
                                 </v-autocomplete>
 
@@ -170,8 +174,8 @@
 
                                     <!-- Icons -->
                                     <template v-slot:append-inner>
-                                        <span v-if="!show_corespondece && input.required" class="filled-star">
-                                        </span>
+                                        <v-icon v-if="!show_corespondece && input.required" icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                         <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon
                                         }}</v-icon>
                                     </template>
@@ -215,7 +219,7 @@
 
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="State" :items="regCitiesList" variant="outlined"
-                                    v-model="regSelectedState" :disabled="regSelectedCountry === ''"
+                                    v-model="regSelectedState" :disabled="regSelectedCountry === null"
                                     :rules="show_registered ? [] : fieldRequired">
                                 </v-autocomplete>
 
@@ -230,8 +234,8 @@
 
                                     <!-- Icons -->
                                     <template v-slot:append-inner>
-                                        <span v-if="!show_registered && input.required" class="filled-star">
-                                        </span>
+                                        <v-icon v-if="!show_registered && input.required" icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                         <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon
                                         }}</v-icon>
                                     </template>
@@ -589,17 +593,17 @@ export default {
 
             allCountries: [],
 
-            resSelectedCountry: '',
-            corSelectedCountry: '',
-            regSelectedCountry: '',
+            resSelectedCountry: null,
+            corSelectedCountry: null,
+            regSelectedCountry: null,
 
             resCitiesList: [],
             corCitiesList: [],
             regCitiesList: [],
 
-            resSelectedState: '',
-            corSelectedState: '',
-            regSelectedState: '',
+            resSelectedState: null,
+            corSelectedState: null,
+            regSelectedState: null,
 
             fieldRequired: [v => !!v || 'Field is required',],
 
@@ -681,6 +685,9 @@ export default {
 
     methods: {
 
+
+
+        // Method called on submiting form
         onSubmit() {
             if (!this.form) return;
 
@@ -695,10 +702,19 @@ export default {
 
 
         },
+        // Method called on submiting form
+
+
+
+        // Field required rule
         required(v) {
             return !!v || 'Field is required';
         },
+        // Field required rule
 
+
+
+        // Adding correspondence form
         copyResidenceToCorrespondence() {
             if (this.show_corespondece) {
                 for (let i = 0; i < this.residenceAddress.length; i++) {
@@ -717,7 +733,11 @@ export default {
                 this.input_data['correspondence_state'] = this.corSelectedState;
             }
         },
+        // Adding correspondence form
 
+
+
+        // Adding registered form
         copyResidenceToRegistered() {
             if (this.show_registered) {
                 for (let i = 0; i < this.residenceAddress.length; i++) {
@@ -736,7 +756,11 @@ export default {
                 this.input_data['registered_state'] = this.regSelectedState;
             }
         },
+        // Adding registered form
 
+
+
+        // Getting data from inputs
         getDataFromInputs() {
             this.copyResidenceToCorrespondence();
             this.copyResidenceToRegistered();
@@ -755,8 +779,11 @@ export default {
             this.input_data['residence_state'] = this.resSelectedState;
 
         },
+        // Getting data from inputs
 
 
+
+        // Generate username based on first and last name
         generateUsername() {
             let firstName = '';
             let lastName = '';
@@ -776,17 +803,28 @@ export default {
 
             this.input_data.username = `${firstName}${lastName}${randomDigits}`;
         },
+        // Generate username based on first and last name
 
 
+
+        // Random digits generator
         generateRandomDigits() {
             return Math.floor(100 + Math.random() * 900);
         },
+        // Random digits generator
 
+
+
+        // Get countries
         async getCountries() {
             const response = await axios.get("api/users/get-countries/");
             this.allCountries = response.data;
         },
+        // Get countries
 
+
+
+        // Get cities
         async getCities(country) {
             const propertyMap = {
                 residence: this.resSelectedCountry,
@@ -809,8 +847,11 @@ export default {
                     break;
             }
         },
+        // Get cities
 
 
+
+        // Create user function
         async createUser() {
             this.getDataFromInputs();
 
@@ -838,8 +879,11 @@ export default {
             }
 
         },
+        // Create user function
 
 
+
+        // Get user data from server when editing
         async getUserData(username, user_role) {
 
             const response = await axios.get(`api/users/get/${username}/${user_role}`);
@@ -858,10 +902,14 @@ export default {
             this.corSelectedState = this.editUser['correspondence_state'];
             this.regSelectedState = this.editUser['registered_state'];
         },
+        // Get user data from server when editing
 
+
+
+        // Update user function
         async updateUser() {
             // Generate dict for sending
-            this.input_data['user_role'] = this.addingRole;
+            this.input_data['user_role'] = this.user_role;
             const ready_data = this.input_data;
 
 
@@ -879,6 +927,7 @@ export default {
                 emit('message', '');
                 this.loading = false;
                 this.$root.changeCurrentComponent('ModifyUserComponent');
+
             }
             catch (error) {
                 this.loading = false;
@@ -888,11 +937,12 @@ export default {
                 };
                 localStorage.setItem('message', JSON.stringify(messageData));
                 emit('message', '');
-
+                this.$root.changeCurrentComponent('ModifyUserComponent');
             }
 
 
         },
+        // Update user function
 
 
 
@@ -906,19 +956,4 @@ export default {
 };
 </script>
 
-<style >
-.filled-star::before {
-    content: '\2605';
-    color: #ff6666;
-    font-weight: bold;
-    position: absolute;
-    left: 3px;
-    top: 0px;
-}
-
-.filled-star-example::before {
-    content: '\2605';
-    color: #ff0000;
-
-}
-</style>
+<style ></style>
