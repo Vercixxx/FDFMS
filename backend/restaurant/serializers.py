@@ -9,25 +9,23 @@ class CreateRestaurantSerializer(serializers.ModelSerializer):
     managers = serializers.SlugRelatedField(
     many=True,
     queryset=RestManager.objects.all(),
-    slug_field='username',
+    slug_field='id',
     )
     class Meta:
         model = Restaurant
         fields = [
                   'name', 
                   'phone', 
+                  'brand', 
                   'country', 
                   'city', 
                   'state', 
                   'street', 
-                  'home_number', 
-                  'apartament_number', 
-                  'zip_code', 
+                  'home', 
+                  'apartament', 
+                  'zip', 
                   'managers', 
                   ]
-        extra_kwargs = {
-            'name': {'validators': [UniqueValidator(queryset=Restaurant.objects.all(), message='This name is already in use.')]}
-        }
         
     def create(self, validated_data):
         managers_data = validated_data.pop('managers', [])

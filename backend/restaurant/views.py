@@ -21,14 +21,23 @@ class CreateRestaurant(APIView):
     
     def post(self, request):
         data = request.data
-        
-        
+            
+        # Check for unique 
+        fields_to_check = ['name']
+
+        for field_name in fields_to_check:
+            if field_name in data:
+                field_value = data[field_name]
+
+                duplicate_exists = Restaurant.objects.filter(**{field_name: field_value}).exists()
+                if duplicate_exists:
+                    return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400) 
         
         serializer = CreateRestaurantSerializer(data=data)
         
         if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({'message' : 'Success'},status=200)
+            brand = serializer.save()
+            return JsonResponse({'message' : f'Succesfully created {brand.name}'},status=200)
         else:
             return JsonResponse(serializer.errors, status=400)
         
@@ -37,17 +46,17 @@ class GetRestaurants(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     
     # query
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('name',)
 
     serializer_class = GetAllRestaurants
 
     def get_queryset(self):
         city = self.request.GET.get('city')
         queryset = Restaurant.objects.all()
-        
-        if city in city != 'all':
+        print(city)
+        if city in city != 'All':
+            print("ASD")
             queryset = queryset.filter(city=city)
+            
         
         
         return queryset
@@ -168,8 +177,5 @@ class UpdateBrand(APIView):
             
         except Brands.DoesNotExist:
             return JsonResponse({'error': 'Brand does not exist.'}, status=404)
-        
-        
-        
 # Updating brand
 # Brand

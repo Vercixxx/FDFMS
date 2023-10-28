@@ -255,7 +255,7 @@ import DriverUser from '../components/hr/users/AddDriver.vue';
 
 // Clients
 import AddClient from '../components/clients/AddClient.vue';
-import ShowClients from '../components/clients/ShowClients.vue';
+import ManageClients from '../components/clients/ManageClients.vue';
 import AddBrand from '../components/clients/AddBrand.vue';
 import ManageBrands from '../components/clients/ManageBrands.vue';
 // Clients
@@ -563,7 +563,7 @@ export default {
                     disabled: true,
                 },
             ],
-                this.currentComponent = ShowClients
+                this.currentComponent = ManageClients
         },
         AddBrandComponent() {
             this.path = [

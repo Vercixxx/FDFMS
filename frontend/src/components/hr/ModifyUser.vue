@@ -106,7 +106,7 @@
     <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
 
     <div class="text-h3 ma-5">
-      Data
+      Users
     </div>
 
     <!-- Table -->

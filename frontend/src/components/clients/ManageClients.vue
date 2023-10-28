@@ -6,6 +6,25 @@
             <p class="p-2 fw-bolder text-h4">Options</p>
 
             <v-row>
+                <v-col cols="4">
+
+                    <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 text-white">
+                        <span class="pr-2">City - </span>
+                        {{ selectedCity }}
+
+                        <v-icon icon="mdi-menu-down"></v-icon>
+                    </v-btn>
+
+                    <v-menu activator="#role-activator" transition="slide-y-transition">
+                        <v-list>
+                            <v-list-item v-for="option in availableCities" :value="option" @click="selectCity(option)">
+                                {{ option }}
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </v-col>
+            </v-row>
+            <v-row>
                 <v-col cols="7">
                     <!-- Combobox columns selection -->
 
@@ -25,6 +44,7 @@
 
                     <!-- Combobox columns selection -->
                 </v-col>
+
                 <v-col cols="5">
                     <!-- Search bar -->
                     <v-text-field variant="solo-filled" v-model="searchInput" @keydown.enter="searchTable = searchInput"
@@ -41,12 +61,12 @@
 
         <div>
             <h1>
-                Brands
+                Restaurants
             </h1>
         </div>
 
         <!-- Table -->
-        <v-data-table :headers="updatedColumns" :items="brands" :search="searchTable" :loading="tableLoading"
+        <v-data-table :headers="updatedColumns" :items="restaurants" :search="searchTable" :loading="tableLoading"
             class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
             show-current-page>
 
@@ -55,9 +75,7 @@
             <!-- No data -->
             <template v-slot:no-data>
                 <p class="text-h4 pa-5">
-                    <span class="material-symbols-outlined">
-                        database
-                    </span>
+                    <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
                     No data
                 </p>
             </template>
@@ -67,39 +85,31 @@
             <template #item="{ item }">
                 <tr>
                     <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id" class="text-center">
-                        <span v-if="cell === null">
-                            <v-icon icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
-                        </span>
-                        <span v-else-if="cell === true">
-                            <v-icon icon="mdi-check-bold" style="color:green"></v-icon>
-                        </span>
-                        <span v-else-if="cell === false">
-                            <v-icon icon="mdi-close-thick" style="color:red"></v-icon>
-                        </span>
+
+                        <v-icon v-if="cell === null" icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
+
+                        <v-icon v-else-if="cell === true" icon="mdi-check-bold" style="color:green"></v-icon>
+
+                        <v-icon v-else-if="cell === false" icon="mdi-close-thick" style="color:red"></v-icon>
+
                         <span v-else>
                             {{ cell }}
                         </span>
 
                         <!-- Actions -->
                         <template v-if="columnIndex === 'action'">
-                            <v-btn variant="plain" color="blue" @click="brandDetailsFunct(item.columns.id )">
-                                <span class="material-symbols-outlined">
-                                    description
-                                </span>
-                                <v-tooltip activator="parent" location="top">Show brand details</v-tooltip>
+                            <v-btn variant="plain" color="blue" @click="brandDetailsFunct(item.columns.id)">
+                                <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
+                                <v-tooltip activator="parent" location="top">Show client details</v-tooltip>
                             </v-btn>
 
-                            <v-btn variant="plain" color="green" @click="editBrand(item.columns.id )">
-                                <span class="material-symbols-outlined d-flex">
-                                    edit
-                                </span>
+                            <v-btn variant="plain" color="green" @click="editBrand(item.columns.id)">
+                                <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
                                 <v-tooltip activator="parent" location="top">Edit</v-tooltip>
                             </v-btn>
 
-                            <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.id )">
-                                <span class="material-symbols-outlined d-flex">
-                                    delete
-                                </span>
+                            <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.id)">
+                                <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
                                 <v-tooltip activator="parent" location="top">Delete</v-tooltip>
                             </v-btn>
                         </template>
@@ -114,7 +124,6 @@
 
     </div>
 
-
     <!-- Dialaogs section -->
 
     <!-- Delete car confirm -->
@@ -123,22 +132,18 @@
             <div class="text-warning text-h6 text-md-h5 text-lg-h4">
 
                 <div class="d-flex justify-content-between align-items-center px-4 pt-4">
-                    <span class="material-symbols-outlined">
-                        warning
-                    </span>
-                    <span>
-                        Warning
-                    </span>
-                    <span class="material-symbols-outlined">
-                        warning
-                    </span>
+
+                    <v-icon icon="mdi-alert"></v-icon>
+                    Warning
+                    <v-icon icon="mdi-alert"></v-icon>
+
                 </div>
                 <hr>
             </div>
 
             <div class="pa-3" align="center">
 
-                You are trying to delete brand id -
+                You are trying to delete restaurant id -
                 <span class='fw-bolder'>
                     {{ deleteBrandId }}
                 </span>
@@ -150,7 +155,10 @@
 
             <div class="justify-center d-flex align-items-center mb-3">
                 <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
-                <v-btn width="150" @click="deleteBrand(deleteBrandId)" color="red">Yes</v-btn>
+                <v-btn width="150" @click="deleteRestaurant(deleteBrandId)" color="red">
+                    <v-icon icon="mdi-delete-empty"></v-icon>
+                    Yes
+                </v-btn>
             </div>
 
         </v-card>
@@ -223,14 +231,21 @@ export default {
 
     data() {
         return {
-            brands: [],
-            columns: [],
+            selectedCity: 'All',
+            availableCities: [],
+
+            restaurants: [],
             itemsPerPage: 25,
+            columns: [],
             searchInput: '',
             searchTable: '',
             tableLoading: false,
             selectedColumns: [],
             avaliableColumns: [],
+
+
+
+            // OLD
 
             dialogDelete: false,
             deleteBrandId: '',
@@ -245,10 +260,11 @@ export default {
             ],
             columns: [
                 { title: 'Name', key: 'name', align: 'center', sortable: true },
+                { title: 'Brand', key: 'brand', align: 'center', sortable: false },
                 { title: 'Phone', key: 'phone', align: 'center', sortable: false },
                 { title: 'Country', key: 'country', align: 'center', sortable: false },
-                { title: 'City', key: 'city', align: 'center', sortable: true },
                 { title: 'State', key: 'state', align: 'center', sortable: false },
+                { title: 'City', key: 'city', align: 'center', sortable: true },
                 { title: 'Street', key: 'street', align: 'center', sortable: false },
                 { title: 'Home', key: 'home', align: 'center', sortable: false },
                 { title: 'Apartament', key: 'apartament', align: 'center', sortable: false },
@@ -271,7 +287,8 @@ export default {
 
 
     created() {
-        this.loadBrands();
+        this.loadRestaurants();
+        this.getCities()
 
         this.selectedColumns = this.columns;
         this.avaliableColumns = this.columns;
@@ -282,20 +299,44 @@ export default {
     methods: {
 
         // Load all brands
-        async loadBrands() {
+        async loadRestaurants() {
             try {
-                const response = await axios.get('api/brands/get-all/');
+                const response = await axios.get('api/restaurants/get-restaurants/', {
+                    params: {
+                        city: this.selectedCity,
+                    }
+                });
+                console.log(response)
+                console.log(response.data)
 
-                this.brands = response.data;
-
+                this.restaurants = response.data;
                 this.tableLoading = false;
-
             }
             catch (error) {
                 console.error('Error when fetching', error);
             }
+
         },
         // Load all brands
+
+
+
+        // Get cities
+        async getCities() {
+            const response = await axios.get('api/restaurants/unique_cities/');
+            this.availableCities = ['All', ...response.data];
+            console.log(this.availableCities);
+        },
+        // Get cities
+
+
+
+        // Select city
+        selectCity(city) {
+            this.selectedCity = city;
+            this.loadRestaurants();
+        },
+        // Select city
 
 
 
@@ -309,14 +350,14 @@ export default {
 
 
         // Deleting brand method
-        async deleteBrand() {
+        async deleteRestaurant() {
             this.dialogDelete = false;
             try {
                 const response = await axios.delete(`api/brands/delete/${this.deleteBrandId}`);
 
 
                 if (response.status === 204) {
-                    this.loadBrands()
+                    this.loadRestaurants()
 
                     const messageData = {
                         message: `Successfully deleted brand id - ${this.deleteBrandId}`,
@@ -328,7 +369,7 @@ export default {
 
                 }
                 else {
-                    this.loadBrands();
+                    this.loadRestaurants();
                     this.dataError = 'Error!'
                     document.getElementById('hiddenButton').click();
                 }
