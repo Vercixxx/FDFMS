@@ -2,29 +2,28 @@
     <div class="containter m-2 p-2 d-flex justify-content-center">
         <div class="col-12 col-md-9">
 
+
+            <!-- Top -->
             <div class="d-flex justify-content-between mb-5">
+                <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
+                    Manage
+                </v-btn>
 
-                <v-row class="text-h4">
-                    <v-col cols="5">
-                        <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger"
-                            :variant="theme ? undefined : 'outlined'">
-                            Back
-                        </v-btn>
-                    </v-col>
 
-                    <v-col>
-                        <span v-if="!editing">
-                            Add Restaurant
-                        </span>
-                        <span v-else>
-                            Edit Restaurant
-                        </span>
-                        <v-icon icon="mdi-silverware-fork-knife"></v-icon>
-                    </v-col>
-
-                </v-row>
+                <div v-if="!editing" class="text-h6 text-md-h5 text-lg-h4 fw-bold">
+                    <v-icon icon="mdi-silverware-fork-knife"></v-icon>
+                    Add Restaurant
+                </div>
+                <div v-else class="text-h6 text-md-h5 text-lg-h4 fw-bold">
+                    <v-icon icon="mdi-silverware-fork-knife"></v-icon>
+                    Edit ?
+                </div>
+                <div></div>
 
             </div>
+            <!-- Top -->
+
+
 
 
             <v-form v-model="form" @submit.prevent="onSubmit">
@@ -32,7 +31,7 @@
                     :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-4': theme }">
 
                     <div class="fw-light">
-                        <span class="filled-star-example"></span> - field required
+                        <v-icon icon="mdi-star" color="red" style="font-size:medium"></v-icon> - field required
                     </div>
 
 
@@ -53,8 +52,8 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -63,13 +62,11 @@
                         </v-col>
 
                         <v-col cols="12" sm="6">
-                            <v-autocomplete label="Brand" :items="brands" variant="outlined"
-                                v-model="selectedBrand" @update:search="getBrands()" :rules="fieldRequired">
+                            <v-autocomplete label="Brand" :items="availableBrands" variant="outlined"
+                                v-model="selectedBrand" :rules="fieldRequired">
                             </v-autocomplete>
                         </v-col>
                     </v-row>
-
-                    {{ brands }}
 
 
                     <v-divider :thickness="3"
@@ -82,20 +79,20 @@
 
                     <v-row>
 
-                        <!-- Country and City -->
+                        <!-- Country and State -->
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                v-model="resSelectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
+                                v-model="selectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
                             </v-autocomplete>
                         </v-col>
 
                         <v-col cols="12" sm="6">
-                            <v-autocomplete label="State" :items="resCitiesList" variant="outlined"
-                                v-model="resSelectedState" :disabled="resSelectedCountry === ''" :rules="fieldRequired">
+                            <v-autocomplete label="State" :items="allStates" variant="outlined" v-model="selectedState"
+                                :disabled="selectedCountry === null" :rules="fieldRequired">
                             </v-autocomplete>
 
                         </v-col>
-                        <!-- Country and City -->
+                        <!-- Country and State -->
 
                         <v-col cols="12" sm="6" v-for="input in residenceAddress" :key="input.name">
 
@@ -104,8 +101,8 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -128,20 +125,95 @@
 
 
 
+                    <!-- Managers -->
                     <v-row>
                         <v-col cols="12" sm="6">
-                            <v-card>
-                                available
-                            </v-card>
+
+                            <p align="center" class="text-h4 text-md-h5 text-lg-h5">Available managers</p>
+
+                            <!-- Search bar -->
+                            <v-text-field variant="solo-filled" v-model="searchQueryAvailable"
+                                @keydown.enter="searchTableAvailable = searchQueryAvailable" label="Search" class="px-1 "
+                                prepend-inner-icon="mdi-magnify" hide-actions hint="Press enter to search" />
+                            <!-- Search bar -->
+
+                            <!-- Available managers -->
+                            <v-data-table :headers="tableHeaders" :items="availableManagers" :search="searchTableAvailable"
+                                :loading="tableLoading" class="elevation-4 rounded-xl" item-value="id"
+                                v-model:items-per-page="itemsPerPage" hover select-strategy="all" show-current-page>
+
+
+
+                                <!-- No data -->
+                                <template v-slot:no-data>
+                                    <p class="text-h6 pa-5">
+                                        <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
+                                        No available managers
+                                    </p>
+                                </template>
+                                <!-- No data -->
+
+
+                                <template #item="{ item }">
+                                    <tr @click="selectUser(item.columns.id)" role="button">
+                                        <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id"
+                                            class="text-center">
+
+                                            {{ cell }}
+
+                                        </td>
+                                    </tr>
+                                </template>
+
+                            </v-data-table>
+                            <!-- Available managers -->
+
                         </v-col>
                         <v-col cols="12" sm="6">
-                            <v-card>
-                                choosen
-                            </v-card>
+
+                            <p align="center" class="text-h4 text-md-h5 text-lg-h5">Selected managers</p>
+
+                            <!-- Search bar -->
+                            <v-text-field variant="solo-filled" v-model="searchQuerySelected"
+                                @keydown.enter="searchTableSelected = searchQuerySelected" label="Search" class="px-1 "
+                                prepend-inner-icon="mdi-magnify" hide-actions hint="Press enter to search" />
+                            <!-- Search bar -->
+
+
+                            <!-- Selected managers -->
+                            <v-data-table :headers="tableHeaders" :items="selectedManagers" :search="searchTableSelected"
+                                :loading="tableLoading" class="elevation-4 rounded-xl" item-value="id"
+                                v-model:items-per-page="itemsPerPage" hover select-strategy="all" show-current-page>
+
+
+
+                                <!-- No data -->
+                                <template v-slot:no-data>
+                                    <p class="text-h6 pa-5">
+                                        <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
+                                        No data
+                                    </p>
+                                </template>
+                                <!-- No data -->
+
+
+                                <template #item="{ item }">
+                                    <tr @click="unselectUser(item.columns.id)" role="button">
+                                        <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id"
+                                            class="text-center">
+
+                                            {{ cell }}
+
+                                        </td>
+                                    </tr>
+                                </template>
+
+                            </v-data-table>
+                            <!-- Selected managers -->
+
                         </v-col>
                     </v-row>
-
-
+                    <!-- Managers -->
 
 
                     <!-- Button submit -->
@@ -175,12 +247,14 @@
                 </v-container>
             </v-form>
 
-
-
         </div>
 
     </div>
 </template>
+
+<script setup>
+import { VDataTable } from 'vuetify/labs/VDataTable'
+</script>
 
 <script>
 import axios from 'axios';
@@ -193,9 +267,6 @@ import { useTheme } from 'vuetify'
 export default {
     data() {
         return {
-            managersUsernames: [],
-            choosenUsernames: [],
-
             theme: true,
             form: false,
             loading: false,
@@ -203,9 +274,26 @@ export default {
 
             input_data: {},
 
-            brands: [],
             availableBrands: [],
             selectedBrand: null,
+
+            // Country, state
+            allCountries: [],
+            allStates: [],
+            selectedCountry: null,
+            selectedState: null,
+
+            // Managers
+            availableManagers: [],
+            selectedManagers: [],
+
+            tableHeaders: [
+                { title: 'Username', key: 'username', align: 'center', sortable: true },
+                { title: 'Id', key: 'id', align: 'center', sortable: true },
+            ],
+
+            // Search
+            searchTableAvailable: '',
 
             // Inputs definisions
             basicInfoInputs: [
@@ -287,6 +375,12 @@ export default {
         }
     },
 
+    computed: {
+        allInputs() {
+            return [...this.basicInfoInputs, ...this.residenceAddress];
+        },
+    },
+
 
     mounted() {
         // Dark mode
@@ -303,37 +397,103 @@ export default {
         const theme = useTheme();
         this.theme = theme.global.current.value.dark;
 
-        this.getAllUsernames();
+        // Get managers
+        this.getManagers();
 
         // Get brands
         this.loadBrands();
 
+        // Get countries
+        this.getCountries();
+
     },
 
     methods: {
+        // On submit behavior
         onSubmit() {
             if (!this.form) return;
 
             this.loading = true;
 
             if (!this.editing) {
-                this.createUser();
+                this.createRestaurant();
             }
             else {
-                this.updateUser();
+                this.updateRestaurant();
+            }
+        },
+        // On submit behavior
+
+
+
+        // Getting data from inputs
+        getDataFromInputs() {
+            for (const field of this.allInputs) {
+                if (typeof this.input_data[field.model] === 'string') {
+                    this.input_data[field.model] = this.input_data[field.model].trim();
+                }
+                if (!this.input_data[field.model]) {
+                    this.input_data[field.model] = null;
+                }
             }
 
+            // Adding country, state and choosen managers
+            this.input_data['country'] = this.selectedCountry;
+            this.input_data['state'] = this.selectedState;
+            this.input_data['managers'] = this.selectedManagers.map(manager => manager.id);
 
         },
+        // Getting data from inputs
 
 
 
-        
+        // Country
+        async getCountries() {
+            const response = await axios.get("api/users/get-countries/");
+            this.allCountries = response.data;
+        },
+        // Country
+
+
+
+        // City
+        async getCities(country) {
+            const response = await axios.get(`api/users/get-cities/${this.selectedCountry}/`);
+            this.allStates = response.data
+        },
+        // City
+
+
+
+        // Move user to selected
+        selectUser(userID) {
+            const userIndex = this.availableManagers.findIndex(user => user.id === userID);
+            if (userIndex !== -1) {
+                const selectedUser = this.availableManagers.splice(userIndex, 1)[0];
+                this.selectedManagers.push(selectedUser);
+            }
+        },
+        // Move user to selected
+
+
+
+        // Move user to unselected
+        unselectUser(userID) {
+            const userIndex = this.selectedManagers.findIndex(user => user.id === userID);
+            if (userIndex !== -1) {
+                const unselectedUser = this.selectedManagers.splice(userIndex, 1)[0];
+                this.availableManagers.push(unselectedUser);
+            }
+        },
+        // Move user to unselected
+
+
+
         // Load all brands
         async loadBrands() {
             try {
                 const response = await axios.get('api/brands/get-all/');
-                this.brands = response.data;
+                this.availableBrands = response.data.map(item => item.name);
             }
             catch (error) {
                 console.error('Error when fetching', error);
@@ -341,75 +501,59 @@ export default {
         },
         // Load all brands
 
-        async getAllUsernames() {
+
+
+        // Get all managers
+        async getManagers() {
             const response = await axios.get('api/managers/get_username_all/', {
                 params: {
                     search: this.query,
                 }
             });
-
-            this.managersUsernames = response.data.filter(username => !this.choosenUsernames.includes(username));
-
-            console.log(response);
+            this.availableManagers = response.data;
 
         },
-        toggleUser(user) {
-            if (this.isSelected(user)) {
-                this.choosenUsernames = this.choosenUsernames.filter(u => u !== user);
-            } else if (!this.choosenUsernames.includes(user)) {
-                this.choosenUsernames.push(user);
-            }
-        },
+        // Get all managers
 
-        isSelected(user) {
-            return this.choosenUsernames.some(u => u.username === user.username);
-        },
 
+
+        // Create restaurant
         async createRestaurant() {
-            const userList = this.choosenUsernames.map(user => user.username);
 
-            const fetched_data = {
-                name: this.name,
-                phone: this.phone,
+            this.getDataFromInputs();
 
-                country: this.country,
-                city: this.city,
-                state: this.state,
-                street: this.street,
-                home_number: this.home_number,
-                apartament_number: this.apartament_number,
-                zip_code: this.zip_code,
+            try {
+                const response = await axios.post('api/restaurant/create/', this.input_data);
 
-                managers: userList,
-            };
+                const messageData = {
+                    message: response.data.message,
+                    type: 'success'
+                };
 
-            // post data
-            const response = await axios.post('api/restaurant/create/', fetched_data)
+                localStorage.setItem('message', JSON.stringify(messageData));
 
-            if (response.data.message) {
-                this.dataCorrect = response.data;
-                document.getElementById('hiddenButton').click();
-                this.resetForm();
+                emit('message', '');
+                this.goBack()
             }
-            else {
-                this.dataError = response.data;
-                document.getElementById('hiddenButton').click();
+            catch (error) {
+                this.loading = false;
+                const messageData = {
+                    message: error.response.data.error,
+                    type: 'danger'
+                };
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
             }
-
         },
+        // Create restaurant
 
-        resetForm() {
-            this.name = '';
-            this.phone = '';
 
-            this.country = '';
-            this.city = '';
-            this.state = '';
-            this.street = '';
-            this.home_number = '';
-            this.apartament_number = '';
-            this.zip_code = '';
+
+        // Go back
+        goBack() {
+            this.$root.changeCurrentComponent('ManageRestaurantComponent');
         },
+        // Go back
 
     },
 

@@ -33,9 +33,9 @@ class Restaurant(models.Model):
     city = models.CharField(max_length=100, blank=True, null=True)
     state = models.CharField(max_length=100, blank=True, null=True)
     street = models.CharField(max_length=200, blank=True, null=True)
-    home_number = models.CharField(max_length=10, blank=True, null=True)
-    apartament_number = models.CharField(max_length=10, blank=True, null=True)
-    zip_code = models.CharField(max_length=10, blank=True, null=True)
+    home = models.CharField(max_length=10, blank=True, null=True)
+    apartament = models.CharField(max_length=10, blank=True, null=True)
+    zip = models.CharField(max_length=10, blank=True, null=True)
 
 class WorkChange(models.Model):
     time_start = models.CharField(max_length=5)
