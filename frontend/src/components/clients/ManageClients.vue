@@ -8,7 +8,7 @@
             <v-row>
                 <v-col cols="4">
 
-                    <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 text-white">
+                    <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 bg-teal-darken-4" >
                         <span class="pr-2">City - </span>
                         {{ selectedCity }}
 
@@ -25,7 +25,7 @@
                 </v-col>
             </v-row>
             <v-row>
-                <v-col cols="7">
+                <v-col cols="5">
                     <!-- Combobox columns selection -->
 
                     <v-expansion-panels>
@@ -43,6 +43,10 @@
                     </v-expansion-panels>
 
                     <!-- Combobox columns selection -->
+                </v-col>
+
+                <v-col cols="2">
+                    
                 </v-col>
 
                 <v-col cols="5">
@@ -98,7 +102,7 @@
 
                         <!-- Actions -->
                         <template v-if="columnIndex === 'action'">
-                            <v-btn variant="plain" color="blue" @click="brandDetailsFunct(item.columns.id)">
+                            <v-btn variant="plain" color="blue" @click="restaurantDetailsFunct(item.columns.id)">
                                 <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
                                 <v-tooltip activator="parent" location="top">Show client details</v-tooltip>
                             </v-btn>
@@ -167,7 +171,7 @@
 
 
     <!-- Dialog details -->
-    <v-dialog v-model="brandDetailsDialog" width="auto">
+    <v-dialog v-model="restaurantDetailsDialog" width="auto">
         <v-card>
             <v-card-text>
                 <v-table>
@@ -182,7 +186,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(value, key) in brandDetails" :key="key">
+                        <tr v-for="(value, key) in restaurantDetails" :key="key">
                             <td>{{ key }}</td>
                             <td v-if="value === null">
                                 <v-icon icon="mdi-minus-thick"></v-icon>
@@ -206,7 +210,7 @@
 
             </v-card-text>
             <v-card-actions>
-                <v-btn color="primary" block @click="brandDetailsDialog = false">Close</v-btn>
+                <v-btn color="primary" block @click="restaurantDetailsDialog = false">Close</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -250,8 +254,8 @@ export default {
             dialogDelete: false,
             deleteBrandId: '',
 
-            brandDetailsDialog: false,
-            brandDetails: [],
+            restaurantDetailsDialog: false,
+            restaurantDetails: [],
 
 
             // Headers
@@ -298,14 +302,10 @@ export default {
 
     methods: {
 
-        // Load all brands
+        // Load all Restaurants
         async loadRestaurants() {
             try {
-                const response = await axios.get('api/restaurants/get-restaurants/', {
-                    params: {
-                        city: this.selectedCity,
-                    }
-                });
+                const response = await axios.get(`api/restaurant/get/${this.selectedCity}/`);
                 console.log(response)
                 console.log(response.data)
 
@@ -317,7 +317,7 @@ export default {
             }
 
         },
-        // Load all brands
+        // Load all Restaurants
 
 
 
@@ -340,16 +340,16 @@ export default {
 
 
 
-        // Deleting brand confirmation
+        // Deleting Restaurant confirmation
         deleteConfirm(carid) {
             this.deleteBrandId = carid;
             this.dialogDelete = true;
         },
-        // Deleting brand confirmation
+        // Deleting Restaurant confirmation
 
 
 
-        // Deleting brand method
+        // Deleting Restaurant method
         async deleteRestaurant() {
             this.dialogDelete = false;
             try {
@@ -360,7 +360,7 @@ export default {
                     this.loadRestaurants()
 
                     const messageData = {
-                        message: `Successfully deleted brand id - ${this.deleteBrandId}`,
+                        message: `Successfully deleted restaurant id - ${this.deleteBrandId}`,
                         type: 'success'
                     };
 
@@ -380,27 +380,27 @@ export default {
                 console.error('Error when fetching', error);
             }
         },
-        // Deleting brand method
+        // Deleting Restaurant method
 
 
 
-        // Editing brand
-        editBrand(brandID) {
-            localStorage.setItem('brandID', brandID);
+        // Editing Restaurant
+        editBrand(restaurantID) {
+            localStorage.setItem('restaurantID', restaurantID);
             this.$root.changeCurrentComponent('AddBrandComponent');
         },
-        // Editing brand
+        // Editing Restaurant
 
 
 
-        // Brand details
-        async brandDetailsFunct(brandID) {
-            const response = await axios.get(`api/brands/get-info/${brandID}/`);
-            this.brandDetails = response.data;
-            this.brandDetailsDialog = true;
+        // Restaurant details
+        async restaurantDetailsFunct(restaurantID) {
+            const response = await axios.get(`api/restaurant/get/${restaurantID}/`);
+            this.restaurantDetails = response.data;
+            this.restaurantDetailsDialog = true;
 
         },
-        // Brand details
+        // Restaurant details
 
 
     },

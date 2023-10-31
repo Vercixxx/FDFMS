@@ -10,7 +10,7 @@ import string
 from django.http import JsonResponse
 
 
-from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer
+from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer, getAllUsernames
 from owner.serializers import AddOwnerSerializer
 from rest_manager.serializers import AddManagerSerializer, RestManagerSerializer, GetRestManager, UpdateRestManager
 from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer, GetAssetUser, UpdateAssetUser
@@ -150,6 +150,15 @@ class GUViewSet(viewsets.ModelViewSet):
     def get_users(self, request):
         serializer = GeneralUserSerializer(self.queryset, many=True)
         return Response(serializer.data)
+    
+    
+class GetUsernames(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        users = GeneralUser.objects.all()
+        serializer = getAllUsernames(users, many=True)
+        return JsonResponse(serializer.data, safe=False)
     
     
 class DeleteUser(DestroyAPIView):
