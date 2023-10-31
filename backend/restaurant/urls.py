@@ -2,9 +2,6 @@ from . import views
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-router = DefaultRouter()
-router.register(r"get-restaurants", views.GetRestaurants, basename='get-restaurants')
-
 
 urlpatterns = [
     # Creating restaurant
@@ -14,7 +11,10 @@ urlpatterns = [
     path('api/restaurant/delete/<str:name>/', views.DeleteRestaurant.as_view(), name='delete-restaurant'),
     
     # Get restaurants
-    path('api/restaurants/', include(router.urls)),
+    path('api/restaurant/get/<str:city>/', views.GetRestaurants.as_view(), name='get-restaurants'),
+    
+    # Get restaurant
+    path('api/restaurant/get/<int:id>/', views.GetRestaurants.as_view(), name='get-restaurant'),
     
     # Get list of possible cities
     path('api/restaurants/unique_cities/', views.GetPossibleCities.as_view(), name='unique-cities'),

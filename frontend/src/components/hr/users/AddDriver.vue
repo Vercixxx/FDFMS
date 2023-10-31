@@ -97,7 +97,7 @@
 
                             <v-date-picker v-if="show_ln_release" ok-text="Select" v-model="ln_release"
                                 title="License number release date" view-mode="year" min="01-01-1960" :max="maxDate"
-                                color="success" @click:save="show_ln_release = !show_ln_release"
+                                color="teal-darken-3" @click:save="show_ln_release = !show_ln_release"
                                 @click:cancel="show_ln_release = !show_ln_release" class="mb-4"></v-date-picker>
                             <!-- Release date -->
                         </v-col>
@@ -121,7 +121,7 @@
 
                             <v-date-picker v-if="show_ln_expire" ok-text="Select" v-model="ln_expire"
                                 title="License number expire date" view-mode="year" min="01-01-1960" :max="maxDate"
-                                color="success" @click:save="show_ln_expire = !show_ln_expire"
+                                color="teal-darken-3" @click:save="show_ln_expire = !show_ln_expire"
                                 @click:cancel="show_ln_expire = !show_ln_expire" class="mb-4"></v-date-picker>
                             <!-- Expire date -->
 

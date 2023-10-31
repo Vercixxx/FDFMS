@@ -127,89 +127,104 @@
 
                     <!-- Managers -->
                     <v-row>
-                        <v-col cols="12" sm="6">
+                        <v-col cols="12" sm="6" align="center">
 
-                            <p align="center" class="text-h4 text-md-h5 text-lg-h5">Available managers</p>
+                            <v-card class="pa-3 ma-1 border-xl rounded-xl" :color="theme ? 'grey-darken-3' : ''">
+                                <v-col cols="10" align="center">
 
-                            <!-- Search bar -->
-                            <v-text-field variant="solo-filled" v-model="searchQueryAvailable"
-                                @keydown.enter="searchTableAvailable = searchQueryAvailable" label="Search" class="px-1 "
-                                prepend-inner-icon="mdi-magnify" hide-actions hint="Press enter to search" />
-                            <!-- Search bar -->
+                                    <p class="text-h4 text-md-h5 text-lg-h5">Available managers</p>
 
-                            <!-- Available managers -->
-                            <v-data-table :headers="tableHeaders" :items="availableManagers" :search="searchTableAvailable"
-                                :loading="tableLoading" class="elevation-4 rounded-xl" item-value="id"
-                                v-model:items-per-page="itemsPerPage" hover select-strategy="all" show-current-page>
+                                    <!-- Search bar -->
+                                    <v-text-field variant="solo-filled" v-model="searchQueryAvailable"
+                                        @keydown.enter="searchTableAvailable = searchQueryAvailable" label="Search"
+                                        class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions
+                                        hint="Press enter to search" />
+                                    <!-- Search bar -->
 
-
-
-                                <!-- No data -->
-                                <template v-slot:no-data>
-                                    <p class="text-h6 pa-5">
-                                        <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
-                                        No available managers
-                                    </p>
-                                </template>
-                                <!-- No data -->
+                                    <!-- Available managers -->
+                                    <v-data-table :headers="tableHeaders" :items="availableManagers"
+                                        :search="searchTableAvailable" :loading="tableLoading"
+                                        class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage"
+                                        hover select-strategy="all" show-current-page>
 
 
-                                <template #item="{ item }">
-                                    <tr @click="selectUser(item.columns.id)" role="button">
-                                        <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id"
-                                            class="text-center">
 
-                                            {{ cell }}
+                                        <!-- No data -->
+                                        <template v-slot:no-data>
+                                            <p class="text-h6 pa-5">
+                                                <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
+                                                No available managers
+                                            </p>
+                                        </template>
+                                        <!-- No data -->
 
-                                        </td>
-                                    </tr>
-                                </template>
 
-                            </v-data-table>
-                            <!-- Available managers -->
+                                        <template #item="{ item }">
+                                            <tr @click="selectUser(item.columns.id)" role="button">
+                                                <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id"
+                                                    class="text-center">
+
+                                                    {{ cell }}
+
+                                                </td>
+                                            </tr>
+                                        </template>
+
+                                    </v-data-table>
+                                    <!-- Available managers -->
+                                </v-col>
+                            </v-card>
 
                         </v-col>
-                        <v-col cols="12" sm="6">
 
-                            <p align="center" class="text-h4 text-md-h5 text-lg-h5">Selected managers</p>
+                        <v-col cols="12" sm="6" align="center">
 
-                            <!-- Search bar -->
-                            <v-text-field variant="solo-filled" v-model="searchQuerySelected"
-                                @keydown.enter="searchTableSelected = searchQuerySelected" label="Search" class="px-1 "
-                                prepend-inner-icon="mdi-magnify" hide-actions hint="Press enter to search" />
-                            <!-- Search bar -->
+                            <v-card class="pa-3 ma-1 border-xl rounded-xl" :color="theme ? 'grey-darken-3' : ''">
+                                <v-col cols="10" align="center">
 
+                                    <p align="center" class="text-h4 text-md-h5 text-lg-h5">Selected managers</p>
 
-                            <!-- Selected managers -->
-                            <v-data-table :headers="tableHeaders" :items="selectedManagers" :search="searchTableSelected"
-                                :loading="tableLoading" class="elevation-4 rounded-xl" item-value="id"
-                                v-model:items-per-page="itemsPerPage" hover select-strategy="all" show-current-page>
-
+                                    <!-- Search bar -->
+                                    <v-text-field variant="solo-filled" v-model="searchQuerySelected"
+                                        @keydown.enter="searchTableSelected = searchQuerySelected" label="Search"
+                                        class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions
+                                        hint="Press enter to search" />
+                                    <!-- Search bar -->
 
 
-                                <!-- No data -->
-                                <template v-slot:no-data>
-                                    <p class="text-h6 pa-5">
-                                        <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
-                                        No data
-                                    </p>
-                                </template>
-                                <!-- No data -->
+                                    <!-- Selected managers -->
+                                    <v-data-table :headers="tableHeaders" :items="selectedManagers"
+                                        :search="searchTableSelected" :loading="tableLoading" class="elevation-4 rounded-xl"
+                                        item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
+                                        show-current-page>
 
 
-                                <template #item="{ item }">
-                                    <tr @click="unselectUser(item.columns.id)" role="button">
-                                        <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id"
-                                            class="text-center">
 
-                                            {{ cell }}
+                                        <!-- No data -->
+                                        <template v-slot:no-data>
+                                            <p class="text-h6 pa-5">
+                                                <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
+                                                No data
+                                            </p>
+                                        </template>
+                                        <!-- No data -->
 
-                                        </td>
-                                    </tr>
-                                </template>
 
-                            </v-data-table>
-                            <!-- Selected managers -->
+                                        <template #item="{ item }">
+                                            <tr @click="unselectUser(item.columns.id)" role="button">
+                                                <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id"
+                                                    class="text-center">
+
+                                                    {{ cell }}
+
+                                                </td>
+                                            </tr>
+                                        </template>
+
+                                    </v-data-table>
+                                    <!-- Selected managers -->
+                                </v-col>
+                            </v-card>
 
                         </v-col>
                     </v-row>

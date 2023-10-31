@@ -42,24 +42,25 @@ class CreateRestaurant(APIView):
             return JsonResponse(serializer.errors, status=400)
         
         
-class GetRestaurants(viewsets.ModelViewSet):
+class GetRestaurants(APIView):
     permission_classes = [IsAuthenticated]
     
-    # query
-
-    serializer_class = GetAllRestaurants
-
-    def get_queryset(self):
-        city = self.request.GET.get('city')
-        queryset = Restaurant.objects.all()
-        print(city)
-        if city in city != 'All':
-            print("ASD")
-            queryset = queryset.filter(city=city)
+    
+    def get(self, request, city, id=None):
+        print(id)
+        if id:
+            restaurant = Restaurant.objects.get(id=id)
+            serializer = GetAllRestaurants(restaurant)
+        
+        else:
+            if city == "All":
+                all_restaurants = Restaurant.objects.all()
+            else:
+                all_restaurants = Restaurant.objects.filter(city=city)
+            serializer = GetAllRestaurants(all_restaurants, many=True)
             
-        
-        
-        return queryset
+        return JsonResponse(serializer.data, status=200, safe=False)
+    
     
 class GetPossibleCities(APIView):
     permission_classes = [IsAuthenticated]

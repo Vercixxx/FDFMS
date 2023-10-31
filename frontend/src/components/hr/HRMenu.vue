@@ -61,6 +61,33 @@
 
         </v-list>
     </v-menu>
+
+
+
+
+    <!-- Messages -->
+    <v-menu transition="slide-y-transition">
+        <template v-slot:activator="{ props }">
+            <v-list-item prepend-icon="mdi-forum" v-bind="props" class="my-3">
+                Messages
+            </v-list-item>
+
+        </template>
+        <v-list density="compact" nav>
+
+            <!-- Add -->
+            <v-list-item prepend-icon="mdi-plus" title="Add" @click="createMessage()">
+            </v-list-item>
+            <!-- Add -->
+
+            <!-- Manage -->
+            <v-list-item prepend-icon="mdi-list-status" title="Manage" @click="showMessages()">
+            </v-list-item>
+            <!-- Manage -->
+
+        </v-list>
+    </v-menu>
+    <!-- Messages -->
 </template>
 
 
@@ -143,22 +170,6 @@ export default {
                         },
                     ],
                 },
-                {
-                    name: 'Messages',
-                    mainIcon: 'mdi-forum',
-                    options: [
-                        {
-                            name: 'Create',
-                            click: 'AddUserComponent',
-                            icon: 'mdi-database-edit',
-                        },
-                        {
-                            name: 'Show log',
-                            click: 'ModifyUserComponent',
-                            icon: ' mdi-database-edit',
-                        },
-                    ],
-                },
             ]
 
         };
@@ -171,7 +182,7 @@ export default {
         },
 
         addUserButtonClick(option) {
-            if(option.name === 'Driver') {
+            if (option.name === 'Driver') {
                 closeDrawer();
                 this.$root.changeCurrentComponent('AddDriverComponent');
             }
@@ -186,7 +197,19 @@ export default {
         manageUsersClick() {
             closeDrawer();
             this.$root.changeCurrentComponent('ModifyUserComponent');
-        }
+        },
+
+
+        createMessage() {
+            closeDrawer();
+            emit('showAddMessage', '');
+        },
+
+
+        showMessages() {
+            closeDrawer();
+            emit('showMessageManager', '');
+        },
     },
 
 };

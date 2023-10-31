@@ -135,6 +135,7 @@
             <!-- Menu -->
             <v-navigation-drawer app v-model="drawer" location="left"
                 :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }">
+
                 <v-list density="compact" nav class="pa-3">
                     <v-row>
                         <v-col cols="auto">
@@ -158,11 +159,13 @@
 
             <!-- Content -->
             <v-main :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }" @click="drawer = false">
+
                 <!-- content -->
                 <div class="cointainter m-2 p-2" :key="forceReload">
                     <component :is="currentComponent"></component>
                 </div>
                 <!-- content -->
+
             </v-main>
             <!-- Content -->
 
@@ -201,6 +204,8 @@
         </v-sheet>
 
 
+        <CreateMessage ref="createMessage" style="display: none;"  :key="forceReload"/>
+
     </v-app>
 </template>
 
@@ -230,6 +235,10 @@ function toggleTheme() {
 <script>
 import { markRaw } from 'vue';
 import useEventsBus from '../plugins/eventBus.js'
+
+// Messages
+import CreateMessage from '../components/SendMessage.vue'
+// Messages
 
 // Home components
 import Home from '../components/Home.vue';
@@ -289,6 +298,7 @@ export default {
 
             forceReload: 0,
 
+
             socials: [
                 {
                     id: 1,
@@ -304,6 +314,10 @@ export default {
         };
     },
 
+    components: {
+        CreateMessage,
+    },
+
 
     mounted() {
         this.$root.changeCurrentComponent = (functionName) => {
@@ -314,13 +328,17 @@ export default {
 
         const { bus } = useEventsBus();
         watch(
-            () => [bus.value.get('message'), bus.value.get('forceReload')],
-            ([message, forceReload]) => {
+            () => [bus.value.get('message'), bus.value.get('forceReload'), bus.value.get('showAddMessage')],
+            ([message, forceReload, showAddMessage]) => {
                 if (message) {
                     this.showSnackBar();
                 }
                 if (forceReload) {
-                    this.forceReload+=1;
+                    this.forceReload += 1;
+                }
+                if (showAddMessage) {
+                    this.$refs.createMessage.dialog = true;
+                    // this.$refs.createMessage.target = null;
                 }
             }
         );

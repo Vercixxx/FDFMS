@@ -14,7 +14,7 @@
 
             <div class="btn-group dropdown mx-2">
 
-              <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 text-white">
+              <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 text-white bg-teal-darken-4">
                 <span class="pr-2">User status - </span>
                 {{ selectedRole }}
 
@@ -43,7 +43,7 @@
 
             <div class="btn-group dropdown mx-2">
 
-              <v-btn id="status-activator" variant="tonal" class="rounded-xl rounded-0 text-white">
+              <v-btn id="status-activator" variant="tonal" class="rounded-xl rounded-0 text-white  bg-teal-darken-4">
                 <span class="pr-2">User status - </span>
                 <span v-if="selectedActive === 'True'">Active</span>
                 <span v-else-if="selectedActive === 'False'">Not active</span>
@@ -70,7 +70,7 @@
 
         </v-col>
 
-        <v-col cols="5">
+        <v-col cols="12" sm="4">
           <!-- Search bar -->
           <v-text-field variant="solo-filled" v-model="searchInput" @keydown.enter="searchTable = searchInput"
             label="Search" class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions clearable
