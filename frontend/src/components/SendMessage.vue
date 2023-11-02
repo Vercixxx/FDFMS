@@ -1,233 +1,256 @@
 <template>
     <v-row justify="center">
         <v-dialog v-model="dialog" persistent width="800">
-            <v-card class="pa-5">
-                <v-card-title class="text-h5">
-                    Create message
-                </v-card-title>
-                <v-card-text>
 
-                    <!-- Destiny -->
-                    <v-select label="To" variant="solo-filled" :items="['Users', 'Groups']" v-model="target"
-                        :disabled="target"></v-select>
-                    <!-- Destiny -->
+            <v-form v-model="form" @submit.prevent="onSubmit">
 
+                <v-card class="pa-5">
+                    <v-card-title class="text-h5">
+                        Create message
+                    </v-card-title>
+                    <v-card-text>
 
-
-                    <!-- If Destiny is group -->
-                    <v-select v-if="target === 'Groups'" chips label="Select groups" :items="groups" multiple
-                        variant="solo-filled" v-model="selectedGroups"></v-select>
-                    <!-- If Destiny is group -->
+                        <!-- Destiny -->
+                        <v-select label="To" variant="solo-filled" :items="['Users', 'Groups']" v-model="target"
+                            :disabled="target"></v-select>
+                        <!-- Destiny -->
 
 
 
-                    <!-- If Destiny are users -->
-                    <v-dialog persistent v-model="dialogUsers" width="1400">
-                        <v-card class="pa-5">
-                            <v-card-title>
-                                Select users
-                            </v-card-title>
-                            <v-card-text>
+                        <!-- If Destiny is group -->
+                        <v-select v-if="target === 'Groups'" chips label="Select groups" :items="groups" multiple
+                            variant="solo-filled" v-model="selectedGroups" :disabled="loading"
+                            :rules="[required]"></v-select>
+                        <!-- If Destiny is group -->
 
-                                <!-- USERS -->
+
+
+                        <!-- If Destiny are users -->
+                        <v-dialog persistent v-model="dialogUsers" width="1400">
+                            <v-card class="pa-5">
+                                <v-card-title>
+                                    Select users
+                                </v-card-title>
+                                <v-card-text>
+
+
+                                    <v-row>
+                                        <v-col cols="12" sm="6" align="center">
+
+                                            <v-card class="pa-3 ma-1 border-xl rounded-xl"
+                                                :color="theme ? 'grey-darken-3' : ''">
+                                                <v-col cols="10" align="center">
+
+                                                    <p class="text-h4 text-md-h5 text-lg-h5">Available Users</p>
+
+
+                                                    <!-- Search bar -->
+                                                    <v-text-field variant="solo-filled" v-model="searchQueryAvailable"
+                                                        @keydown.enter="searchTableAvailable = searchQueryAvailable"
+                                                        label="Search" class="px-1 " prepend-inner-icon="mdi-magnify"
+                                                        hide-actions hint="Press enter to search" />
+                                                    <!-- Search bar -->
+
+
+                                                    <v-data-table :headers="tableHeaders" :items="availableUsers" :search="searchTableAvailable"
+                                                        class="elevation-4 rounded-xl" item-value="id"
+                                                        v-model:items-per-page="itemsPerPage" hover select-strategy="all"
+                                                        show-current-page>
+
+
+
+
+                                                        <template v-slot:no-data>
+                                                            <p class="text-h6 pa-5">
+                                                                <v-icon icon="mdi-database-alert-outline"
+                                                                    color="red"></v-icon>
+                                                                No available users
+                                                            </p>
+                                                        </template>
+
+
+
+                                                        <template #item="{ item }">
+                                                            <tr @click="selectUser(item.columns.id)" role="button">
+                                                                <td v-for="(cell, columnIndex) in item.columns"
+                                                                    :key="item.columns.id" class="text-center">
+
+                                                                    {{ cell }}
+
+                                                                </td>
+                                                            </tr>
+                                                        </template>
+
+                                                    </v-data-table>
+
+
+
+                                                </v-col>
+
+                                            </v-card>
+
+                                        </v-col>
+
+
+
+
+
+
+                                        <v-col cols="12" sm="6" align="center">
+
+                                            <v-card class="pa-3 ma-1 border-xl rounded-xl"
+                                                :color="theme ? 'grey-darken-3' : ''">
+                                                <v-col cols="10" align="center">
+
+                                                    <p align="center" class="text-h4 text-md-h5 text-lg-h5">Selected users
+                                                    </p>
+
+                                                    <v-data-table :headers="tableHeaders" :items="selectedUsers"
+                                                        class="elevation-4 rounded-xl" item-value="id"
+                                                        v-model:items-per-page="itemsPerPage" hover select-strategy="all"
+                                                        show-current-page>
+
+
+
+
+                                                        <template v-slot:no-data>
+                                                            <p class="text-h6 pa-5">
+                                                                <v-icon icon="mdi-database-alert-outline"
+                                                                    color="red"></v-icon>
+                                                                No selected users
+                                                            </p>
+                                                        </template>
+
+
+
+                                                        <template #item="{ item }">
+                                                            <tr @click="unselectUser(item.columns.id)" role="button">
+                                                                <td v-for="(cell, columnIndex) in item.columns"
+                                                                    :key="item.columns.id" class="text-center">
+
+                                                                    {{ cell }}
+
+                                                                </td>
+                                                            </tr>
+                                                        </template>
+
+                                                    </v-data-table>
+
+                                                </v-col>
+
+                                            </v-card>
+
+                                        </v-col>
+
+
+                                    </v-row>
+
+
+
+
+                                </v-card-text>
                                 <v-row>
-                                    <v-col cols="12" sm="6" align="center">
-
-                                        <v-card class="pa-3 ma-1 border-xl rounded-xl"
-                                            :color="theme ? 'grey-darken-3' : ''">
-                                            <v-col cols="10" align="center">
-
-                                                <p class="text-h4 text-md-h5 text-lg-h5">Available Users</p>
-
-                                                <!-- Search bar -->
-                                                <v-text-field variant="solo-filled" v-model="searchQueryAvailable"
-                                                    @keydown.enter="searchTableAvailable = searchQueryAvailable"
-                                                    label="Search" class="px-1 " prepend-inner-icon="mdi-magnify"
-                                                    hide-actions hint="Press enter to search" />
-                                                <!-- Search bar -->
-
-                                                <!-- Available users -->
-                                                <v-data-table :headers="tableHeaders" :items="availableUsers"
-                                                    :search="searchTableAvailable" :loading="tableLoading"
-                                                    class="elevation-4 rounded-xl" item-value="id"
-                                                    v-model:items-per-page="itemsPerPage" hover select-strategy="all"
-                                                    show-current-page>
-
-
-
-                                                    <!-- No data -->
-                                                    <template v-slot:no-data>
-                                                        <p class="text-h6 pa-5">
-                                                            <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
-                                                            No available users
-                                                        </p>
-                                                    </template>
-                                                    <!-- No data -->
-
-
-                                                    <template #item="{ item }">
-                                                        <tr @click="selectUser(item.columns.id)" role="button">
-                                                            <td v-for="(cell, columnIndex) in item.columns"
-                                                                :key="item.columns.id" class="text-center">
-
-                                                                {{ cell }}
-
-                                                            </td>
-                                                        </tr>
-                                                    </template>
-
-                                                </v-data-table>
-                                                <!-- Available users -->
-                                            </v-col>
-                                        </v-card>
-
+                                    <v-col cols="6">
+                                        <v-btn block color="red-darken-1" variant="text" @click="close()">
+                                            Close
+                                        </v-btn>
                                     </v-col>
 
-                                    <v-col cols="12" sm="6" align="center">
-
-                                        <v-card class="pa-3 ma-1 border-xl rounded-xl"
-                                            :color="theme ? 'grey-darken-3' : ''">
-                                            <v-col cols="10" align="center">
-
-                                                <p align="center" class="text-h4 text-md-h5 text-lg-h5">Selected users
-                                                </p>
-
-                                                <!-- Selected users -->
-                                                <v-data-table :headers="tableHeaders" :items="selectedUsers"
-                                                    :loading="tableLoading" class="elevation-4 rounded-xl" item-value="id"
-                                                    v-model:items-per-page="itemsPerPage" hover select-strategy="all"
-                                                    show-current-page>
-
-
-
-                                                    <!-- No data -->
-                                                    <template v-slot:no-data>
-                                                        <p class="text-h6 pa-5">
-                                                            <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
-                                                            No selected users
-                                                        </p>
-                                                    </template>
-                                                    <!-- No data -->
-
-
-                                                    <template #item="{ item }">
-                                                        <tr @click="unselectUser(item.columns.id)" role="button">
-                                                            <td v-for="(cell, columnIndex) in item.columns"
-                                                                :key="item.columns.id" class="text-center">
-
-                                                                {{ cell }}
-
-                                                            </td>
-                                                        </tr>
-                                                    </template>
-
-                                                </v-data-table>
-                                                <!-- Selected users -->
-                                            </v-col>
-                                        </v-card>
-
+                                    <v-col cols="6">
+                                        <span>
+                                            <v-tooltip v-if="selectedUser === null" activator="parent" location="top"
+                                                no-overflow>
+                                                Select users
+                                            </v-tooltip>
+                                            <span>
+                                                <v-btn block :disabled="selectedUsers === null" color="green-darken-1" variant="text"
+                                                    @click="dialogUsers = false">
+                                                    Select
+                                                </v-btn>
+                                            </span>
+                                        </span>
                                     </v-col>
                                 </v-row>
-                                <!-- USERS -->
-
-
-                            </v-card-text>
-                            <v-row>
-                                <v-col cols="6">
-                                    <v-btn block color="red-darken-1" variant="text" @click="close()">
-                                        Close
-                                    </v-btn>
-                                </v-col>
-
-                                <v-col cols="6">
-                                    <span>
-                                        <v-tooltip v-if="selectedUser === null" activator="parent" location="top"
-                                            no-overflow>
-                                            Select users
-                                        </v-tooltip>
-                                        <span>
-                                            <v-btn block :disabled="!sendButton" color="green-darken-1" variant="text"
-                                                @click="dialogUsers = false">
-                                                Select
-                                            </v-btn>
-                                        </span>
-                                    </span>
-                                </v-col>
-                            </v-row>
-                        </v-card>
-                    </v-dialog>
-                    <!-- If Destiny are users -->
+                            </v-card>
+                        </v-dialog>
+                        <!-- If Destiny are users -->
 
 
 
-                    <!-- Title -->
-                    <span>
-                        <v-tooltip v-if="!target" activator="parent" location="bottom" no-overflow>
-                            Choose recipient first
-                        </v-tooltip>
+                        <!-- Title -->
                         <span>
-                            <v-text-field :disabled="!target" label="Title" variant="solo-filled" v-model="title">
-                            </v-text-field>
-                        </span>
-                    </span>
-                    <!-- Title -->
-
-
-
-
-                    <!-- Content -->
-                    <span>
-                        <v-tooltip v-if="!target" activator="parent" location="bottom" no-overflow>
-                            Choose recipient first
-                        </v-tooltip>
-                        <span>
-                            <v-textarea :disabled="!target" label="Content" variant="solo-filled"
-                                v-model="content"></v-textarea>
-                        </span>
-                    </span>
-                    <!-- Content -->
-
-                </v-card-text>
-
-                <!-- Buttons at the bottom-->
-                <v-row>
-                    <v-col cols="6">
-                        <v-btn block color="red-darken-1" variant="text" @click="close()">
-                            Close
-                        </v-btn>
-                    </v-col>
-
-                    <v-col cols="6">
-                        <span>
-                            <v-tooltip v-if="!sendButton" activator="parent" location="top" no-overflow>
-                                Fill all fields first
+                            <v-tooltip v-if="!target" activator="parent" location="bottom" no-overflow>
+                                Choose recipient first
                             </v-tooltip>
                             <span>
-                                <v-btn block :disabled="!sendButton" color="green-darken-1" variant="text"
-                                    @click="sendMessage()">
-                                    Send
-                                </v-btn>
+                                <v-text-field :disabled="!target" label="Title" variant="solo-filled" v-model="title"
+                                    :readonly="loading" :rules="[required]">
+                                </v-text-field>
                             </span>
                         </span>
-                    </v-col>
-                </v-row>
-                <!-- Buttons at the bottom -->
+                        <!-- Title -->
 
-            </v-card>
+
+
+
+                        <!-- Content -->
+                        <span>
+                            <v-tooltip v-if="!target" activator="parent" location="bottom" no-overflow>
+                                Choose recipient first
+                            </v-tooltip>
+                            <span>
+                                <v-textarea :disabled="!target" label="Content" variant="solo-filled" v-model="content"
+                                    :readonly="loading" :rules="[required]"></v-textarea>
+                            </span>
+                        </span>
+                        <!-- Content -->
+
+                    </v-card-text>
+
+                    <!-- Buttons at the bottom-->
+                    <v-row>
+                        <v-col cols="6">
+                            <v-btn block color="red-darken-1" variant="text" @click="close()">
+                                Close
+                            </v-btn>
+                        </v-col>
+
+                        <v-col cols="6">
+                            <span>
+                                <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                                    Fill all fields first
+                                </v-tooltip>
+                                <span>
+                                    <v-btn block type="submit" :disabled="!form" :loading="loading" color="green-darken-1"
+                                        variant="text">
+                                        Send
+                                    </v-btn>
+                                </span>
+                            </span>
+                        </v-col>
+                    </v-row>
+                    <!-- Buttons at the bottom -->
+
+                </v-card>
+            </v-form>
         </v-dialog>
     </v-row>
 </template>
 
-<!-- <script setup>
+<script setup>
 import { VDataTable } from 'vuetify/labs/VDataTable';
-</script> -->
+</script>
 
 <script>
 import axios from 'axios';
+import useEventsBus from '../plugins/eventBus.js'
+import { watch } from "vue";
 export default {
     data() {
         return {
             dialog: false,
+            loading: false,
+            form: false,
 
             target: null,
 
@@ -244,23 +267,57 @@ export default {
             // Users
             dialogUsers: false,
             availableUsers: {},
-            selectedUsers: {},
+            selectedUsers: [],
+            itemsPerPage: 10,
             tableHeaders: [
                 { title: 'Username', key: 'username', align: 'center', sortable: true },
                 { title: 'Id', key: 'id', align: 'center', sortable: true },
             ],
             // Search
+            searchQueryAvailable: '',
             searchTableAvailable: '',
             // Users
 
-            sendButton: false,
 
+
+            to: [],
             title: '',
             content: '',
         }
     },
 
+
+
+    mounted() {
+        const { bus } = useEventsBus();
+        watch(
+            () => [bus.value.get('showAddMessage')],
+            ([showAddMessage]) => {
+                if (showAddMessage) {
+                    this.dialog = true
+                }
+            }
+        );
+
+        // Get list of users
+        this.getUsers();
+    },
+
+
+
     methods: {
+
+        onSubmit() {
+            if (!this.form) return
+
+            this.loading = true
+            this.sendMessage()
+        },
+        required(v) {
+            return !!v || 'Field is required'
+        },
+
+
         // Close dialog
         close() {
             this.dialog = false;
@@ -268,6 +325,7 @@ export default {
             this.title = '';
             this.content = '';
             this.selectedGroups = [];
+            this.selectedUsers = [];
         },
         // Close dialog
 
@@ -280,9 +338,53 @@ export default {
         },
         // Get all Usernames
 
-        sendMessage() {
+
+        
+        // Move user to selected
+        selectUser(userID) {
+            const userIndex = this.availableUsers.findIndex(user => user.id === userID);
+            if (userIndex !== -1) {
+                const selectedUser = this.availableUsers.splice(userIndex, 1)[0];
+                this.selectedUsers.push(selectedUser);
+            }
+        },
+        // Move user to selected
+
+
+
+        // Move user to unselected
+        unselectUser(userID) {
+            const userIndex = this.selectedUsers.findIndex(user => user.id === userID);
+            if (userIndex !== -1) {
+                const unselectedUser = this.selectedUsers.splice(userIndex, 1)[0];
+                this.availableUsers.push(unselectedUser);
+            }
+        },
+        // Move user to unselected
+
+
+
+        // Send message
+        async sendMessage() {
+            const data = {
+                'title': this.title,
+                'content': this.content,
+            }
+            if (this.target === 'Groups') {
+                data['taget'] = 'Groups';
+                data['to'] = this.selectedGroups;
+            }
+            else {
+                data['taget'] = 'Users';
+                data['to'] = this.selectedUsers;
+            }
+            console.log(data);
+            this.loading = false;
+            this.close();
+            // await axios.post('')
 
         },
+        // Send message
     },
 
     watch: {

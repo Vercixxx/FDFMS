@@ -302,6 +302,7 @@ export default {
             availableManagers: [],
             selectedManagers: [],
 
+            itemsPerPage: 10,
             tableHeaders: [
                 { title: 'Username', key: 'username', align: 'center', sortable: true },
                 { title: 'Id', key: 'id', align: 'center', sortable: true },
