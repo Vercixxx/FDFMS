@@ -24,6 +24,17 @@
                         <!-- If Destiny is group -->
 
 
+                        <!-- If Destiny are Users -->
+                        <v-select v-else-if="target === 'Users'" chips multiple closable-chips label="Selected users"
+                            :items="selectedUsers" v-model="selectedUsers" variant="solo-filled" 
+                            @click="dialogUsers = true" item-title="username" readonly="">
+               
+                        </v-select>
+
+                        <!-- If Destiny are Users -->
+                        {{ availableUsers }}
+                        {{ selectedUsers }}
+
 
                         <!-- If Destiny are users -->
                         <v-dialog persistent v-model="dialogUsers" width="1400">
@@ -52,10 +63,10 @@
                                                     <!-- Search bar -->
 
 
-                                                    <v-data-table :headers="tableHeaders" :items="availableUsers" :search="searchTableAvailable"
-                                                        class="elevation-4 rounded-xl" item-value="id"
-                                                        v-model:items-per-page="itemsPerPage" hover select-strategy="all"
-                                                        show-current-page>
+                                                    <v-data-table :headers="tableHeaders" :items="availableUsers"
+                                                        :search="searchTableAvailable" class="elevation-4 rounded-xl"
+                                                        item-value="id" v-model:items-per-page="itemsPerPage" hover
+                                                        select-strategy="all" show-current-page>
 
 
 
@@ -151,7 +162,7 @@
                                 </v-card-text>
                                 <v-row>
                                     <v-col cols="6">
-                                        <v-btn block color="red-darken-1" variant="text" @click="close()">
+                                        <v-btn block color="red-darken-1" variant="text" @click="dialogUsers = false">
                                             Close
                                         </v-btn>
                                     </v-col>
@@ -163,8 +174,8 @@
                                                 Select users
                                             </v-tooltip>
                                             <span>
-                                                <v-btn block :disabled="selectedUsers === null" color="green-darken-1" variant="text"
-                                                    @click="dialogUsers = false">
+                                                <v-btn block :disabled="selectedUsers === null" color="green-darken-1"
+                                                    variant="text" @click="dialogUsers = false">
                                                     Select
                                                 </v-btn>
                                             </span>
@@ -268,6 +279,7 @@ export default {
             dialogUsers: false,
             availableUsers: {},
             selectedUsers: [],
+            selectedUsersDisplay: [],
             itemsPerPage: 10,
             tableHeaders: [
                 { title: 'Username', key: 'username', align: 'center', sortable: true },
@@ -303,9 +315,16 @@ export default {
         this.getUsers();
     },
 
+    computed: {
+        selectedUsernames() {
+            return this.selectedUsersDisplay.map(user => user.username);
+        }
+    },
 
 
     methods: {
+
+
 
         onSubmit() {
             if (!this.form) return
@@ -339,7 +358,7 @@ export default {
         // Get all Usernames
 
 
-        
+
         // Move user to selected
         selectUser(userID) {
             const userIndex = this.availableUsers.findIndex(user => user.id === userID);
@@ -387,15 +406,5 @@ export default {
         // Send message
     },
 
-    watch: {
-        target: function (newTarget, oldTarget) {
-            if (newTarget === 'Users') {
-                this.getUsers();
-                this.dialogUsers = true;
-            } else {
-                this.dialogUsers = false;
-            }
-        }
-    }
 }
 </script>
