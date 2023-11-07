@@ -11,8 +11,7 @@
                     <v-card-text>
 
                         <!-- Destiny -->
-                        <v-select label="To" variant="solo-filled" :items="['Users', 'Groups']" v-model="target"
-                            :disabled="target"></v-select>
+                        <v-select label="To" variant="solo-filled" :items="['Users', 'Groups']" v-model="target" :disabled="target"></v-select>
                         <!-- Destiny -->
 
 
@@ -25,15 +24,14 @@
 
 
                         <!-- If Destiny are Users -->
-                        <v-select v-else-if="target === 'Users'" chips multiple closable-chips label="Selected users"
-                            :items="selectedUsers" v-model="selectedUsers" variant="solo-filled" 
-                            @click="dialogUsers = true" item-title="username" readonly="">
-               
+                        <v-select v-else-if="target === 'Users'" chips multiple label="Selected users"
+                            :items="selectedUsers" v-model="selectedUsers" variant="solo-filled" @click="dialogUsers = true"
+                            item-title="username" readonly :rules="[selectedUsers.length >= 1 || 'Select at least one user.']" immediate>
+
                         </v-select>
 
                         <!-- If Destiny are Users -->
-                        {{ availableUsers }}
-                        {{ selectedUsers }}
+{{ selectedUsers.length }}
 
 
                         <!-- If Destiny are users -->
@@ -277,7 +275,8 @@ export default {
 
             // Users
             dialogUsers: false,
-            availableUsers: {},
+            allUsers: [],
+            availableUsers: [],
             selectedUsers: [],
             selectedUsersDisplay: [],
             itemsPerPage: 10,
@@ -316,9 +315,13 @@ export default {
     },
 
     computed: {
-        selectedUsernames() {
-            return this.selectedUsersDisplay.map(user => user.username);
-        }
+        // selectedUsernames() {
+        //     return this.selectedUsersDisplay.map(user => user.username);
+        // },
+
+        availableUsers() {
+            return this.allUsers.filter(user => !this.selectedUsers.some(selectedUser => selectedUser.id === user.id));
+        },
     },
 
 
@@ -353,7 +356,7 @@ export default {
         // Get all Usernames
         async getUsers() {
             const response = await axios.get('api/users/get-usernames/');
-            this.availableUsers = response.data;
+            this.allUsers = response.data;
         },
         // Get all Usernames
 
@@ -361,12 +364,14 @@ export default {
 
         // Move user to selected
         selectUser(userID) {
-            const userIndex = this.availableUsers.findIndex(user => user.id === userID);
+            const userIndex = this.allUsers.findIndex(user => user.id === userID);
             if (userIndex !== -1) {
-                const selectedUser = this.availableUsers.splice(userIndex, 1)[0];
-                this.selectedUsers.push(selectedUser);
+                const userToCopy = this.allUsers[userIndex];
+                const copiedUser = Object.assign({}, userToCopy); // Tworzy kopię użytkownika
+                this.selectedUsers.push(copiedUser);
             }
         },
+
         // Move user to selected
 
 
@@ -375,10 +380,10 @@ export default {
         unselectUser(userID) {
             const userIndex = this.selectedUsers.findIndex(user => user.id === userID);
             if (userIndex !== -1) {
-                const unselectedUser = this.selectedUsers.splice(userIndex, 1)[0];
-                this.availableUsers.push(unselectedUser);
+                this.selectedUsers.splice(userIndex, 1); // Usuń użytkownika z selectedUsers
             }
         },
+
         // Move user to unselected
 
 
