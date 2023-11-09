@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <div :class="isDarkModeEnabled ? 'bg-grey-darken-4':''" class="min-vh-100">
+        <div :class="isDarkModeEnabled ? 'bg-grey-darken-4' : ''" class="min-vh-100">
 
             <v-list-item class="mx-auto pa-12" max-width="700" rounded="lg" align="center" justify="center">
 
@@ -91,7 +91,7 @@
                                         <br>
 
                                         <v-btn :disabled="!form" :loading="loading" block class="bg-teal-darken-2"
-                                            size="large" type="submit" append-icon="mdi-login">
+                                            size="large" type="submit" append-icon="mdi-login" v-autofocus>
                                             Login
                                         </v-btn>
                                     </v-form>
@@ -223,6 +223,8 @@ export default {
             this.$refs.usernameInput.dispatchEvent(new Event('input'));
             this.$refs.passwordInput.dispatchEvent(new Event('input'));
         }
+
+
     },
 
     methods: {
