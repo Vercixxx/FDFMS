@@ -44,4 +44,8 @@ urlpatterns = [
     # Get Cities for Given Country
     path("api/users/get-cities/<str:selected_country>/", views.GetCities.as_view(), name="get-cities"),
 
+
+    # Get usernames
+    path('api/users/get-usernames/', views.GetUsernames.as_view(), name="get-usernames"),
+    
 ]

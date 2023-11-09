@@ -9,7 +9,7 @@
                 </v-btn>
 
                 <div v-if="!editing" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new Brand</div>
-                <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit {{ editUser.username }}</div>
+                <div v-else class="text-h6 text-md-h5 text-lg-h4 fw-bold">Edit {{ editingBrand.name }}</div>
                 <div></div>
 
             </div>
@@ -69,7 +69,7 @@
 
                     <v-row>
 
-                        <!-- Country and City -->
+                        <!-- Country and State -->
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
                                 v-model="selectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
@@ -82,7 +82,7 @@
                             </v-autocomplete>
 
                         </v-col>
-                        <!-- Country and City -->
+                        <!-- Country and State -->
 
                         <v-col cols="12" sm="6" v-for="input in residenceAddress" :key="input.name">
 
@@ -160,6 +160,8 @@ export default {
             fieldRequired: [v => !!v || 'Field is required',],
 
             editing: false,
+            editingBrand: {},
+            brandID: null,
 
             allCountries: [],
             selectedCountry: null,
@@ -213,7 +215,7 @@ export default {
                     icon: 'mdi-map-marker',
                     rules: [
                         v => !!v || 'Street is required',
-                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
+                        v => /^[a-zA-Z0-9 -]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
@@ -257,6 +259,18 @@ export default {
 
 
     mounted() {
+
+        // Check if user dont want to edit existing brand
+        this.brandID = localStorage.getItem('brandID');
+        if (this.brandID !== null) {
+            this.getBrandData(this.brandID);
+            localStorage.removeItem('brandID');
+            this.editing = true;
+        }
+        // Check if user dont want to edit existing brand
+
+
+
         // Dark mode
         const { bus } = useEventsBus();
 
@@ -289,7 +303,7 @@ export default {
                 this.createBrand();
             }
             else {
-                this.updateUser();
+                this.updateBrand();
             }
 
         },
@@ -363,7 +377,7 @@ export default {
                 localStorage.setItem('message', JSON.stringify(messageData));
 
                 emit('message', '');
-                // this.goBack()
+                this.goBack()
             }
             catch (error) {
                 this.loading = false;
@@ -377,6 +391,61 @@ export default {
 
         },
         // Create Brand
+
+
+
+        // Update brand
+        async updateBrand() {
+            this.getDataFromInputs();
+
+            try {
+                const input_data = this.input_data;
+                const response = await axios.put(`api/brands/update/${this.brandID}/`, input_data);
+
+                const messageData = {
+                    message: response.data.message,
+                    type: 'success'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+
+                emit('message', '');
+                this.goBack()
+            }
+            catch (error) {
+                this.loading = false;
+                const messageData = {
+                    message: error.response.data.error,
+                    type: 'danger'
+                };
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+            }
+
+        },
+        // Update brand
+
+
+
+        // Get brand data
+        async getBrandData(brandID) {
+            const response = await axios.get(`api/brands/get-info/${brandID}`)
+            this.editingBrand = response.data;
+
+            for (const field of this.allInputs) {
+                this.input_data[field.model] = this.editingBrand[field.model];
+            }
+
+            this.selectedCountry = this.editingBrand['country'];
+            this.selectedState = this.editingBrand['state'];
+
+            console.log(this.editingBrand);
+
+        },
+        // Get brand data
+
+
+
 
     }
 }
