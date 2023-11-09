@@ -1,39 +1,29 @@
 <template>
+    <v-list>
+        <v-list-item prepend-icon="mdi-home" @click="handleButtonClick('HomeComponent')" title="Home" class="rounded-xl text-h5 bg-teal-darken-2">
+        </v-list-item>
+    </v-list>
 
-
-    <v-list-item>
-        <v-btn block @click="handleButtonClick('HomeComponent')">
-            <span class="material-symbols-outlined">
-                home
-            </span>
-            Home
-        </v-btn>
-    </v-list-item>
-
-    <v-menu transition="scale-transition" v-for="button in buttons" :key="button.name">
+    <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name">
         <template v-slot:activator="{ props }">
-            <v-btn block color="success" v-bind="props" variant="tonal" class="my-5">
+            <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3">
                 {{ button.name }}
-            </v-btn>
+            </v-list-item>
         </template>
 
-        <v-list>
-            <v-list-item v-for="option in button.options" :key="option">
-                <v-list-item-title>
-                    <v-btn block @click="handleButtonClick(option.click)">
-                        <span v-html="option.icon"></span>
-                        {{ option.name }}
-                    </v-btn>
-                </v-list-item-title>
+        <v-list density="compact" nav>
 
+            <v-list-item v-for="option in button.options" :key="option.name" :prepend-icon="option.icon"
+                :title="option.name" @click="handleButtonClick(option.click)">
             </v-list-item>
+
         </v-list>
     </v-menu>
 </template>
 
 
 <script>
-import { closeDrawer } from '../../store/store.js'
+import { drawer, closeDrawer } from '../../store/store.js'
 
 export default {
     data() {
@@ -41,51 +31,54 @@ export default {
             buttons: [
                 {
                     name: 'Cars',
+                    mainIcon: 'mdi-car',
                     options: [
                         {
-                            name: 'add',
+                            name: 'Add',
                             click: 'AddCarsComponent',
-                            icon: '<span class="material-symbols-outlined">add</span>',
+                            icon: 'mdi-plus',
                         },
                         {
-                            name: 'modify',
+                            name: 'Manage',
                             click: 'ShowCarsComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                            icon: 'mdi-list-status',
                         },
                     ],
                 },
                 {
                     name: 'Fleet',
+                    mainIcon: 'mdi-bus-multiple',
                     options: [
                         {
-                            name: 'add',
+                            name: 'Add',
                             click: 'AddUserComponent',
-                            icon: '<span class="material-symbols-outlined">add</span>',
+                            icon: 'mdi-plus',
                         },
                         {
-                            name: 'modify',
+                            name: 'Manage',
                             click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                            icon: 'mdi-list-status',
                         },
                         {
                             name: 'Transfer cars',
                             click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                            icon: 'mdi-transfer',
                         },
                     ],
                 },
                 {
                     name: 'Messages',
+                    mainIcon: 'mdi-forum',
                     options: [
                         {
                             name: 'Create',
                             click: 'AddUserComponent',
-                            icon: '<span class="material-symbols-outlined">add</span>',
+                            icon: 'mdi-plus',
                         },
                         {
                             name: 'Show log',
                             click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                            icon: 'mdi-database',
                         },
                     ],
                 },

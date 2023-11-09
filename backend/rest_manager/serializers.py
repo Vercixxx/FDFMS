@@ -208,10 +208,10 @@ class UpdateRestManager(serializers.Serializer):
 
 
 
-class GetAllManagersUsername(serializers.ModelSerializer):
+class GetAllManagersUI(serializers.ModelSerializer):
     class Meta:
         model = RestManager
-        fields = ['username']
+        fields = ['username', 'id']
 
 
 
