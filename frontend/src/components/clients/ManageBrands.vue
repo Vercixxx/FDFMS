@@ -41,12 +41,12 @@
 
         <div>
             <h1>
-                List of cars
+                Brands
             </h1>
         </div>
 
         <!-- Table -->
-        <v-data-table :headers="updatedColumns" :items="cars" :search="searchTable" :loading="tableLoading"
+        <v-data-table :headers="updatedColumns" :items="brands" :search="searchTable" :loading="tableLoading"
             class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
             show-current-page>
 
@@ -62,8 +62,6 @@
                 </p>
             </template>
             <!-- No data -->
-
-
 
 
             <template #item="{ item }">
@@ -84,21 +82,21 @@
 
                         <!-- Actions -->
                         <template v-if="columnIndex === 'action'">
-                            <v-btn variant="plain" color="blue" @click="carDetailsFunct(item.columns.id)">
+                            <v-btn variant="plain" color="blue" @click="brandDetailsFunct(item.columns.id )">
                                 <span class="material-symbols-outlined">
                                     description
                                 </span>
-                                <v-tooltip activator="parent" location="top">Show car details</v-tooltip>
+                                <v-tooltip activator="parent" location="top">Show brand details</v-tooltip>
                             </v-btn>
 
-                            <v-btn variant="plain" color="green" @click="editCar(item.columns.id)">
+                            <v-btn variant="plain" color="green" @click="editBrand(item.columns.id )">
                                 <span class="material-symbols-outlined d-flex">
                                     edit
                                 </span>
                                 <v-tooltip activator="parent" location="top">Edit</v-tooltip>
                             </v-btn>
 
-                            <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.vin)">
+                            <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.id )">
                                 <span class="material-symbols-outlined d-flex">
                                     delete
                                 </span>
@@ -109,7 +107,6 @@
                     </td>
                 </tr>
             </template>
-
 
         </v-data-table>
         <!-- Table -->
@@ -141,9 +138,9 @@
 
             <div class="pa-3" align="center">
 
-                You are trying to delete car vin -
+                You are trying to delete brand id -
                 <span class='fw-bolder'>
-                    {{ deleteCarId }}
+                    {{ deleteBrandId }}
                 </span>
                 , this operation is <span class="fw-bold">irreversible</span>.
                 Are you sure?
@@ -153,7 +150,7 @@
 
             <div class="justify-center d-flex align-items-center mb-3">
                 <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
-                <v-btn width="150" @click="deleteCar(deleteCarId)" color="red">Yes</v-btn>
+                <v-btn width="150" @click="deleteBrand(deleteBrandId)" color="red">Yes</v-btn>
             </div>
 
         </v-card>
@@ -162,7 +159,7 @@
 
 
     <!-- Dialog details -->
-    <v-dialog v-model="carDetailsDialog" width="auto">
+    <v-dialog v-model="brandDetailsDialog" width="auto">
         <v-card>
             <v-card-text>
                 <v-table>
@@ -177,7 +174,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(value, key) in carDetails" :key="key">
+                        <tr v-for="(value, key) in brandDetails" :key="key">
                             <td>{{ key }}</td>
                             <td v-if="value === null">
                                 <v-icon icon="mdi-minus-thick"></v-icon>
@@ -201,7 +198,7 @@
 
             </v-card-text>
             <v-card-actions>
-                <v-btn color="primary" block @click="carDetailsDialog = false">Close</v-btn>
+                <v-btn color="primary" block @click="brandDetailsDialog = false">Close</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -214,18 +211,19 @@
 import { VDataTable } from 'vuetify/labs/VDataTable'
 </script>
 
-
 <script>
 import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
 const { emit } = useEventsBus()
+
+
 
 export default {
     name: 'App',
 
     data() {
         return {
-            cars: [],
+            brands: [],
             columns: [],
             itemsPerPage: 25,
             searchInput: '',
@@ -235,37 +233,34 @@ export default {
             avaliableColumns: [],
 
             dialogDelete: false,
-            deleteCarId: '',
+            deleteBrandId: '',
 
-            carDetailsDialog: false,
-            carDetails: [],
+            brandDetailsDialog: false,
+            brandDetails: [],
 
 
-
+            // Headers
             necessaryHeaders: [
-                { title: 'Id', align: 'center', sortable: false, key: 'id' },
-                { title: 'VIN', key: 'vin', align: 'center', sortable: false },
+                { title: 'Id', align: 'center', sortable: true, key: 'id' },
             ],
             columns: [
-                { title: 'Brand', key: 'brand', align: 'center', sortable: false },
-                { title: 'Model', key: 'model', align: 'center', sortable: false },
-                { title: 'Color', key: 'color', align: 'center', sortable: false },
-                { title: 'Production year', key: 'year_of_prod', align: 'center', sortable: false },
-                { title: 'Mileage', key: 'mileage', align: 'center', sortable: false },
-                { title: 'Engine capacity', key: 'engine_cap', align: 'center', sortable: false },
-                { title: 'Engine power', key: 'engine_pow', align: 'center', sortable: false },
-                { title: 'Transmission', key: 'transmission', align: 'center', sortable: false },
-                { title: 'Insurance number', key: 'policy_number', align: 'center', sortable: false },
-                { title: 'Insurance phone number', key: 'phone_policy_contact', align: 'center', sortable: false },
-                { title: 'OC', key: 'is_oc', align: 'center', sortable: false },
-                { title: 'AC', key: 'is_ac', align: 'center', sortable: false },
-                { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+                { title: 'Name', key: 'name', align: 'center', sortable: true },
+                { title: 'Phone', key: 'phone', align: 'center', sortable: false },
+                { title: 'Country', key: 'country', align: 'center', sortable: false },
+                { title: 'City', key: 'city', align: 'center', sortable: true },
+                { title: 'State', key: 'state', align: 'center', sortable: false },
+                { title: 'Street', key: 'street', align: 'center', sortable: false },
+                { title: 'Home', key: 'home', align: 'center', sortable: false },
+                { title: 'Apartament', key: 'apartament', align: 'center', sortable: false },
+                { title: 'Zip code', key: 'zip', align: 'center', sortable: false },
+                { title: 'Actions', key: 'action', align: 'center', sortable: false },
             ],
+            // Headers
 
-
-
-        };
+        }
     },
+
+
 
     computed: {
         updatedColumns() {
@@ -273,25 +268,25 @@ export default {
         },
     },
 
+
+
     created() {
-        this.loadCars();
+        this.loadBrands();
 
         this.selectedColumns = this.columns;
         this.avaliableColumns = this.columns;
     },
 
-    methods: {
-        async loadCars() {
-            try {
-                const response = await axios.get('api/cars/get-cars/', {
-                    params: {
-                        limit: this.cars_per_site,
-                        offset: this.currentPage,
-                        search: this.query,
-                    }
-                });
 
-                this.cars = response.data;
+
+    methods: {
+
+        // Load all brands
+        async loadBrands() {
+            try {
+                const response = await axios.get('api/brands/get-all/');
+
+                this.brands = response.data;
 
                 this.tableLoading = false;
 
@@ -300,34 +295,31 @@ export default {
                 console.error('Error when fetching', error);
             }
         },
-
-        previousPage() {
-            this.currentPage -= 1;
-            this.loadcars();
-        },
-        nextPage() {
-            this.currentPage += 1;
-            this.loadcars();
-        },
+        // Load all brands
 
 
+
+        // Deleting brand confirmation
         deleteConfirm(carid) {
-            this.deleteCarId = carid;
+            this.deleteBrandId = carid;
             this.dialogDelete = true;
         },
+        // Deleting brand confirmation
 
 
-        async deleteCar() {
+
+        // Deleting brand method
+        async deleteBrand() {
             this.dialogDelete = false;
             try {
-                const response = await axios.delete(`api/car/delete/${this.deleteCarId}`);
+                const response = await axios.delete(`api/brands/delete/${this.deleteBrandId}`);
 
 
                 if (response.status === 204) {
-                    this.loadCars()
+                    this.loadBrands()
 
                     const messageData = {
-                        message: `Successfully deleted car id - ${this.deleteCarId}`,
+                        message: `Successfully deleted brand id - ${this.deleteBrandId}`,
                         type: 'success'
                     };
 
@@ -336,7 +328,7 @@ export default {
 
                 }
                 else {
-                    this.loadcars();
+                    this.loadBrands();
                     this.dataError = 'Error!'
                     document.getElementById('hiddenButton').click();
                 }
@@ -347,29 +339,30 @@ export default {
                 console.error('Error when fetching', error);
             }
         },
+        // Deleting brand method
 
-        editCar(carid) {
-            localStorage.setItem('carid', carid);
-            this.$root.changeCurrentComponent('AddCarsComponent');
+
+
+        // Editing brand
+        editBrand(brandID) {
+            localStorage.setItem('brandID', brandID);
+            this.$root.changeCurrentComponent('AddBrandComponent');
         },
+        // Editing brand
 
-        search() {
-            this.loadCars();
-        },
 
-        reloadComponent() {
-            this.loadCars();
-        },
 
-        async carDetailsFunct(car_id) {
-            const response = await axios.get(`api/car/get/${car_id}/`);
-            console.log(response)
-            this.carDetails = response.data;
-            this.carDetailsDialog = true;
+        // Brand details
+        async brandDetailsFunct(brandID) {
+            const response = await axios.get(`api/brands/get-info/${brandID}/`);
+            this.brandDetails = response.data;
+            this.brandDetailsDialog = true;
 
         },
+        // Brand details
 
 
     },
-};
+
+}
 </script>

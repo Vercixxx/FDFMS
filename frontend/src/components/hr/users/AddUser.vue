@@ -2,15 +2,15 @@
     <div class="containter m-2 p-2 d-flex justify-content-center">
         <div class="col-12 col-md-9">
 
-            <div class="d-flex justify-content-between mb-5">
-                <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
-                    Back
-                </v-btn>
+            <v-btn v-if="editing" @click="goBack" prepend-icon="mdi-undo" color="danger"
+                :variant="theme ? undefined : 'outlined'">
+                Back
+            </v-btn>
 
-                <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new Driver user</div>
+            <div class="d-flex justify-center mb-5">
+                <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new {{ addingRole }} user
+                </div>
                 <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit {{ editUser.username }} user</div>
-                <div></div>
-
             </div>
 
 
@@ -20,7 +20,7 @@
                     :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-4': theme }">
 
                     <div class="fw-light">
-                        <span class="filled-star-example"></span> - field required
+                        <v-icon icon="mdi-star" color="red" style="font-size:medium;"></v-icon> - field required
                     </div>
 
 
@@ -41,95 +41,14 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
 
                             </v-text-field>
                         </v-col>
-                    </v-row>
-
-
-
-                    <v-divider :thickness="3"
-                        :class="theme ? 'border-opacity-75 rounded-xl mt-10' : 'border-opacity-50 rounded-xl mt-10'"
-                        :color="theme ? '' : 'info'"></v-divider>
-                    <p align="center" class="text-h4 text-md-h5 text-lg-h5">License info</p>
-                    <v-divider :thickness="3"
-                        :class="theme ? 'border-opacity-75 rounded-xl mb-10' : 'border-opacity-50 rounded-xl mb-10'"
-                        :color="theme ? '' : 'info'"></v-divider>
-
-
-                    <v-row>
-                        <v-col cols="12" sm="6" v-for="input in licenseInputs" :key="input.name">
-                            <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
-                                :readonly="input.readonly || false" :hint="input.hint || undefined" :rules="input.rules">
-
-                                <!-- Icons -->
-                                <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
-                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
-                                </template>
-                                <!-- Icons -->
-
-                            </v-text-field>
-                        </v-col>
-
-                        <!-- Date pickers -->
-                        <v-col cols="12" sm="12">
-
-                            <!-- Release date -->
-                            <v-text-field variant="outlined" :value="formattedReleaseDate" v-model="ln_release"
-                                label="License number release date" readonly @click="show_ln_release = !show_ln_release"
-                                :rules="fieldRequired">
-
-                                <!-- Icons -->
-                                <template v-slot:append-inner>
-                                    <span class="filled-star">
-                                    </span>
-                                    <v-icon class="icon" style="opacity: 0.4;" icon="mdi-calendar"></v-icon>
-                                </template>
-                                <!-- Icons -->
-                            </v-text-field>
-
-                            <v-date-picker v-if="show_ln_release" ok-text="Select" v-model="ln_release"
-                                title="License number release date" view-mode="year" min="01-01-1960" :max="maxDate"
-                                color="teal-darken-3" @click:save="show_ln_release = !show_ln_release"
-                                @click:cancel="show_ln_release = !show_ln_release" class="mb-4"></v-date-picker>
-                            <!-- Release date -->
-                        </v-col>
-
-                        <v-col cols="12" sm="12">
-
-
-                            <!-- Expire date -->
-                            <v-text-field variant="outlined" :value="formattedExpireDate" v-model="ln_expire"
-                                label="License number expire date" readonly @click="show_ln_expire = !show_ln_expire"
-                                :rules="fieldRequired">
-
-                                <!-- Icons -->
-                                <template v-slot:append-inner>
-                                    <span class="filled-star">
-                                    </span>
-                                    <v-icon class="icon" style="opacity: 0.4;" icon="mdi-calendar"></v-icon>
-                                </template>
-                                <!-- Icons -->
-                            </v-text-field>
-
-                            <v-date-picker v-if="show_ln_expire" ok-text="Select" v-model="ln_expire"
-                                title="License number expire date" view-mode="year" min="01-01-1960" :max="maxDate"
-                                color="teal-darken-3" @click:save="show_ln_expire = !show_ln_expire"
-                                @click:cancel="show_ln_expire = !show_ln_expire" class="mb-4"></v-date-picker>
-                            <!-- Expire date -->
-
-
-                        </v-col>
-                        <!-- Date pickers -->
-
-
                     </v-row>
 
                     <v-divider :thickness="3"
@@ -149,8 +68,8 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -172,20 +91,22 @@
                     <p align="center" class="text-h6 text-md-h5 text-lg-h5">Residence address</p>
                     <v-row>
 
-                        <!-- Country and City -->
+                        <!-- Country and State -->
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
                                 v-model="resSelectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
+
                             </v-autocomplete>
+
                         </v-col>
 
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="State" :items="resCitiesList" variant="outlined"
-                                v-model="resSelectedState" :disabled="resSelectedCountry === ''" :rules="fieldRequired">
+                                v-model="resSelectedState" :disabled="resSelectedCountry === null" :rules="fieldRequired">
                             </v-autocomplete>
 
                         </v-col>
-                        <!-- Country and City -->
+                        <!-- Country and State -->
 
                         <v-col cols="12" sm="6" v-for="input in residenceAddress" :key="input.name">
 
@@ -194,8 +115,8 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -238,7 +159,7 @@
 
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="State" :items="corCitiesList" variant="outlined"
-                                    v-model="corSelectedState" :disabled="corSelectedCountry === ''"
+                                    v-model="corSelectedState" :disabled="corSelectedCountry === null"
                                     :rules="show_corespondece ? [] : fieldRequired">
                                 </v-autocomplete>
 
@@ -253,8 +174,8 @@
 
                                     <!-- Icons -->
                                     <template v-slot:append-inner>
-                                        <span v-if="!show_corespondece && input.required" class="filled-star">
-                                        </span>
+                                        <v-icon v-if="!show_corespondece && input.required" icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                         <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon
                                         }}</v-icon>
                                     </template>
@@ -298,7 +219,7 @@
 
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="State" :items="regCitiesList" variant="outlined"
-                                    v-model="regSelectedState" :disabled="regSelectedCountry === ''"
+                                    v-model="regSelectedState" :disabled="regSelectedCountry === null"
                                     :rules="show_registered ? [] : fieldRequired">
                                 </v-autocomplete>
 
@@ -313,8 +234,8 @@
 
                                     <!-- Icons -->
                                     <template v-slot:append-inner>
-                                        <span v-if="!show_registered && input.required" class="filled-star">
-                                        </span>
+                                        <v-icon v-if="!show_registered && input.required" icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                         <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon
                                         }}</v-icon>
                                     </template>
@@ -379,26 +300,18 @@
     <!-- Message -->
 </template>
 
-
-
-<script setup>
-import { VDatePicker } from 'vuetify/labs/VDatePicker'
-</script>
-
 <script>
 import axios from 'axios';
 import useEventsBus from '../../../plugins/eventBus.js'
 import { ref, watch } from "vue";
 const { emit } = useEventsBus()
 import { useTheme } from 'vuetify'
-import format from 'date-fns/format'
 
 export default {
     data() {
         return {
 
             user_role: null,
-
 
             basicInfoInputs: [
                 {
@@ -467,48 +380,6 @@ export default {
 
                 },
             ],
-
-
-            licenseInputs: [
-                {
-                    name: 'License number',
-                    model: 'license_number',
-                    required: true,
-                    icon: 'mdi-card-bulleted',
-                    rules: [
-                        v => !!v || 'License number is required',
-                        v => (v && v.length >= 3) || 'License number must containt at least 3 characters',
-                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'License number can only contain letters, nubers and "-"',
-                    ],
-                },
-                {
-                    name: 'License code',
-                    model: 'ln_code',
-                    required: true,
-                    icon: 'mdi-card-bulleted',
-                    rules: [
-                        v => !!v || 'License code is required',
-                        v => (v && v.length >= 3) || 'License code must containt at least 3 characters',
-                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'License code can only contain letters, nubers and "-"',
-                    ],
-
-
-                },
-                {
-                    name: 'Published by',
-                    model: 'ln_published_by',
-                    required: true,
-                    icon: 'mdi-card-bulleted',
-                    rules: [
-                        v => !!v || 'Published by code is required',
-                        v => (v && v.length >= 3) || 'Published by must containt at least 3 characters',
-                        v => /^[a-zA-Z 0-9-]+$/.test(v) || 'Published by can only contain letters, nubers and "-"',
-                    ],
-
-                },
-
-            ],
-
 
             taxAndHealth: [
                 {
@@ -722,29 +593,24 @@ export default {
 
             allCountries: [],
 
-            resSelectedCountry: '',
-            corSelectedCountry: '',
-            regSelectedCountry: '',
+            resSelectedCountry: null,
+            corSelectedCountry: null,
+            regSelectedCountry: null,
 
             resCitiesList: [],
             corCitiesList: [],
             regCitiesList: [],
 
-            resSelectedState: '',
-            corSelectedState: '',
-            regSelectedState: '',
+            resSelectedState: null,
+            corSelectedState: null,
+            regSelectedState: null,
 
             fieldRequired: [v => !!v || 'Field is required',],
 
             editing: false,
             editUser: {},
 
-
-            ln_release: null,
-            ln_expire: null,
-            show_ln_release: false,
-            show_ln_expire: false,
-            maxDate: null,
+            addingRole: null,
 
 
         };
@@ -752,21 +618,17 @@ export default {
 
     computed: {
         allInputs() {
-            return [...this.basicInfoInputs, ...this.taxAndHealth, ...this.licenseInputs, ...this.residenceAddress, ...this.correspodenceAddress, ...this.registeredAddress];
+            return [...this.basicInfoInputs, ...this.taxAndHealth, ...this.residenceAddress, ...this.correspodenceAddress, ...this.registeredAddress];
         },
-
-        formattedReleaseDate() {
-            return this.ln_release ? format(this.ln_release, 'yyyy-M-d') : '';
-        },
-        formattedExpireDate() {
-            return this.ln_expire ? format(this.ln_expire, 'yyyy-M-d') : '';
-        },
-
     },
 
 
     mounted() {
-        this.username = localStorage.getItem('username')
+        // Check for user class
+        this.addingRole = localStorage.getItem('addingRole');
+        localStorage.removeItem('addingRole');
+
+        this.username = localStorage.getItem('username');
 
 
         if (this.username !== null) {
@@ -802,9 +664,6 @@ export default {
         // Get all Countries
         this.getCountries();
 
-        // Get date for date pickers
-        this.maxDate = this.getCurrentDate();
-
 
     },
 
@@ -826,6 +685,9 @@ export default {
 
     methods: {
 
+
+
+        // Method called on submiting form
         onSubmit() {
             if (!this.form) return;
 
@@ -840,21 +702,19 @@ export default {
 
 
         },
+        // Method called on submiting form
+
+
+
+        // Field required rule
         required(v) {
             return !!v || 'Field is required';
         },
+        // Field required rule
 
-        getCurrentDate() {
-            const today = new Date();
-            const day = today.getDate();
-            const month = today.getMonth() + 1;
-            const year = today.getFullYear();
 
-            const formattedDate = `${day}-${month}-${year}`;
 
-            return formattedDate;
-        },
-
+        // Adding correspondence form
         copyResidenceToCorrespondence() {
             if (this.show_corespondece) {
                 for (let i = 0; i < this.residenceAddress.length; i++) {
@@ -873,7 +733,11 @@ export default {
                 this.input_data['correspondence_state'] = this.corSelectedState;
             }
         },
+        // Adding correspondence form
 
+
+
+        // Adding registered form
         copyResidenceToRegistered() {
             if (this.show_registered) {
                 for (let i = 0; i < this.residenceAddress.length; i++) {
@@ -892,7 +756,11 @@ export default {
                 this.input_data['registered_state'] = this.regSelectedState;
             }
         },
+        // Adding registered form
 
+
+
+        // Getting data from inputs
         getDataFromInputs() {
             this.copyResidenceToCorrespondence();
             this.copyResidenceToRegistered();
@@ -910,12 +778,12 @@ export default {
             this.input_data['residence_country'] = this.resSelectedCountry;
             this.input_data['residence_state'] = this.resSelectedState;
 
-
-            // Additional fields for driver
-            this.input_data['ln_release_date'] = this.formattedReleaseDate;
-            this.input_data['ln_expire_date'] = this.formattedExpireDate;
-
         },
+        // Getting data from inputs
+
+
+
+        // Generate username based on first and last name
         generateUsername() {
             let firstName = '';
             let lastName = '';
@@ -935,17 +803,28 @@ export default {
 
             this.input_data.username = `${firstName}${lastName}${randomDigits}`;
         },
+        // Generate username based on first and last name
 
 
+
+        // Random digits generator
         generateRandomDigits() {
             return Math.floor(100 + Math.random() * 900);
         },
+        // Random digits generator
 
+
+
+        // Get countries
         async getCountries() {
             const response = await axios.get("api/users/get-countries/");
             this.allCountries = response.data;
         },
+        // Get countries
 
+
+
+        // Get cities
         async getCities(country) {
             const propertyMap = {
                 residence: this.resSelectedCountry,
@@ -968,15 +847,15 @@ export default {
                     break;
             }
         },
+        // Get cities
 
 
+
+        // Create user function
         async createUser() {
             this.getDataFromInputs();
 
-            this.input_data['user_role'] = 'Driver';
-
-
-
+            this.input_data['user_role'] = this.addingRole;
 
             const response = await axios.post('api/create/', this.input_data);
 
@@ -1000,12 +879,11 @@ export default {
             }
 
         },
-        resetForm() {
-            for (const field of this.allInputs) {
-                this.input_data[field.model] = '';
-            }
-        },
+        // Create user function
 
+
+
+        // Get user data from server when editing
         async getUserData(username, user_role) {
 
             const response = await axios.get(`api/users/get/${username}/${user_role}`);
@@ -1024,10 +902,14 @@ export default {
             this.corSelectedState = this.editUser['correspondence_state'];
             this.regSelectedState = this.editUser['registered_state'];
         },
+        // Get user data from server when editing
 
+
+
+        // Update user function
         async updateUser() {
             // Generate dict for sending
-            this.input_data['user_role'] = 'Driver'
+            this.input_data['user_role'] = this.user_role;
             const ready_data = this.input_data;
 
 
@@ -1045,6 +927,7 @@ export default {
                 emit('message', '');
                 this.loading = false;
                 this.$root.changeCurrentComponent('ModifyUserComponent');
+
             }
             catch (error) {
                 this.loading = false;
@@ -1054,37 +937,21 @@ export default {
                 };
                 localStorage.setItem('message', JSON.stringify(messageData));
                 emit('message', '');
-
-            }
-
-
-        },
-
-        goBack() {
-            if (this.user_role === null) {
-                this.$root.changeCurrentComponent('AddUserComponent');
-            } else {
                 this.$root.changeCurrentComponent('ModifyUserComponent');
             }
+
+
         },
+        // Update user function
+
+
+
+        // Go back
+        goBack() {
+            this.$root.changeCurrentComponent('ModifyUserComponent');
+        },
+        // Go back
 
     }
 };
 </script>
-
-<style >
-.filled-star::before {
-    content: '\2605';
-    color: #ff6666;
-    font-weight: bold;
-    position: absolute;
-    left: 3px;
-    top: 0px;
-}
-
-.filled-star-example::before {
-    content: '\2605';
-    color: #ff0000;
-
-}
-</style>

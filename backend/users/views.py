@@ -10,7 +10,7 @@ import string
 from django.http import JsonResponse
 
 
-from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer
+from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer, getAllUsernames
 from owner.serializers import AddOwnerSerializer
 from rest_manager.serializers import AddManagerSerializer, RestManagerSerializer, GetRestManager, UpdateRestManager
 from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer, GetAssetUser, UpdateAssetUser
@@ -152,6 +152,15 @@ class GUViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     
+class GetUsernames(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        users = GeneralUser.objects.all()
+        serializer = getAllUsernames(users, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    
+    
 class DeleteUser(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = GeneralUser.objects.all()
@@ -200,7 +209,6 @@ class AddUser(APIView):
     
     def post(self, request):
         user_role = request.data.get('user_role')
-        print("Data z funkcji: ", request.data)
         
         # Password generating
         generated_password = self.generate_password()
@@ -249,33 +257,47 @@ class UpdateUser(APIView):
     
     def put(self, request, username, user_role):
         data = request.data
+        
+        try:
+            user_model = GlobalDictionaries.get_serializer('UserModels', user_role)
+            user = user_model.objects.get(username = username)
 
-        fields_to_check = ['username', 'email']
+            fields_to_check = ['username', 'email']
+            conflicting_fields = []
 
-        for field_name in fields_to_check:
-            if field_name in data:
-                field_value = data[field_name]
+            for field_name in fields_to_check:
+                if field_name in data:
+                    field_value = data[field_name]
+                    exclude_conditions = {field_name: field_value}
+                    if GeneralUser.objects.exclude(username=username).filter(**exclude_conditions).exists():
+                        conflicting_fields.append(field_name)
 
-                duplicate_exists = GeneralUser.objects.filter(**{field_name: field_value}).exclude(username=username, user_role=user_role).exists()
-                if duplicate_exists:
-                    return JsonResponse({'error': f'{field_name} is already taken. Please try another.'}, status=400) 
+            if conflicting_fields:
+                error_message = f'The following fields are already taken: {", ".join(conflicting_fields)}. Please try another.'
+                return JsonResponse({'error': error_message}, status=400)
+
         
 
-        user_model = GlobalDictionaries.get_serializer('UserModels', user_role)
-        user = user_model.objects.get(username = username)
+            user_model = GlobalDictionaries.get_serializer('UserModels', user_role)
+            user = user_model.objects.get(username = username)
+            
+            serializer_class = GlobalDictionaries.get_serializer('UpdateUserSerializers', user_role)
+            serializer = serializer_class(user, data=data)
+            
+            if serializer.is_valid():
+                serializer.update(user, data)  
+                return JsonResponse({'message' : 'Successfully updated'},status=200)
+            
+            else:
+                return JsonResponse(serializer.errors, status=400)
+            
         
-        serializer_class = GlobalDictionaries.get_serializer('UpdateUserSerializers', user_role)
-        serializer = serializer_class(user, data=data)
-        
-        if serializer.is_valid():
-            serializer.update(user, data)  
-            return JsonResponse({'message' : 'Successfully updated'},status=200)
-        
-        else:
-            return JsonResponse(serializer.errors, status=400)
+        except GeneralUser.DoesNotExist:
+            return JsonResponse({'error': 'Brand does not exist.'}, status=404)
             
 
 class ChangeUserState(APIView):
+    permission_classes = [IsAuthenticated]
     def put(self, request, username):
         user = GeneralUser.objects.get(username = username)
         user.is_active = not user.is_active

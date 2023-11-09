@@ -9,7 +9,7 @@
 
                     <!-- Menu button -->
                     <v-col cols="auto" align="start">
-                        <v-app-bar-nav-icon @click.stop="drawer = !drawer">
+                        <v-app-bar-nav-icon @click.stop="drawer = !drawer" @mouseenter="drawer = true">
                             <span class="material-symbols-outlined">
                                 menu
                             </span>
@@ -34,7 +34,6 @@
                         </div>
 
                     </v-col>
-
                     <!-- Title -->
 
 
@@ -42,29 +41,25 @@
                     <v-col cols="auto" align="end">
                         <v-col cols="auto">
 
-                            <v-btn :ripple="false" variant="plain"
-                                :icon="actualTheme ? 'mdi-weather-night' : 'mdi-white-balance-sunny'" @click="toggleTheme">
-                            </v-btn>
-
-
-
-
-
-
-                            <v-btn variant="text">
-                                <span class="material-symbols-outlined">
-                                    search
-                                </span>
-                            </v-btn>
-
-
-                            <v-menu transition="slide-x-transition">
+                            <v-tooltip :text="isDarkModeEnabled ? 'Enable light mode' : 'Enable dark mode'" location="bottom">
                                 <template v-slot:activator="{ props }">
-                                    <v-btn v-bind="props">
-                                        <span class="material-symbols-outlined">
-                                            account_circle
-                                        </span>
+                                    <v-btn :ripple="false" variant="plain" v-bind="props"
+                                        :icon="isDarkModeEnabled ? 'mdi-weather-night' : 'mdi-white-balance-sunny'"
+                                        @click="toggleTheme">
+
                                     </v-btn>
+                                </template>
+                            </v-tooltip>
+
+
+
+
+                            <v-menu transition="slide-y-transition">
+                                <template v-slot:activator="{ props }">
+
+                                    <v-btn v-bind="props" ripple="false" variant="plain" icon="mdi-account-circle-outline">
+                                    </v-btn>
+
                                 </template>
 
                                 <v-list class="p-0">
@@ -77,16 +72,14 @@
                                     </v-list-item>
 
                                     <v-list-item class="p-0">
-                                        <v-btn block variant="flat">Profile</v-btn>
+                                        <v-btn block variant="flat" prepend-icon="mdi-email">Messages</v-btn>
                                     </v-list-item>
 
                                     <v-list-item class="p-0">
                                         <v-dialog transition="dialog-top-transition" width="400">
                                             <template v-slot:activator="{ props }">
-                                                <v-btn v-bind="props" block variant="flat">
-                                                    <span class="material-symbols-outlined">
-                                                        logout
-                                                    </span>
+                                                <v-btn v-bind="props" block variant="flat" append-icon="mdi-logout">
+                                                    Logout
                                                 </v-btn>
                                             </template>
                                             <template v-slot:default="{ isActive }">
@@ -140,8 +133,9 @@
 
 
             <!-- Menu -->
-            <v-navigation-drawer app v-model="drawer" location="left" temporary
-                :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }">
+            <v-navigation-drawer app v-model="drawer" location="left"
+                :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }">
+
                 <v-list density="compact" nav class="pa-3">
                     <v-row>
                         <v-col cols="auto">
@@ -164,12 +158,14 @@
 
 
             <!-- Content -->
-            <v-main :class="{ '': !actualTheme, 'bg-grey-darken-3': actualTheme }">
+            <v-main :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }" @click="drawer = false">
+
                 <!-- content -->
-                <div class="cointainter m-2 p-2">
+                <div class="cointainter m-2 p-2" :key="forceReload">
                     <component :is="currentComponent"></component>
                 </div>
                 <!-- content -->
+
             </v-main>
             <!-- Content -->
 
@@ -191,8 +187,8 @@
 
         </v-layout>
 
-        <v-sheet app class="elevation-4">
-            <div class="pa-1 bg-grey-darken-3 text-center w-100 ">
+        <v-sheet app>
+            <div class="pa-1 text-center w-100 " :class="isDarkModeEnabled ? 'bg-grey-darken-4': '' ">
 
 
                 <span v-for="social in socials" :key="social.id" class="pa-3">
@@ -207,6 +203,8 @@
             </div>
         </v-sheet>
 
+
+        <CreateMessage ref="createMessage" style="display: none;"  :key="forceReload"/>
 
     </v-app>
 </template>
@@ -223,12 +221,12 @@ const toggleDrawer = () => {
 }
 
 const theme = useTheme()
-let actualTheme = theme.global.current.value.dark
+let isDarkModeEnabled = theme.global.current.value.dark
 
 function toggleTheme() {
     theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
-    actualTheme = theme.global.current.value.dark
-    emit('theme', actualTheme)
+    isDarkModeEnabled = theme.global.current.value.dark
+    emit('theme', isDarkModeEnabled)
 }
 
 </script>
@@ -237,6 +235,10 @@ function toggleTheme() {
 <script>
 import { markRaw } from 'vue';
 import useEventsBus from '../plugins/eventBus.js'
+
+// Messages
+import CreateMessage from '../components/SendMessage.vue'
+// Messages
 
 // Home components
 import Home from '../components/Home.vue';
@@ -250,7 +252,7 @@ import HRNav from "../components/hr/HRMenu.vue"
 // Navigation Bars
 
 // HR
-import AddUser from '../components/hr/AddUser.vue';
+import AddUser from '../components/hr/users/AddUser.vue';
 import ModifyUser from '../components/hr/ModifyUser.vue';
 import HrUser from '../components/hr/users/AddHr.vue';
 import PayrollUser from '../components/hr/users/AddPayroll.vue';
@@ -262,13 +264,15 @@ import DriverUser from '../components/hr/users/AddDriver.vue';
 
 // Clients
 import AddClient from '../components/clients/AddClient.vue';
-import ShowClients from '../components/clients/ShowClients.vue';
+import ManageClients from '../components/clients/ManageClients.vue';
+import AddBrand from '../components/clients/AddBrand.vue';
+import ManageBrands from '../components/clients/ManageBrands.vue';
 // Clients
 
 
 // Asset
-import ShowCars from '../components/asset/ShowCars.vue';
 import AddCar from '../components/asset/AddCar.vue';
+import ShowCars from '../components/asset/ShowCars.vue';
 // Asset
 
 
@@ -292,6 +296,9 @@ export default {
             alert: false,
             snackContent: '',
 
+            forceReload: 0,
+
+
             socials: [
                 {
                     id: 1,
@@ -307,6 +314,10 @@ export default {
         };
     },
 
+    components: {
+        CreateMessage,
+    },
+
 
     mounted() {
         this.$root.changeCurrentComponent = (functionName) => {
@@ -317,9 +328,14 @@ export default {
 
         const { bus } = useEventsBus();
         watch(
-            () => bus.value.get('message'),
-            (val) => {
-                this.showSnackBar();
+            () => [bus.value.get('message'), bus.value.get('forceReload')],
+            ([message, forceReloa]) => {
+                if (message) {
+                    this.showSnackBar();
+                }
+                if (forceReload) {
+                    this.forceReload += 1;
+                }
             }
         );
     },
@@ -381,8 +397,8 @@ export default {
                     disabled: true,
                 },
                 {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
+                    name: 'Add user',
+                    component: '',
                     disabled: true,
                 },
             ];
@@ -419,10 +435,6 @@ export default {
                     disabled: true,
                 },
                 {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
-                },
-                {
                     name: 'Add HR User',
                     component: 'AddHrComponent',
                     disabled: true,
@@ -440,10 +452,6 @@ export default {
                     component: '',
                     disabled: true,
 
-                },
-                {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
                 },
                 {
                     name: 'Add Payroll user',
@@ -466,10 +474,6 @@ export default {
 
                 },
                 {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
-                },
-                {
                     name: 'Add Payroll user',
                     component: 'AddAssetComponent',
                     disabled: true,
@@ -487,10 +491,6 @@ export default {
                     name: "Users",
                     component: '',
                     disabled: true,
-                },
-                {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
                 },
                 {
                     name: 'Add Client User',
@@ -512,10 +512,6 @@ export default {
                     disabled: true,
                 },
                 {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
-                },
-                {
                     name: 'Add Manager User',
                     component: 'AddManagerComponent',
                     disabled: true,
@@ -535,10 +531,6 @@ export default {
                     disabled: true,
                 },
                 {
-                    name: 'Add User',
-                    component: 'AddUserComponent',
-                },
-                {
                     name: 'Add Driver User',
                     component: 'AddDriverComponent',
                     disabled: true,
@@ -549,25 +541,124 @@ export default {
 
 
         // Clients
-        ClientsAddClientComponent() {
-            this.currentComponent = AddClient
+        AddRestaurantComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Restaurant",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Add restaurant',
+                    component: '',
+                    disabled: true,
+                },
+            ],
+                this.currentComponent = AddClient
         },
-        ClientsModifyClientComponent() {
-            this.currentComponent = ShowClients
+        ManageRestaurantComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Restaurant",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Manage restaurants',
+                    component: '',
+                    disabled: true,
+                },
+            ],
+                this.currentComponent = ManageClients
+        },
+        AddBrandComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Brands",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Add brand',
+                    component: '',
+                    disabled: true,
+                },
+            ],
+                this.currentComponent = AddBrand
+        },
+        ManageBrandsComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Brands",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Manage brands',
+                    component: '',
+                    disabled: true,
+                },
+            ],
+                this.currentComponent = ManageBrands
         },
 
 
         // Assets
         AddCarsComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Cars",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Add Car',
+                    component: '',
+                    disabled: true,
+                },
+            ];
             this.currentComponent = AddCar;
         },
         ShowCarsComponent() {
+            this.path = [
+                {
+                    name: "Home",
+                    component: 'HomeComponent',
+                },
+                {
+                    name: "Cars",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    name: 'Show Cars',
+                    component: '',
+                    disabled: true,
+                },
+            ];
             this.currentComponent = ShowCars;
         },
         // Assets
-
-
-
 
 
 

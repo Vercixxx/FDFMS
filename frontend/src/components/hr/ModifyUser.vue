@@ -14,7 +14,7 @@
 
             <div class="btn-group dropdown mx-2">
 
-              <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 text-white">
+              <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 text-white bg-teal-darken-4">
                 <span class="pr-2">User status - </span>
                 {{ selectedRole }}
 
@@ -43,7 +43,7 @@
 
             <div class="btn-group dropdown mx-2">
 
-              <v-btn id="status-activator" variant="tonal" class="rounded-xl rounded-0 text-white">
+              <v-btn id="status-activator" variant="tonal" class="rounded-xl rounded-0 text-white  bg-teal-darken-4">
                 <span class="pr-2">User status - </span>
                 <span v-if="selectedActive === 'True'">Active</span>
                 <span v-else-if="selectedActive === 'False'">Not active</span>
@@ -70,7 +70,7 @@
 
         </v-col>
 
-        <v-col cols="5">
+        <v-col cols="12" sm="4">
           <!-- Search bar -->
           <v-text-field variant="solo-filled" v-model="searchInput" @keydown.enter="searchTable = searchInput"
             label="Search" class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions clearable
@@ -99,15 +99,14 @@
           </v-expansion-panel>
         </v-expansion-panels>
       </v-col>
+      <!-- Combobox columns selection -->
 
     </v-card>
-
-    <!-- Combobox columns selection -->
 
     <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
 
     <div class="text-h3 ma-5">
-      Data
+      Users
     </div>
 
     <!-- Table -->
@@ -324,13 +323,21 @@
               <tr v-for="(value, key) in userDetailData" :key="key">
                 <td>{{ key }}</td>
                 <td v-if="value === null">
-                  <span class="material-symbols-outlined">
-                    check_indeterminate_small
-                  </span>
+                  <v-icon icon="mdi-minus-thick"></v-icon>
                 </td>
+
+                <td v-else-if="value === true">
+                  <v-icon icon="mdi-check-bold" style="color:green"></v-icon>
+                </td>
+
+                <td v-else-if="value === false">
+                  <v-icon icon="mdi-close-thick" style="color:red"></v-icon>
+                </td>
+
                 <td v-else>
                   {{ value }}
                 </td>
+
 
               </tr>
             </tbody>
@@ -734,29 +741,16 @@ export default {
       localStorage.setItem('username', username)
       localStorage.setItem('user_role', user_role)
 
+      this.$root.changeCurrentComponent('AddUserComponent');
+
+
       switch (user_role) {
-        case 'HR':
-          this.$root.changeCurrentComponent('AddHrComponent');
-          break;
-
-        case 'Payroll':
-          this.$root.changeCurrentComponent('AddPayrollComponent');
-          break;
-
-        case 'Asset':
-          this.$root.changeCurrentComponent('AddAssetComponent');
-          break;
-
-        case 'Clients':
-          this.$root.changeCurrentComponent('AddClientComponent');
-          break;
-
-        case 'Manager':
-          this.$root.changeCurrentComponent('AddManagerComponent');
-          break;
-
         case 'Driver':
           this.$root.changeCurrentComponent('AddDriverComponent');
+          break;
+
+        default:
+          this.$root.changeCurrentComponent('AddUserComponent');
           break;
       }
     },
