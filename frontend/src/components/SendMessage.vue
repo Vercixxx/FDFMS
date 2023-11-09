@@ -23,15 +23,13 @@
                         <!-- If Destiny is group -->
 
 
-                        <!-- If Destiny are Users -->
+                        <!-- If Users selected -->
                         <v-select v-else-if="target === 'Users'" chips multiple label="Selected users"
                             :items="selectedUsers" v-model="selectedUsers" variant="solo-filled" @click="dialogUsers = true"
                             item-title="username" readonly :rules="[selectedUsers.length >= 1 || 'Select at least one user.']" immediate>
 
                         </v-select>
-
-                        <!-- If Destiny are Users -->
-{{ selectedUsers.length }}
+                        <!-- If Users selected -->
 
 
                         <!-- If Destiny are users -->
@@ -367,7 +365,7 @@ export default {
             const userIndex = this.allUsers.findIndex(user => user.id === userID);
             if (userIndex !== -1) {
                 const userToCopy = this.allUsers[userIndex];
-                const copiedUser = Object.assign({}, userToCopy); // Tworzy kopię użytkownika
+                const copiedUser = Object.assign({}, userToCopy);
                 this.selectedUsers.push(copiedUser);
             }
         },
@@ -380,7 +378,7 @@ export default {
         unselectUser(userID) {
             const userIndex = this.selectedUsers.findIndex(user => user.id === userID);
             if (userIndex !== -1) {
-                this.selectedUsers.splice(userIndex, 1); // Usuń użytkownika z selectedUsers
+                this.selectedUsers.splice(userIndex, 1);
             }
         },
 

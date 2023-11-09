@@ -13,7 +13,7 @@
                 <v-row>
 
                     <v-col class="text-h3">
-                        <span class="fw-bold ">F</span>ood
+                        <span class="fw-bold">F</span>ood
                         <span class="fw-bold">D</span>elivery
                         <span class="fw-bold">F</span>leet
                         <span class="fw-bold">M</span>anagement
@@ -49,51 +49,53 @@
                                         <!-- Username field -->
                                         <v-text-field v-model="username" variant="outlined" label="Username"
                                             ref="usernameInput" :readonly="loading" :rules="usernameRules" class="mb-2"
-                                            clearable density="compact" prepend-icon="mdi-account-tie">
+                                            clearable density="compact" prepend-icon="mdi-account-tie"
+                                            autocomplete="username">
                                         </v-text-field>
                                         <!-- Username field -->
 
 
+
+                                        <!-- Password recovery -->
                                         <div
                                             class="text-subtitle-1 text-medium-emphasis d-flex align-end justify-space-between">
-                                            &nbsp
+                                            <span></span>
 
-                                            <v-btn disabled variant="plain" size="x-small"
-                                                @click="passwordRecoverDialog = true" class="text-cyan-darken-4"
-                                                prepend-icon="mdi-restore">
+                                            <v-btn variant="plain" size="x-small" @click="passwordRecoverDialog = true"
+                                                class="text-cyan-darken-1 font-weight-bold" prepend-icon="mdi-restore">
                                                 Forgot password?
                                             </v-btn>
                                         </div>
+                                        <!-- Password recovery -->
 
                                         <!-- Password field -->
                                         <v-text-field v-model="password" variant="outlined" label="Password"
                                             ref="passwordInput" :readonly="loading" :rules="passwordRules" density="compact"
                                             :type="passwordVisible ? 'text' : 'password'" prepend-icon="mdi-key"
                                             :append-inner-icon="passwordVisible ? 'mdi-eye' : ' mdi-eye-off'"
-                                            @click:append-inner="passwordVisible = !passwordVisible">
+                                            @click:append-inner="passwordVisible = !passwordVisible"
+                                            autocomplete="current-password">
                                         </v-text-field>
                                         <!-- Password field -->
 
 
-                                        <!-- Password remember/ password recover -->
 
-                                        <v-row class="d-flex align-end justify-space-between">
+                                        <!-- Button login -->
+                                        <span>
+                                            <v-tooltip v-if="!form" activator="parent" location="top"
+                                                no-overflow>
+                                                Fill required fields
+                                            </v-tooltip>
+                                            <span>
+                                                <v-btn :disabled="!form" :loading="loading" block
+                                                    class="bg-teal-darken-2 mt-10" size="large" type="submit"
+                                                    append-icon="mdi-login" v-autofocus>
+                                                    Login
+                                                </v-btn>
+                                            </span>
+                                        </span>
+                                        <!-- Button login -->
 
-
-                                            <v-checkbox disabled v-model="rememberMe" hide-details label="Remember me"
-                                                class="text-cyan-darken-4">
-                                            </v-checkbox>
-
-
-                                        </v-row>
-
-
-                                        <br>
-
-                                        <v-btn :disabled="!form" :loading="loading" block class="bg-teal-darken-2"
-                                            size="large" type="submit" append-icon="mdi-login" v-autofocus>
-                                            Login
-                                        </v-btn>
                                     </v-form>
                                 </div>
 
@@ -121,16 +123,8 @@
                         <v-card-text>
                             <p>Type your email below</p>
                             <v-text-field v-model="emailPasswordRecover" density="compact" hide-details="auto"
-                                label="Email address" placeholder="example@example.com" type="email" class="mb-3">
-
-                                <template v-slot:prepend>
-                                    <v-icon>
-                                        <span class="material-symbols-outlined">
-                                            mail
-                                        </span>
-                                    </v-icon>
-                                </template>
-
+                                label="Email address" placeholder="example@example.com" type="email" class="mb-3"
+                                prepend-icon="mdi-email">
                             </v-text-field>
                             <v-btn block color="success" @click="passwordReset()">Recover password</v-btn>
                         </v-card-text>
@@ -173,7 +167,6 @@ function toggleTheme() {
 
 <script>
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 export default {
     data: () => ({
@@ -184,7 +177,6 @@ export default {
         loading: false,
         atempt: 0,
 
-        rememberMe: false,
 
         alert: false,
         errorContent: '',
@@ -213,12 +205,12 @@ export default {
     },
 
     mounted() {
-        const cookie_username = Cookies.get('username');
-        const cookie_password = Cookies.get('password');
+        const rememberedUsername = localStorage.getItem('username')
+        const rememberedPassword = localStorage.getItem('password')
 
-        if (cookie_username && cookie_password) {
-            this.$refs.usernameInput.value = cookie_username;
-            this.$refs.passwordInput.value = cookie_password;
+        if (rememberedUsername && rememberedPassword) {
+            this.$refs.usernameInput.value = rememberedUsername;
+            this.$refs.passwordInput.value = rememberedPassword;
 
             this.$refs.usernameInput.dispatchEvent(new Event('input'));
             this.$refs.passwordInput.dispatchEvent(new Event('input'));
@@ -240,7 +232,6 @@ export default {
         passwordReset() {
             this.passwordRecoverDialog = false;
             this.passwordRecoverDialogConfirm = true;
-
         },
 
 
@@ -278,12 +269,6 @@ export default {
                     this.$store.commit('setRefreshToken', response.data.jwt.refresh);
 
                     axios.defaults.headers.common['Authorization'] = `JWT ${response.data.jwt.access}`;
-
-
-                    // if (rememberMe) {
-                    //     Cookies.set('username', username, { expires: new Date('9999-12-31') });
-                    //     Cookies.set('password', password, { expires: new Date('9999-12-31') });
-                    // }
 
                     this.$router.push('/dashboard');
 
