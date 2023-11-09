@@ -9,25 +9,23 @@ class CreateRestaurantSerializer(serializers.ModelSerializer):
     managers = serializers.SlugRelatedField(
     many=True,
     queryset=RestManager.objects.all(),
-    slug_field='username',
+    slug_field='id',
     )
     class Meta:
         model = Restaurant
         fields = [
                   'name', 
                   'phone', 
+                  'brand', 
                   'country', 
                   'city', 
                   'state', 
                   'street', 
-                  'home_number', 
-                  'apartament_number', 
-                  'zip_code', 
+                  'home', 
+                  'apartament', 
+                  'zip', 
                   'managers', 
                   ]
-        extra_kwargs = {
-            'name': {'validators': [UniqueValidator(queryset=Restaurant.objects.all(), message='This name is already in use.')]}
-        }
         
     def create(self, validated_data):
         managers_data = validated_data.pop('managers', [])
@@ -72,4 +70,38 @@ class CreateBrandSerializer(serializers.ModelSerializer):
         brand = Brands(**brand_data)
         brand.save()
         return brand
+    
+    
+    
+
+
+#Get brands
+class GetBrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brands
+        fields = '__all__'
+
+
+
+
+
+# Update brand
+class UpdateBrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brands
+        fields = '__all__'
+        
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.country = validated_data.get('country', instance.country)
+        instance.city = validated_data.get('city', instance.city)
+        instance.state = validated_data.get('state', instance.state)
+        instance.street = validated_data.get('street', instance.street)
+        instance.home = validated_data.get('home', instance.home)
+        instance.apartament = validated_data.get('apartament', instance.apartament)
+        instance.zip = validated_data.get('zip', instance.zip)
+    
+        instance.save()
+        return instance
 # Brand serializers

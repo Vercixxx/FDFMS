@@ -89,7 +89,6 @@ class EditCar(APIView):
                 if field_name in data:
                     field_value = data[field_name]
 
-
                     if field_value != getattr(car, field_name) and Car.objects.exclude(id=id).filter(**{field_name: field_value}).exists():
                         return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400) 
         
@@ -105,4 +104,4 @@ class EditCar(APIView):
                 return JsonResponse(serializer.errors, status=400)
             
         except Car.DoesNotExist:
-            return JsonResponse({'error': 'Samochód o podanym ID nie istnieje.'}, status=404)
+            return JsonResponse({'error': 'Car does not exist.'}, status=404)
