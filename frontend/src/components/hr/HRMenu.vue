@@ -1,59 +1,145 @@
 <template>
-    <v-list-item>
-        <v-btn block variant="text" @click="handleButtonClick('HomeComponent')">
-            <span class="material-symbols-outlined">
-                home
-            </span>
-            Home
-        </v-btn>
-    </v-list-item>
+    <v-list>
+        <v-list-item prepend-icon="mdi-home" @click="handleButtonClick('HomeComponent')" title="Home"
+            class="rounded-xl text-h5 bg-teal-darken-2" elevation="2">
+        </v-list-item>
+    </v-list>
 
-    <v-menu transition="scale-transition" v-for="button in buttons" :key="button.name">
+
+    <!-- Users -->
+    <v-menu transition="slide-y-transition">
         <template v-slot:activator="{ props }">
-            <v-btn block color="primary" v-bind="props" variant="tonal" class="my-5">
+            <v-list-item prepend-icon="mdi-account-multiple" v-bind="props" class="my-3">
+                Users
+            </v-list-item>
+
+        </template>
+        <v-list density="compact" nav>
+
+            <!-- Add -->
+            <v-list-item>
+                <v-menu transition="slide-y-transition">
+                    <template v-slot:activator="{ props }">
+                        <v-list-item prepend-icon="mdi-plus" v-bind="props">
+                            Add
+                        </v-list-item>
+
+                    </template>
+                    <v-list density="compact" nav>
+                        <v-list-item v-for="option in buttonAdd" :key="option.name" :prepend-icon="option.icon"
+                            :title="option.name" @click="addUserButtonClick(option)">
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+            </v-list-item>
+            <!-- Add -->
+
+            <!-- Manage -->
+            <v-list-item prepend-icon="mdi-list-status" title="Manage" @click="manageUsersClick()">
+            </v-list-item>
+            <!-- Manage -->
+
+        </v-list>
+    </v-menu>
+    <!-- Users -->
+
+
+
+
+    <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name">
+        <template v-slot:activator="{ props }">
+            <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3">
                 {{ button.name }}
-            </v-btn>
+            </v-list-item>
         </template>
 
-        <v-list>
-            <v-list-item v-for="option in button.options" :key="option.name">
-                <v-list-item-title>
-                    <v-btn block @click="handleButtonClick(option.click)" :prepend-icon="option.icon">
-                        {{ option.name }}
-                    </v-btn>
-                </v-list-item-title>
+        <v-list density="compact" nav>
+
+            <v-list-item v-for="option in button.options" :key="option.name" :prepend-icon="option.icon"
+                :title="option.name" @click="handleButtonClick(option)">
             </v-list-item>
 
         </v-list>
     </v-menu>
+
+
+
+
+    <!-- Messages -->
+    <v-menu transition="slide-y-transition">
+        <template v-slot:activator="{ props }">
+            <v-list-item prepend-icon="mdi-forum" v-bind="props" class="my-3">
+                Messages
+            </v-list-item>
+
+        </template>
+        <v-list density="compact" nav>
+
+            <!-- Add -->
+            <v-list-item prepend-icon="mdi-plus" title="Add" @click="createMessage()">
+            </v-list-item>
+            <!-- Add -->
+
+            <!-- Manage -->
+            <v-list-item prepend-icon="mdi-list-status" title="Manage" @click="showMessages()">
+            </v-list-item>
+            <!-- Manage -->
+
+        </v-list>
+    </v-menu>
+    <!-- Messages -->
 </template>
 
 
 <script>
 import { closeDrawer } from '../../store/store.js'
+import useEventsBus from '../../plugins/eventBus.js'
+import { ref, watch } from "vue";
+const { emit } = useEventsBus()
 
 export default {
     data() {
         return {
-            buttons: [
-                {
-                    name: 'users',
-                    options: [
-                        {
-                            name: 'add',
-                            click: 'AddUserComponent',
-                            icon: 'mdi-plus',
-                        },
-                        {
-                            name: 'manage',
-                            click: 'ModifyUserComponent',
-                            icon: ' mdi-database-edit',
-                        },
-                    ],
-                },
+            buttonAdd: [
 
                 {
+                    name: 'HR',
+                    click: 'AddHrComponent',
+                    icon: 'mdi-account-group-outline',
+                },
+                {
+                    name: 'Payroll',
+                    click: 'AddPayrollComponent',
+                    icon: 'mdi-cash-multiple',
+                },
+                {
+                    name: 'Asset',
+                    click: 'AddAssetComponent',
+                    icon: 'mdi-car-multiple',
+                },
+                {
+                    name: 'Client',
+                    click: 'AddClientComponent',
+                    icon: 'mdi-silverware-fork-knife',
+                },
+                {
+                    name: 'Manager',
+                    click: 'AddManagerComponent',
+                    icon: 'mdi-account-hard-hat-outline',
+                },
+                {
+                    name: 'Driver',
+                    click: 'AddDriverComponent',
+                    icon: 'mdi-truck-delivery-outline',
+                },
+
+            ],
+
+
+            buttons: [
+                {
                     name: 'Statistics',
+                    mainIcon: 'mdi-presentation',
                     options: [
                         {
                             name: 'Drivers statistics',
@@ -70,6 +156,7 @@ export default {
 
                 {
                     name: 'Hr data',
+                    mainIcon: 'mdi-party-popper',
                     options: [
                         {
                             name: 'Overtime',
@@ -83,30 +170,45 @@ export default {
                         },
                     ],
                 },
-                {
-                    name: 'Messages',
-                    options: [
-                        {
-                            name: 'Create',
-                            click: 'AddUserComponent',
-                            icon: 'mdi-database-edit',
-                        },
-                        {
-                            name: 'Show log',
-                            click: 'ModifyUserComponent',
-                            icon: ' mdi-database-edit',
-                        },
-                    ],
-                },
             ]
 
         };
     },
 
     methods: {
-        handleButtonClick(functionName) {
+        handleButtonClick(option) {
             closeDrawer();
-            this.$root.changeCurrentComponent(functionName);
+            this.$root.changeCurrentComponent(option.name);
+        },
+
+        addUserButtonClick(option) {
+            if (option.name === 'Driver') {
+                closeDrawer();
+                this.$root.changeCurrentComponent('AddDriverComponent');
+            }
+            else {
+                closeDrawer();
+                localStorage.setItem('addingRole', option.name);
+                emit('forceReload', '');
+                this.$root.changeCurrentComponent('AddUserComponent');
+            }
+        },
+
+        manageUsersClick() {
+            closeDrawer();
+            this.$root.changeCurrentComponent('ModifyUserComponent');
+        },
+
+
+        createMessage() {
+            closeDrawer();
+            emit('showAddMessage', '');
+        },
+
+
+        showMessages() {
+            closeDrawer();
+            emit('showMessageManager', '');
         },
     },
 
