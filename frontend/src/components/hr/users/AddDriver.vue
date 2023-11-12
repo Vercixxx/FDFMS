@@ -3,9 +3,9 @@
         <div class="col-12 col-md-9">
 
             <div class="d-flex justify-content-between mb-5">
-                <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
-                    Back
-                </v-btn>
+                <!-- <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
+                    Manage
+                </v-btn> -->
 
                 <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new Driver user</div>
                 <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit {{ editUser.username }} user</div>

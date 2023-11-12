@@ -4,7 +4,7 @@
         </v-list-item>
     </v-list>
 
-    <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name">
+    <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name" :disabled="button.disabled">
         <template v-slot:activator="{ props }">
             <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3">
                 {{ button.name }}
@@ -32,6 +32,7 @@ export default {
                 {
                     name: 'Cars',
                     mainIcon: 'mdi-car',
+                    disabled: false,
                     options: [
                         {
                             name: 'Add',
@@ -48,6 +49,7 @@ export default {
                 {
                     name: 'Fleet',
                     mainIcon: 'mdi-bus-multiple',
+                    disabled: true,
                     options: [
                         {
                             name: 'Add',
@@ -69,6 +71,7 @@ export default {
                 {
                     name: 'Messages',
                     mainIcon: 'mdi-forum',
+                    disabled: true,
                     options: [
                         {
                             name: 'Create',

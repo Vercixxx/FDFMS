@@ -46,7 +46,7 @@
 
 
 
-    <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name">
+    <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name" :disabled="button.disabled">
         <template v-slot:activator="{ props }">
             <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3">
                 {{ button.name }}
@@ -140,6 +140,7 @@ export default {
                 {
                     name: 'Statistics',
                     mainIcon: 'mdi-presentation',
+                    disabled: true,
                     options: [
                         {
                             name: 'Drivers statistics',
@@ -157,6 +158,7 @@ export default {
                 {
                     name: 'Hr data',
                     mainIcon: 'mdi-party-popper',
+                    disabled: true,
                     options: [
                         {
                             name: 'Overtime',

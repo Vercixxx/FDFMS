@@ -253,13 +253,8 @@ import HRNav from "../components/hr/HRMenu.vue"
 
 // HR
 import AddUser from '../components/hr/users/AddUser.vue';
-import ModifyUser from '../components/hr/ModifyUser.vue';
-import HrUser from '../components/hr/users/AddHr.vue';
-import PayrollUser from '../components/hr/users/AddPayroll.vue';
-import AssetUser from '../components/hr/users/AddAsset.vue';
-import ClientUser from '../components/hr/users/AddClient.vue';
-import ManagerUser from '../components/hr/users/AddManager.vue';
 import DriverUser from '../components/hr/users/AddDriver.vue';
+import ManageUsers from '../components/hr/ManageUsers.vue'
 // HR
 
 // Clients
@@ -272,7 +267,7 @@ import ManageBrands from '../components/clients/ManageBrands.vue';
 
 // Asset
 import AddCar from '../components/asset/AddCar.vue';
-import ShowCars from '../components/asset/ShowCars.vue';
+import ManageCars from '../components/asset/ManageCars.vue';
 // Asset
 
 
@@ -329,7 +324,7 @@ export default {
         const { bus } = useEventsBus();
         watch(
             () => [bus.value.get('message'), bus.value.get('forceReload')],
-            ([message, forceReloa]) => {
+            ([message, forceReload]) => {
                 if (message) {
                     this.showSnackBar();
                 }
@@ -404,7 +399,7 @@ export default {
             ];
         },
         ModifyUserComponent() {
-            this.currentComponent = ModifyUser;
+            this.currentComponent = ManageUsers;
             this.path = [
                 {
                     name: "Home",
@@ -416,108 +411,11 @@ export default {
                     disabled: true,
                 },
                 {
-                    name: 'Show users',
-                    component: 'ModifyUserComponent',
+                    name: 'Manage Users',
+                    component: 'ManageUsers',
                     disabled: true,
                 },
             ];
-        },
-        AddHrComponent() {
-            this.currentComponent = HrUser;
-            this.path = [
-                {
-                    name: "Home",
-                    component: 'HomeComponent',
-                },
-                {
-                    name: "Users",
-                    component: '',
-                    disabled: true,
-                },
-                {
-                    name: 'Add HR User',
-                    component: 'AddHrComponent',
-                    disabled: true,
-                },
-            ];
-        },
-        AddPayrollComponent() {
-            this.path = [
-                {
-                    name: "Home",
-                    component: 'HomeComponent',
-                },
-                {
-                    name: "Users",
-                    component: '',
-                    disabled: true,
-
-                },
-                {
-                    name: 'Add Payroll user',
-                    component: 'AddPayrollComponent',
-                    disabled: true,
-                },
-            ]
-            this.currentComponent = PayrollUser;
-        },
-        AddAssetComponent() {
-            this.path = [
-                {
-                    name: "Home",
-                    component: 'HomeComponent',
-                },
-                {
-                    name: "Users",
-                    component: '',
-                    disabled: true,
-
-                },
-                {
-                    name: 'Add Payroll user',
-                    component: 'AddAssetComponent',
-                    disabled: true,
-                },
-            ]
-            this.currentComponent = AssetUser;
-        },
-        AddClientComponent() {
-            this.path = [
-                {
-                    name: "Home",
-                    component: 'HomeComponent',
-                },
-                {
-                    name: "Users",
-                    component: '',
-                    disabled: true,
-                },
-                {
-                    name: 'Add Client User',
-                    component: 'AddClientComponent',
-                    disabled: true,
-                },
-            ];
-            this.currentComponent = ClientUser;
-        },
-        AddManagerComponent() {
-            this.path = [
-                {
-                    name: "Home",
-                    component: 'HomeComponent',
-                },
-                {
-                    name: "Users",
-                    component: '',
-                    disabled: true,
-                },
-                {
-                    name: 'Add Manager User',
-                    component: 'AddManagerComponent',
-                    disabled: true,
-                },
-            ];
-            this.currentComponent = ManagerUser;
         },
         AddDriverComponent() {
             this.path = [
@@ -651,12 +549,12 @@ export default {
                     disabled: true,
                 },
                 {
-                    name: 'Show Cars',
+                    name: 'Manage Cars',
                     component: '',
                     disabled: true,
                 },
             ];
-            this.currentComponent = ShowCars;
+            this.currentComponent = ManageCars;
         },
         // Assets
 
