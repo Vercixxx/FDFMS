@@ -6,7 +6,26 @@
             <p class="p-2 fw-bolder text-h4">Options</p>
 
             <v-row>
-                <v-col cols="7">
+                <v-col cols="4">
+
+                    <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 bg-teal-darken-4" >
+                        <span class="pr-2">City - </span>
+                        {{ selectedCity }}
+
+                        <v-icon icon="mdi-menu-down"></v-icon>
+                    </v-btn>
+
+                    <v-menu activator="#role-activator" transition="slide-y-transition">
+                        <v-list>
+                            <v-list-item v-for="option in availableCities" :value="option" @click="selectCity(option)">
+                                {{ option }}
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="5">
                     <!-- Combobox columns selection -->
 
                     <v-expansion-panels>
@@ -25,6 +44,11 @@
 
                     <!-- Combobox columns selection -->
                 </v-col>
+
+                <v-col cols="2">
+                    
+                </v-col>
+
                 <v-col cols="5">
                     <!-- Search bar -->
                     <v-text-field variant="solo-filled" v-model="searchInput" @keydown.enter="searchTable = searchInput"
@@ -41,12 +65,12 @@
 
         <div>
             <h1>
-                List of cars
+                Restaurants
             </h1>
         </div>
 
         <!-- Table -->
-        <v-data-table :headers="updatedColumns" :items="cars" :search="searchTable" :loading="tableLoading"
+        <v-data-table :headers="updatedColumns" :items="restaurants" :search="searchTable" :loading="tableLoading"
             class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
             show-current-page>
 
@@ -55,53 +79,41 @@
             <!-- No data -->
             <template v-slot:no-data>
                 <p class="text-h4 pa-5">
-                    <span class="material-symbols-outlined">
-                        database
-                    </span>
+                    <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
                     No data
                 </p>
             </template>
             <!-- No data -->
 
 
-
-
             <template #item="{ item }">
                 <tr>
                     <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id" class="text-center">
-                        <span v-if="cell === null">
-                            <v-icon icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
-                        </span>
-                        <span v-else-if="cell === true">
-                            <v-icon icon="mdi-check-bold" style="color:green"></v-icon>
-                        </span>
-                        <span v-else-if="cell === false">
-                            <v-icon icon="mdi-close-thick" style="color:red"></v-icon>
-                        </span>
+
+                        <v-icon v-if="cell === null" icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
+
+                        <v-icon v-else-if="cell === true" icon="mdi-check-bold" style="color:green"></v-icon>
+
+                        <v-icon v-else-if="cell === false" icon="mdi-close-thick" style="color:red"></v-icon>
+
                         <span v-else>
                             {{ cell }}
                         </span>
 
                         <!-- Actions -->
                         <template v-if="columnIndex === 'action'">
-                            <v-btn variant="plain" color="blue" @click="carDetailsFunct(item.columns.id)">
-                                <span class="material-symbols-outlined">
-                                    description
-                                </span>
-                                <v-tooltip activator="parent" location="top">Show car details</v-tooltip>
+                            <v-btn variant="plain" color="blue" @click="restaurantDetailsFunct(item.columns.id)">
+                                <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
+                                <v-tooltip activator="parent" location="top">Show client details</v-tooltip>
                             </v-btn>
 
-                            <v-btn variant="plain" color="green" @click="editCar(item.columns.id)">
-                                <span class="material-symbols-outlined d-flex">
-                                    edit
-                                </span>
+                            <v-btn variant="plain" color="green" @click="editBrand(item.columns.id)">
+                                <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
                                 <v-tooltip activator="parent" location="top">Edit</v-tooltip>
                             </v-btn>
 
-                            <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.vin)">
-                                <span class="material-symbols-outlined d-flex">
-                                    delete
-                                </span>
+                            <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.id)">
+                                <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
                                 <v-tooltip activator="parent" location="top">Delete</v-tooltip>
                             </v-btn>
                         </template>
@@ -110,13 +122,11 @@
                 </tr>
             </template>
 
-
         </v-data-table>
         <!-- Table -->
 
 
     </div>
-
 
     <!-- Dialaogs section -->
 
@@ -126,24 +136,20 @@
             <div class="text-warning text-h6 text-md-h5 text-lg-h4">
 
                 <div class="d-flex justify-content-between align-items-center px-4 pt-4">
-                    <span class="material-symbols-outlined">
-                        warning
-                    </span>
-                    <span>
-                        Warning
-                    </span>
-                    <span class="material-symbols-outlined">
-                        warning
-                    </span>
+
+                    <v-icon icon="mdi-alert"></v-icon>
+                    Warning
+                    <v-icon icon="mdi-alert"></v-icon>
+
                 </div>
                 <hr>
             </div>
 
             <div class="pa-3" align="center">
 
-                You are trying to delete car vin -
+                You are trying to delete restaurant id -
                 <span class='fw-bolder'>
-                    {{ deleteCarId }}
+                    {{ deleteBrandId }}
                 </span>
                 , this operation is <span class="fw-bold">irreversible</span>.
                 Are you sure?
@@ -153,7 +159,10 @@
 
             <div class="justify-center d-flex align-items-center mb-3">
                 <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
-                <v-btn width="150" @click="deleteCar(deleteCarId)" color="red">Yes</v-btn>
+                <v-btn width="150" @click="deleteRestaurant(deleteBrandId)" color="red">
+                    <v-icon icon="mdi-delete-empty"></v-icon>
+                    Yes
+                </v-btn>
             </div>
 
         </v-card>
@@ -162,7 +171,7 @@
 
 
     <!-- Dialog details -->
-    <v-dialog v-model="carDetailsDialog" width="auto">
+    <v-dialog v-model="restaurantDetailsDialog" width="auto">
         <v-card>
             <v-card-text>
                 <v-table>
@@ -177,7 +186,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(value, key) in carDetails" :key="key">
+                        <tr v-for="(value, key) in restaurantDetails" :key="key">
                             <td>{{ key }}</td>
                             <td v-if="value === null">
                                 <v-icon icon="mdi-minus-thick"></v-icon>
@@ -201,7 +210,7 @@
 
             </v-card-text>
             <v-card-actions>
-                <v-btn color="primary" block @click="carDetailsDialog = false">Close</v-btn>
+                <v-btn color="primary" block @click="restaurantDetailsDialog = false">Close</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -214,58 +223,64 @@
 import { VDataTable } from 'vuetify/labs/VDataTable'
 </script>
 
-
 <script>
 import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
 const { emit } = useEventsBus()
+
+
 
 export default {
     name: 'App',
 
     data() {
         return {
-            cars: [],
-            columns: [],
+            selectedCity: 'All',
+            availableCities: [],
+
+            restaurants: [],
             itemsPerPage: 25,
+            columns: [],
             searchInput: '',
             searchTable: '',
             tableLoading: false,
             selectedColumns: [],
             avaliableColumns: [],
 
+
+
+            // OLD
+
             dialogDelete: false,
-            deleteCarId: '',
+            deleteBrandId: '',
 
-            carDetailsDialog: false,
-            carDetails: [],
+            restaurantDetailsDialog: false,
+            restaurantDetails: [],
 
 
-
+            // Headers
             necessaryHeaders: [
-                { title: 'Id', align: 'center', sortable: false, key: 'id' },
-                { title: 'VIN', key: 'vin', align: 'center', sortable: false },
+                { title: 'Id', align: 'center', sortable: true, key: 'id' },
             ],
             columns: [
+                { title: 'Name', key: 'name', align: 'center', sortable: true },
                 { title: 'Brand', key: 'brand', align: 'center', sortable: false },
-                { title: 'Model', key: 'model', align: 'center', sortable: false },
-                { title: 'Color', key: 'color', align: 'center', sortable: false },
-                { title: 'Production year', key: 'year_of_prod', align: 'center', sortable: false },
-                { title: 'Mileage', key: 'mileage', align: 'center', sortable: false },
-                { title: 'Engine capacity', key: 'engine_cap', align: 'center', sortable: false },
-                { title: 'Engine power', key: 'engine_pow', align: 'center', sortable: false },
-                { title: 'Transmission', key: 'transmission', align: 'center', sortable: false },
-                { title: 'Insurance number', key: 'policy_number', align: 'center', sortable: false },
-                { title: 'Insurance phone number', key: 'phone_policy_contact', align: 'center', sortable: false },
-                { title: 'OC', key: 'is_oc', align: 'center', sortable: false },
-                { title: 'AC', key: 'is_ac', align: 'center', sortable: false },
-                { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+                { title: 'Phone', key: 'phone', align: 'center', sortable: false },
+                { title: 'Country', key: 'country', align: 'center', sortable: false },
+                { title: 'State', key: 'state', align: 'center', sortable: false },
+                { title: 'City', key: 'city', align: 'center', sortable: true },
+                { title: 'Street', key: 'street', align: 'center', sortable: false },
+                { title: 'Home', key: 'home', align: 'center', sortable: false },
+                { title: 'Apartament', key: 'apartament', align: 'center', sortable: false },
+                { title: 'Zip code', key: 'zip', align: 'center', sortable: false },
+                { title: 'Actions', key: 'action', align: 'center', sortable: false },
             ],
+            // Headers
 
-
-
-        };
+        }
     },
+
+
 
     computed: {
         updatedColumns() {
@@ -273,61 +288,79 @@ export default {
         },
     },
 
+
+
     created() {
-        this.loadCars();
+        this.loadRestaurants();
+        this.getCities()
 
         this.selectedColumns = this.columns;
         this.avaliableColumns = this.columns;
     },
 
+
+
     methods: {
-        async loadCars() {
+
+        // Load all Restaurants
+        async loadRestaurants() {
             try {
-                const response = await axios.get('api/cars/get-cars/', {
-                    params: {
-                        limit: this.cars_per_site,
-                        offset: this.currentPage,
-                        search: this.query,
-                    }
-                });
+                const response = await axios.get(`api/restaurant/get/${this.selectedCity}/`);
+                console.log(response)
+                console.log(response.data)
 
-                this.cars = response.data;
-
+                this.restaurants = response.data;
                 this.tableLoading = false;
-
             }
             catch (error) {
                 console.error('Error when fetching', error);
             }
-        },
 
-        previousPage() {
-            this.currentPage -= 1;
-            this.loadcars();
         },
-        nextPage() {
-            this.currentPage += 1;
-            this.loadcars();
-        },
+        // Load all Restaurants
 
 
+
+        // Get cities
+        async getCities() {
+            const response = await axios.get('api/restaurants/unique_cities/');
+            this.availableCities = ['All', ...response.data];
+            console.log(this.availableCities);
+        },
+        // Get cities
+
+
+
+        // Select city
+        selectCity(city) {
+            this.selectedCity = city;
+            this.loadRestaurants();
+        },
+        // Select city
+
+
+
+        // Deleting Restaurant confirmation
         deleteConfirm(carid) {
-            this.deleteCarId = carid;
+            this.deleteBrandId = carid;
             this.dialogDelete = true;
         },
+        // Deleting Restaurant confirmation
 
 
-        async deleteCar() {
+
+        // Deleting Restaurant method
+        async deleteRestaurant() {
             this.dialogDelete = false;
             try {
-                const response = await axios.delete(`api/car/delete/${this.deleteCarId}`);
+                const response = await axios.delete(`api/brands/delete/${this.deleteBrandId}`);
 
 
                 if (response.status === 204) {
-                    this.loadCars()
+                    this.loadRestaurants()
 
                     const messageData = {
-                        message: `Successfully deleted car id - ${this.deleteCarId}`,
+                        message: `Successfully deleted restaurant id - ${this.deleteBrandId}`,
                         type: 'success'
                     };
 
@@ -336,7 +369,7 @@ export default {
 
                 }
                 else {
-                    this.loadcars();
+                    this.loadRestaurants();
                     this.dataError = 'Error!'
                     document.getElementById('hiddenButton').click();
                 }
@@ -347,29 +380,30 @@ export default {
                 console.error('Error when fetching', error);
             }
         },
+        // Deleting Restaurant method
 
-        editCar(carid) {
-            localStorage.setItem('carid', carid);
-            this.$root.changeCurrentComponent('AddCarsComponent');
+
+
+        // Editing Restaurant
+        editBrand(restaurantID) {
+            localStorage.setItem('restaurantID', restaurantID);
+            this.$root.changeCurrentComponent('AddBrandComponent');
         },
+        // Editing Restaurant
 
-        search() {
-            this.loadCars();
-        },
 
-        reloadComponent() {
-            this.loadCars();
-        },
 
-        async carDetailsFunct(car_id) {
-            const response = await axios.get(`api/car/get/${car_id}/`);
-            console.log(response)
-            this.carDetails = response.data;
-            this.carDetailsDialog = true;
+        // Restaurant details
+        async restaurantDetailsFunct(restaurantID) {
+            const response = await axios.get(`api/restaurant/get/${restaurantID}/`);
+            this.restaurantDetails = response.data;
+            this.restaurantDetailsDialog = true;
 
         },
+        // Restaurant details
 
 
     },
-};
+
+}
 </script>

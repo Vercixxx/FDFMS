@@ -1,6 +1,6 @@
 <template>
     <div class="mb-15" v-for="menu in menus" :key="menu.name">
-        <p class="text-center">{{ menu.name }}</p>
+        <!-- <p class="text-center">{{ menu.name }}</p> -->
         <component :is="menu.menu"></component>
     </div>
 </template>
@@ -32,18 +32,18 @@ export default {
                     name: 'Clients menu',
                     menu: ClientsMenu
                 },
-                {
-                    name: 'Payroll menu',
-                    menu: PayrollMenu
-                },
-                {
-                    name: 'Manager menu',
-                    menu: ManagerMenu
-                },
-                {
-                    name: 'Driver menu',
-                    menu: DriverMenu
-                },
+                // {
+                //     name: 'Payroll menu',
+                //     menu: PayrollMenu
+                // },
+                // {
+                //     name: 'Manager menu',
+                //     menu: ManagerMenu
+                // },
+                // {
+                //     name: 'Driver menu',
+                //     menu: DriverMenu
+                // },
             ]
         };
     },

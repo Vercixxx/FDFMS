@@ -63,3 +63,8 @@ class GeneralUserRegistrationSerializer(serializers.ModelSerializer):
         account.save()
         return account
 
+class getAllUsernames(serializers.ModelSerializer):
+    class Meta:
+        model = GeneralUser
+        fields = ['username', 'id']
+        

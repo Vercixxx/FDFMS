@@ -13,7 +13,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_manager.models import RestManager
 
 # Serializers
-from rest_manager.serializers import GetAllManagersUsername
+from rest_manager.serializers import GetAllManagersUI
 
 class DisablePagination(PageNumberPagination):
     page_size = None
@@ -21,8 +21,7 @@ class DisablePagination(PageNumberPagination):
 class GetUsernames(APIView):
 
     def get(self, request, format=None):
-        search_param = request.query_params.get('search', '')
-        users = RestManager.objects.filter(username__icontains=search_param)
-        serializer = GetAllManagersUsername(users, many=True)
+        users = RestManager.objects.all()
+        serializer = GetAllManagersUI(users, many=True)
 
         return Response(serializer.data)

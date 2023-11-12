@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Restaurant, WorkChange, DailyCarSchedule, Schedule
+from .models import Restaurant, WorkChange, DailyCarSchedule, Schedule, Brands
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
@@ -19,3 +19,6 @@ class DailyCarScheduleAdmin(admin.ModelAdmin):
 class ScheduleAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Schedule._meta.fields]
     filter_horizontal = ['daily_cars_schedules']
+@admin.register(Brands)
+class BrandsAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Brands._meta.fields]

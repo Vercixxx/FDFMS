@@ -49,6 +49,7 @@ class GetDriver(serializers.ModelSerializer):
                   ]
 
 class DriverSerializer(serializers.ModelSerializer):
+    date_joined = serializers.DateTimeField(format='%Y-%m-%d')
     class Meta:
         model = Driver
         fields = ['email', 
@@ -65,7 +66,9 @@ class DriverSerializer(serializers.ModelSerializer):
                   'residence_street', 
                   'residence_home_number', 
                   'residence_apartament_number', 
-                  'residence_zip_code']
+                  'residence_zip_code',
+                  'date_joined',
+                  ]
         
 class AddDriverSerializer(serializers.ModelSerializer):
     
