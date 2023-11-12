@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'driver',
     'administrator',
     'fleet',
+    'posts',
     
     # My packages
     'rest_framework',
