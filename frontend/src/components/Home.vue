@@ -15,15 +15,16 @@
 
 
         <v-card-item>
-            <v-card-title class="text-h4 text-md-h5 text-lg-h4"  :class="isDarkModeEnabled? 'text-teal-lighten-2':'text-teal-darken-3'">
+            <v-card-title class="text-h4 text-md-h5 text-lg-h4"
+                :class="isDarkModeEnabled ? 'text-teal-lighten-2' : 'text-teal-darken-3'">
                 <v-row>
-                    <v-col>
+                    <v-col class="text-wrap">
                         {{ post.title }}
                     </v-col>
                     <v-col align="end">
                         <!-- Detele button -->
-                        <v-btn v-if="post.author_username === logged_username || logged_role === 'Administrator'" variant="plain" icon="mdi-delete"
-                            color="red"></v-btn>
+                        <v-btn v-if="post.author_username === logged_username || logged_role === 'Administrator'"
+                            variant="plain" icon="mdi-delete" color="red"></v-btn>
                         <!-- Detele button -->
                     </v-col>
                 </v-row>
@@ -39,6 +40,8 @@
 
     </v-card>
 
+
+    <v-pagination v-model="page" class="my-4" :length="pageAmount" :total-visible="5"></v-pagination>
 </template>
 
 
@@ -61,6 +64,9 @@ export default {
             logged_role: '',
             isDarkModeEnabled: false,
 
+            page: 1,
+            pageAmount: 25,
+
         }
     },
 
@@ -75,7 +81,7 @@ export default {
         this.getPosts();
         this.logged_username = this.$store.getters.responseData.username;
         this.logged_role = this.$store.getters.responseData.user_role;
-        
+
         // Dark mode
         const { bus } = useEventsBus();
 
