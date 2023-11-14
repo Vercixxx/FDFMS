@@ -1,57 +1,68 @@
 <template>
     <v-row>
+
         <v-col class="text-h5">
             {{ date }}
         </v-col>
-        <v-col>
-
+        <v-col align="end">
+            <v-btn variant="plain" prepend-icon="mdi-plus" class="bg-teal-darken-2" @click="addPost()"> Add post</v-btn>
         </v-col>
 
     </v-row>
 
-    
+
+    <v-card v-for="post in posts" :key="post.id" class="mx-auto my-8 pa-5 border-2">
 
 
+        <v-card-item>
+            <v-card-title class="text-h4 text-md-h5 text-lg-h4"  :class="isDarkModeEnabled? 'text-teal-lighten-2':'text-teal-darken-3'">
+                <v-row>
+                    <v-col>
+                        {{ post.title }}
+                    </v-col>
+                    <v-col align="end">
+                        <!-- Detele button -->
+                        <v-btn v-if="post.author_username === logged_username || logged_role === 'Administrator'" variant="plain" icon="mdi-delete"
+                            color="red"></v-btn>
+                        <!-- Detele button -->
+                    </v-col>
+                </v-row>
+            </v-card-title>
+            <v-card-subtitle>
+                Added by {{ post.author_username }}, {{ post.posted_date }}
+            </v-card-subtitle>
+        </v-card-item>
 
-    <article class="p-2 m-2 border rounded mb-10">
-        <h3>
-            Hi from
-            <span class="badge bg-secondary">
-                <v-icon icon="mdi-apple"></v-icon>
-                <v-icon icon="mdi-apple-ios"></v-icon>
-            </span>
-        </h3>
-        <hr>
+        <v-card-text>
+            {{ post.content }}
+        </v-card-text>
 
-        <div class="text-wrap fs-5">
-            <v-icon icon="mdi-android" class="text-h1"></v-icon>
-            Content
-        </div>
+    </v-card>
 
-    </article>
-
-    <article class="p-2 m-2 border rounded">
-        <h3>
-            Welcome to home page
-        </h3>
-        <hr>
-
-        <div class="text-wrap fs-5">
-            Hi, it's an honor to present you home page of <span class="fw-bolder">FDFMS</span> system.
-            Check options in menu to proceed some actions.
-        </div>
-
-    </article>
 </template>
 
+
 <script>
+import axios from 'axios'
+import useEventsBus from '../plugins/eventBus.js'
+const { emit } = useEventsBus()
+import { watch } from "vue";
+import { useTheme } from 'vuetify'
+
+
 export default {
+
+
     data() {
         return {
             date: '',
+            posts: [],
+            logged_username: '',
+            logged_role: '',
+            isDarkModeEnabled: false,
+
         }
     },
-
 
 
     mounted() {
@@ -60,6 +71,26 @@ export default {
         this.intervalId = setInterval(() => {
             this.getDate();
         }, 60000);
+
+        this.getPosts();
+        this.logged_username = this.$store.getters.responseData.username;
+        this.logged_role = this.$store.getters.responseData.user_role;
+        
+        // Dark mode
+        const { bus } = useEventsBus();
+
+        watch(
+            () => bus.value.get('theme'),
+            (val) => {
+                const [themeBus] = val ?? [];
+                this.isDarkModeEnabled = themeBus;
+            }
+        );
+
+        const theme = useTheme();
+        this.isDarkModeEnabled = theme.global.current.value.dark;
+        // Dark mode
+
     },
 
 
@@ -69,6 +100,9 @@ export default {
 
 
     methods: {
+
+
+        // Get date
         getDate() {
             const now = new Date();
 
@@ -84,6 +118,25 @@ export default {
 
             this.date = `${dayOfWeek}, ${hours}:${minutes < 10 ? '0' : ''}${minutes}, ${day}-${month}-${year}`;
         },
+        // Get date
+
+
+
+        // Add post
+        addPost() {
+            emit('showAddPost', true)
+        },
+        // Add post
+
+
+
+        // Get posts
+        async getPosts() {
+            const response = await axios.get('api/posts/get/')
+            console.log(response)
+            this.posts = response.data
+        },
+        // Get posts
     },
 
 
