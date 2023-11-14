@@ -21,17 +21,42 @@
                     <!-- Title -->
                     <v-col class="text-start">
 
-                        <div>
+                        <v-row class="ms-2 text-h6" align="center" justify="center">
+                            <v-col cols="auto">
+                                <v-icon icon="mdi-truck-fast" />
+                                <span class="font-weight-medium">
+                                    FDFMS
+                                </span>
 
-                            <span v-for="component in path" :key="component.name">
+                            </v-col>
 
-                                <v-btn :disabled="component.disabled" variant="plain"
-                                    @click="changeComponent(component.component)">
-                                    {{ component.name }}
-                                </v-btn>
-                                /
-                            </span>
-                        </div>
+                            <v-col>
+                                <span v-for="component in path" :key="component.title" class="d-none d-sm-block">
+
+                                    <v-btn :disabled="component.disabled" variant="plain"
+                                        @click="changeComponent(component.component)">
+                                        {{ component.title }}
+                                    </v-btn>
+                                    <v-icon icon="mdi-chevron-right"></v-icon>
+                                </span>
+
+                                <span class="d-block d-sm-none">
+                                    mobile
+                                </span>
+
+                                <!-- <v-breadcrumbs :items="path">
+                                    <template v-slot:divider>
+                                        <v-icon icon="mdi-chevron-right"></v-icon>
+                                    </template>
+                                    <template v-slot:title="{ item }">
+                                        {{ item.title.toUpperCase() }}
+                                    </template>
+                                </v-breadcrumbs> -->
+
+                            </v-col>
+
+                        </v-row>
+
 
                     </v-col>
                     <!-- Title -->
@@ -41,7 +66,8 @@
                     <v-col cols="auto" align="end">
                         <v-col cols="auto">
 
-                            <v-tooltip :text="isDarkModeEnabled ? 'Enable light mode' : 'Enable dark mode'" location="bottom">
+                            <v-tooltip :text="isDarkModeEnabled ? 'Enable light mode' : 'Enable dark mode'"
+                                location="bottom">
                                 <template v-slot:activator="{ props }">
                                     <v-btn :ripple="false" variant="plain" v-bind="props"
                                         :icon="isDarkModeEnabled ? 'mdi-weather-night' : 'mdi-white-balance-sunny'"
@@ -137,16 +163,16 @@
                 :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }">
 
                 <v-list density="compact" nav class="pa-3">
-                    <v-row>
+                    <!-- <v-row align="center">
                         <v-col cols="auto">
                             <v-icon icon="mdi-truck-fast" class="text-h3" />
                         </v-col>
-                        <v-col class="text-h5">
+                        <v-col class="text-h5 text-teal-darken-3">
                             FDFMS
                         </v-col>
                     </v-row>
 
-                    <v-divider></v-divider>
+                    <v-divider></v-divider> -->
 
                     <component :is="getNavigationComponent(userData.user_role)" />
 
@@ -188,7 +214,7 @@
         </v-layout>
 
         <v-sheet app>
-            <div class="pa-1 text-center w-100 " :class="isDarkModeEnabled ? 'bg-grey-darken-4': '' ">
+            <div class="pa-1 text-center w-100 " :class="isDarkModeEnabled ? 'bg-grey-darken-4' : ''">
 
 
                 <span v-for="social in socials" :key="social.id" class="pa-3">
@@ -204,7 +230,12 @@
         </v-sheet>
 
 
-        <CreateMessage ref="createMessage" style="display: none;"  :key="forceReload"/>
+        <CreateMessage ref="createMessage" style="display: none;" :key="forceReload" />
+
+
+        <!-- Add post dialog -->
+        <AddPost ref="addPost" style="display: none;" :key="forceReload" />
+        <!-- Add post dialog -->
 
     </v-app>
 </template>
@@ -239,6 +270,10 @@ import useEventsBus from '../plugins/eventBus.js'
 // Messages
 import CreateMessage from '../components/SendMessage.vue'
 // Messages
+
+// Posts
+import AddPost from '../components/AddPost.vue'
+// Posts
 
 // Home components
 import Home from '../components/Home.vue';
@@ -279,7 +314,7 @@ export default {
             currentComponent: NonReactiveHome,
             path: [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
                 }
             ],
@@ -311,6 +346,7 @@ export default {
 
     components: {
         CreateMessage,
+        AddPost,
     },
 
 
@@ -370,7 +406,7 @@ export default {
             this.currentComponent = NonReactiveHome;
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'NonReactiveHome',
                     disabled: true,
                 },
@@ -383,16 +419,16 @@ export default {
             this.currentComponent = AddUser;
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
                 },
                 {
-                    name: "Users",
+                    title: "Users",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Add user',
+                    title: 'Add user',
                     component: '',
                     disabled: true,
                 },
@@ -402,16 +438,16 @@ export default {
             this.currentComponent = ManageUsers;
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
                 },
                 {
-                    name: "Users",
+                    title: "Users",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Manage Users',
+                    title: 'Manage Users',
                     component: 'ManageUsers',
                     disabled: true,
                 },
@@ -420,16 +456,16 @@ export default {
         AddDriverComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
                 },
                 {
-                    name: "Users",
+                    title: "Users",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Add Driver User',
+                    title: 'Add Driver User',
                     component: 'AddDriverComponent',
                     disabled: true,
                 },
@@ -442,16 +478,16 @@ export default {
         AddRestaurantComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
                 },
                 {
-                    name: "Restaurant",
+                    title: "Restaurant",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Add restaurant',
+                    title: 'Add restaurant',
                     component: '',
                     disabled: true,
                 },
@@ -461,16 +497,16 @@ export default {
         ManageRestaurantComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
                 },
                 {
-                    name: "Restaurant",
+                    title: "Restaurant",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Manage restaurants',
+                    title: 'Manage restaurants',
                     component: '',
                     disabled: true,
                 },
@@ -480,16 +516,16 @@ export default {
         AddBrandComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
                 },
                 {
-                    name: "Brands",
+                    title: "Brands",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Add brand',
+                    title: 'Add brand',
                     component: '',
                     disabled: true,
                 },
@@ -499,16 +535,16 @@ export default {
         ManageBrandsComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
                 },
                 {
-                    name: "Brands",
+                    title: "Brands",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Manage brands',
+                    title: 'Manage brands',
                     component: '',
                     disabled: true,
                 },
@@ -521,16 +557,16 @@ export default {
         AddCarsComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
                 },
                 {
-                    name: "Cars",
+                    title: "Cars",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Add Car',
+                    title: 'Add Car',
                     component: '',
                     disabled: true,
                 },
@@ -540,16 +576,16 @@ export default {
         ShowCarsComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
                 },
                 {
-                    name: "Cars",
+                    title: "Cars",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Manage Cars',
+                    title: 'Manage Cars',
                     component: '',
                     disabled: true,
                 },
@@ -557,12 +593,6 @@ export default {
             this.currentComponent = ManageCars;
         },
         // Assets
-
-
-
-
-
-
 
 
 
@@ -584,8 +614,6 @@ export default {
     watch: {
         group() {
             this.drawer = false
-
-
         },
     },
 
