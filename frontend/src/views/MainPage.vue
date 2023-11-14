@@ -9,49 +9,67 @@
 
                     <!-- Menu button -->
                     <v-col cols="auto" align="start">
-                        <v-app-bar-nav-icon @click.stop="drawer = !drawer" @mouseenter="drawer = true">
-                            <span class="material-symbols-outlined">
-                                menu
-                            </span>
+                        <v-app-bar-nav-icon @click.stop="drawer = !drawer" @mouseenter="drawer = true" >
+                            <v-icon icon="mdi-menu" />
                         </v-app-bar-nav-icon>
                     </v-col>
                     <!-- Menu button -->
 
 
-                    <!-- Title -->
-                    <v-col class="text-start">
+                    <!-- Title and location -->
+                    <v-col>
 
                         <v-row class="ms-2 text-h6" align="center" justify="center">
                             <v-col cols="auto">
-                                <v-icon icon="mdi-truck-fast" />
-                                <span class="font-weight-medium">
+                                <v-btn icon="mdi-truck-fast" @click="changeComponent('HomeComponent')" ></v-btn>
+                                <span class="font-weight-medium" v-if="!$vuetify.display.smAndDown">
                                     FDFMS
                                 </span>
-
                             </v-col>
+               
 
                             <v-col>
-                                <span v-for="component in path" :key="component.title" class="d-none d-sm-block">
-
-                                    <v-btn :disabled="component.disabled" variant="plain"
-                                        @click="changeComponent(component.component)">
-                                        {{ component.title }}
-                                    </v-btn>
-                                    <v-icon icon="mdi-chevron-right"></v-icon>
-                                </span>
-
-                                <span class="d-block d-sm-none">
-                                    mobile
-                                </span>
-
-                                <!-- <v-breadcrumbs :items="path">
+                                <!-- Visible on larger devices -->
+                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown">
                                     <template v-slot:divider>
                                         <v-icon icon="mdi-chevron-right"></v-icon>
                                     </template>
                                     <template v-slot:title="{ item }">
-                                        {{ item.title.toUpperCase() }}
+                                        <span v-if="!item.disabled" @click="changeComponent(item.component)" role="button">
+                                            {{ item.title.toUpperCase() }}
+                                        </span>
+                                        <span v-else>
+                                            {{ item.title.toUpperCase() }}
+                                        </span>
                                     </template>
-                                </v-breadcrumbs> -->
+                                </v-breadcrumbs>
+                                <!-- Visible on larger devices -->
+
+
+                                <!-- Visible on smaller devices -->
+                                <span v-if="$vuetify.display.smAndDown">
+                                    <v-select variant="underlined" :items="reversedPath" v-model="reversedPath[0]"
+                                        :disabled="reversedPath.length === 1">
+                                        <template #item="{ item }">
+
+                                            <v-list-item align="center" justify="center">
+
+                                                <p v-if="!item.raw.disabled" @click="changeComponent(item.raw.component)"
+                                                    role="button" class="font-weight-bold"
+                                                    :class="isDarkModeEnabled ? 'text-teal-lighten-2' : 'text-teal-darken-3'">
+                                                    {{ item.title }}
+                                                </p>
+                                                <p v-else>
+                                                    {{ item.title }}
+                                                </p>
+
+                                            </v-list-item>
+                                        </template>
+                                    </v-select>
+                                </span>
+                                <!-- Visible on smaller devices -->
+
+
 
                             </v-col>
 
@@ -59,7 +77,7 @@
 
 
                     </v-col>
-                    <!-- Title -->
+                    <!-- Title and location -->
 
 
                     <!-- Log out -->
@@ -114,15 +132,9 @@
 
                                                         <div
                                                             class="d-flex justify-content-between align-items-center px-4 pt-4">
-                                                            <span class="material-symbols-outlined">
-                                                                warning
-                                                            </span>
-                                                            <span>
-                                                                Logout
-                                                            </span>
-                                                            <span class="material-symbols-outlined">
-                                                                warning
-                                                            </span>
+                                                            <v-icon icon="mdi-alert" class="text-h4"/>
+                                                            Logout
+                                                            <v-icon icon="mdi-alert" class="text-h4"/>
                                                         </div>
                                                         <hr>
                                                     </div>
@@ -132,10 +144,10 @@
                                                     </div>
                                                     <hr>
 
-                                                    <div class="justify-center d-flex align-items-center mb-3">
-                                                        <v-btn variant="outlined" width="150" class="mr-5"
+                                                    <div class="d-flex align-items-center justify-content-evenly mb-3">
+                                                        <v-btn variant="outlined" width="130" class="mr-5"
                                                             @click="isActive.value = false">No</v-btn>
-                                                        <v-btn width="150" @click="logout" color="red">Yes</v-btn>
+                                                        <v-btn variant="outlined" width="130" @click="logout" color="red" append-icon="mdi-logout">Yes</v-btn>
                                                     </div>
                                                 </v-card>
                                             </template>
@@ -163,16 +175,6 @@
                 :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }">
 
                 <v-list density="compact" nav class="pa-3">
-                    <!-- <v-row align="center">
-                        <v-col cols="auto">
-                            <v-icon icon="mdi-truck-fast" class="text-h3" />
-                        </v-col>
-                        <v-col class="text-h5 text-teal-darken-3">
-                            FDFMS
-                        </v-col>
-                    </v-row>
-
-                    <v-divider></v-divider> -->
 
                     <component :is="getNavigationComponent(userData.user_role)" />
 
@@ -328,6 +330,8 @@ export default {
 
             forceReload: 0,
 
+            isSmallScreen: false,
+
 
             socials: [
                 {
@@ -347,6 +351,13 @@ export default {
     components: {
         CreateMessage,
         AddPost,
+    },
+
+    computed: {
+        reversedPath() {
+            return this.path.slice().reverse();
+        },
+
     },
 
 
@@ -369,10 +380,24 @@ export default {
                 }
             }
         );
+
+
     },
 
 
+    watch: {
+        group() {
+            this.drawer = false
+        },
+
+    },
+
+
+
     methods: {
+
+
+
         toggleDarkMode() {
             this.darkModeEnabled = !this.darkModeEnabled;
             this.$vuetify.theme.dark = this.darkModeEnabled;
@@ -421,6 +446,7 @@ export default {
                 {
                     title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
                     title: "Users",
@@ -440,6 +466,7 @@ export default {
                 {
                     title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
                     title: "Users",
@@ -458,6 +485,7 @@ export default {
                 {
                     title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
                     title: "Users",
@@ -480,6 +508,7 @@ export default {
                 {
                     title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
                     title: "Restaurant",
@@ -499,6 +528,7 @@ export default {
                 {
                     title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
                     title: "Restaurant",
@@ -518,6 +548,7 @@ export default {
                 {
                     title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
                     title: "Brands",
@@ -537,6 +568,7 @@ export default {
                 {
                     title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
                     title: "Brands",
@@ -559,6 +591,7 @@ export default {
                 {
                     title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
                     title: "Cars",
@@ -578,6 +611,7 @@ export default {
                 {
                     title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
                     title: "Cars",
@@ -611,11 +645,7 @@ export default {
 
 
 
-    watch: {
-        group() {
-            this.drawer = false
-        },
-    },
+
 
 }
 
