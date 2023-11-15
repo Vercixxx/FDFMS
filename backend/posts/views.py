@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from rest_framework.pagination import PageNumberPagination
 
 # Serializers
-from .serializers import getPostsSerializer
+from .serializers import getPostsSerializer, CreatePostSerializer
 
 # Models
 from .models import Posts
@@ -16,7 +16,7 @@ from rest_framework.generics import DestroyAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 
 class CustomPostsPagination(PageNumberPagination):
-    page_size = 1
+    page_size = 5
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -39,3 +39,19 @@ class getPosts(APIView):
         }
 
         return JsonResponse(response_data, status=200)
+    
+    
+class CreatePost(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, target):
+        data = request.data
+        
+        serializer = CreatePostSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+
+            return JsonResponse({'message': 'Post created successfully'}, status=201)
+        else:
+            return JsonResponse({'errors': serializer.errors}, status=400)  

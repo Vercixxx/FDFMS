@@ -17,3 +17,14 @@ class getPostsSerializer(serializers.ModelSerializer):
             return user.username
         except GeneralUser.DoesNotExist:
             return None
+        
+        
+
+class CreatePostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Posts
+        fields = ['author', 'title', 'content']
+    
+    def create(self, validated_data):
+        post = Posts.objects.create(**validated_data)
+        return post
