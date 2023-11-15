@@ -40,8 +40,8 @@
 
     </v-card>
 
-
-    <v-pagination v-model="page" class="my-4" :length="pageAmount" :total-visible="5"></v-pagination>
+    <v-pagination v-model="page" class="my-3" :length="pageAmount" :total-visible="5" @next="nextPage()"
+        @prev="prevPage()"></v-pagination>
 </template>
 
 
@@ -65,7 +65,9 @@ export default {
             isDarkModeEnabled: false,
 
             page: 1,
-            pageAmount: 25,
+            pageAmount: 0,
+            prev: null,
+            next: null,
 
         }
     },
@@ -137,12 +139,31 @@ export default {
 
 
         // Get posts
-        async getPosts() {
-            const response = await axios.get('api/posts/get/')
+        async getPosts(url) {
+            const response = await axios.get(url || 'api/posts/get/')
             console.log(response)
-            this.posts = response.data
+            this.posts = response.data.results
+            this.pageAmount = response.data.total_pages
+            this.prev = response.data.previous
+            this.next = response.data.next
         },
         // Get posts
+
+
+
+        // Previous page
+        async prevPage() {
+            await this.getPosts(this.prev)
+        },
+        // Previous page
+
+
+
+        // Next page
+        async nextPage() {
+            await this.getPosts(this.next)
+        },
+        // Next page
     },
 
 
