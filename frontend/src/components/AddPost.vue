@@ -81,6 +81,7 @@
 import axios from 'axios';
 import useEventsBus from '../plugins/eventBus.js'
 import { watch } from "vue";
+const { emit } = useEventsBus()
 export default {
     data() {
         return {
@@ -93,7 +94,7 @@ export default {
                 'Drivers'
             ],
             target: null,
-            creatorUsername: '',
+            creatorId: '',
             title: '',
             content: '',
         }
@@ -111,6 +112,8 @@ export default {
                 }
             }
         );
+
+        this.creatorId = this.$store.getters.responseData.id;
     },
 
     methods: {
@@ -130,7 +133,8 @@ export default {
         close() {
             this.dialog = false;
             this.target = null;
-            this.title = '';
+            this.loading = false,
+                this.title = '';
             this.content = '';
         },
         // Close dialog
@@ -139,14 +143,39 @@ export default {
         // Send message
         async addPost() {
             const data = {
-                'target': this.target,
+                'author': this.creatorId,
                 'title': this.title,
                 'content': this.content,
             }
-            
-            console.log(data);
+            const target = this.target;
+
+            const response = await axios.post(`api/posts/create/${target}`, data);
             this.loading = false;
-            this.close();
+
+            if (response.status === 201) {
+                this.close();
+                emit('forceReload', '');
+
+                const messageData = {
+                    message: response.data.message,
+                    type: 'success'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+
+            }
+
+            else {
+                const messageData = {
+                    message: response.error,
+                    type: 'error'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+            }
+
         },
         // Send message
 
