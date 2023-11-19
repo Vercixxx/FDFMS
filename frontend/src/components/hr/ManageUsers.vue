@@ -14,7 +14,8 @@
 
             <div class="btn-group dropdown mx-2 mb-2">
 
-              <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 text-white bg-teal-darken-4 font-weight-bold">
+              <v-btn id="role-activator" variant="tonal"
+                class="rounded-xl rounded-0 text-white bg-teal-darken-4 font-weight-bold">
                 <span class="pr-2">User role - </span>
                 {{ selectedRole }}
 
@@ -41,7 +42,8 @@
 
             <div class="btn-group dropdown mx-2 mb-2">
 
-              <v-btn id="status-activator" variant="tonal" class="rounded-xl rounded-0 text-white  bg-teal-darken-4 font-weight-bold">
+              <v-btn id="status-activator" variant="tonal"
+                class="rounded-xl rounded-0 text-white  bg-teal-darken-4 font-weight-bold">
                 <span class="pr-2">User status - </span>
                 <span v-if="selectedActive === 'True'">Active</span>
                 <span v-else-if="selectedActive === 'False'">Not active</span>
@@ -106,107 +108,95 @@
       Users
     </div>
 
+
+
     <!-- Table -->
     <v-data-table :headers="updatedColumns" :items="users" :search="searchTable" :loading="tableLoading"
       class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover
       select-strategy="all" show-current-page>
 
 
+
       <!-- No data -->
       <template v-slot:no-data>
         <p class="text-h4 pa-5">
-          <span class="material-symbols-outlined">
-            database
-          </span>
+          <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
           No data
         </p>
       </template>
       <!-- No data -->
 
 
+      <template #item="{ item }">
+        <tr>
+          <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id" class="text-center">
 
-      <!-- Actions label -->
-      <template v-slot:column.action="{ column }">
-        <span class="text-success">
-          {{ column.title }}
-        </span>
+            <v-icon v-if="cell === null" icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
+
+            <v-icon v-else-if="cell === ''" icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
+
+            <v-icon v-else-if="cell === true && columnIndex !== 'is_active'" icon="mdi-check-bold"
+              style="color:green"></v-icon>
+
+            <v-icon v-else-if="cell === false && columnIndex !== 'is_active'" icon="mdi-close-thick"
+              style="color:red"></v-icon>
+
+            <span v-else-if="columnIndex !== 'email' && columnIndex !== 'is_active'">
+              {{ cell }}
+            </span>
+
+            <!-- Email -->
+            <template v-if="columnIndex === 'email'">
+              <v-btn v-if="item.columns.email !== ''" variant="plain" v-ripple="{ class: 'text-success' }"
+                @click="copyElement(item.columns.email)">
+
+                {{ item.columns.email }}
+
+                <v-tooltip activator="parent" location="top">
+                  Click email to copy
+                </v-tooltip>
+
+              </v-btn>
+            </template>
+            <!-- Email -->
+
+            <!-- Active -->
+            <template v-if="columnIndex === 'is_active'">
+              <v-btn variant="plain"
+                @click="changeStateConfirm(item.columns.username, item.columns.user_role, item.columns.is_active)">
+                <v-tooltip activator="parent" location="top">Click to change status</v-tooltip>
+
+                <span class="text-h6">
+                  <v-icon v-if="item.columns.is_active" icon="mdi-check-bold" style="color:green"></v-icon>
+
+                  <v-icon v-else icon="mdi-close-thick" style="color:red"></v-icon>
+                </span>
+
+              </v-btn>
+            </template>
+            <!-- Active -->
+
+            <!-- Actions -->
+            <template v-if="columnIndex === 'action'">
+              <v-btn variant="plain" color="blue" @click="userDetails(item.columns.username, item.columns.user_role)">
+                <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
+                <v-tooltip activator="parent" location="top">Show user details</v-tooltip>
+              </v-btn>
+
+              <v-btn variant="plain" color="green" @click="editUser(item.columns.username, item.columns.user_role)">
+                <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
+                <v-tooltip activator="parent" location="top">Edit</v-tooltip>
+              </v-btn>
+
+              <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.username)">
+                <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
+                <v-tooltip activator="parent" location="top">Delete</v-tooltip>
+              </v-btn>
+            </template>
+            <!-- Actions -->
+          </td>
+        </tr>
       </template>
-      <!-- Actions label -->
-
-
-
-      <!-- Maping is active -->
-      <template #item.is_active="{ item }">
-
-        <v-btn variant="plain"
-          @click="changeStateConfirm(item.columns.username, item.columns.user_role, item.columns.is_active)">
-          <v-tooltip activator="parent" location="top">Click to change status</v-tooltip>
-
-          <span v-if="item.columns.is_active" class="material-symbols-outlined" style="color:green">
-            check
-          </span>
-
-          <span v-else class="material-symbols-outlined" style="color:red">
-            check_indeterminate_small
-          </span>
-        </v-btn>
-
-      </template>
-
-
-
-      <!-- Email -->
-      <template v-slot:item.email="{ item }">
-
-        <v-btn variant="plain" v-ripple="{ class: 'text-success' }" @click="copyElement(item.columns.email)">
-
-          {{ item.columns.email }}
-
-          <v-tooltip activator="parent" location="top">
-            Click email to copy
-          </v-tooltip>
-
-        </v-btn>
-      </template>
-      <!-- Email -->
-
-
-
-      <!-- Buttons -->
-      <template v-slot:item.action="{ item }">
-        <!-- Button show info -->
-        <v-btn variant="plain" color="blue" @click="userDetails(item.columns.username, item.columns.user_role)">
-          <span class="material-symbols-outlined">
-            description
-          </span>
-          <v-tooltip activator="parent" location="top">Show user details</v-tooltip>
-        </v-btn>
-        <!-- Button show info -->
-
-
-
-        <!-- Button edit -->
-        <v-btn variant="plain" color="green" @click="editUser(item.columns.username, item.columns.user_role)">
-          <span class="material-symbols-outlined d-flex">
-            edit
-          </span>
-          <v-tooltip activator="parent" location="top">Edit</v-tooltip>
-        </v-btn>
-        <!-- Button edit -->
-
-
-
-        <!-- Button delete -->
-        <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.username)">
-          <span class="material-symbols-outlined d-flex">
-            delete
-          </span>
-          <v-tooltip activator="parent" location="top">Delete</v-tooltip>
-        </v-btn>
-        <!-- Button delete -->
-      </template>
-      <!-- Buttons -->
-
 
     </v-data-table>
     <!-- Table -->
@@ -218,7 +208,7 @@
     <!-- Delete user dialog -->
     <v-dialog v-model="dialogDelete" width="400">
       <v-card>
-          <div class="text-warning text-h6 text-md-h5 text-lg-h4">
+        <div class="text-danger text-h6 text-md-h5 text-lg-h4">
           <div class="d-flex justify-content-between align-items-center px-4 pt-4">
             <v-icon icon="mdi-alert" class="text-h4" />
             Warning
@@ -253,19 +243,13 @@
     <v-dialog v-model="dialogState" width="400">
       <v-card>
         <div class="text-warning text-h6 text-md-h5 text-lg-h4">
-
           <div class="d-flex justify-content-between align-items-center px-4 pt-4">
-            <span class="material-symbols-outlined">
-              warning
-            </span>
-            <span>
-              Warning
-            </span>
-            <span class="material-symbols-outlined">
-              warning
-            </span>
+            <v-icon icon="mdi-alert" class="text-h4" />
+            Warning
+            <v-icon icon="mdi-alert" class="text-h4" />
           </div>
-          <hr>
+
+          <hr />
         </div>
 
         <div class="pa-3" align="center">
@@ -352,7 +336,7 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 </script>
 
 <script>
-import axios, { all } from 'axios';
+import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
 const { emit } = useEventsBus()
 import { ref, watch } from "vue";
@@ -776,9 +760,21 @@ export default {
     },
 
     async userDetails(username, role) {
-      const response = await axios.get(`api/users/get/${username}/${role}/`);
-      this.userDetailData = response.data;
-      this.UserDetailsDialog = true;
+      try {
+        const response = await axios.get(`api/users/get/${username}/${role}/`);
+        this.userDetailData = response.data;
+        this.UserDetailsDialog = true;
+      }
+      catch(error) {
+      // Call message
+      const messageData = {
+        message: 'Error',
+        type: 'error'
+      };
+
+      localStorage.setItem('message', JSON.stringify(messageData));
+      emit('message', '');
+      }
 
     },
 

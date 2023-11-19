@@ -11,7 +11,7 @@
 
   <v-card v-for="post in posts" :key="post.id" class="mx-auto my-8 pa-5 border-2">
     <v-card-item>
-      <v-card-title class="text-h4 text-md-h5 text-lg-h4" :class="
+      <v-card-title class="text-md-h5 text-lg-h4" :class="
         isDarkModeEnabled ? 'text-teal-lighten-2' : 'text-teal-darken-3'
       ">
         <v-row>
@@ -44,7 +44,7 @@
   <!-- Delete post dialog -->
   <v-dialog v-model="dialogDelete" width="400">
     <v-card>
-      <div class="text-warning text-h6 text-md-h5 text-lg-h4">
+      <div class="text-danger text-h6 text-md-h5 text-lg-h4">
         <div class="d-flex justify-content-between align-items-center px-4 pt-4">
           <v-icon icon="mdi-alert" class="text-h4" />
           Warning
