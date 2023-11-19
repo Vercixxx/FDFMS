@@ -39,11 +39,10 @@
 
         <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
 
-        <div>
-            <h1>
-                List of cars
-            </h1>
+        <div class="text-h3 ma-5 font-weight-bold">
+            Cars
         </div>
+
 
         <!-- Table -->
         <v-data-table :headers="updatedColumns" :items="cars" :search="searchTable" :loading="tableLoading"
@@ -55,29 +54,25 @@
             <!-- No data -->
             <template v-slot:no-data>
                 <p class="text-h4 pa-5">
-                    <span class="material-symbols-outlined">
-                        database
-                    </span>
+                    <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
                     No data
                 </p>
             </template>
             <!-- No data -->
 
 
-
-
             <template #item="{ item }">
                 <tr>
                     <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id" class="text-center">
-                        <span v-if="cell === null">
-                            <v-icon icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
-                        </span>
-                        <span v-else-if="cell === true">
-                            <v-icon icon="mdi-check-bold" style="color:green"></v-icon>
-                        </span>
-                        <span v-else-if="cell === false">
-                            <v-icon icon="mdi-close-thick" style="color:red"></v-icon>
-                        </span>
+
+                        <v-icon v-if="cell === null" icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
+
+                        <v-icon v-else-if="cell === ''" icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
+
+                        <v-icon v-else-if="cell === true" icon="mdi-check-bold" style="color:green"></v-icon>
+
+                        <v-icon v-else-if="cell === false" icon="mdi-close-thick" style="color:red"></v-icon>
+
                         <span v-else>
                             {{ cell }}
                         </span>
@@ -85,23 +80,17 @@
                         <!-- Actions -->
                         <template v-if="columnIndex === 'action'">
                             <v-btn variant="plain" color="blue" @click="carDetailsFunct(item.columns.id)">
-                                <span class="material-symbols-outlined">
-                                    description
-                                </span>
-                                <v-tooltip activator="parent" location="top">Show car details</v-tooltip>
+                                <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
+                                <v-tooltip activator="parent" location="top">Show user details</v-tooltip>
                             </v-btn>
 
                             <v-btn variant="plain" color="green" @click="editCar(item.columns.id)">
-                                <span class="material-symbols-outlined d-flex">
-                                    edit
-                                </span>
+                                <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
                                 <v-tooltip activator="parent" location="top">Edit</v-tooltip>
                             </v-btn>
 
                             <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.vin)">
-                                <span class="material-symbols-outlined d-flex">
-                                    delete
-                                </span>
+                                <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
                                 <v-tooltip activator="parent" location="top">Delete</v-tooltip>
                             </v-btn>
                         </template>
@@ -110,9 +99,9 @@
                 </tr>
             </template>
 
-
         </v-data-table>
         <!-- Table -->
+
 
 
     </div>
@@ -123,20 +112,14 @@
     <!-- Delete car confirm -->
     <v-dialog v-model="dialogDelete" width="400">
         <v-card>
-            <div class="text-warning text-h6 text-md-h5 text-lg-h4">
-
+            <div class="text-danger text-h6 text-md-h5 text-lg-h4">
                 <div class="d-flex justify-content-between align-items-center px-4 pt-4">
-                    <span class="material-symbols-outlined">
-                        warning
-                    </span>
-                    <span>
-                        Warning
-                    </span>
-                    <span class="material-symbols-outlined">
-                        warning
-                    </span>
+                    <v-icon icon="mdi-alert" class="text-h4" />
+                    Warning
+                    <v-icon icon="mdi-alert" class="text-h4" />
                 </div>
-                <hr>
+
+                <hr />
             </div>
 
             <div class="pa-3" align="center">
@@ -180,6 +163,10 @@
                         <tr v-for="(value, key) in carDetails" :key="key">
                             <td>{{ key }}</td>
                             <td v-if="value === null">
+                                <v-icon icon="mdi-minus-thick"></v-icon>
+                            </td>
+
+                            <td v-else-if="value === ''">
                                 <v-icon icon="mdi-minus-thick"></v-icon>
                             </td>
 
@@ -259,55 +246,52 @@ export default {
                 { title: 'Insurance phone number', key: 'phone_policy_contact', align: 'center', sortable: false },
                 { title: 'OC', key: 'is_oc', align: 'center', sortable: false },
                 { title: 'AC', key: 'is_ac', align: 'center', sortable: false },
-                { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
             ],
-
-
+            actions: [
+                { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+            ]
 
         };
     },
 
     computed: {
         updatedColumns() {
-            return [...this.necessaryHeaders, ...this.selectedColumns];
+            return [...this.necessaryHeaders, ...this.selectedColumns, ...this.actions];
         },
     },
 
     created() {
         this.loadCars();
 
-        this.selectedColumns = this.columns;
+        this.selectedColumns = [
+            this.columns[0],
+            this.columns[1],
+            this.columns[3],
+            this.columns[8],
+            this.columns[9],
+            this.columns[10],
+            this.columns[11],
+        ];
         this.avaliableColumns = this.columns;
     },
 
     methods: {
         async loadCars() {
             try {
-                const response = await axios.get('api/cars/get-cars/', {
-                    params: {
-                        limit: this.cars_per_site,
-                        offset: this.currentPage,
-                        search: this.query,
-                    }
-                });
-
+                const response = await axios.get('api/cars/get-cars/');
                 this.cars = response.data;
-
                 this.tableLoading = false;
 
             }
             catch (error) {
-                console.error('Error when fetching', error);
-            }
-        },
+                const messageData = {
+                    message: "Error when fetching",
+                    type: 'error'
+                };
 
-        previousPage() {
-            this.currentPage -= 1;
-            this.loadcars();
-        },
-        nextPage() {
-            this.currentPage += 1;
-            this.loadcars();
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+            }
         },
 
 
@@ -319,32 +303,28 @@ export default {
 
         async deleteCar() {
             this.dialogDelete = false;
+
             try {
                 const response = await axios.delete(`api/car/delete/${this.deleteCarId}`);
+                this.loadCars()
 
+                const messageData = {
+                    message: `Successfully deleted car id - ${this.deleteCarId}`,
+                    type: 'success'
+                };
 
-                if (response.status === 204) {
-                    this.loadCars()
-
-                    const messageData = {
-                        message: `Successfully deleted car id - ${this.deleteCarId}`,
-                        type: 'success'
-                    };
-
-                    localStorage.setItem('message', JSON.stringify(messageData));
-                    emit('message', '');
-
-                }
-                else {
-                    this.loadcars();
-                    this.dataError = 'Error!'
-                    document.getElementById('hiddenButton').click();
-                }
-
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
 
             }
             catch (error) {
-                console.error('Error when fetching', error);
+                const messageData = {
+                    message: "Error",
+                    type: 'error'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
             }
         },
 
@@ -353,17 +333,9 @@ export default {
             this.$root.changeCurrentComponent('AddCarsComponent');
         },
 
-        search() {
-            this.loadCars();
-        },
-
-        reloadComponent() {
-            this.loadCars();
-        },
 
         async carDetailsFunct(car_id) {
             const response = await axios.get(`api/car/get/${car_id}/`);
-            console.log(response)
             this.carDetails = response.data;
             this.carDetailsDialog = true;
 
