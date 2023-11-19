@@ -3,7 +3,7 @@
 
     <v-card elevation="1" class="pa-5 rounded-xl" color="teal-darken-2">
 
-      <p class="p-2 fw-bolder text-h4">Filters</p>
+      <p class="p-2 text-h4 font-weight-bold">Filters</p>
 
       <!-- Search bar section -->
       <v-row class="mb-5 d-flex justify-content-between">
@@ -104,7 +104,7 @@
 
     <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
 
-    <div class="text-h3 ma-5">
+    <div class="text-h3 ma-5 font-weight-bold">
       Users
     </div>
 
@@ -435,11 +435,14 @@ export default {
         { title: 'USER ROLE', align: 'center', key: 'user_role', sortable: false },
       ],
 
+      actions: [
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+
       allHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
         { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
         { title: 'JOINED', align: 'center', key: 'date_joined' },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       DriverHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
@@ -453,7 +456,6 @@ export default {
         { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
         { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
         { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       AssetHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
@@ -467,7 +469,6 @@ export default {
         { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
         { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
         { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       HRHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
@@ -481,7 +482,6 @@ export default {
         { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
         { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
         { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       ManagerHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
@@ -495,7 +495,6 @@ export default {
         { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
         { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
         { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       PayrollHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
@@ -509,7 +508,6 @@ export default {
         { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
         { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
         { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       ClientsHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
@@ -523,7 +521,6 @@ export default {
         { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
         { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
         { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
 
     };
@@ -531,7 +528,7 @@ export default {
 
   computed: {
     updatedColumns() {
-      return [...this.necessaryHeaders, ...this.selectedColumns];
+      return [...this.necessaryHeaders, ...this.selectedColumns, ...this.actions];
     },
   },
 
@@ -579,7 +576,6 @@ export default {
         }
 
         this.users = response.data.results;
-        console.log(response.data.results);
 
         // Add number for each row
         this.users.forEach((user, index) => {
@@ -675,32 +671,16 @@ export default {
         this.dialogDelete = false;
         this.reloadComponent()
 
+        // Call message
+        const messageData = {
+          message: `Successfully deleted ${delUsername}`,
+          type: 'success'
+        };
 
-        if (response.status == 204) {
-          // Call message
-          const messageData = {
-            message: `Successfully deleted ${delUsername}`,
-            type: 'success'
-          };
-
-          localStorage.setItem('message', JSON.stringify(messageData));
-          emit('message', '');
-
-        }
-        else {
-          const messageData = {
-            message: 'Error, please try again',
-            type: 'error'
-          };
-
-          localStorage.setItem('message', JSON.stringify(messageData));
-          emit('message', '');
-
-
-          this.reloadComponent()
-        }
-
+        localStorage.setItem('message', JSON.stringify(messageData));
+        emit('message', '')
       }
+
       catch (error) {
         const messageData = {
           message: 'Error, please try again',
@@ -743,6 +723,8 @@ export default {
     },
 
 
+
+
     async changeState(username) {
       const response = await axios.put(`api/users/change-state/${username}/`)
       this.dialogState = false;
@@ -765,15 +747,15 @@ export default {
         this.userDetailData = response.data;
         this.UserDetailsDialog = true;
       }
-      catch(error) {
-      // Call message
-      const messageData = {
-        message: 'Error',
-        type: 'error'
-      };
+      catch (error) {
+        // Call message
+        const messageData = {
+          message: 'Error',
+          type: 'error'
+        };
 
-      localStorage.setItem('message', JSON.stringify(messageData));
-      emit('message', '');
+        localStorage.setItem('message', JSON.stringify(messageData));
+        emit('message', '');
       }
 
     },
