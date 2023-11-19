@@ -134,7 +134,7 @@ export default {
             this.dialog = false;
             this.target = null;
             this.loading = false,
-                this.title = '';
+            this.title = '';
             this.content = '';
         },
         // Close dialog
