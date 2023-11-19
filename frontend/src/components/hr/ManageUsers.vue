@@ -12,15 +12,13 @@
           <!-- User role -->
           <span>
 
-            <div class="btn-group dropdown mx-2">
+            <div class="btn-group dropdown mx-2 mb-2">
 
-              <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 text-white bg-teal-darken-4">
-                <span class="pr-2">User status - </span>
+              <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 text-white bg-teal-darken-4 font-weight-bold">
+                <span class="pr-2">User role - </span>
                 {{ selectedRole }}
 
-                <span class="material-symbols-outlined">
-                  arrow_drop_down
-                </span>
+                <v-icon class="text-h5" icon="mdi-menu-down" />
               </v-btn>
             </div>
 
@@ -41,16 +39,15 @@
           <!-- User status -->
           <span>
 
-            <div class="btn-group dropdown mx-2">
+            <div class="btn-group dropdown mx-2 mb-2">
 
-              <v-btn id="status-activator" variant="tonal" class="rounded-xl rounded-0 text-white  bg-teal-darken-4">
+              <v-btn id="status-activator" variant="tonal" class="rounded-xl rounded-0 text-white  bg-teal-darken-4 font-weight-bold">
                 <span class="pr-2">User status - </span>
                 <span v-if="selectedActive === 'True'">Active</span>
                 <span v-else-if="selectedActive === 'False'">Not active</span>
                 <span v-else>All</span>
-                <span class="material-symbols-outlined">
-                  arrow_drop_down
-                </span>
+
+                <v-icon class="text-h5" icon="mdi-menu-down" />
               </v-btn>
 
             </div>
@@ -221,20 +218,14 @@
     <!-- Delete user dialog -->
     <v-dialog v-model="dialogDelete" width="400">
       <v-card>
-        <div class="text-warning text-h6 text-md-h5 text-lg-h4">
-
+          <div class="text-warning text-h6 text-md-h5 text-lg-h4">
           <div class="d-flex justify-content-between align-items-center px-4 pt-4">
-            <span class="material-symbols-outlined">
-              warning
-            </span>
-            <span>
-              Warning
-            </span>
-            <span class="material-symbols-outlined">
-              warning
-            </span>
+            <v-icon icon="mdi-alert" class="text-h4" />
+            Warning
+            <v-icon icon="mdi-alert" class="text-h4" />
           </div>
-          <hr>
+
+          <hr />
         </div>
 
         <div class="pa-3" align="center">

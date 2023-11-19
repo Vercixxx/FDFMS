@@ -5,26 +5,27 @@
             <v-form v-model="form" @submit.prevent="onSubmit">
 
                 <v-card class="pa-5">
-                    <v-card-title class="text-h5">
+                    <v-card-title class="text-h5 font-weight-bold">
                         Add post
                     </v-card-title>
                     <v-card-text>
 
-                        <!-- Destiny -->
-                        <v-select label="Choose destiny" variant="solo-filled" :items="targetOptions" v-model="target"
+                        <!-- Reciver -->
+                        <v-select label="Choose Reciver" variant="solo-filled" :items="targetOptions" v-model="target"
                             :disabled="target"></v-select>
-                        <!-- Destiny -->
+                        <!-- Reciver -->
 
 
                         <!-- Title -->
                         <span>
                             <v-tooltip v-if="!target" activator="parent" location="bottom" no-overflow>
-                                Choose destiny first
+                                Choose Reciver first
                             </v-tooltip>
                             <span>
-                                <v-text-field :disabled="!target" label="Title" variant="solo-filled" v-model="title"
-                                    :readonly="loading" :rules="[required]">
-                                </v-text-field>
+                                <v-textarea clearable auto-grow counter rows="1" :disabled="!target" label="Title" variant="solo-filled" v-model="title"
+                                    :readonly="loading" :rules="[v => v.length <= maxTitleLen || 'Max 200 characters', required]">
+                                </v-textarea>
+
                             </span>
                         </span>
                         <!-- Title -->
@@ -35,11 +36,11 @@
                         <!-- Content -->
                         <span>
                             <v-tooltip v-if="!target" activator="parent" location="bottom" no-overflow>
-                                Choose destiny first
+                                Choose Reciver first
                             </v-tooltip>
                             <span>
-                                <v-textarea :disabled="!target" label="Content" variant="solo-filled" v-model="content"
-                                    :readonly="loading" :rules="[required]"></v-textarea>
+                                <v-textarea clearable auto-grow counter rows="5" :disabled="!target" label="Content" variant="solo-filled" v-model="content"
+                                    :readonly="loading" :rules="[v => v.length <= maxContentLen || 'Max 400 characters', required]"></v-textarea>
                             </span>
                         </span>
                         <!-- Content -->
@@ -96,7 +97,19 @@ export default {
             target: null,
             creatorId: '',
             title: '',
+
+            maxTitleLen: 200,
             content: '',
+            contentCounter: 0,
+            maxContentLen: 400,
+        }
+    },
+
+
+
+    computed: {
+        titleCounter() {
+            return this.title.length;
         }
     },
 
@@ -134,7 +147,7 @@ export default {
             this.dialog = false;
             this.target = null;
             this.loading = false,
-            this.title = '';
+                this.title = '';
             this.content = '';
         },
         // Close dialog

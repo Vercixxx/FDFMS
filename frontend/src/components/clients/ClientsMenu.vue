@@ -1,12 +1,13 @@
 <template>
     <v-list>
-        <v-list-item prepend-icon="mdi-home" @click="handleButtonClick('HomeComponent')" title="Home" class="rounded-xl text-h5 bg-teal-darken-2">
+        <v-list-item prepend-icon="mdi-home" @click="handleButtonClick('HomeComponent')" class="rounded-xl bg-teal-darken-2 font-weight-bold">
+            Home
         </v-list-item>
     </v-list>
 
     <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name">
         <template v-slot:activator="{ props }">
-            <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3">
+            <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3 font-weight-bold">
                 {{ button.name }}
             </v-list-item>
         </template>

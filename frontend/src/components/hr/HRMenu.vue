@@ -1,7 +1,7 @@
 <template>
     <v-list>
-        <v-list-item prepend-icon="mdi-home" @click="handleButtonClick('HomeComponent')" title="Home"
-            class="rounded-xl text-h5 bg-teal-darken-2" elevation="2">
+        <v-list-item prepend-icon="mdi-home" @click="homeButton('HomeComponent')" class="rounded-xl bg-teal-darken-2 font-weight-bold">
+            Home
         </v-list-item>
     </v-list>
 
@@ -9,7 +9,7 @@
     <!-- Users -->
     <v-menu transition="slide-y-transition">
         <template v-slot:activator="{ props }">
-            <v-list-item prepend-icon="mdi-account-multiple" v-bind="props" class="my-3">
+            <v-list-item prepend-icon="mdi-account-multiple" v-bind="props" class="my-3 font-weight-bold">
                 Users
             </v-list-item>
 
@@ -35,7 +35,8 @@
             <!-- Add -->
 
             <!-- Manage -->
-            <v-list-item prepend-icon="mdi-list-status" title="Manage" @click="manageUsersClick()">
+            <v-list-item prepend-icon="mdi-list-status" @click="manageUsersClick()">
+                Manage
             </v-list-item>
             <!-- Manage -->
 
@@ -48,7 +49,7 @@
 
     <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name" :disabled="button.disabled">
         <template v-slot:activator="{ props }">
-            <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3">
+            <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3 font-weight-bold">
                 {{ button.name }}
             </v-list-item>
         </template>
@@ -68,7 +69,7 @@
     <!-- Messages -->
     <v-menu transition="slide-y-transition">
         <template v-slot:activator="{ props }">
-            <v-list-item prepend-icon="mdi-forum" v-bind="props" class="my-3">
+            <v-list-item prepend-icon="mdi-forum" v-bind="props" class="my-3 font-weight-bold">
                 Messages
             </v-list-item>
 
@@ -181,6 +182,11 @@ export default {
         handleButtonClick(option) {
             closeDrawer();
             this.$root.changeCurrentComponent(option.name);
+        },
+
+        homeButton(functionName) {
+            closeDrawer();
+            this.$root.changeCurrentComponent(functionName);
         },
 
         addUserButtonClick(option) {
