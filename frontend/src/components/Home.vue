@@ -24,7 +24,7 @@
                     <v-col align="end">
                         <!-- Detele button -->
                         <v-btn v-if="post.author_username === logged_username || logged_role === 'Administrator'"
-                            variant="plain" icon="mdi-delete" color="red"></v-btn>
+                            variant="plain" icon="mdi-delete" color="red" @click="deletePostDialog(post.id)"></v-btn>
                         <!-- Detele button -->
                     </v-col>
                 </v-row>
@@ -42,6 +42,51 @@
 
     <v-pagination v-model="page" class="my-3" :length="pageAmount" :total-visible="5" @next="nextPage()"
         @prev="prevPage()"></v-pagination>
+
+
+    
+    <!-- Delete post dialog -->
+    <v-dialog v-model="dialogDelete" width="400">
+      <v-card>
+        <div class="text-warning text-h6 text-md-h5 text-lg-h4">
+
+          <div class="d-flex justify-content-between align-items-center px-4 pt-4">
+            <span class="material-symbols-outlined">
+              warning
+            </span>
+            <span>
+              Warning
+            </span>
+            <span class="material-symbols-outlined">
+              warning
+            </span>
+          </div>
+          <hr>
+        </div>
+
+        <div class="pa-3" align="center">
+
+          You are trying to delete post id 
+          <span class='fw-bolder'>
+            {{ deleteId }}
+          </span>
+          , this operation is <span class="fw-bold">irreversible</span>.
+          Are you sure?
+
+        </div>
+        <hr>
+
+        <div class="justify-center d-flex align-items-center mb-3">
+          <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
+          <v-btn width="150" @click="deletePost()" color="red">Yes</v-btn>
+        </div>
+
+      </v-card>
+    </v-dialog>
+    <!-- Delete post dialog -->
+
+
+
 </template>
 
 
@@ -68,6 +113,9 @@ export default {
             pageAmount: 0,
             prev: null,
             next: null,
+
+            dialogDelete: false,
+            deleteId: null,
 
         }
     },
@@ -135,6 +183,36 @@ export default {
             emit('showAddPost', true)
         },
         // Add post
+        
+
+
+        // Delete post
+        deletePostDialog(postId) {
+            this.dialogDelete = true
+            this.deleteId = postId
+        },
+
+        async deletePost() {
+            this.dialogDelete = false
+            try {
+                const response = await axios.delete(`api/posts/delete/${this.deleteId}`);
+                emit('forceReload', '');
+
+                const messageData = {
+                    message: `Succesfully deleted post id ${this.deleteId}`,
+                    type: 'error'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+
+            }
+            catch(error) {
+                console.log(error)
+            }
+
+        },
+        // Delete post
 
 
 

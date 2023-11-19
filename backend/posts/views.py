@@ -55,3 +55,10 @@ class CreatePost(APIView):
             return JsonResponse({'message': 'Post created successfully'}, status=201)
         else:
             return JsonResponse({'errors': serializer.errors}, status=400)  
+        
+        
+class DeletePost(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Posts.objects.all()
+    serializer_class = getPostsSerializer
+    lookup_field = 'id'
