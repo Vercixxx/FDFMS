@@ -1,6 +1,8 @@
 <template>
+    <p align="center" class="text-blue">Asset</p>
     <v-list>
-        <v-list-item prepend-icon="mdi-home" @click="handleButtonClick('HomeComponent')" class="rounded-xl bg-teal-darken-2 font-weight-bold">
+        <v-list-item prepend-icon="mdi-home" @click="handleButtonClick('HomeComponent')"
+            class="rounded-xl bg-teal-darken-2 font-weight-bold">
             Home
         </v-list-item>
     </v-list>
@@ -32,7 +34,7 @@ export default {
             buttons: [
                 {
                     name: 'Cars',
-                    mainIcon: 'mdi-car',
+                    mainIcon: 'mdi-car-multiple',
                     disabled: false,
                     options: [
                         {

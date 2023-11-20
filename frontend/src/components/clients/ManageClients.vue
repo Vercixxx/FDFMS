@@ -8,7 +8,7 @@
             <v-row>
                 <v-col cols="4">
 
-                    <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 bg-teal-darken-4" >
+                    <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 bg-teal-darken-4">
                         <span class="pr-2">City - </span>
                         {{ selectedCity }}
 
@@ -46,7 +46,7 @@
                 </v-col>
 
                 <v-col cols="2">
-                    
+
                 </v-col>
 
                 <v-col cols="5">
@@ -133,16 +133,14 @@
     <!-- Delete car confirm -->
     <v-dialog v-model="dialogDelete" width="400">
         <v-card>
-            <div class="text-warning text-h6 text-md-h5 text-lg-h4">
-
+            <div class="text-danger text-h6 text-md-h5 text-lg-h4">
                 <div class="d-flex justify-content-between align-items-center px-4 pt-4">
-
-                    <v-icon icon="mdi-alert"></v-icon>
+                    <v-icon icon="mdi-alert" class="text-h4" />
                     Warning
-                    <v-icon icon="mdi-alert"></v-icon>
-
+                    <v-icon icon="mdi-alert" class="text-h4" />
                 </div>
-                <hr>
+
+                <hr />
             </div>
 
             <div class="pa-3" align="center">
@@ -189,6 +187,10 @@
                         <tr v-for="(value, key) in restaurantDetails" :key="key">
                             <td>{{ key }}</td>
                             <td v-if="value === null">
+                                <v-icon icon="mdi-minus-thick"></v-icon>
+                            </td>
+
+                            <td v-else-if="value === ''">
                                 <v-icon icon="mdi-minus-thick"></v-icon>
                             </td>
 
@@ -273,7 +275,9 @@ export default {
                 { title: 'Home', key: 'home', align: 'center', sortable: false },
                 { title: 'Apartament', key: 'apartament', align: 'center', sortable: false },
                 { title: 'Zip code', key: 'zip', align: 'center', sortable: false },
-                { title: 'Actions', key: 'action', align: 'center', sortable: false },
+            ],
+            actions: [
+                { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
             ],
             // Headers
 
@@ -284,7 +288,7 @@ export default {
 
     computed: {
         updatedColumns() {
-            return [...this.necessaryHeaders, ...this.selectedColumns];
+            return [...this.necessaryHeaders, ...this.selectedColumns, ...this.actions];
         },
     },
 

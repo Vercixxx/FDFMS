@@ -36,10 +36,10 @@ export default {
                 //     name: 'Payroll menu',
                 //     menu: PayrollMenu
                 // },
-                // {
-                //     name: 'Manager menu',
-                //     menu: ManagerMenu
-                // },
+                {
+                    name: 'Manager menu',
+                    menu: ManagerMenu
+                },
                 // {
                 //     name: 'Driver menu',
                 //     menu: DriverMenu

@@ -29,7 +29,6 @@ ALLOWED_HOSTS = ['127.0.0.1']
 INSTALLED_APPS = [
     # My apps
     'users',
-    'owner',
     'payroll_dept',
     'hr_dept',
     'asset_dept',
