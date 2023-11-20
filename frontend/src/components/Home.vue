@@ -9,6 +9,15 @@
     </v-col>
   </v-row>
 
+  <!-- Variant -->
+  <v-row>
+    <v-col cols="5">
+      <v-select v-if="logged_role !== 'Driver'" class="ma-5" label="Choose home variant"
+        v-model="version" :items="versions" variant="outlined"></v-select>
+    </v-col>
+  </v-row>
+  <!-- Variant -->
+
   <v-card v-for="post in posts" :key="post.id" class="mx-auto my-8 pa-5 border-2">
     <v-card-item>
       <v-card-title class="text-md-h5 text-lg-h4" :class="
@@ -89,6 +98,9 @@ export default {
       logged_role: "",
       isDarkModeEnabled: false,
 
+      versions: ['Users', 'Drivers'],
+      version: '',
+
       page: 1,
       pageAmount: 0,
       prev: null,
@@ -99,6 +111,11 @@ export default {
     };
   },
 
+
+  watch: {
+    version: 'handleVersionChange',
+  },
+
   mounted() {
     this.getDate();
 
@@ -106,9 +123,20 @@ export default {
       this.getDate();
     }, 60000);
 
-    this.getPosts();
+
+    
+
     this.logged_username = this.$store.getters.responseData.username;
     this.logged_role = this.$store.getters.responseData.user_role;
+
+    if(this.logged_role === 'Driver'){
+      this.version = 'Driver';
+    }
+    else {
+      this.version = 'Users'
+    }
+    this.getPosts();
+
 
     // Dark mode
     const { bus } = useEventsBus();
@@ -193,12 +221,26 @@ export default {
 
     // Get posts
     async getPosts(url) {
-      const response = await axios.get(url || "api/posts/get/");
+      console.log(this.version);
+
+      let response;
+
+      if (this.version === 'Users') {
+        response = await axios.get(url || `api/posts/get/${this.version}/`);
+      } else {
+        response = await axios.get(url || `api/posts/get/${this.version}/`);
+      }
+
+      // emit("forceReload", "");
       console.log(response);
       this.posts = response.data.results;
       this.pageAmount = response.data.total_pages;
       this.prev = response.data.previous;
       this.next = response.data.next;
+    },
+
+    handleVersionChange() {
+      this.getPosts();
     },
     // Get posts
 

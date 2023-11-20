@@ -1,37 +1,29 @@
 <template>
-    <v-sheet>
-
-        <v-list-item>
-            <v-btn block @click="handleButtonClick('HomeComponent')">
-                <span class="material-symbols-outlined">
-                    home
-                </span>
-                Home
-            </v-btn>
+    <p align="center" class="text-blue">Manager</p>
+    <v-list>
+        <v-list-item prepend-icon="mdi-home" @click="handleButtonClick('HomeComponent')"
+            class="rounded-xl bg-teal-darken-2 font-weight-bold">
+            Home
         </v-list-item>
+    </v-list>
 
-        <v-menu transition="scale-transition" v-for="button in buttons" :key="button.name">
-            <template v-slot:activator="{ props }">
-                <v-btn block color="success" v-bind="props" variant="tonal" class="my-5">
-                    {{ button.name }}
-                </v-btn>
-            </template>
+    <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name" :disabled="button.disabled">
+        <template v-slot:activator="{ props }">
+            <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3 font-weight-bold">
+                {{ button.name }}
+            </v-list-item>
+        </template>
 
-            <v-list>
-                <v-list-item v-for="option in button.options" :key="option">
-                    <v-list-item-title>
-                        <v-btn block @click="handleButtonClick(option.click)">
-                            <span v-html="option.icon"></span>
-                            {{ option.name }}
-                        </v-btn>
-                    </v-list-item-title>
+        <v-list density="compact" nav>
 
-                </v-list-item>
-            </v-list>
-        </v-menu>
+            <v-list-item v-for="option in button.options" :key="option.name" :prepend-icon="option.icon"
+                :title="option.name" @click="handleButtonClick(option.click)">
+            </v-list-item>
 
-    </v-sheet>
+        </v-list>
+    </v-menu>
 </template>
+
 
 
 <script>
@@ -43,26 +35,30 @@ export default {
             buttons: [
                 {
                     name: 'Drivers',
+                    mainIcon: 'mdi-truck-delivery',
+                    disabled: false,
                     options: [
                         {
                             name: 'Daily driver report',
                             click: 'AddUserComponent',
-                            icon: '<span class="material-symbols-outlined">add</span>',
+                            icon: 'mdi-plus',
                         },
                         {
                             name: 'Show drivers',
                             click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                            icon: 'mdi-list-status',
                         },
                     ],
                 },
                 {
                     name: 'Cars',
+                    mainIcon: 'mdi-car-multiple',
+                    disabled: true,
                     options: [
                         {
                             name: 'Car management',
                             click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                            icon: 'mdi-list-status',
                         },
                         {
                             name: 'Add car damage',
@@ -78,16 +74,20 @@ export default {
                 },
                 {
                     name: 'Schedule',
+                    mainIcon: 'mdi-store-clock-outline',
+                    disabled: false,
                     options: [
                         {
                             name: 'Modify Schedule',
                             click: 'AddUserComponent',
-                            icon: '<span class="material-symbols-outlined">add</span>',
+                            icon: 'mdi-calendar-account-outline',
                         },
                     ],
                 },
                 {
                     name: 'Work',
+                    mainIcon: 'mdi-briefcase',
+                    disabled: true,
                     options: [
                         {
                             name: 'Statut',

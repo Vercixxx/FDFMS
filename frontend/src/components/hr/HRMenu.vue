@@ -1,6 +1,8 @@
 <template>
+    <p align="center" class="text-blue">HR</p>
     <v-list>
-        <v-list-item prepend-icon="mdi-home" @click="homeButton('HomeComponent')" class="rounded-xl bg-teal-darken-2 font-weight-bold">
+        <v-list-item prepend-icon="mdi-home" @click="homeButton('HomeComponent')"
+            class="rounded-xl bg-teal-darken-2 font-weight-bold">
             Home
         </v-list-item>
     </v-list>
@@ -158,7 +160,7 @@ export default {
 
                 {
                     name: 'Hr data',
-                    mainIcon: 'mdi-party-popper',
+                    mainIcon: 'mdi-account-group',
                     disabled: true,
                     options: [
                         {

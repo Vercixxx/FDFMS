@@ -4,10 +4,10 @@ from django.http import JsonResponse
 from rest_framework.pagination import PageNumberPagination
 
 # Serializers
-from .serializers import getPostsSerializer, CreatePostSerializer
+from .serializers import GetPostsSerializer, CreatePostSerializer, CreateDriverPostSerializer, GetDriverPostsSerializer
 
 # Models
-from .models import Posts
+from .models import Posts, DriverPosts
 
 # Rest
 from rest_framework import viewsets, filters
@@ -20,15 +20,22 @@ class CustomPostsPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-class getPosts(APIView):
+class GetPosts(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPostsPagination
     
-    def get(self, request):
-        posts = Posts.objects.all().order_by('-posted_date')
-        paginator = CustomPostsPagination()
-        result_page = paginator.paginate_queryset(posts, request)
-        serializer = getPostsSerializer(result_page, many=True)
+    def get(self, request, target):
+        if target == "Users":
+            posts = Posts.objects.all().order_by('-posted_date')
+            paginator = CustomPostsPagination()
+            result_page = paginator.paginate_queryset(posts, request)
+            serializer = GetPostsSerializer(result_page, many=True)
+            
+        else:
+            posts = DriverPosts.objects.all().order_by('-posted_date')
+            paginator = CustomPostsPagination()
+            result_page = paginator.paginate_queryset(posts, request)
+            serializer = GetDriverPostsSerializer(result_page, many=True)
         
         response_data = {
             'posts_amount': paginator.page.paginator.count,
@@ -47,8 +54,11 @@ class CreatePost(APIView):
     def post(self, request, target):
         data = request.data
         
-        serializer = CreatePostSerializer(data=data)
-        
+        if target == "Users":
+            serializer = CreatePostSerializer(data=data)
+        else:
+            serializer = CreateDriverPostSerializer(data=data)
+            
         if serializer.is_valid():
             serializer.save()
 
@@ -60,5 +70,5 @@ class CreatePost(APIView):
 class DeletePost(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Posts.objects.all()
-    serializer_class = getPostsSerializer
+    serializer_class = GetPostsSerializer
     lookup_field = 'id'

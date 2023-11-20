@@ -5,7 +5,6 @@ class GeneralUser(AbstractUser):
 
     # User rank
     ROLE_CHOICES = (
-        ('Owner', 'Owner'),
         ('HR', 'HR'),
         ('Payroll', 'Payroll'),
         ('Asset', 'Asset'),
