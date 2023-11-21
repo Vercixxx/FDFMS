@@ -49,13 +49,10 @@
 
 
 
-
-
-
         <!-- Table -->
         <v-data-table :headers="updatedColumns" :items="brands" :search="searchTable" :loading="tableLoading"
-            class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover
-            select-strategy="all" show-current-page>
+            class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
+            show-current-page>
 
 
 
@@ -69,44 +66,54 @@
             <!-- No data -->
 
 
-            <template #item="{ item }">
-                <tr>
-                    <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id" class="text-center">
 
-                        <v-icon v-if="cell === null" icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
+            <!-- Accessing table cells -->
+            <template v-slot:item="{ item }">
+                <tr align="center">
+                    <td v-for="header in updatedColumns" :key="header.key">
 
-                        <v-icon v-else-if="cell === ''" icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
+                        <template v-if="header.key === 'action'">
+                            <span>
+                                <v-btn variant="plain" color="blue" @click="brandDetailsFunct(item.id)">
+                                    <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Show {{ item.name }}
+                                        details</v-tooltip>
+                                </v-btn>
 
-                        <v-icon v-else-if="cell === true" icon="mdi-check-bold" style="color:green"></v-icon>
+                                <v-btn variant="plain" color="green" @click="editBrand(item.id)">
+                                    <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Edit {{ item.name }}</v-tooltip>
+                                </v-btn>
 
-                        <v-icon v-else-if="cell === false" icon="mdi-close-thick" style="color:red"></v-icon>
-
-                        <span v-else>
-                            {{ cell }}
-                        </span>
-
-
-                        <!-- Actions -->
-                        <template v-if="columnIndex === 'action'">
-                            <v-btn variant="plain" color="blue" @click="brandDetailsFunct(item.columns.id)">
-                                <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
-                                <v-tooltip activator="parent" location="top">Show brand details</v-tooltip>
-                            </v-btn>
-
-                            <v-btn variant="plain" color="green" @click="editBrand(item.columns.id)">
-                                <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
-                                <v-tooltip activator="parent" location="top">Edit</v-tooltip>
-                            </v-btn>
-
-                            <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.id)">
-                                <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
-                                <v-tooltip activator="parent" location="top">Delete</v-tooltip>
-                            </v-btn>
+                                <v-btn variant="plain" color="red" @click="deleteConfirm(item.id)">
+                                    <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Delete {{ item.name }}</v-tooltip>
+                                </v-btn>
+                            </span>
                         </template>
-                        <!-- Actions -->
+
+
+                        <template v-else>
+                            <span v-if="item[header.key] === null || item[header.key] === ''">
+                                <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
+                            </span>
+                            <span v-else-if="item[header.key] === true">
+                                <v-icon icon="mdi-check-bold" style="color:green" />
+                            </span>
+                            <span v-else-if="item[header.key] === false">
+                                <v-icon icon="mdi-close-thick" style="color:red" />
+                            </span>
+                            <span v-else>
+                                {{ item[header.key] }}
+                            </span>
+
+
+                        </template>
+
                     </td>
                 </tr>
             </template>
+            <!-- Accessing table cells -->
 
         </v-data-table>
         <!-- Table -->
@@ -204,16 +211,12 @@
     <!-- Dialog details -->
 </template>
 
-<!-- <script setup>
-import { VDataTable } from 'vuetify/labs/VDataTable'
-</script> -->
+
 
 <script>
 import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
 const { emit } = useEventsBus()
-
-
 
 export default {
     name: 'App',
