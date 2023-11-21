@@ -109,11 +109,10 @@
     </div>
 
 
-
     <!-- Table -->
     <v-data-table :headers="updatedColumns" :items="users" :search="searchTable" :loading="tableLoading"
-      class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover
-      select-strategy="all" show-current-page>
+      class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
+      show-current-page>
 
 
 
@@ -127,76 +126,83 @@
       <!-- No data -->
 
 
-      <template #item="{ item }">
-        <tr>
-          <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id" class="text-center">
 
-            <v-icon v-if="cell === null" icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
+      <!-- Accessing table cells -->
+      <template v-slot:item="{ item }">
+        <tr align="center">
+          <td v-for="header in updatedColumns" :key="header.key">
 
-            <v-icon v-else-if="cell === ''" icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
+            <template v-if="header.key === 'action'">
+              <span>
+                <v-btn variant="plain" color="blue" @click="userDetails(item.username, item.user_role)">
+                  <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
+                  <v-tooltip activator="parent" location="top">Show {{ item.username }} details</v-tooltip>
+                </v-btn>
 
-            <v-icon v-else-if="cell === true && columnIndex !== 'is_active'" icon="mdi-check-bold"
-              style="color:green"></v-icon>
+                <v-btn variant="plain" color="green" @click="editUser(item.username, item.user_role)">
+                  <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
+                  <v-tooltip activator="parent" location="top">Edit {{ item.username }}</v-tooltip>
+                </v-btn>
 
-            <v-icon v-else-if="cell === false && columnIndex !== 'is_active'" icon="mdi-close-thick"
-              style="color:red"></v-icon>
+                <v-btn variant="plain" color="red" @click="deleteConfirm(item.username)">
+                  <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
+                  <v-tooltip activator="parent" location="top">Delete {{ item.username }}</v-tooltip>
+                </v-btn>
+              </span>
+            </template>
 
-            <span v-else-if="columnIndex !== 'email' && columnIndex !== 'is_active'">
-              {{ cell }}
-            </span>
+            <template v-else-if="header.key === 'is_active'">
 
-            <!-- Email -->
-            <template v-if="columnIndex === 'email'">
-              <v-btn v-if="item.columns.email !== ''" variant="plain" v-ripple="{ class: 'text-success' }"
-                @click="copyElement(item.columns.email)">
+              <v-tooltip location="top"
+                :text="item.is_active ? `Make ${item.username} not active` : `Make ${item.username} active`">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" variant="plain" :icon="item.is_active ? 'mdi-check-bold' : 'mdi-close-thick'"
+                    :style="item.is_active ? 'color:green' : 'color:red'"></v-btn>
+                </template>
+              </v-tooltip>
 
-                {{ item.columns.email }}
+            </template>
 
-                <v-tooltip activator="parent" location="top">
-                  Click email to copy
+            <template v-else-if="header.key === 'email'">
+
+              <span v-if="item[header.key] === null || item[header.key] === ''">
+                <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
+              </span>
+
+              <span v-else>
+                <v-tooltip location="top" text="Click to copy email">
+                  <template v-slot:activator="{ props }">
+                    <v-btn v-bind="props" variant="plain" @click="copyElement(item.email)">
+                      {{ item.email }}
+                    </v-btn>
+                  </template>
                 </v-tooltip>
+              </span>
 
-              </v-btn>
             </template>
-            <!-- Email -->
 
-            <!-- Active -->
-            <template v-if="columnIndex === 'is_active'">
-              <v-btn variant="plain"
-                @click="changeStateConfirm(item.columns.username, item.columns.user_role, item.columns.is_active)">
-                <v-tooltip activator="parent" location="top">Click to change status</v-tooltip>
 
-                <span class="text-h6">
-                  <v-icon v-if="item.columns.is_active" icon="mdi-check-bold" style="color:green"></v-icon>
+            <template v-else>
+              <span v-if="item[header.key] === null || item[header.key] === ''">
+                <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
+              </span>
+              <span v-else-if="item[header.key] === true">
+                <v-icon icon="mdi-check-bold" style="color:green" />
+              </span>
+              <span v-else-if="item[header.key] === false">
+                <v-icon icon="mdi-close-thick" style="color:red" />
+              </span>
+              <span v-else>
+                {{ item[header.key] }}
+              </span>
 
-                  <v-icon v-else icon="mdi-close-thick" style="color:red"></v-icon>
-                </span>
 
-              </v-btn>
             </template>
-            <!-- Active -->
 
-            <!-- Actions -->
-            <template v-if="columnIndex === 'action'">
-              <v-btn variant="plain" color="blue" @click="userDetails(item.columns.username, item.columns.user_role)">
-                <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
-                <v-tooltip activator="parent" location="top">Show user details</v-tooltip>
-              </v-btn>
-
-              <v-btn variant="plain" color="green" @click="editUser(item.columns.username, item.columns.user_role)">
-                <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
-                <v-tooltip activator="parent" location="top">Edit</v-tooltip>
-              </v-btn>
-
-              <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.username)">
-                <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
-                <v-tooltip activator="parent" location="top">Delete</v-tooltip>
-              </v-btn>
-            </template>
-            <!-- Actions -->
           </td>
         </tr>
       </template>
+      <!-- Accessing table cells -->
 
     </v-data-table>
     <!-- Table -->
@@ -331,17 +337,13 @@
 </template>
   
 
-<script setup>
-import { VDataTable } from 'vuetify/labs/VDataTable'
-</script>
 
 <script>
 import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
 const { emit } = useEventsBus()
-import { ref, watch } from "vue";
+import { watch } from "vue";
 import { useTheme } from 'vuetify'
-import { VDataTable } from 'vuetify/labs/VDataTable'
 
 
 export default {

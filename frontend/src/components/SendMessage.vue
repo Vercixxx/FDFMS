@@ -243,10 +243,10 @@
         </v-dialog>
     </v-row>
 </template>
-
+<!-- 
 <script setup>
 import { VDataTable } from 'vuetify/labs/VDataTable';
-</script>
+</script> -->
 
 <script>
 import axios from 'axios';

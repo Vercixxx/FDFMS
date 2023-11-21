@@ -246,7 +246,7 @@
 import { useTheme } from 'vuetify'
 import { drawer, closeDrawer } from '../store/store.js';
 import useEventsBus from '../plugins/eventBus.js'
-import { ref, watch } from "vue";
+import { watch } from "vue";
 const { emit } = useEventsBus()
 
 const toggleDrawer = () => {
@@ -306,6 +306,11 @@ import ManageBrands from '../components/clients/ManageBrands.vue';
 import AddCar from '../components/asset/AddCar.vue';
 import ManageCars from '../components/asset/ManageCars.vue';
 // Asset
+
+
+// Managers
+import CreateSchedule from '../components/manager/CreateSchedule.vue';
+// Managers
 
 
 
@@ -627,6 +632,25 @@ export default {
             this.currentComponent = ManageCars;
         },
         // Assets
+
+
+        // Managers
+        ManageScheduleComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Schedule",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = CreateSchedule;
+        },
+        // Managers
 
 
 

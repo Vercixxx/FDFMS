@@ -79,7 +79,7 @@ export default {
                     options: [
                         {
                             name: 'Modify Schedule',
-                            click: 'AddUserComponent',
+                            click: 'ManageScheduleComponent',
                             icon: 'mdi-calendar-account-outline',
                         },
                     ],
