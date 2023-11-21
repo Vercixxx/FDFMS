@@ -221,9 +221,9 @@
     <!-- Dialog details -->
 </template>
 
-<script setup>
+<!-- <script setup>
 import { VDataTable } from 'vuetify/labs/VDataTable'
-</script>
+</script> -->
 
 <script>
 import axios from 'axios';
