@@ -63,11 +63,11 @@
 
         <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
 
-        <div>
-            <h1>
-                Restaurants
-            </h1>
+
+        <div class="text-h4 ma-5 font-weight-bold">
+            Restaurants
         </div>
+
 
         <!-- Table -->
         <v-data-table :headers="updatedColumns" :items="restaurants" :search="searchTable" :loading="tableLoading"
@@ -86,41 +86,54 @@
             <!-- No data -->
 
 
-            <template #item="{ item }">
-                <tr>
-                    <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id" class="text-center">
 
-                        <v-icon v-if="cell === null" icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
+            <!-- Accessing table cells -->
+            <template v-slot:item="{ item }">
+                <tr align="center">
+                    <td v-for="header in updatedColumns" :key="header.key">
 
-                        <v-icon v-else-if="cell === true" icon="mdi-check-bold" style="color:green"></v-icon>
+                        <template v-if="header.key === 'action'">
+                            <span>
+                                <v-btn variant="plain" color="blue" @click="restaurantDetailsFunct(item.id)">
+                                    <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Show {{ item.name }}
+                                        details</v-tooltip>
+                                </v-btn>
 
-                        <v-icon v-else-if="cell === false" icon="mdi-close-thick" style="color:red"></v-icon>
+                                <v-btn variant="plain" color="green" @click="editRestaurant(item.id)">
+                                    <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Edit {{ item.name }}</v-tooltip>
+                                </v-btn>
 
-                        <span v-else>
-                            {{ cell }}
-                        </span>
-
-                        <!-- Actions -->
-                        <template v-if="columnIndex === 'action'">
-                            <v-btn variant="plain" color="blue" @click="restaurantDetailsFunct(item.columns.id)">
-                                <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
-                                <v-tooltip activator="parent" location="top">Show client details</v-tooltip>
-                            </v-btn>
-
-                            <v-btn variant="plain" color="green" @click="editBrand(item.columns.id)">
-                                <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
-                                <v-tooltip activator="parent" location="top">Edit</v-tooltip>
-                            </v-btn>
-
-                            <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.id)">
-                                <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
-                                <v-tooltip activator="parent" location="top">Delete</v-tooltip>
-                            </v-btn>
+                                <v-btn variant="plain" color="red" @click="deleteConfirm(item.name, item.id)">
+                                    <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Delete {{ item.name }}</v-tooltip>
+                                </v-btn>
+                            </span>
                         </template>
-                        <!-- Actions -->
+
+
+                        <template v-else>
+                            <span v-if="item[header.key] === null || item[header.key] === ''">
+                                <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
+                            </span>
+                            <span v-else-if="item[header.key] === true">
+                                <v-icon icon="mdi-check-bold" style="color:green" />
+                            </span>
+                            <span v-else-if="item[header.key] === false">
+                                <v-icon icon="mdi-close-thick" style="color:red" />
+                            </span>
+                            <span v-else>
+                                {{ item[header.key] }}
+                            </span>
+
+
+                        </template>
+
                     </td>
                 </tr>
             </template>
+            <!-- Accessing table cells -->
 
         </v-data-table>
         <!-- Table -->
@@ -145,9 +158,9 @@
 
             <div class="pa-3" align="center">
 
-                You are trying to delete restaurant id -
+                You are trying to delete
                 <span class='fw-bolder'>
-                    {{ deleteBrandId }}
+                    {{ deleteRestName }}
                 </span>
                 , this operation is <span class="fw-bold">irreversible</span>.
                 Are you sure?
@@ -157,7 +170,7 @@
 
             <div class="justify-center d-flex align-items-center mb-3">
                 <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
-                <v-btn width="150" @click="deleteRestaurant(deleteBrandId)" color="red">
+                <v-btn width="150" @click="deleteRestaurant(deleteRestId)" color="red">
                     <v-icon icon="mdi-delete-empty"></v-icon>
                     Yes
                 </v-btn>
@@ -221,15 +234,11 @@
     <!-- Dialog details -->
 </template>
 
-<!-- <script setup>
-import { VDataTable } from 'vuetify/labs/VDataTable'
-</script> -->
 
 <script>
 import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
 const { emit } = useEventsBus()
-
 
 
 export default {
@@ -254,7 +263,8 @@ export default {
             // OLD
 
             dialogDelete: false,
-            deleteBrandId: '',
+            deleteRestId: '',
+            deleteRestName: '',
 
             restaurantDetailsDialog: false,
             restaurantDetails: [],
@@ -309,15 +319,18 @@ export default {
         // Load all Restaurants
         async loadRestaurants() {
             try {
-                const response = await axios.get(`api/restaurant/get/${this.selectedCity}/`);
-                console.log(response)
-                console.log(response.data)
-
+                const response = await axios.get(`api/restaurants/get/${this.selectedCity}/`);
                 this.restaurants = response.data;
                 this.tableLoading = false;
             }
             catch (error) {
-                console.error('Error when fetching', error);
+                const messageData = {
+                    message: `Error, please try again`,
+                    type: 'error'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
             }
 
         },
@@ -329,7 +342,6 @@ export default {
         async getCities() {
             const response = await axios.get('api/restaurants/unique_cities/');
             this.availableCities = ['All', ...response.data];
-            console.log(this.availableCities);
         },
         // Get cities
 
@@ -345,8 +357,9 @@ export default {
 
 
         // Deleting Restaurant confirmation
-        deleteConfirm(carid) {
-            this.deleteBrandId = carid;
+        deleteConfirm(restName, restId) {
+            this.deleteRestName = restName;
+            this.deleteRestId = restId;
             this.dialogDelete = true;
         },
         // Deleting Restaurant confirmation
@@ -357,31 +370,26 @@ export default {
         async deleteRestaurant() {
             this.dialogDelete = false;
             try {
-                const response = await axios.delete(`api/brands/delete/${this.deleteBrandId}`);
+                const response = await axios.delete(`api/rest/delete/${this.deleteRestId}`);
 
+                const messageData = {
+                    message: `Successfully deleted ${this.deleteRestName}`,
+                    type: 'success'
+                };
 
-                if (response.status === 204) {
-                    this.loadRestaurants()
-
-                    const messageData = {
-                        message: `Successfully deleted restaurant id - ${this.deleteBrandId}`,
-                        type: 'success'
-                    };
-
-                    localStorage.setItem('message', JSON.stringify(messageData));
-                    emit('message', '');
-
-                }
-                else {
-                    this.loadRestaurants();
-                    this.dataError = 'Error!'
-                    document.getElementById('hiddenButton').click();
-                }
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
 
 
             }
             catch (error) {
-                console.error('Error when fetching', error);
+                const messageData = {
+                    message: `Error, please try again`,
+                    type: 'error'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
             }
         },
         // Deleting Restaurant method
@@ -389,9 +397,9 @@ export default {
 
 
         // Editing Restaurant
-        editBrand(restaurantID) {
+        editRestaurant(restaurantID) {
             localStorage.setItem('restaurantID', restaurantID);
-            this.$root.changeCurrentComponent('AddBrandComponent');
+            this.$root.changeCurrentComponent('AddRestaurantComponent');
         },
         // Editing Restaurant
 
@@ -401,6 +409,7 @@ export default {
         async restaurantDetailsFunct(restaurantID) {
             const response = await axios.get(`api/restaurant/get/${restaurantID}/`);
             this.restaurantDetails = response.data;
+            console.log(this.restaurantDetails)
             this.restaurantDetailsDialog = true;
 
         },

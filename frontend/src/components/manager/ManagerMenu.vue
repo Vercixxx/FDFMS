@@ -22,6 +22,10 @@
 
         </v-list>
     </v-menu>
+
+    <v-list-item @click="handleButtonClick('ManageScheduleComponent')" prepend-icon="mdi-store-clock-outline" class="my-3 font-weight-bold">
+        Schedule
+    </v-list-item>
 </template>
 
 
@@ -69,18 +73,6 @@ export default {
                             name: 'Show car damage',
                             click: 'ModifyUserComponent',
                             icon: ' <span class="material-symbols-outlined">edit</span>',
-                        },
-                    ],
-                },
-                {
-                    name: 'Schedule',
-                    mainIcon: 'mdi-store-clock-outline',
-                    disabled: false,
-                    options: [
-                        {
-                            name: 'Modify Schedule',
-                            click: 'ManageScheduleComponent',
-                            icon: 'mdi-calendar-account-outline',
                         },
                     ],
                 },
