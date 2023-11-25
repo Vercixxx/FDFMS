@@ -310,7 +310,7 @@ import ManageCars from '../components/asset/ManageCars.vue';
 
 
 // Managers
-import CreateSchedule from '../components/manager/CreateSchedule.vue';
+import CreateSchedule from '../components/manager/ManageSchedules.vue';
 // Managers
 
 
