@@ -6,14 +6,17 @@
 
                 <v-card class="pa-5">
                     <v-card-title class="text-h5 font-weight-bold">
-                        Choose hours 
+                        Choose hours
                     </v-card-title>
                     <v-card-text>
 
-                        schedule id {{ scheduleId }}
+                        <v-select label="Select shift" variant="outlined" :items="updatedAvailableSchedules"
+                            v-model="selectedSchedule">
+
+                        </v-select>
 
 
-                        <v-range-slider reverse direction="vertical" v-model="selectedHours" min="0"
+                        <v-range-slider :disabled="selectedSchedule === null" reverse direction="vertical" v-model="selectedHours" min="0"
                             :max="hoursList.length - 1" :step="1" show-ticks="always" thumb-label="always"
                             thumb-color="green-darken-4" track-fill-color="green" track-size="20" density="comfortable">
 
@@ -45,10 +48,18 @@
                         </v-col>
 
                         <v-col cols="6">
+                            <span>
+                                <v-tooltip v-if="selectedSchedule === null" activator="parent" location="top" no-overflow>
+                                    Select shift
+                                </v-tooltip>
+                                <span>
+                                    <v-btn block type="submit" color="green-darken-1" prepend-icon="mdi-check"
+                                        variant="text" :disabled="selectedSchedule === null">
+                                        Apply
+                                    </v-btn>
+                                </span>
+                            </span>
 
-                            <v-btn block type="submit" color="green-darken-1" prepend-icon="mdi-check" variant="text">
-                                Apply
-                            </v-btn>
 
                         </v-col>
                     </v-row>
@@ -73,12 +84,25 @@ export default {
     data() {
         return {
             showDialog: false,
-            scheduleId: null,
+            availableSchedules: [],
+            selectedSchedule: null,
             hoursListDict: {},
             hoursList: [],
             selectedHours: [0, 28],
         }
     },
+
+    computed: {
+        updatedAvailableSchedules() {
+            if (this.availableSchedules.length > 0) {
+                const lastSchedule = this.availableSchedules[this.availableSchedules.length - 1];
+                return [...this.availableSchedules, lastSchedule + 1];
+            } else {
+                return [1];
+            }
+        },
+    },
+
 
 
     mounted() {
@@ -94,7 +118,9 @@ export default {
             ([showScheduleSelector]) => {
                 if (showScheduleSelector) {
                     this.showDialog = true;
-                    this.scheduleId = showScheduleSelector[0][0];
+
+                    const schedulesIds = showScheduleSelector[0][0];
+                    this.availableSchedules = schedulesIds.map(item => item.scheduleId)
                 }
             }
         );
@@ -130,7 +156,7 @@ export default {
             const selected = [
                 this.hoursListDict[this.selectedHours[0]],
                 this.hoursListDict[this.selectedHours[1]],
-                this.scheduleId
+                this.selectedSchedule
             ]
             emit('appliedScheduleHours', selected);
             this.closeDialog();
