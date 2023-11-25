@@ -234,6 +234,7 @@
 
         <CreateMessage ref="createMessage" style="display: none;" :key="forceReload" />
 
+       
 
         <!-- Add post dialog -->
         <AddPost ref="addPost" style="display: none;" :key="forceReload" />
