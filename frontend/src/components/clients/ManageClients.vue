@@ -258,10 +258,6 @@ export default {
             selectedColumns: [],
             avaliableColumns: [],
 
-
-
-            // OLD
-
             dialogDelete: false,
             deleteRestId: '',
             deleteRestName: '',

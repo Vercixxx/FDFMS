@@ -151,21 +151,21 @@
 
                                         <!-- No data -->
                                         <template v-slot:no-data>
-                                            <p class="text-h6 pa-5">
-                                                <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
+                                            <p class="text-h6 pa-5 text-danger">
+                                                <v-icon icon="mdi-database-alert-outline"></v-icon>
                                                 No available managers
                                             </p>
                                         </template>
                                         <!-- No data -->
 
 
-                                        <template #item="{ item }">
-                                            <tr @click="selectUser(item.columns.id)" role="button">
-                                                <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id"
-                                                    class="text-center">
-
-                                                    {{ cell }}
-
+                                        <template v-slot:item="{ item }">
+                                            <tr align="center" @click="selectUser(item.id)" role="button">
+                                                <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                                                    Click to select
+                                                </v-tooltip>
+                                                <td v-for="header in tableHeaders" :key="header.key">
+                                                    {{ item[header.key] }}
                                                 </td>
                                             </tr>
                                         </template>
@@ -202,21 +202,20 @@
 
                                         <!-- No data -->
                                         <template v-slot:no-data>
-                                            <p class="text-h6 pa-5">
-                                                <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
-                                                No data
+                                            <p class="text-h6 pa-5 text-danger">
+                                                <v-icon icon="mdi-database-alert-outline"></v-icon>
+                                                No selected managers
                                             </p>
                                         </template>
                                         <!-- No data -->
 
-
-                                        <template #item="{ item }">
-                                            <tr @click="unselectUser(item.columns.id)" role="button">
-                                                <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id"
-                                                    class="text-center">
-
-                                                    {{ cell }}
-
+                                        <template v-slot:item="{ item }">
+                                            <tr align="center" @click="unselectUser(item.id)" role="button">
+                                                <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                                                    Click to unselect
+                                                </v-tooltip>
+                                                <td v-for="header in tableHeaders" :key="header.key">
+                                                    {{ item[header.key] }}
                                                 </td>
                                             </tr>
                                         </template>
@@ -237,8 +236,8 @@
                             Fill all required fields first
                         </v-tooltip>
                         <span>
-                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
-                                class="mt-10 mb-5">
+                            <v-btn :disabled="!form" :loading="loading" block :color="!form ? 'danger' : 'success'"
+                                size="large" type="submit" class="mt-10 mb-5">
                                 Create
                             </v-btn>
                         </span>
@@ -251,7 +250,7 @@
                             Fill all required fields first
                         </v-tooltip>
                         <span>
-                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
+                            <v-btn :disabled="!form" :loading="loading" block :color="!form ? 'danger' : 'success'" size="large" type="submit"
                                 class="mt-10 mb-5">
                                 Save
                             </v-btn>
@@ -267,9 +266,7 @@
     </div>
 </template>
 
-<!-- <script setup>
-import { VDataTable } from 'vuetify/labs/VDataTable'
-</script> -->
+
 
 <script>
 import axios from 'axios';
