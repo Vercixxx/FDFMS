@@ -30,7 +30,7 @@
 
                             <v-col>
                                 <!-- Visible on larger devices -->
-                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown">
+                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown" class="mt-3">
                                     <template v-slot:divider>
                                         <v-icon icon="mdi-chevron-right"></v-icon>
                                     </template>

@@ -19,6 +19,7 @@ class CreateRestaurant(APIView):
 
     def post(self, request):
         data = request.data
+        print(data)
 
         # Check for unique
         fields_to_check = ['name']
