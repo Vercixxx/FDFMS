@@ -128,8 +128,8 @@
                     <v-row>
                         <v-col cols="12" sm="6" align="center">
 
-                            <v-card class="pa-3 ma-1 border-xl rounded-xl" :color="theme ? 'grey-darken-3' : ''">
-                                <v-col cols="10" align="center">
+                            <v-card class="border-xl rounded-xl" :color="theme ? 'grey-darken-3' : ''">
+                                <v-col cols="12" align="center">
 
                                     <p class="text-h4 text-md-h5 text-lg-h5">Available managers</p>
 
@@ -178,8 +178,8 @@
 
                         <v-col cols="12" sm="6" align="center">
 
-                            <v-card class="pa-3 ma-1 border-xl rounded-xl" :color="theme ? 'grey-darken-3' : ''">
-                                <v-col cols="10" align="center">
+                            <v-card class="border-xl rounded-xl" :color="theme ? 'grey-darken-3' : ''">
+                                <v-col cols="12" align="center">
 
                                     <p align="center" class="text-h4 text-md-h5 text-lg-h5">Selected managers</p>
 
@@ -228,34 +228,39 @@
                     </v-row>
                     <!-- Managers -->
 
+                    <v-row>
 
-                    <!-- Button submit -->
-                    <span v-if="!editing">
-                        <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
-                            Fill all required fields first
-                        </v-tooltip>
-                        <span>
-                            <v-btn :disabled="!form" :loading="loading" block :color="!form ? 'danger' : 'success'"
-                                size="large" type="submit" class="mt-10 mb-5">
-                                Create
-                            </v-btn>
-                        </span>
-                    </span>
-                    <!-- Button submit -->
+                        <v-col cols="12" align="center">
 
-                    <!-- Button submit when editing -->
-                    <span v-else>
-                        <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
-                            Fill all required fields first
-                        </v-tooltip>
-                        <span>
-                            <v-btn :disabled="!form" :loading="loading" block :color="!form ? 'danger' : 'success'"
-                                size="large" type="submit" class="mt-10 mb-5">
-                                Save
-                            </v-btn>
-                        </span>
-                    </span>
-                    <!-- Button submit when editing -->
+                            <!-- Button submit -->
+                            <span v-if="!editing">
+                                <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                                    Fill all required fields first
+                                </v-tooltip>
+                                <span>
+                                    <v-btn :disabled="!form" :loading="loading" :color="!form ? 'danger' : 'success'"
+                                        size="large" type="submit" class="mt-10 mb-5 font-weight-black">
+                                        Create
+                                    </v-btn>
+                                </span>
+                            </span>
+                            <!-- Button submit -->
+
+                            <!-- Button submit when editing -->
+                            <span v-else>
+                                <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                                    Fill all required fields first
+                                </v-tooltip>
+                                <span>
+                                    <v-btn :disabled="!form" :loading="loading" :color="!form ? 'danger' : 'success'"
+                                        size="large" type="submit" class="mt-10 mb-5 font-weight-black">
+                                        Save
+                                    </v-btn>
+                                </span>
+                            </span>
+                            <!-- Button submit when editing -->
+                        </v-col>
+                    </v-row>
 
                 </v-container>
             </v-form>

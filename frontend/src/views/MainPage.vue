@@ -113,7 +113,7 @@
                             <v-menu transition="slide-y-transition">
                                 <template v-slot:activator="{ props }">
 
-                                    <v-btn v-bind="props" ripple="false" variant="plain" icon="mdi-account-circle-outline">
+                                    <v-btn v-bind="props" :ripple="false" variant="plain" icon="mdi-account-circle-outline">
                                     </v-btn>
 
                                 </template>
@@ -127,9 +127,6 @@
 
                                     </v-list-item>
 
-                                    <v-list-item class="p-0">
-                                        <v-btn block variant="flat" prepend-icon="mdi-email">Messages</v-btn>
-                                    </v-list-item>
 
                                     <v-list-item class="p-0">
                                         <v-dialog transition="dialog-top-transition" width="400">

@@ -71,7 +71,7 @@
     <!-- Messages -->
     <v-menu transition="slide-y-transition">
         <template v-slot:activator="{ props }">
-            <v-list-item prepend-icon="mdi-forum" v-bind="props" class="my-3 font-weight-bold">
+            <v-list-item prepend-icon="mdi-email" v-bind="props" class="my-3 font-weight-bold">
                 Messages
             </v-list-item>
 
