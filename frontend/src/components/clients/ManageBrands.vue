@@ -39,11 +39,15 @@
 
         <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
 
-        <div>
-            <h1>
-                Brands
-            </h1>
+
+        <div class="text-h4 ma-5 font-weight-bold">
+            Brands
         </div>
+
+
+
+
+
 
         <!-- Table -->
         <v-data-table :headers="updatedColumns" :items="brands" :search="searchTable" :loading="tableLoading"
@@ -55,62 +59,64 @@
             <!-- No data -->
             <template v-slot:no-data>
                 <p class="text-h4 pa-5">
-                    <span class="material-symbols-outlined">
-                        database
-                    </span>
+                    <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
                     No data
                 </p>
             </template>
             <!-- No data -->
 
 
-            <template #item="{ item }">
-                <tr>
-                    <td v-for="(cell, columnIndex) in item.columns" :key="item.columns.id" class="text-center">
-                        <span v-if="cell === null">
-                            <v-icon icon="mdi-minus-thick" color="red-lighten-2"></v-icon>
-                        </span>
-                        <span v-else-if="cell === true">
-                            <v-icon icon="mdi-check-bold" style="color:green"></v-icon>
-                        </span>
-                        <span v-else-if="cell === false">
-                            <v-icon icon="mdi-close-thick" style="color:red"></v-icon>
-                        </span>
-                        <span v-else>
-                            {{ cell }}
-                        </span>
 
-                        <!-- Actions -->
-                        <template v-if="columnIndex === 'action'">
-                            <v-btn variant="plain" color="blue" @click="brandDetailsFunct(item.columns.id )">
-                                <span class="material-symbols-outlined">
-                                    description
-                                </span>
-                                <v-tooltip activator="parent" location="top">Show brand details</v-tooltip>
-                            </v-btn>
+            <!-- Accessing table cells -->
+            <template v-slot:item="{ item }">
+                <tr align="center">
+                    <td v-for="header in updatedColumns" :key="header.key">
 
-                            <v-btn variant="plain" color="green" @click="editBrand(item.columns.id )">
-                                <span class="material-symbols-outlined d-flex">
-                                    edit
-                                </span>
-                                <v-tooltip activator="parent" location="top">Edit</v-tooltip>
-                            </v-btn>
+                        <template v-if="header.key === 'action'">
+                            <span>
+                                <v-btn variant="plain" color="blue" @click="brandDetailsFunct(item.id)">
+                                    <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Show {{ item.name }}
+                                        details</v-tooltip>
+                                </v-btn>
 
-                            <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.id )">
-                                <span class="material-symbols-outlined d-flex">
-                                    delete
-                                </span>
-                                <v-tooltip activator="parent" location="top">Delete</v-tooltip>
-                            </v-btn>
+                                <v-btn variant="plain" color="green" @click="editBrand(item.id)">
+                                    <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Edit {{ item.name }}</v-tooltip>
+                                </v-btn>
+
+                                <v-btn variant="plain" color="red" @click="deleteConfirm(item.id)">
+                                    <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Delete {{ item.name }}</v-tooltip>
+                                </v-btn>
+                            </span>
                         </template>
-                        <!-- Actions -->
+
+
+                        <template v-else>
+                            <span v-if="item[header.key] === null || item[header.key] === ''">
+                                <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
+                            </span>
+                            <span v-else-if="item[header.key] === true">
+                                <v-icon icon="mdi-check-bold" style="color:green" />
+                            </span>
+                            <span v-else-if="item[header.key] === false">
+                                <v-icon icon="mdi-close-thick" style="color:red" />
+                            </span>
+                            <span v-else>
+                                {{ item[header.key] }}
+                            </span>
+
+
+                        </template>
+
                     </td>
                 </tr>
             </template>
+            <!-- Accessing table cells -->
 
         </v-data-table>
         <!-- Table -->
-
 
     </div>
 
@@ -120,20 +126,14 @@
     <!-- Delete car confirm -->
     <v-dialog v-model="dialogDelete" width="400">
         <v-card>
-            <div class="text-warning text-h6 text-md-h5 text-lg-h4">
-
+            <div class="text-danger text-h6 text-md-h5 text-lg-h4">
                 <div class="d-flex justify-content-between align-items-center px-4 pt-4">
-                    <span class="material-symbols-outlined">
-                        warning
-                    </span>
-                    <span>
-                        Warning
-                    </span>
-                    <span class="material-symbols-outlined">
-                        warning
-                    </span>
+                    <v-icon icon="mdi-alert" class="text-h4" />
+                    Warning
+                    <v-icon icon="mdi-alert" class="text-h4" />
                 </div>
-                <hr>
+
+                <hr />
             </div>
 
             <div class="pa-3" align="center">
@@ -180,6 +180,10 @@
                                 <v-icon icon="mdi-minus-thick"></v-icon>
                             </td>
 
+                            <td v-else-if="value === ''">
+                                <v-icon icon="mdi-minus-thick"></v-icon>
+                            </td>
+
                             <td v-else-if="value === true">
                                 <v-icon icon="mdi-check-bold" style="color:green"></v-icon>
                             </td>
@@ -207,16 +211,12 @@
     <!-- Dialog details -->
 </template>
 
-<script setup>
-import { VDataTable } from 'vuetify/labs/VDataTable'
-</script>
+
 
 <script>
 import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
 const { emit } = useEventsBus()
-
-
 
 export default {
     name: 'App',
@@ -253,7 +253,9 @@ export default {
                 { title: 'Home', key: 'home', align: 'center', sortable: false },
                 { title: 'Apartament', key: 'apartament', align: 'center', sortable: false },
                 { title: 'Zip code', key: 'zip', align: 'center', sortable: false },
-                { title: 'Actions', key: 'action', align: 'center', sortable: false },
+            ],
+            actions: [
+                { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
             ],
             // Headers
 
@@ -264,7 +266,7 @@ export default {
 
     computed: {
         updatedColumns() {
-            return [...this.necessaryHeaders, ...this.selectedColumns];
+            return [...this.necessaryHeaders, ...this.selectedColumns, ...this.actions];
         },
     },
 
@@ -292,7 +294,14 @@ export default {
 
             }
             catch (error) {
-                console.error('Error when fetching', error);
+
+                const messageData = {
+                    message: `Error, please try again`,
+                    type: 'error'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
             }
         },
         // Load all brands
@@ -313,30 +322,25 @@ export default {
             this.dialogDelete = false;
             try {
                 const response = await axios.delete(`api/brands/delete/${this.deleteBrandId}`);
+                this.loadBrands()
 
+                const messageData = {
+                    message: `Successfully deleted brand id - ${this.deleteBrandId}`,
+                    type: 'success'
+                };
 
-                if (response.status === 204) {
-                    this.loadBrands()
-
-                    const messageData = {
-                        message: `Successfully deleted brand id - ${this.deleteBrandId}`,
-                        type: 'success'
-                    };
-
-                    localStorage.setItem('message', JSON.stringify(messageData));
-                    emit('message', '');
-
-                }
-                else {
-                    this.loadBrands();
-                    this.dataError = 'Error!'
-                    document.getElementById('hiddenButton').click();
-                }
-
-
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
             }
             catch (error) {
-                console.error('Error when fetching', error);
+
+                const messageData = {
+                    message: `Error, please try again`,
+                    type: 'error'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
             }
         },
         // Deleting brand method
