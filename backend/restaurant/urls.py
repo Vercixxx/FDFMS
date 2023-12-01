@@ -8,7 +8,7 @@ urlpatterns = [
     path('api/restaurant/create/', views.CreateRestaurant.as_view(), name="create-restaurant"),
     
     # Deliting restaurant
-    path('api/restaurant/delete/<str:name>/', views.DeleteRestaurant.as_view(), name='delete-restaurant'),
+    path('api/restaurant/delete/<int:id>/', views.DeleteRestaurant.as_view(), name='delete-restaurant'),
     
     # Get restaurants
     path('api/restaurants/get/<str:city>/', views.GetRestaurants.as_view(), name='get-restaurants'),
