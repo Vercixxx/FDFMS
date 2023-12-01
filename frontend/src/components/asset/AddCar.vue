@@ -179,17 +179,14 @@
     <!-- Message -->
 </template>
 
-<script setup>
-import { VDatePicker } from 'vuetify/labs/VDatePicker'
-</script>
+
 
 <script>
 import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
-import { ref, watch } from "vue";
+import { watch } from "vue";
 const { emit } = useEventsBus()
 import { useTheme } from 'vuetify'
-import format from 'date-fns/format'
 import { drawer } from '../../store/store.js';
 
 export default {
@@ -450,7 +447,6 @@ export default {
 
             const response = await axios.get(`api/car/get/${carid}/`);
             this.editingCar = response.data;
-            console.log(response.data);
 
             for (const field of this.allInputs) {
                 this.input_data[field.model] = this.editingCar[field.model];

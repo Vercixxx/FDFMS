@@ -3,7 +3,7 @@
 
     <v-card elevation="1" class="pa-5 rounded-xl" color="teal-darken-2">
 
-      <p class="p-2 fw-bolder text-h4">Filters</p>
+      <p class="p-2 text-h4 font-weight-bold">Filters</p>
 
       <!-- Search bar section -->
       <v-row class="mb-5 d-flex justify-content-between">
@@ -12,15 +12,14 @@
           <!-- User role -->
           <span>
 
-            <div class="btn-group dropdown mx-2">
+            <div class="btn-group dropdown mx-2 mb-2">
 
-              <v-btn id="role-activator" variant="tonal" class="rounded-xl rounded-0 text-white bg-teal-darken-4">
-                <span class="pr-2">User status - </span>
+              <v-btn id="role-activator" variant="tonal"
+                class="rounded-xl rounded-0 text-white bg-teal-darken-4 font-weight-bold">
+                <span class="pr-2">User role - </span>
                 {{ selectedRole }}
 
-                <span class="material-symbols-outlined">
-                  arrow_drop_down
-                </span>
+                <v-icon class="text-h5" icon="mdi-menu-down" />
               </v-btn>
             </div>
 
@@ -41,16 +40,16 @@
           <!-- User status -->
           <span>
 
-            <div class="btn-group dropdown mx-2">
+            <div class="btn-group dropdown mx-2 mb-2">
 
-              <v-btn id="status-activator" variant="tonal" class="rounded-xl rounded-0 text-white  bg-teal-darken-4">
+              <v-btn id="status-activator" variant="tonal"
+                class="rounded-xl rounded-0 text-white  bg-teal-darken-4 font-weight-bold">
                 <span class="pr-2">User status - </span>
                 <span v-if="selectedActive === 'True'">Active</span>
                 <span v-else-if="selectedActive === 'False'">Not active</span>
                 <span v-else>All</span>
-                <span class="material-symbols-outlined">
-                  arrow_drop_down
-                </span>
+
+                <v-icon class="text-h5" icon="mdi-menu-down" />
               </v-btn>
 
             </div>
@@ -105,22 +104,22 @@
 
     <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
 
-    <div class="text-h3 ma-5">
+    <div class="text-h4 ma-5 font-weight-bold">
       Users
     </div>
 
+
     <!-- Table -->
     <v-data-table :headers="updatedColumns" :items="users" :search="searchTable" :loading="tableLoading"
-      class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover
-      select-strategy="all" show-current-page>
+      class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
+      show-current-page>
+
 
 
       <!-- No data -->
       <template v-slot:no-data>
         <p class="text-h4 pa-5">
-          <span class="material-symbols-outlined">
-            database
-          </span>
+          <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
           No data
         </p>
       </template>
@@ -128,88 +127,82 @@
 
 
 
-      <!-- Actions label -->
-      <template v-slot:column.action="{ column }">
-        <span class="text-success">
-          {{ column.title }}
-        </span>
+      <!-- Accessing table cells -->
+      <template v-slot:item="{ item }">
+        <tr align="center">
+          <td v-for="header in updatedColumns" :key="header.key">
+
+            <template v-if="header.key === 'action'">
+              <span>
+                <v-btn variant="plain" color="blue" @click="userDetails(item.username, item.user_role)">
+                  <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
+                  <v-tooltip activator="parent" location="top">Show {{ item.username }} details</v-tooltip>
+                </v-btn>
+
+                <v-btn variant="plain" color="green" @click="editUser(item.username, item.user_role)">
+                  <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
+                  <v-tooltip activator="parent" location="top">Edit {{ item.username }}</v-tooltip>
+                </v-btn>
+
+                <v-btn variant="plain" color="red" @click="deleteConfirm(item.username)">
+                  <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
+                  <v-tooltip activator="parent" location="top">Delete {{ item.username }}</v-tooltip>
+                </v-btn>
+              </span>
+            </template>
+
+            <template v-else-if="header.key === 'is_active'">
+
+              <v-tooltip location="top"
+                :text="item.is_active ? `Make ${item.username} not active` : `Make ${item.username} active`">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" variant="plain" :icon="item.is_active ? 'mdi-check-bold' : 'mdi-close-thick'"
+                    :style="item.is_active ? 'color:green' : 'color:red'"></v-btn>
+                </template>
+              </v-tooltip>
+
+            </template>
+
+            <template v-else-if="header.key === 'email'">
+
+              <span v-if="item[header.key] === null || item[header.key] === ''">
+                <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
+              </span>
+
+              <span v-else>
+                <v-tooltip location="top" text="Click to copy email">
+                  <template v-slot:activator="{ props }">
+                    <v-btn v-bind="props" variant="plain" @click="copyElement(item.email)">
+                      {{ item.email }}
+                    </v-btn>
+                  </template>
+                </v-tooltip>
+              </span>
+
+            </template>
+
+
+            <template v-else>
+              <span v-if="item[header.key] === null || item[header.key] === ''">
+                <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
+              </span>
+              <span v-else-if="item[header.key] === true">
+                <v-icon icon="mdi-check-bold" style="color:green" />
+              </span>
+              <span v-else-if="item[header.key] === false">
+                <v-icon icon="mdi-close-thick" style="color:red" />
+              </span>
+              <span v-else>
+                {{ item[header.key] }}
+              </span>
+
+
+            </template>
+
+          </td>
+        </tr>
       </template>
-      <!-- Actions label -->
-
-
-
-      <!-- Maping is active -->
-      <template #item.is_active="{ item }">
-
-        <v-btn variant="plain"
-          @click="changeStateConfirm(item.columns.username, item.columns.user_role, item.columns.is_active)">
-          <v-tooltip activator="parent" location="top">Click to change status</v-tooltip>
-
-          <span v-if="item.columns.is_active" class="material-symbols-outlined" style="color:green">
-            check
-          </span>
-
-          <span v-else class="material-symbols-outlined" style="color:red">
-            check_indeterminate_small
-          </span>
-        </v-btn>
-
-      </template>
-
-
-
-      <!-- Email -->
-      <template v-slot:item.email="{ item }">
-
-        <v-btn variant="plain" v-ripple="{ class: 'text-success' }" @click="copyElement(item.columns.email)">
-
-          {{ item.columns.email }}
-
-          <v-tooltip activator="parent" location="top">
-            Click email to copy
-          </v-tooltip>
-
-        </v-btn>
-      </template>
-      <!-- Email -->
-
-
-
-      <!-- Buttons -->
-      <template v-slot:item.action="{ item }">
-        <!-- Button show info -->
-        <v-btn variant="plain" color="blue" @click="userDetails(item.columns.username, item.columns.user_role)">
-          <span class="material-symbols-outlined">
-            description
-          </span>
-          <v-tooltip activator="parent" location="top">Show user details</v-tooltip>
-        </v-btn>
-        <!-- Button show info -->
-
-
-
-        <!-- Button edit -->
-        <v-btn variant="plain" color="green" @click="editUser(item.columns.username, item.columns.user_role)">
-          <span class="material-symbols-outlined d-flex">
-            edit
-          </span>
-          <v-tooltip activator="parent" location="top">Edit</v-tooltip>
-        </v-btn>
-        <!-- Button edit -->
-
-
-
-        <!-- Button delete -->
-        <v-btn variant="plain" color="red" @click="deleteConfirm(item.columns.username)">
-          <span class="material-symbols-outlined d-flex">
-            delete
-          </span>
-          <v-tooltip activator="parent" location="top">Delete</v-tooltip>
-        </v-btn>
-        <!-- Button delete -->
-      </template>
-      <!-- Buttons -->
-
+      <!-- Accessing table cells -->
 
     </v-data-table>
     <!-- Table -->
@@ -221,20 +214,14 @@
     <!-- Delete user dialog -->
     <v-dialog v-model="dialogDelete" width="400">
       <v-card>
-        <div class="text-warning text-h6 text-md-h5 text-lg-h4">
-
+        <div class="text-danger text-h6 text-md-h5 text-lg-h4">
           <div class="d-flex justify-content-between align-items-center px-4 pt-4">
-            <span class="material-symbols-outlined">
-              warning
-            </span>
-            <span>
-              Warning
-            </span>
-            <span class="material-symbols-outlined">
-              warning
-            </span>
+            <v-icon icon="mdi-alert" class="text-h4" />
+            Warning
+            <v-icon icon="mdi-alert" class="text-h4" />
           </div>
-          <hr>
+
+          <hr />
         </div>
 
         <div class="pa-3" align="center">
@@ -262,19 +249,13 @@
     <v-dialog v-model="dialogState" width="400">
       <v-card>
         <div class="text-warning text-h6 text-md-h5 text-lg-h4">
-
           <div class="d-flex justify-content-between align-items-center px-4 pt-4">
-            <span class="material-symbols-outlined">
-              warning
-            </span>
-            <span>
-              Warning
-            </span>
-            <span class="material-symbols-outlined">
-              warning
-            </span>
+            <v-icon icon="mdi-alert" class="text-h4" />
+            Warning
+            <v-icon icon="mdi-alert" class="text-h4" />
           </div>
-          <hr>
+
+          <hr />
         </div>
 
         <div class="pa-3" align="center">
@@ -356,17 +337,13 @@
 </template>
   
 
-<script setup>
-import { VDataTable } from 'vuetify/labs/VDataTable'
-</script>
 
 <script>
-import axios, { all } from 'axios';
+import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
 const { emit } = useEventsBus()
-import { ref, watch } from "vue";
+import { watch } from "vue";
 import { useTheme } from 'vuetify'
-import { VDataTable } from 'vuetify/labs/VDataTable'
 
 
 export default {
@@ -460,11 +437,14 @@ export default {
         { title: 'USER ROLE', align: 'center', key: 'user_role', sortable: false },
       ],
 
+      actions: [
+        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
+      ],
+
       allHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
         { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
         { title: 'JOINED', align: 'center', key: 'date_joined' },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       DriverHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
@@ -478,7 +458,6 @@ export default {
         { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
         { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
         { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       AssetHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
@@ -492,7 +471,6 @@ export default {
         { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
         { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
         { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       HRHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
@@ -506,7 +484,6 @@ export default {
         { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
         { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
         { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       ManagerHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
@@ -520,7 +497,6 @@ export default {
         { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
         { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
         { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       PayrollHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
@@ -534,7 +510,6 @@ export default {
         { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
         { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
         { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
       ClientsHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
@@ -548,7 +523,6 @@ export default {
         { title: 'STREET', align: 'center', key: 'residence_street', sortable: false },
         { title: 'HOME', align: 'center', key: 'residence_home_number', sortable: false },
         { title: 'APARTAMENT', align: 'center', key: 'residence_apartament_number', sortable: false },
-        { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
       ],
 
     };
@@ -556,7 +530,7 @@ export default {
 
   computed: {
     updatedColumns() {
-      return [...this.necessaryHeaders, ...this.selectedColumns];
+      return [...this.necessaryHeaders, ...this.selectedColumns, ...this.actions];
     },
   },
 
@@ -604,7 +578,6 @@ export default {
         }
 
         this.users = response.data.results;
-        console.log(response.data.results);
 
         // Add number for each row
         this.users.forEach((user, index) => {
@@ -700,32 +673,16 @@ export default {
         this.dialogDelete = false;
         this.reloadComponent()
 
+        // Call message
+        const messageData = {
+          message: `Successfully deleted ${delUsername}`,
+          type: 'success'
+        };
 
-        if (response.status == 204) {
-          // Call message
-          const messageData = {
-            message: `Successfully deleted ${delUsername}`,
-            type: 'success'
-          };
-
-          localStorage.setItem('message', JSON.stringify(messageData));
-          emit('message', '');
-
-        }
-        else {
-          const messageData = {
-            message: 'Error, please try again',
-            type: 'error'
-          };
-
-          localStorage.setItem('message', JSON.stringify(messageData));
-          emit('message', '');
-
-
-          this.reloadComponent()
-        }
-
+        localStorage.setItem('message', JSON.stringify(messageData));
+        emit('message', '')
       }
+
       catch (error) {
         const messageData = {
           message: 'Error, please try again',
@@ -768,6 +725,8 @@ export default {
     },
 
 
+
+
     async changeState(username) {
       const response = await axios.put(`api/users/change-state/${username}/`)
       this.dialogState = false;
@@ -785,9 +744,21 @@ export default {
     },
 
     async userDetails(username, role) {
-      const response = await axios.get(`api/users/get/${username}/${role}/`);
-      this.userDetailData = response.data;
-      this.UserDetailsDialog = true;
+      try {
+        const response = await axios.get(`api/users/get/${username}/${role}/`);
+        this.userDetailData = response.data;
+        this.UserDetailsDialog = true;
+      }
+      catch (error) {
+        // Call message
+        const messageData = {
+          message: 'Error',
+          type: 'error'
+        };
+
+        localStorage.setItem('message', JSON.stringify(messageData));
+        emit('message', '');
+      }
 
     },
 

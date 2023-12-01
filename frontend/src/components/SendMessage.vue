@@ -5,22 +5,22 @@
             <v-form v-model="form" @submit.prevent="onSubmit">
 
                 <v-card class="pa-5">
-                    <v-card-title class="text-h5">
+                    <v-card-title class="text-h5 font-weight-bold">
                         Create message
                     </v-card-title>
                     <v-card-text>
 
-                        <!-- Destiny -->
-                        <v-select label="To" variant="solo-filled" :items="['Users', 'Groups']" v-model="target" :disabled="target"></v-select>
-                        <!-- Destiny -->
+                        <!-- Target -->
+                        <v-select label="Choose recivers" variant="solo-filled" :items="['Users', 'Groups']" v-model="target" :disabled="target"></v-select>
+                        <!-- Target -->
 
 
 
-                        <!-- If Destiny is group -->
+                        <!-- If Target is group -->
                         <v-select v-if="target === 'Groups'" chips label="Select groups" :items="groups" multiple
                             variant="solo-filled" v-model="selectedGroups" :disabled="loading"
                             :rules="[required]"></v-select>
-                        <!-- If Destiny is group -->
+                        <!-- If Target is group -->
 
 
                         <!-- If Users selected -->
@@ -32,7 +32,7 @@
                         <!-- If Users selected -->
 
 
-                        <!-- If Destiny are users -->
+                        <!-- If Target are users -->
                         <v-dialog persistent v-model="dialogUsers" width="1400">
                             <v-card class="pa-5">
                                 <v-card-title>
@@ -180,7 +180,7 @@
                                 </v-row>
                             </v-card>
                         </v-dialog>
-                        <!-- If Destiny are users -->
+                        <!-- If Target are users -->
 
 
 
@@ -244,9 +244,6 @@
     </v-row>
 </template>
 
-<script setup>
-import { VDataTable } from 'vuetify/labs/VDataTable';
-</script>
 
 <script>
 import axios from 'axios';

@@ -10,38 +10,94 @@
                     <!-- Menu button -->
                     <v-col cols="auto" align="start">
                         <v-app-bar-nav-icon @click.stop="drawer = !drawer" @mouseenter="drawer = true">
-                            <span class="material-symbols-outlined">
-                                menu
-                            </span>
+                            <v-icon icon="mdi-menu" />
                         </v-app-bar-nav-icon>
                     </v-col>
                     <!-- Menu button -->
 
 
-                    <!-- Title -->
-                    <v-col class="text-start">
+                    <!-- Title and location -->
+                    <v-col>
 
-                        <div>
+                        <v-row class="ms-2 text-h6" align="center" justify="center">
+                            <v-col cols="auto">
+                                <v-btn icon="mdi-truck-fast" @click="changeComponent('HomeComponent')"></v-btn>
+                                <span class="font-weight-medium" v-if="!$vuetify.display.smAndDown">
+                                    FDFMS
+                                </span>
+                            </v-col>
 
-                            <span v-for="component in path" :key="component.name">
 
-                                <v-btn :disabled="component.disabled" variant="plain"
-                                    @click="changeComponent(component.component)">
-                                    {{ component.name }}
-                                </v-btn>
-                                /
-                            </span>
-                        </div>
+                            <v-col>
+                                <!-- Visible on larger devices -->
+                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown" class="mt-3">
+                                    <template v-slot:divider>
+                                        <v-icon icon="mdi-chevron-right"></v-icon>
+                                    </template>
+                                    <template v-slot:title="{ item }">
+                                        <span v-if="!item.disabled" @click="changeComponent(item.component)" role="button">
+                                            {{ item.title.toUpperCase() }}
+                                        </span>
+                                        <span v-else>
+                                            {{ item.title.toUpperCase() }}
+                                        </span>
+                                    </template>
+                                </v-breadcrumbs>
+                                <!-- Visible on larger devices -->
+
+
+                                <!-- Visible on smaller devices -->
+                                <span v-if="$vuetify.display.smAndDown">
+                                    <v-select variant="underlined" :items="reversedPath" v-model="reversedPath[0]"
+                                        :disabled="reversedPath.length === 1">
+                                        <template #item="{ item }">
+
+                                            <v-list-item align="center" justify="center">
+
+                                                <p v-if="!item.raw.disabled" @click="changeComponent(item.raw.component)"
+                                                    role="button" class="font-weight-bold"
+                                                    :class="isDarkModeEnabled ? 'text-teal-lighten-2' : 'text-teal-darken-3'">
+                                                    {{ item.title }}
+                                                </p>
+                                                <p v-else>
+                                                    {{ item.title }}
+                                                </p>
+
+                                            </v-list-item>
+                                        </template>
+                                    </v-select>
+                                </span>
+                                <!-- Visible on smaller devices -->
+
+
+
+                            </v-col>
+
+                        </v-row>
+
 
                     </v-col>
-                    <!-- Title -->
+                    <!-- Title and location -->
 
 
                     <!-- Log out -->
                     <v-col cols="auto" align="end">
                         <v-col cols="auto">
 
-                            <v-tooltip :text="isDarkModeEnabled ? 'Enable light mode' : 'Enable dark mode'" location="bottom">
+                            <v-tooltip text="Help"
+                                location="bottom">
+                                <template v-slot:activator="{ props }">
+                                    <v-btn :ripple="false" variant="plain" v-bind="props"
+                                        icon="mdi-help" color="blue-darken-4"
+                                        @click="showHelp">
+
+                                    </v-btn>
+                                </template>
+                            </v-tooltip>
+
+
+                            <v-tooltip :text="isDarkModeEnabled ? 'Enable light mode' : 'Enable dark mode'"
+                                location="bottom">
                                 <template v-slot:activator="{ props }">
                                     <v-btn :ripple="false" variant="plain" v-bind="props"
                                         :icon="isDarkModeEnabled ? 'mdi-weather-night' : 'mdi-white-balance-sunny'"
@@ -88,15 +144,9 @@
 
                                                         <div
                                                             class="d-flex justify-content-between align-items-center px-4 pt-4">
-                                                            <span class="material-symbols-outlined">
-                                                                warning
-                                                            </span>
-                                                            <span>
-                                                                Logout
-                                                            </span>
-                                                            <span class="material-symbols-outlined">
-                                                                warning
-                                                            </span>
+                                                            <v-icon icon="mdi-alert" class="text-h4" />
+                                                            Logout
+                                                            <v-icon icon="mdi-alert" class="text-h4" />
                                                         </div>
                                                         <hr>
                                                     </div>
@@ -106,10 +156,11 @@
                                                     </div>
                                                     <hr>
 
-                                                    <div class="justify-center d-flex align-items-center mb-3">
-                                                        <v-btn variant="outlined" width="150" class="mr-5"
+                                                    <div class="d-flex align-items-center justify-content-evenly mb-3">
+                                                        <v-btn variant="outlined" width="130" class="mr-5"
                                                             @click="isActive.value = false">No</v-btn>
-                                                        <v-btn width="150" @click="logout" color="red">Yes</v-btn>
+                                                        <v-btn variant="outlined" width="130" @click="logout" color="red"
+                                                            append-icon="mdi-logout">Yes</v-btn>
                                                     </div>
                                                 </v-card>
                                             </template>
@@ -137,16 +188,6 @@
                 :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }">
 
                 <v-list density="compact" nav class="pa-3">
-                    <v-row>
-                        <v-col cols="auto">
-                            <v-icon icon="mdi-truck-fast" class="text-h3" />
-                        </v-col>
-                        <v-col class="text-h5">
-                            FDFMS
-                        </v-col>
-                    </v-row>
-
-                    <v-divider></v-divider>
 
                     <component :is="getNavigationComponent(userData.user_role)" />
 
@@ -188,7 +229,7 @@
         </v-layout>
 
         <v-sheet app>
-            <div class="pa-1 text-center w-100 " :class="isDarkModeEnabled ? 'bg-grey-darken-4': '' ">
+            <div class="pa-1 text-center w-100 " :class="isDarkModeEnabled ? 'bg-grey-darken-4' : ''">
 
 
                 <span v-for="social in socials" :key="social.id" class="pa-3">
@@ -204,7 +245,15 @@
         </v-sheet>
 
 
-        <CreateMessage ref="createMessage" style="display: none;"  :key="forceReload"/>
+        <CreateMessage ref="createMessage" style="display: none;" :key="forceReload" />
+
+        <!-- Help dialog -->
+        <HelpDialog ref="helpDialog" style="display: none;" :key="forceReload" />
+        <!-- Help dialog -->
+
+        <!-- Add post dialog -->
+        <AddPost ref="addPost" style="display: none;" :key="forceReload" />
+        <!-- Add post dialog -->
 
     </v-app>
 </template>
@@ -213,7 +262,7 @@
 import { useTheme } from 'vuetify'
 import { drawer, closeDrawer } from '../store/store.js';
 import useEventsBus from '../plugins/eventBus.js'
-import { ref, watch } from "vue";
+import { watch } from "vue";
 const { emit } = useEventsBus()
 
 const toggleDrawer = () => {
@@ -235,10 +284,20 @@ function toggleTheme() {
 <script>
 import { markRaw } from 'vue';
 import useEventsBus from '../plugins/eventBus.js'
+const { emit } = useEventsBus()
+
+// Help dialog
+import HelpDialog from '../components/HelpDialog.vue'
+// Help dialog
+
 
 // Messages
 import CreateMessage from '../components/SendMessage.vue'
 // Messages
+
+// Posts
+import AddPost from '../components/AddPost.vue'
+// Posts
 
 // Home components
 import Home from '../components/Home.vue';
@@ -271,6 +330,11 @@ import ManageCars from '../components/asset/ManageCars.vue';
 // Asset
 
 
+// Managers
+import CreateSchedule from '../components/manager/ManageSchedules.vue';
+// Managers
+
+
 
 export default {
     data() {
@@ -279,7 +343,7 @@ export default {
             currentComponent: NonReactiveHome,
             path: [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
                 }
             ],
@@ -292,6 +356,8 @@ export default {
             snackContent: '',
 
             forceReload: 0,
+
+            isSmallScreen: false,
 
 
             socials: [
@@ -311,6 +377,15 @@ export default {
 
     components: {
         CreateMessage,
+        AddPost,
+        HelpDialog,
+    },
+
+    computed: {
+        reversedPath() {
+            return this.path.slice().reverse();
+        },
+
     },
 
 
@@ -333,10 +408,24 @@ export default {
                 }
             }
         );
+
+
     },
 
 
+    watch: {
+        group() {
+            this.drawer = false
+        },
+
+    },
+
+
+
     methods: {
+
+
+
         toggleDarkMode() {
             this.darkModeEnabled = !this.darkModeEnabled;
             this.$vuetify.theme.dark = this.darkModeEnabled;
@@ -361,6 +450,10 @@ export default {
             }
         },
 
+        showHelp() {
+            emit('showHelpDialog')
+        },
+
         changeComponent(name) {
             this.$root.changeCurrentComponent(name);
         },
@@ -370,7 +463,7 @@ export default {
             this.currentComponent = NonReactiveHome;
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'NonReactiveHome',
                     disabled: true,
                 },
@@ -383,16 +476,17 @@ export default {
             this.currentComponent = AddUser;
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
-                    name: "Users",
+                    title: "Users",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Add user',
+                    title: 'Add user',
                     component: '',
                     disabled: true,
                 },
@@ -402,16 +496,17 @@ export default {
             this.currentComponent = ManageUsers;
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
-                    name: "Users",
+                    title: "Users",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Manage Users',
+                    title: 'Manage Users',
                     component: 'ManageUsers',
                     disabled: true,
                 },
@@ -420,16 +515,17 @@ export default {
         AddDriverComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
-                    name: "Users",
+                    title: "Users",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Add Driver User',
+                    title: 'Add Driver User',
                     component: 'AddDriverComponent',
                     disabled: true,
                 },
@@ -442,16 +538,17 @@ export default {
         AddRestaurantComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
-                    name: "Restaurant",
+                    title: "Restaurant",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Add restaurant',
+                    title: 'Add restaurant',
                     component: '',
                     disabled: true,
                 },
@@ -461,16 +558,17 @@ export default {
         ManageRestaurantComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
-                    name: "Restaurant",
+                    title: "Restaurant",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Manage restaurants',
+                    title: 'Manage restaurants',
                     component: '',
                     disabled: true,
                 },
@@ -480,16 +578,17 @@ export default {
         AddBrandComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
-                    name: "Brands",
+                    title: "Brands",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Add brand',
+                    title: 'Add brand',
                     component: '',
                     disabled: true,
                 },
@@ -499,16 +598,17 @@ export default {
         ManageBrandsComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
-                    name: "Brands",
+                    title: "Brands",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Manage brands',
+                    title: 'Manage brands',
                     component: '',
                     disabled: true,
                 },
@@ -521,16 +621,17 @@ export default {
         AddCarsComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
-                    name: "Cars",
+                    title: "Cars",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Add Car',
+                    title: 'Add Car',
                     component: '',
                     disabled: true,
                 },
@@ -540,16 +641,17 @@ export default {
         ShowCarsComponent() {
             this.path = [
                 {
-                    name: "Home",
+                    title: "Home",
                     component: 'HomeComponent',
+                    disabled: false,
                 },
                 {
-                    name: "Cars",
+                    title: "Cars",
                     component: '',
                     disabled: true,
                 },
                 {
-                    name: 'Manage Cars',
+                    title: 'Manage Cars',
                     component: '',
                     disabled: true,
                 },
@@ -559,10 +661,23 @@ export default {
         // Assets
 
 
-
-
-
-
+        // Managers
+        ManageScheduleComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Schedule",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = CreateSchedule;
+        },
+        // Managers
 
 
 
@@ -581,13 +696,7 @@ export default {
 
 
 
-    watch: {
-        group() {
-            this.drawer = false
 
-
-        },
-    },
 
 }
 

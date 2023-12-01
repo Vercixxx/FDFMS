@@ -11,7 +11,6 @@ from django.http import JsonResponse
 
 
 from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer, getAllUsernames
-from owner.serializers import AddOwnerSerializer
 from rest_manager.serializers import AddManagerSerializer, RestManagerSerializer, GetRestManager, UpdateRestManager
 from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer, GetAssetUser, UpdateAssetUser
 from clients_dept.serializers import AddClientsUserSerializer, ClientsSerializer, GetClientsUser, UpdateClientsUser
@@ -37,7 +36,6 @@ from rest_framework_simplejwt.settings import api_settings
 
 # Models
 from .models import GeneralUser
-from owner.models import Owner
 from rest_manager.models import RestManager
 from asset_dept.models import AssetUser
 from clients_dept.models import ClientsUser
@@ -52,7 +50,6 @@ from django.db.models import F
 class GlobalDictionaries:
     dicts = {
         'UserModels': {
-            'Owner': Owner,
             'Manager': RestManager,
             'Asset': AssetUser,
             'Clients': ClientsUser,
@@ -63,7 +60,6 @@ class GlobalDictionaries:
         },
         
         'AddUserSerializers': {
-            'Owner' : AddOwnerSerializer,
             'Manager' : AddManagerSerializer,
             'Asset' : AddAssetUserSerializer,
             'Clients' : AddClientsUserSerializer,

@@ -1,89 +1,260 @@
 <template>
-    <v-row>
-        <v-col class="text-h5">
-            {{ date }}
-        </v-col>
-        <v-col>
+  <v-row>
+    <v-col class="text-h5">
+      {{ date }}
+    </v-col>
+    <v-col align="end">
+      <v-btn variant="plain" prepend-icon="mdi-plus" class="bg-teal-darken-2" @click="addPost()">
+        Add post</v-btn>
+    </v-col>
+  </v-row>
 
-        </v-col>
+  <!-- Variant -->
+  <v-row>
+    <v-col cols="5">
+      <v-select v-if="logged_role !== 'Driver'" class="ma-5" label="Choose home variant"
+        v-model="version" :items="versions" variant="outlined"></v-select>
+    </v-col>
+  </v-row>
+  <!-- Variant -->
 
-    </v-row>
+  <v-card v-for="post in posts" :key="post.id" class="mx-auto my-8 pa-5 border-2">
+    <v-card-item>
+      <v-card-title class="text-md-h5 text-lg-h4" :class="
+        isDarkModeEnabled ? 'text-teal-lighten-2' : 'text-teal-darken-3'
+      ">
+        <v-row>
+          <v-col class="text-wrap font-weight-bold">
+            {{ post.title }}
+          </v-col>
+          <v-col align="end">
+            <!-- Detele button -->
+            <v-btn v-if="
+              post.author_username === logged_username ||
+              logged_role === 'Administrator'
+            " variant="plain" icon="mdi-delete" color="red" @click="deletePostDialog(post.id)"></v-btn>
+            <!-- Detele button -->
+          </v-col>
+        </v-row>
+      </v-card-title>
+      <v-card-subtitle>
+        Added by {{ post.author_username }}, {{ post.posted_date }}
+      </v-card-subtitle>
+    </v-card-item>
 
+    <v-card-text>
+      {{ post.content }}
+    </v-card-text>
+  </v-card>
 
+  <v-pagination v-model="page" class="my-3" :length="pageAmount" :total-visible="5" @next="nextPage()"
+    @prev="prevPage()"></v-pagination>
 
-    <article class="p-2 m-2 border rounded mb-10">
-        <h3>
-            Hi from
-            <span class="badge bg-secondary">
-                <v-icon icon="mdi-apple"></v-icon>
-                <v-icon icon="mdi-apple-ios"></v-icon>
-            </span>
-        </h3>
-        <hr>
-
-        <div class="text-wrap fs-5">
-            <v-icon icon="mdi-android" class="text-h1"></v-icon>
-            Content
+  <!-- Delete post dialog -->
+  <v-dialog v-model="dialogDelete" width="400">
+    <v-card>
+      <div class="text-danger text-h6 text-md-h5 text-lg-h4">
+        <div class="d-flex justify-content-between align-items-center px-4 pt-4">
+          <v-icon icon="mdi-alert" class="text-h4" />
+          Warning
+          <v-icon icon="mdi-alert" class="text-h4" />
         </div>
 
-    </article>
+        <hr />
+      </div>
 
-    <article class="p-2 m-2 border rounded">
-        <h3>
-            Welcome to home page
-        </h3>
-        <hr>
+      <div class="pa-3" align="center">
+        You are trying to delete post id
+        <span class="fw-bolder">
+          {{ deleteId }}
+        </span>
+        , this operation is <span class="fw-bold">irreversible</span>. Are you
+        sure?
+      </div>
+      <hr />
 
-        <div class="text-wrap fs-5">
-            Hi, it's an honor to present you home page of <span class="fw-bolder">FDFMS</span> system.
-            Check options in menu to proceed some actions.
-        </div>
-
-    </article>
+      <div class="justify-center d-flex align-items-center mb-3">
+        <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
+        <v-btn width="150" @click="deletePost()" color="red">Yes</v-btn>
+      </div>
+    </v-card>
+  </v-dialog>
+  <!-- Delete post dialog -->
 </template>
 
 <script>
+import axios from "axios";
+import useEventsBus from "../plugins/eventBus.js";
+const { emit } = useEventsBus();
+import { watch } from "vue";
+import { useTheme } from "vuetify";
+
 export default {
-    data() {
-        return {
-            date: '',
-        }
+  data() {
+    return {
+      date: "",
+      posts: [],
+      logged_username: "",
+      logged_role: "",
+      isDarkModeEnabled: false,
+
+      versions: ['Users', 'Drivers'],
+      version: '',
+
+      page: 1,
+      pageAmount: 0,
+      prev: null,
+      next: null,
+
+      dialogDelete: false,
+      deleteId: null,
+    };
+  },
+
+
+  watch: {
+    version: 'handleVersionChange',
+  },
+
+  mounted() {
+    this.getDate();
+
+    this.intervalId = setInterval(() => {
+      this.getDate();
+    }, 60000);
+
+
+    
+
+    this.logged_username = this.$store.getters.responseData.username;
+    this.logged_role = this.$store.getters.responseData.user_role;
+
+    if(this.logged_role === 'Driver'){
+      this.version = 'Driver';
+    }
+    else {
+      this.version = 'Users'
+    }
+    this.getPosts();
+
+
+    // Dark mode
+    const { bus } = useEventsBus();
+
+    watch(
+      () => bus.value.get("theme"),
+      (val) => {
+        const [themeBus] = val ?? [];
+        this.isDarkModeEnabled = themeBus;
+      }
+    );
+
+    const theme = useTheme();
+    this.isDarkModeEnabled = theme.global.current.value.dark;
+    // Dark mode
+  },
+
+  beforeDestroy() {
+    clearInterval(this.intervalId);
+  },
+
+  methods: {
+    // Get date
+    getDate() {
+      const now = new Date();
+
+      const daysOfWeek = [
+        "Niedziela",
+        "Poniedziałek",
+        "Wtorek",
+        "Środa",
+        "Czwartek",
+        "Piątek",
+        "Sobota",
+      ];
+      const dayOfWeek = daysOfWeek[now.getDay()];
+
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+
+      const day = now.getDate();
+      const month = now.getMonth() + 1;
+      const year = now.getFullYear();
+
+      this.date = `${dayOfWeek}, ${hours}:${minutes < 10 ? "0" : ""
+        }${minutes}, ${day}-${month}-${year}`;
+    },
+    // Get date
+
+    // Add post
+    addPost() {
+      emit("showAddPost", true);
+    },
+    // Add post
+
+    // Delete post
+    deletePostDialog(postId) {
+      this.dialogDelete = true;
+      this.deleteId = postId;
     },
 
+    async deletePost() {
+      this.dialogDelete = false;
+      try {
+        const response = await axios.delete(
+          `api/posts/delete/${this.deleteId}`
+        );
+        emit("forceReload", "");
 
+        const messageData = {
+          message: `Succesfully deleted post id ${this.deleteId}`,
+          type: "error",
+        };
 
-    mounted() {
-        this.getDate();
+        localStorage.setItem("message", JSON.stringify(messageData));
+        emit("message", "");
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // Delete post
 
-        this.intervalId = setInterval(() => {
-            this.getDate();
-        }, 60000);
+    // Get posts
+    async getPosts(url) {
+      console.log(this.version);
+
+      let response;
+
+      if (this.version === 'Users') {
+        response = await axios.get(url || `api/posts/get/${this.version}/`);
+      } else {
+        response = await axios.get(url || `api/posts/get/${this.version}/`);
+      }
+
+      // emit("forceReload", "");
+      console.log(response);
+      this.posts = response.data.results;
+      this.pageAmount = response.data.total_pages;
+      this.prev = response.data.previous;
+      this.next = response.data.next;
     },
 
-
-    beforeDestroy() {
-        clearInterval(this.intervalId);
+    handleVersionChange() {
+      this.getPosts();
     },
+    // Get posts
 
-
-    methods: {
-        getDate() {
-            const now = new Date();
-
-            const daysOfWeek = ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'];
-            const dayOfWeek = daysOfWeek[now.getDay()];
-
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-
-            const day = now.getDate();
-            const month = now.getMonth() + 1
-            const year = now.getFullYear();
-
-            this.date = `${dayOfWeek}, ${hours}:${minutes < 10 ? '0' : ''}${minutes}, ${day}-${month}-${year}`;
-        },
+    // Previous page
+    async prevPage() {
+      await this.getPosts(this.prev);
     },
+    // Previous page
 
-
-}
+    // Next page
+    async nextPage() {
+      await this.getPosts(this.next);
+    },
+    // Next page
+  },
+};
 </script>
