@@ -447,7 +447,6 @@ export default {
 
             const response = await axios.get(`api/car/get/${carid}/`);
             this.editingCar = response.data;
-            console.log(response.data);
 
             for (const field of this.allInputs) {
                 this.input_data[field.model] = this.editingCar[field.model];

@@ -9,7 +9,7 @@
 
                     <!-- Menu button -->
                     <v-col cols="auto" align="start">
-                        <v-app-bar-nav-icon @click.stop="drawer = !drawer" @mouseenter="drawer = true" >
+                        <v-app-bar-nav-icon @click.stop="drawer = !drawer" @mouseenter="drawer = true">
                             <v-icon icon="mdi-menu" />
                         </v-app-bar-nav-icon>
                     </v-col>
@@ -21,12 +21,12 @@
 
                         <v-row class="ms-2 text-h6" align="center" justify="center">
                             <v-col cols="auto">
-                                <v-btn icon="mdi-truck-fast" @click="changeComponent('HomeComponent')" ></v-btn>
+                                <v-btn icon="mdi-truck-fast" @click="changeComponent('HomeComponent')"></v-btn>
                                 <span class="font-weight-medium" v-if="!$vuetify.display.smAndDown">
                                     FDFMS
                                 </span>
                             </v-col>
-               
+
 
                             <v-col>
                                 <!-- Visible on larger devices -->
@@ -84,6 +84,18 @@
                     <v-col cols="auto" align="end">
                         <v-col cols="auto">
 
+                            <v-tooltip text="Help"
+                                location="bottom">
+                                <template v-slot:activator="{ props }">
+                                    <v-btn :ripple="false" variant="plain" v-bind="props"
+                                        icon="mdi-help" color="blue-darken-4"
+                                        @click="showHelp">
+
+                                    </v-btn>
+                                </template>
+                            </v-tooltip>
+
+
                             <v-tooltip :text="isDarkModeEnabled ? 'Enable light mode' : 'Enable dark mode'"
                                 location="bottom">
                                 <template v-slot:activator="{ props }">
@@ -132,9 +144,9 @@
 
                                                         <div
                                                             class="d-flex justify-content-between align-items-center px-4 pt-4">
-                                                            <v-icon icon="mdi-alert" class="text-h4"/>
+                                                            <v-icon icon="mdi-alert" class="text-h4" />
                                                             Logout
-                                                            <v-icon icon="mdi-alert" class="text-h4"/>
+                                                            <v-icon icon="mdi-alert" class="text-h4" />
                                                         </div>
                                                         <hr>
                                                     </div>
@@ -147,7 +159,8 @@
                                                     <div class="d-flex align-items-center justify-content-evenly mb-3">
                                                         <v-btn variant="outlined" width="130" class="mr-5"
                                                             @click="isActive.value = false">No</v-btn>
-                                                        <v-btn variant="outlined" width="130" @click="logout" color="red" append-icon="mdi-logout">Yes</v-btn>
+                                                        <v-btn variant="outlined" width="130" @click="logout" color="red"
+                                                            append-icon="mdi-logout">Yes</v-btn>
                                                     </div>
                                                 </v-card>
                                             </template>
@@ -234,7 +247,9 @@
 
         <CreateMessage ref="createMessage" style="display: none;" :key="forceReload" />
 
-       
+        <!-- Help dialog -->
+        <HelpDialog ref="helpDialog" style="display: none;" :key="forceReload" />
+        <!-- Help dialog -->
 
         <!-- Add post dialog -->
         <AddPost ref="addPost" style="display: none;" :key="forceReload" />
@@ -269,6 +284,12 @@ function toggleTheme() {
 <script>
 import { markRaw } from 'vue';
 import useEventsBus from '../plugins/eventBus.js'
+const { emit } = useEventsBus()
+
+// Help dialog
+import HelpDialog from '../components/HelpDialog.vue'
+// Help dialog
+
 
 // Messages
 import CreateMessage from '../components/SendMessage.vue'
@@ -357,6 +378,7 @@ export default {
     components: {
         CreateMessage,
         AddPost,
+        HelpDialog,
     },
 
     computed: {
@@ -426,6 +448,10 @@ export default {
                 default:
                     return null;
             }
+        },
+
+        showHelp() {
+            emit('showHelpDialog')
         },
 
         changeComponent(name) {

@@ -2,7 +2,6 @@
     <div class="containter m-2 p-2 d-flex justify-content-center">
         <div class="col-12 col-md-9">
 
-
             <!-- Top -->
             <div class="d-flex justify-content-between mb-5">
                 <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
@@ -16,7 +15,7 @@
                 </div>
                 <div v-else class="text-h6 text-md-h5 text-lg-h4 fw-bold">
                     <v-icon icon="mdi-silverware-fork-knife"></v-icon>
-                    Edit ?
+                    Edit {{ editRest.name }}
                 </div>
                 <div></div>
 
@@ -250,8 +249,8 @@
                             Fill all required fields first
                         </v-tooltip>
                         <span>
-                            <v-btn :disabled="!form" :loading="loading" block :color="!form ? 'danger' : 'success'" size="large" type="submit"
-                                class="mt-10 mb-5">
+                            <v-btn :disabled="!form" :loading="loading" block :color="!form ? 'danger' : 'success'"
+                                size="large" type="submit" class="mt-10 mb-5">
                                 Save
                             </v-btn>
                         </span>
@@ -283,6 +282,8 @@ export default {
             form: false,
             loading: false,
             editing: false,
+            restId: null,
+            editRest: {},
 
             input_data: {},
 
@@ -396,6 +397,16 @@ export default {
 
 
     mounted() {
+        // Check for editing or creating
+        this.restId = localStorage.getItem('restaurantID')
+
+        if (this.restId !== null) {
+            this.editing = true;
+            this.getRestInfo();
+            localStorage.removeItem('restaurantID');
+        }
+
+
         // Dark mode
         const { bus } = useEventsBus();
 
@@ -461,6 +472,36 @@ export default {
 
 
 
+        // Get restaurant info
+        async getRestInfo() {
+            try {
+                const response = await axios.get(`api/restaurant/get/${this.restId}/`);
+                this.editRest = response.data;
+
+                for (const field of this.allInputs) {
+                    this.input_data[field.model] = this.editRest[field.model];
+                }
+                console.log(this.editRest)
+
+                this.selectedCountry = this.editRest['country'];
+                this.selectedState = this.editRest['state'];
+                this.selectedManagers = this.editRest['managers'];
+                this.selectedBrand = this.editRest['brand'];
+
+            }
+            catch (error) {
+                const messageData = {
+                    message: "Error, please try again",
+                    type: 'danger'
+                };
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+            }
+        },
+        // Get restaurant info
+
+
+
         // Country
         async getCountries() {
             const response = await axios.get("api/users/get-countries/");
@@ -510,7 +551,12 @@ export default {
                 this.availableBrands = response.data.map(item => item.name);
             }
             catch (error) {
-                console.error('Error when fetching', error);
+                const messageData = {
+                    message: "Error, please try again",
+                    type: 'danger'
+                };
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
             }
         },
         // Load all brands
