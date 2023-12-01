@@ -69,6 +69,22 @@ class CreatePost(APIView):
         
 class DeletePost(DestroyAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Posts.objects.all()
-    serializer_class = GetPostsSerializer
     lookup_field = 'id'
+    def get_queryset(self):
+        target = self.kwargs.get('target')
+
+        if target == 'Users':
+            return Posts.objects.all()
+        else:
+            return DriverPosts.objects.all()
+
+    def get_serializer_class(self):
+        target = self.kwargs.get('target')
+
+        if target == 'Users':
+            return GetPostsSerializer
+        else:
+            return GetDriverPostsSerializer
+
+
+    
