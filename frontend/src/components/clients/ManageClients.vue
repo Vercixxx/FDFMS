@@ -366,7 +366,7 @@ export default {
         async deleteRestaurant() {
             this.dialogDelete = false;
             try {
-                const response = await axios.delete(`api/rest/delete/${this.deleteRestId}`);
+                const response = await axios.delete(`api/restaurant/delete/${this.deleteRestId}`);
 
                 const messageData = {
                     message: `Successfully deleted ${this.deleteRestName}`,
@@ -375,6 +375,8 @@ export default {
 
                 localStorage.setItem('message', JSON.stringify(messageData));
                 emit('message', '');
+
+                this.loadRestaurants();
 
 
             }
@@ -405,7 +407,6 @@ export default {
         async restaurantDetailsFunct(restaurantID) {
             const response = await axios.get(`api/restaurant/get/${restaurantID}/`);
             this.restaurantDetails = response.data;
-            console.log(this.restaurantDetails)
             this.restaurantDetailsDialog = true;
 
         },

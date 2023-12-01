@@ -11,6 +11,8 @@ class CreateRestaurantSerializer(serializers.ModelSerializer):
     queryset=RestManager.objects.all(),
     slug_field='id',
     )
+    
+    # brand = serializers.PrimaryKeyRelatedField(queryset=Brands.objects.all())
     class Meta:
         model = Restaurant
         fields = [
@@ -36,9 +38,19 @@ class CreateRestaurantSerializer(serializers.ModelSerializer):
     
     
 class GetAllRestaurants(serializers.ModelSerializer):
+    
+    managers = serializers.SerializerMethodField()
+    brand = serializers.SerializerMethodField()
+    
     class Meta:
         model = Restaurant
         fields = '__all__'
+        
+    def get_managers(self, obj):
+        return [manager.username for manager in obj.managers.all()]
+
+    def get_brand(self, obj):
+        return obj.brand.name
 
 
 

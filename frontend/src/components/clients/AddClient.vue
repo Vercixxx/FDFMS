@@ -454,6 +454,7 @@ export default {
             this.input_data['country'] = this.selectedCountry;
             this.input_data['state'] = this.selectedState;
             this.input_data['managers'] = this.selectedManagers.map(manager => manager.id);
+            this.input_data['brand'] = this.selectedBrand;
 
         },
         // Getting data from inputs
@@ -537,6 +538,7 @@ export default {
 
             try {
                 const response = await axios.post('api/restaurant/create/', this.input_data);
+                console.log(response);
 
                 const messageData = {
                     message: response.data.message,

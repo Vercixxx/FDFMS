@@ -19,7 +19,9 @@ class CreateRestaurant(APIView):
 
     def post(self, request):
         data = request.data
-        print(data)
+        
+        brand = Brands.objects.get(name=data['brand'])
+        data['brand'] = brand.id
 
         # Check for unique
         fields_to_check = ['name']
@@ -36,8 +38,8 @@ class CreateRestaurant(APIView):
         serializer = CreateRestaurantSerializer(data=data)
 
         if serializer.is_valid():
-            brand = serializer.save()
-            return JsonResponse({'message': f'Succesfully created {brand.name}'}, status=200)
+            restaurant = serializer.save()
+            return JsonResponse({'message': f'Succesfully created {restaurant.name}'}, status=200)
         else:
             return JsonResponse(serializer.errors, status=400)
 
@@ -78,7 +80,7 @@ class DeleteRestaurant(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Restaurant.objects.all()
     serializer_class = GetAllRestaurants
-    lookup_field = 'name'
+    lookup_field = 'id'
 
 
 # Brand
@@ -137,7 +139,7 @@ class GetBrands(APIView):
 class DeleteBrands(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Brands.objects.all()
-    lookup_field = 'id'
+    # lookup_field = 'id'
 # Deletion
 
 
