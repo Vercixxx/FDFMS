@@ -175,6 +175,20 @@ export default {
                         },
                     ],
                 },
+
+                {
+                    name: 'Other',
+                    mainIcon: 'mdi-lightning-bolt',
+                    disabled: false,
+                    options: [
+                        {
+                            name: 'Country/state',
+                            click: '',
+                            icon: 'mdi-city-variant',
+                        },
+
+                    ],
+                },
             ]
 
         };
