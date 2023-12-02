@@ -335,8 +335,8 @@
                             Fill all required fields first
                         </v-tooltip>
                         <span>
-                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
-                                class="mt-10 mb-5">
+                            <v-btn :disabled="!form" :loading="loading" :color="!form ? 'danger' : 'success'" size="large"
+                                type="submit" class="mt-10 mb-5 font-weight-black" block>
                                 Create
                             </v-btn>
                         </span>
@@ -349,8 +349,8 @@
                             Fill all required fields first
                         </v-tooltip>
                         <span>
-                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
-                                class="mt-10 mb-5">
+                            <v-btn :disabled="!form" :loading="loading" :color="!form ? 'danger' : 'success'" size="large"
+                                type="submit" class="mt-10 mb-5 font-weight-black" block>
                                 Save
                             </v-btn>
                         </span>
