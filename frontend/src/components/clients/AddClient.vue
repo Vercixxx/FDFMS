@@ -230,7 +230,7 @@
 
                     <v-row>
 
-                        <v-col cols="12" align="center">
+                        <v-col align="center">
 
                             <!-- Button submit -->
                             <span v-if="!editing">
@@ -239,7 +239,7 @@
                                 </v-tooltip>
                                 <span>
                                     <v-btn :disabled="!form" :loading="loading" :color="!form ? 'danger' : 'success'"
-                                        size="large" type="submit" class="mt-10 mb-5 font-weight-black">
+                                        size="large" type="submit" class="mt-10 mb-5 font-weight-black" block>
                                         Create
                                     </v-btn>
                                 </span>
@@ -253,7 +253,7 @@
                                 </v-tooltip>
                                 <span>
                                     <v-btn :disabled="!form" :loading="loading" :color="!form ? 'danger' : 'success'"
-                                        size="large" type="submit" class="mt-10 mb-5 font-weight-black">
+                                        size="large" type="submit" class="mt-10 mb-5 font-weight-black" block>
                                         Save
                                     </v-btn>
                                 </span>
