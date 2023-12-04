@@ -10,7 +10,7 @@
                     </v-card-title>
                     <v-card-text>
 
-                        <v-select label="Select shift" variant="outlined" :items="updatedAvailableSchedules"
+                        <v-select label="Select car" variant="outlined" :items="updatedavailableCars"
                             v-model="selectedSchedule">
 
                         </v-select>
@@ -50,11 +50,11 @@
                         <v-col cols="6">
                             <span>
                                 <v-tooltip v-if="selectedSchedule === null" activator="parent" location="top" no-overflow>
-                                    Select shift
+                                    Select car
                                 </v-tooltip>
                                 <span>
                                     <v-btn block type="submit" color="green-darken-1" prepend-icon="mdi-check"
-                                        variant="text" :disabled="selectedSchedule === null">
+                                        variant="text" :disabled="selectedSchedule === null" @click="closeDialog()">
                                         Apply
                                     </v-btn>
                                 </span>
@@ -64,7 +64,7 @@
                         </v-col>
                     </v-row>
                     <!-- Buttons at the bottom -->
-
+{{ availableCars }}
                 </v-card>
             </v-form>
         </v-dialog>
@@ -84,8 +84,8 @@ export default {
     data() {
         return {
             showDialog: false,
-            availableSchedules: [],
-            selectedSchedule: null,
+            availableCars: [],
+            selectedSchedule: 1,
             hoursListDict: {},
             hoursList: [],
             selectedHours: [0, 28],
@@ -93,10 +93,10 @@ export default {
     },
 
     computed: {
-        updatedAvailableSchedules() {
-            if (this.availableSchedules.length > 0) {
-                const lastSchedule = this.availableSchedules[this.availableSchedules.length - 1];
-                return [...this.availableSchedules, lastSchedule + 1];
+        updatedavailableCars() {
+            if (this.availableCars.length > 0) {
+                const lastSchedule = this.availableCars[this.availableCars.length - 1];
+                return [...this.availableCars, lastSchedule + 1];
             } else {
                 return [1];
             }
@@ -119,8 +119,8 @@ export default {
                 if (showScheduleSelector) {
                     this.showDialog = true;
 
-                    const schedulesIds = showScheduleSelector[0][0];
-                    this.availableSchedules = schedulesIds.map(item => item.scheduleId)
+                    const carIds = showScheduleSelector[0][0];
+                    this.availableCars = carIds.map(item => item.carId)
                 }
             }
         );

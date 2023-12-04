@@ -1,8 +1,12 @@
 <template>
     <v-row>
         <v-col cols="auto">
-            <v-date-picker v-model="date" border="2" rounded=4 elevation="4" hide-header></v-date-picker>
+            <v-autocomplete label="Select restaurant"
+                :items="['Sosnowiec plaza KFC']"
+                variant="outlined"></v-autocomplete>
 
+            <v-date-picker v-model="date" border="2" rounded=4 elevation="4" hide-header></v-date-picker>
+            {{ date }}
             <v-row>
                 <v-col align="center">
                     <v-btn variant="outlined" class="bg-teal my-5" @click="showScheduleSelector()" prepend-icon="mdi-plus">
@@ -21,40 +25,46 @@
 
                 <v-row>
                     <v-col cols="auto">
-                        <v-table density="compact" hover>
+                        <table class="custom-table">
                             <thead>
-                                <tr>
+                                <tr align="center">
                                     <th class="text-left font-weight-black">
                                         Hours
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="hour in hoursList" :key="hour.hour">
+                                <tr v-for="hour in hoursList" :key="hour.hour" align="center">
                                     <td>{{ hour }}</td>
                                 </tr>
                             </tbody>
-                        </v-table>
+                        </table>
                     </v-col>
 
-                    <v-col cols='2' v-for="schedule in shiftSchedules" :key="schedule.id">
-                        <v-table density="compact" hover>
+                    <v-col cols='2' v-for="car in cars" :key="car.id">
+                        <table>
                             <thead>
-                                <tr>
-
-                                    <th class="text-center font-weight-black" style="margin-right: 10px;">
-                                        Shift {{ schedule.id }}
+                                <tr align="center">
+                                    <th class="text-center font-weight-black">
+                                        Car {{ car.id }}
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="hour in hoursList" :key="hour.hour">
-                                    <td :class="isDriverScheduled(schedule, hour) ? 'bg-teal' : ''">
+                                <tr v-for="hour in hoursList" :key="hour.hour" align="center">
+                                    <!-- <td :class="isDriverScheduled(schedule, hour) ? 'bg-teal' : ''">
+                                        <span v-if="isDriverScheduled(schedule, hour) === 'null'">
+                                        </span>
 
-                                    </td>
+                                        <span v-else>
+                                            {{ isDriverScheduled(schedule, hour) }}a
+
+                                        </span>
+                                    </td> -->
+                                    test
                                 </tr>
                             </tbody>
-                        </v-table>
+                        </table>
                     </v-col>
 
 
@@ -67,7 +77,7 @@
         </v-col>
     </v-row>
 
-
+    {{ cars }}
 
     <v-row justify="center">
         <v-col cols="3">
@@ -96,11 +106,11 @@ export default {
 
             date: null,
             hoursList: [],
-            shiftSchedules: [],
+            cars: [],
 
             hoursListDict: {},
-            id: 1,
-            scheduleId: 1,
+            shiftId: 1,
+            car: 1,
 
 
 
@@ -122,6 +132,7 @@ export default {
 
 
     mounted() {
+
         this.hoursList = this.generateTimeRows().map(item => item.hour);
 
         this.hoursList.forEach((hour, index) => {
@@ -136,18 +147,18 @@ export default {
                 if (appliedScheduleHours) {
                     const start = appliedScheduleHours[0][0];
                     const end = appliedScheduleHours[0][1];
-                    const scheduleId = appliedScheduleHours[0][2];
+                    const carId = appliedScheduleHours[0][2];
 
                     const newSingleSchedule = {
-                        scheduleId: scheduleId,
-                        id: this.id,
-                        driver: 'empty',
+                        carId: carId,
+                        shiftId: this.shiftId,
+                        driver: 'null',
                         start: start,
                         end: end,
                     };
 
-                    this.id += 1;
-                    this.shiftSchedules.push(newSingleSchedule);
+                    this.shiftId += 1;
+                    this.cars.push(newSingleSchedule);
 
                 }
             }
@@ -175,7 +186,7 @@ export default {
 
         showScheduleSelector() {
             const data = [
-                this.shiftSchedules,
+                this.cars,
             ]
             console.log(data)
             emit('showScheduleSelector', data)
@@ -187,17 +198,11 @@ export default {
             const currentHour = new Date(`2000-01-01 ${hour}`);
 
             if (currentHour >= scheduleStart && currentHour <= scheduleEnd) {
-                return schedule.driver !== 'empty' ? schedule.driver : 'free';
+                return schedule.driver !== 'null' ? schedule.driver : '';
             } else {
                 return '';
             }
         },
-
-        // formatTime(date) {
-        //     const hours = date.getHours().toString().padStart(2, '0');
-        //     const minutes = date.getMinutes().toString().padStart(2, '0');
-        //     return `${hours}:${minutes}`;
-        // },
 
 
         // checkHourAvailability(currentHour, schedule) {
@@ -223,3 +228,11 @@ export default {
     },
 };
 </script>
+
+
+
+<style scoped>
+.custom-table {
+    height: 65vh;
+}
+</style>
