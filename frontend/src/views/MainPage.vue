@@ -22,7 +22,7 @@
                         <v-row class="ms-2 text-h6" align="center" justify="center">
                             <v-col cols="auto">
                                 <v-btn icon="mdi-truck-fast" @click="changeComponent('HomeComponent')"></v-btn>
-                                <span class="font-weight-medium" v-if="!$vuetify.display.smAndDown">
+                                <span class="font-weight-bold" v-if="!$vuetify.display.smAndDown">
                                     FDFMS
                                 </span>
                             </v-col>
@@ -30,7 +30,7 @@
 
                             <v-col>
                                 <!-- Visible on larger devices -->
-                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown" class="mt-3">
+                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown" class="mt-3 font-weight-bold">
                                     <template v-slot:divider>
                                         <v-icon icon="mdi-chevron-right"></v-icon>
                                     </template>

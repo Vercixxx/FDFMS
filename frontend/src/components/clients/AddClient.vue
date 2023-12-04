@@ -143,8 +143,8 @@
                                     <!-- Available managers -->
                                     <v-data-table :headers="tableHeaders" :items="availableManagers"
                                         :search="searchTableAvailable" :loading="tableLoading"
-                                        class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage"
-                                        hover select-strategy="all" show-current-page>
+                                        class="elevation-4 rounded-xl" v-model:items-per-page="itemsPerPage" hover
+                                        select-strategy="all" show-current-page>
 
 
 
@@ -159,12 +159,12 @@
 
 
                                         <template v-slot:item="{ item }">
-                                            <tr align="center" @click="selectUser(item.id)" role="button">
+                                            <tr align="center" @click="selectUser(item)" role="button">
                                                 <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
                                                     Click to select
                                                 </v-tooltip>
                                                 <td v-for="header in tableHeaders" :key="header.key">
-                                                    {{ item[header.key] }}
+                                                    {{ item }}
                                                 </td>
                                             </tr>
                                         </template>
@@ -194,8 +194,7 @@
                                     <!-- Selected managers -->
                                     <v-data-table :headers="tableHeaders" :items="selectedManagers"
                                         :search="searchTableSelected" :loading="tableLoading" class="elevation-4 rounded-xl"
-                                        item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
-                                        show-current-page>
+                                        v-model:items-per-page="itemsPerPage" hover select-strategy="all" show-current-page>
 
 
 
@@ -209,12 +208,12 @@
                                         <!-- No data -->
 
                                         <template v-slot:item="{ item }">
-                                            <tr align="center" @click="unselectUser(item.id)" role="button">
+                                            <tr align="center" @click="unselectUser(item)" role="button">
                                                 <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
                                                     Click to unselect
                                                 </v-tooltip>
                                                 <td v-for="header in tableHeaders" :key="header.key">
-                                                    {{ item[header.key] }}
+                                                    {{ item }}
                                                 </td>
                                             </tr>
                                         </template>
@@ -262,11 +261,12 @@
                         </v-col>
                     </v-row>
 
+                    available: {{ availableManagers }}<br>
+                    seleted: {{ selectedManagers }}
                 </v-container>
             </v-form>
 
         </div>
-
     </div>
 </template>
 
@@ -308,11 +308,11 @@ export default {
             itemsPerPage: 10,
             tableHeaders: [
                 { title: 'Username', key: 'username', align: 'center', sortable: true },
-                { title: 'Id', key: 'id', align: 'center', sortable: true },
             ],
 
             // Search
             searchTableAvailable: '',
+            searchTableSelected: '',
 
             // Inputs definisions
             basicInfoInputs: [
@@ -402,6 +402,8 @@ export default {
 
 
     mounted() {
+
+
         // Check for editing or creating
         this.restId = localStorage.getItem('restaurantID')
 
@@ -469,7 +471,7 @@ export default {
             // Adding country, state and choosen managers
             this.input_data['country'] = this.selectedCountry;
             this.input_data['state'] = this.selectedState;
-            this.input_data['managers'] = this.selectedManagers.map(manager => manager.id);
+            this.input_data['managers'] = this.selectedManagers;
             this.input_data['brand'] = this.selectedBrand;
 
         },
@@ -526,8 +528,9 @@ export default {
 
 
         // Move user to selected
-        selectUser(userID) {
-            const userIndex = this.availableManagers.findIndex(user => user.id === userID);
+        selectUser(username) {
+            const userIndex = this.availableManagers.findIndex(user => user === username);
+
             if (userIndex !== -1) {
                 const selectedUser = this.availableManagers.splice(userIndex, 1)[0];
                 this.selectedManagers.push(selectedUser);
@@ -538,8 +541,8 @@ export default {
 
 
         // Move user to unselected
-        unselectUser(userID) {
-            const userIndex = this.selectedManagers.findIndex(user => user.id === userID);
+        unselectUser(username) {
+            const userIndex = this.selectedManagers.findIndex(user => user === username);
             if (userIndex !== -1) {
                 const unselectedUser = this.selectedManagers.splice(userIndex, 1)[0];
                 this.availableManagers.push(unselectedUser);
@@ -576,6 +579,7 @@ export default {
                 }
             });
             this.availableManagers = response.data;
+            this.availableManagers = this.availableManagers.filter(username => !this.selectedManagers.includes(username));
 
         },
         // Get all managers
@@ -589,7 +593,6 @@ export default {
 
             try {
                 const response = await axios.post('api/restaurant/create/', this.input_data);
-                console.log(response);
 
                 const messageData = {
                     message: response.data.message,
@@ -612,6 +615,37 @@ export default {
             }
         },
         // Create restaurant
+
+
+
+        // Update restaurant
+        async updateRestaurant() {
+            this.getDataFromInputs();
+
+            try {
+                const response = await axios.put(`api/restaurant/update/${this.editRest['name']}/`, this.input_data);
+                console.log(response);
+
+                const messageData = {
+                    message: response.data.message,
+                    type: 'success'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+
+                emit('message', '');
+                this.goBack()
+            } catch (error) {
+                this.loading = false;
+                const messageData = {
+                    message: error.response.data,
+                    type: 'danger'
+                };
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+            }
+        },
+        // Update restaurant
 
 
 
