@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from .models import Restaurant, Brands
 
 # Serializers
-from .serializers import CreateRestaurantSerializer, GetAllRestaurants, CreateBrandSerializer, GetBrandSerializer, UpdateBrandSerializer
+from .serializers import CreateRestaurantSerializer, UpdateRestaurantSerializer, GetAllRestaurants, CreateBrandSerializer, GetBrandSerializer, UpdateBrandSerializer
 
 # Rest
 from rest_framework.permissions import IsAuthenticated
@@ -42,6 +42,46 @@ class CreateRestaurant(APIView):
             return JsonResponse({'message': f'Succesfully created {restaurant.name}'}, status=200)
         else:
             return JsonResponse(serializer.errors, status=400)
+
+
+
+
+class UpdateRestaurant(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, name):
+        data = request.data
+        print(data)
+        
+        brand_name = data['brand']
+        brand = Brands.objects.get(name=brand_name)
+        data['brand'] = brand.pk
+
+        try:
+            restaurant = Restaurant.objects.get(name=name)
+
+            fields_to_check = ['name']
+
+            for field_name in fields_to_check:
+                if field_name in data:
+                    field_value = data[field_name]
+
+                    if field_value != getattr(restaurant, field_name) and Restaurant.objects.exclude(name=name).filter(**{field_name: field_value}).exists():
+                        return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400)
+
+            serializer = UpdateRestaurantSerializer(restaurant, data=data)
+
+            if serializer.is_valid():
+                serializer.update(restaurant, data)
+                return JsonResponse({'message': f'Succesfully edited {restaurant.name}'}, status=200)
+
+            else:
+                return JsonResponse(serializer.errors, status=400)
+
+        except Restaurant.DoesNotExist:
+            return JsonResponse({'error': 'Restaurant does not exist.'}, status=404)
+
+
 
 
 class GetRestaurants(APIView):
