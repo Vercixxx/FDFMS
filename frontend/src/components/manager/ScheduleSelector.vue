@@ -10,13 +10,13 @@
                     </v-card-title>
                     <v-card-text>
 
-                        <v-select label="Select car" variant="outlined" :items="updatedavailableCars"
-                            v-model="selectedSchedule">
+                        <v-select label="Select car" variant="outlined" :items="availableCars"
+                            v-model="selectedCar">
 
                         </v-select>
 
 
-                        <v-range-slider :disabled="selectedSchedule === null" reverse direction="vertical" v-model="selectedHours" min="0"
+                        <v-range-slider :disabled="selectedCar === null" reverse direction="vertical" v-model="selectedHours" strict min="0"
                             :max="hoursList.length - 1" :step="1" show-ticks="always" thumb-label="always"
                             thumb-color="green-darken-4" track-fill-color="green" track-size="20" density="comfortable">
 
@@ -29,6 +29,7 @@
                         </v-range-slider>
 
 
+                        
                         <p align="center">
                             Selected hours: <br>
                             {{ hoursListDict[selectedHours[0]] }} -
@@ -49,12 +50,12 @@
 
                         <v-col cols="6">
                             <span>
-                                <v-tooltip v-if="selectedSchedule === null" activator="parent" location="top" no-overflow>
+                                <v-tooltip v-if="selectedCar === null" activator="parent" location="top" no-overflow>
                                     Select car
                                 </v-tooltip>
                                 <span>
                                     <v-btn block type="submit" color="green-darken-1" prepend-icon="mdi-check"
-                                        variant="text" :disabled="selectedSchedule === null" @click="closeDialog()">
+                                        variant="text" :disabled="selectedCar === null">
                                         Apply
                                     </v-btn>
                                 </span>
@@ -85,22 +86,11 @@ export default {
         return {
             showDialog: false,
             availableCars: [],
-            selectedSchedule: 1,
+            selectedCar: 1,
             hoursListDict: {},
             hoursList: [],
             selectedHours: [0, 28],
         }
-    },
-
-    computed: {
-        updatedavailableCars() {
-            if (this.availableCars.length > 0) {
-                const lastSchedule = this.availableCars[this.availableCars.length - 1];
-                return [...this.availableCars, lastSchedule + 1];
-            } else {
-                return [1];
-            }
-        },
     },
 
 
@@ -156,8 +146,9 @@ export default {
             const selected = [
                 this.hoursListDict[this.selectedHours[0]],
                 this.hoursListDict[this.selectedHours[1]],
-                this.selectedSchedule
+                this.selectedCar
             ]
+
             emit('appliedScheduleHours', selected);
             this.closeDialog();
         },

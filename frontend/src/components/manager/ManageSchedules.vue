@@ -1,12 +1,10 @@
 <template>
     <v-row>
         <v-col cols="auto">
-            <v-autocomplete label="Select restaurant"
-                :items="['Sosnowiec plaza KFC']"
-                variant="outlined"></v-autocomplete>
+            <v-autocomplete label="Select restaurant" :items="['Sosnowiec plaza KFC']" variant="outlined"></v-autocomplete>
 
             <v-date-picker v-model="date" border="2" rounded=4 elevation="4" hide-header></v-date-picker>
-            {{ date }}
+
             <v-row>
                 <v-col align="center">
                     <v-btn variant="outlined" class="bg-teal my-5" @click="showScheduleSelector()" prepend-icon="mdi-plus">
@@ -41,27 +39,26 @@
                         </table>
                     </v-col>
 
-                    <v-col cols='2' v-for="car in cars" :key="car.id">
+                    <v-col v-for="car in cars" :key="car.carId">
                         <table>
                             <thead>
                                 <tr align="center">
                                     <th class="text-center font-weight-black">
-                                        Car {{ car.id }}
+                                        Car {{ car.carId }}
+
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="hour in hoursList" :key="hour.hour" align="center">
-                                    <!-- <td :class="isDriverScheduled(schedule, hour) ? 'bg-teal' : ''">
-                                        <span v-if="isDriverScheduled(schedule, hour) === 'null'">
-                                        </span>
-
-                                        <span v-else>
-                                            {{ isDriverScheduled(schedule, hour) }}a
-
-                                        </span>
-                                    </td> -->
-                                    test
+                                <tr v-for="hour in hoursList" :key="hour" align="center">
+                                    <td align="center" v-if="isHourScheduled(hour, car.schedules) === true" class="bg-grey"
+                                        style="width: 200px;" role="button">
+                                        &nbsp
+                                    </td>
+                                    <td v-else>
+                                        {{ isHourScheduled(hour, car.schedules) }}
+                                        &nbsp
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -72,12 +69,9 @@
                 </v-row>
 
 
-
             </v-row>
         </v-col>
     </v-row>
-
-    {{ cars }}
 
     <v-row justify="center">
         <v-col cols="3">
@@ -106,11 +100,35 @@ export default {
 
             date: null,
             hoursList: [],
-            cars: [],
+            cars: [
+                {
+                    carId: 1,
+                    schedules: [
+
+                    ],
+                },
+                {
+                    carId: 2,
+                    schedules: [
+
+                    ],
+                },
+                {
+                    carId: 3,
+                    schedules: [
+
+                    ],
+                },
+                {
+                    carId: 4,
+                    schedules: [
+
+                    ],
+                },
+            ],
+
 
             hoursListDict: {},
-            shiftId: 1,
-            car: 1,
 
 
 
@@ -127,40 +145,22 @@ export default {
     computed: {
         formattedDate() {
             return this.date ? format(this.date, 'EEEE, dd/LL/yyyy') : "Select date"
-        }
+        },
     },
 
 
     mounted() {
-
         this.hoursList = this.generateTimeRows().map(item => item.hour);
 
         this.hoursList.forEach((hour, index) => {
             this.hoursListDict[index] = hour;
         });
 
-
         const { bus } = useEventsBus();
         watch(
             () => [bus.value.get('appliedScheduleHours')],
             ([appliedScheduleHours]) => {
-                if (appliedScheduleHours) {
-                    const start = appliedScheduleHours[0][0];
-                    const end = appliedScheduleHours[0][1];
-                    const carId = appliedScheduleHours[0][2];
-
-                    const newSingleSchedule = {
-                        carId: carId,
-                        shiftId: this.shiftId,
-                        driver: 'null',
-                        start: start,
-                        end: end,
-                    };
-
-                    this.shiftId += 1;
-                    this.cars.push(newSingleSchedule);
-
-                }
+                this.handleAppliedScheduleHours(appliedScheduleHours);
             }
         );
 
@@ -188,42 +188,67 @@ export default {
             const data = [
                 this.cars,
             ]
-            console.log(data)
             emit('showScheduleSelector', data)
         },
 
-        isDriverScheduled(schedule, hour) {
-            const scheduleStart = new Date(`2000-01-01 ${schedule.start}`);
-            const scheduleEnd = new Date(`2000-01-01 ${schedule.end}`);
-            const currentHour = new Date(`2000-01-01 ${hour}`);
 
-            if (currentHour >= scheduleStart && currentHour <= scheduleEnd) {
-                return schedule.driver !== 'null' ? schedule.driver : '';
-            } else {
-                return '';
+        handleAppliedScheduleHours(appliedScheduleHours) {
+            if (appliedScheduleHours) {
+                const start = appliedScheduleHours[0][0];
+                const end = appliedScheduleHours[0][1];
+                const carId = appliedScheduleHours[0][2];
+
+                const carIndex = this.cars.findIndex(car => car.carId === carId);
+
+                if (carIndex !== -1) {
+                    if (!this.cars[carIndex].schedules) {
+                        this.cars[carIndex].schedules = [];
+                    }
+
+                    const newSingleSchedule = {
+                        driver: true,
+                        start: start,
+                        end: end,
+                    };
+
+                    this.cars[carIndex].schedules.push(newSingleSchedule);
+                }
             }
         },
 
 
-        // checkHourAvailability(currentHour, schedule) {
-        //     const startHour = parseInt(schedule.start.split(':')[0]);
-        //     const startMinute = parseInt(schedule.start.split(':')[1]);
-        //     const endHour = parseInt(schedule.end.split(':')[0]);
-        //     const endMinute = parseInt(schedule.end.split(':')[1]);
+        isHourScheduled(hour, schedule) {
+            const hourInMinutes = this.hourToMinutes(hour);
 
-        //     const currentHourParsed = parseInt(currentHour.split(':')[0]);
-        //     const currentMinuteParsed = parseInt(currentHour.split(':')[1]);
+            for (const singleSchedule of schedule) {
+                const startInMinutes = this.hourToMinutes(singleSchedule.start);
+                const endInMinutes = this.hourToMinutes(singleSchedule.end);
 
-        //     const startTimeInMinutes = startHour * 60 + startMinute;
-        //     const endTimeInMinutes = endHour * 60 + endMinute;
-        //     const currentTimeInMinutes = currentHourParsed * 60 + currentMinuteParsed;
+                if (hourInMinutes >= startInMinutes && hourInMinutes <= endInMinutes) {
+                    if (singleSchedule.breaks) {
+                        for (const breakTime of singleSchedule.breaks) {
+                            const breakStart = this.hourToMinutes(breakTime.start);
+                            const breakEnd = this.hourToMinutes(breakTime.end);
 
-        //     if (currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes) {
-        //         return schedule.driver;
-        //     }
+                            if (hourInMinutes >= breakStart && hourInMinutes < breakEnd) {
+                                return '';
+                            }
+                        }
+                    }
 
-        //     return 'free';
-        // },
+                    return singleSchedule.driver;
+                }
+            }
+
+            return '';
+        },
+
+
+        hourToMinutes(hour) {
+            const [hourPart, minutePart] = hour.split(":");
+            return parseInt(hourPart) * 60 + parseInt(minutePart);
+        },
+
 
     },
 };
