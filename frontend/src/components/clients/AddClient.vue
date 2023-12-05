@@ -261,8 +261,6 @@
                         </v-col>
                     </v-row>
 
-                    available: {{ availableManagers }}<br>
-                    seleted: {{ selectedManagers }}
                 </v-container>
             </v-form>
 
