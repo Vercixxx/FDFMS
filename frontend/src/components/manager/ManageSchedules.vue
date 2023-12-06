@@ -1,4 +1,5 @@
 <template>
+    {{ cars }}
     <v-row>
         <v-col cols="auto">
             <v-autocomplete label="Select restaurant" :items="['Sosnowiec plaza KFC']" variant="outlined"></v-autocomplete>
@@ -83,7 +84,12 @@
                             </thead>
                             <tbody class="custom-table">
                                 <tr v-for="hour in hoursList" :key="hour.hour" align="center">
-                                    <td>{{ hour }}</td>
+                                    <td v-if="hour[3] != 3 && hour !== '9:30'">
+                                        {{ hour }}
+                                    </td>
+                                    <td v-else>
+                                        &nbsp
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -91,30 +97,25 @@
 
 
                     <v-col v-for="car in cars" :key="car.carId">
-                        <v-row>
+                        <v-row :style="{ position: 'relative' }">
                             <v-col align="center">
                                 Car {{ car.carId }}
-                            </v-col>
+                                <v-card v-for="schedule in car.schedules" :key="schedule.start" color="teal"
+                                class="elevation-20" :style="{
+                                    'height': `${schedule.blockHeight}px`,
+                                    'top': `${schedule.blockMarginTop + car.topOffset}px`,
+                                }">
+                                <v-row align="center">
+                                    <v-col>
+                                        <div class="text-center">
+                                            {{ schedule.start }} - {{ schedule.end }}
+                                        </div>
+                                    </v-col>
+                                </v-row>
+                            </v-card>
+                        </v-col>
                         </v-row>
-                        <v-card color="teal" class="elevation-20" v-for="schedule in car.schedules" :style="{
-                            'height': `${((hourToMinutes(schedule.end) - hourToMinutes(schedule.start)) / 30) * 2.48}vh`,
-                            'margin-top': `${((hourToMinutes(schedule.start) - hourToMinutes('9:00')) / 30) * 2.48}vh`
-                        }">
-                            <v-row align="center">
-                                <v-col>
-                                    <div class="text-center">
-                                        start {{ schedule.start }}
-                                        end {{ schedule.end }}
-
-
-                                        margin top: {{((hourToMinutes(schedule.start) - hourToMinutes('9:00')) / 30) * 2.48}}
-                                    </div>
-                                </v-col>
-                            </v-row>
-                        </v-card>
-
                     </v-col>
-
                 </v-row>
 
 
@@ -122,7 +123,7 @@
         </v-col>
     </v-row>
 
-    {{ cars }}
+
 
     <v-row justify="center">
         <v-col cols="3">
@@ -265,9 +266,16 @@ export default {
                         driver: true,
                         start: start,
                         end: end,
-                        blockHeight: (this.hourToMinutes(end) - this.hourToMinutes(start) / 30) * 2.48,
-                        blockMarginTop: (this.hourToMinutes(start) - this.hourToMinutes('9:00') / 30) * 2.48,
                     };
+                    newSingleSchedule.startMinutes = this.hourToMinutes(newSingleSchedule.start);
+                    newSingleSchedule.endMinutes = this.hourToMinutes(newSingleSchedule.end);
+
+                    const columnHeight = 56; // Dostosuj do rzeczywistej wysokości
+                    const scalePerMinute = columnHeight / 60;
+
+                    newSingleSchedule.blockHeight = (newSingleSchedule.endMinutes - newSingleSchedule.startMinutes) * scalePerMinute;
+                    newSingleSchedule.blockMarginTop = (newSingleSchedule.startMinutes - this.hourToMinutes('9:00')) * scalePerMinute;
+
 
                     this.cars[carIndex].schedules.push(newSingleSchedule);
                 }
@@ -316,6 +324,6 @@ export default {
 
 <style scoped>
 .custom-table {
-    height: 65vh;
+    height: 56vh;
 }
 </style>
