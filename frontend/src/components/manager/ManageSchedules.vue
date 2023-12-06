@@ -22,7 +22,7 @@
             <v-row border="2" class="pa-2">
 
                 <v-row>
-                    <v-col cols="auto">
+                    <!-- <v-col cols="auto">
                         <table class="custom-table">
                             <thead>
                                 <tr align="center">
@@ -37,22 +37,24 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </v-col>
+                    </v-col> -->
 
-                    <v-col v-for="car in cars" :key="car.carId">
-                        <table>
-                            <thead>
-                                <tr align="center">
-                                    <th class="text-center font-weight-black">
-                                        Car {{ car.carId }}
-
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="hour in hoursList" :key="hour" align="center">
-                                    <td align="center" v-if="isHourScheduled(hour, car.schedules) === true" class="bg-grey"
-                                        style="width: 200px;" role="button">
+                    <!-- <v-col v-for="car in cars" :key="car.carId">
+                        <span v-if="car.schedules.length > 0">
+                            
+                            <table>
+                                <thead>
+                                    <tr align="center">
+                                        <th class="text-center font-weight-black">
+                                            Car {{ car.carId }}
+                                            
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="hour in hoursList" :key="hour" align="center">
+                                        <td align="center" v-if="isHourScheduled(hour, car.schedules) === true"
+                                        class="bg-teal" style="width: 200px;" role="button" @click="editSchedule(car.schedules)">
                                         &nbsp
                                     </td>
                                     <td v-else>
@@ -60,11 +62,58 @@
                                         &nbsp
                                     </td>
                                 </tr>
+                                </tbody>
+                            </table>
+                        </span>
+                    </v-col>
+                     -->
+
+
+
+                    <!-- Alternative -->
+
+                    <v-col cols="auto">
+                        <table>
+                            <thead>
+                                <tr align="center">
+                                    <th class="text-left font-weight-black">
+                                        Hours
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="custom-table">
+                                <tr v-for="hour in hoursList" :key="hour.hour" align="center">
+                                    <td>{{ hour }}</td>
+                                </tr>
                             </tbody>
                         </table>
                     </v-col>
 
 
+                    <v-col v-for="car in cars" :key="car.carId">
+                        <v-row>
+                            <v-col align="center">
+                                Car {{ car.carId }}
+                            </v-col>
+                        </v-row>
+                        <v-card color="teal" class="elevation-20" v-for="schedule in car.schedules" :style="{
+                            'height': `${((hourToMinutes(schedule.end) - hourToMinutes(schedule.start)) / 30) * 2.48}vh`,
+                            'margin-top': `${((hourToMinutes(schedule.start) - hourToMinutes('9:00')) / 30) * 2.48}vh`
+                        }">
+                            <v-row align="center">
+                                <v-col>
+                                    <div class="text-center">
+                                        start {{ schedule.start }}
+                                        end {{ schedule.end }}
+
+
+                                        margin top: {{((hourToMinutes(schedule.start) - hourToMinutes('9:00')) / 30) * 2.48}}
+                                    </div>
+                                </v-col>
+                            </v-row>
+                        </v-card>
+
+                    </v-col>
 
                 </v-row>
 
@@ -72,6 +121,8 @@
             </v-row>
         </v-col>
     </v-row>
+
+    {{ cars }}
 
     <v-row justify="center">
         <v-col cols="3">
@@ -192,6 +243,11 @@ export default {
         },
 
 
+        editSchedule(carSchedules) {
+            console.log(carSchedules)
+        },
+
+
         handleAppliedScheduleHours(appliedScheduleHours) {
             if (appliedScheduleHours) {
                 const start = appliedScheduleHours[0][0];
@@ -209,6 +265,8 @@ export default {
                         driver: true,
                         start: start,
                         end: end,
+                        blockHeight: (this.hourToMinutes(end) - this.hourToMinutes(start) / 30) * 2.48,
+                        blockMarginTop: (this.hourToMinutes(start) - this.hourToMinutes('9:00') / 30) * 2.48,
                     };
 
                     this.cars[carIndex].schedules.push(newSingleSchedule);
