@@ -74,7 +74,7 @@
                     <!-- Alternative -->
 
                     <v-col cols="auto">
-                        <table>
+                        <table style="height: 56vh;">
                             <thead>
                                 <tr align="center">
                                     <th class="text-left font-weight-black">
@@ -270,7 +270,7 @@ export default {
                     newSingleSchedule.startMinutes = this.hourToMinutes(newSingleSchedule.start);
                     newSingleSchedule.endMinutes = this.hourToMinutes(newSingleSchedule.end);
 
-                    const columnHeight = 56; // Dostosuj do rzeczywistej wysokości
+                    const columnHeight = 56; 
                     const scalePerMinute = columnHeight / 60;
 
                     newSingleSchedule.blockHeight = (newSingleSchedule.endMinutes - newSingleSchedule.startMinutes) * scalePerMinute;
@@ -319,11 +319,3 @@ export default {
     },
 };
 </script>
-
-
-
-<style scoped>
-.custom-table {
-    height: 56vh;
-}
-</style>
