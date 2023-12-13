@@ -25,7 +25,7 @@ class DailyWork(models.Model):
     user = models.ForeignKey(Driver, on_delete=models.CASCADE)
     day = models.CharField(max_length=10)
     start_work = models.TimeField()
-    end_wotoprk = models.TimeField()
+    end_work = models.TimeField()
     orders = models.IntegerField(default=0)
     working_time = models.CharField(max_length=5, blank=True)
     

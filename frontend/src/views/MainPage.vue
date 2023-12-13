@@ -289,6 +289,7 @@ import HelpDialog from '../components/HelpDialog.vue'
 
 // Messages
 import CreateMessage from '../components/SendMessage.vue'
+import MailBox from '../components/Mailbox.vue'
 // Messages
 
 // Posts
@@ -470,6 +471,34 @@ export default {
 
             ];
         },
+
+
+
+
+        // Messages
+        MailBoxComponent() {
+            this.currentComponent = MailBox;
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Messages",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Mail Box',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+        },
+        // Messages
+
+
 
         // HR
         AddUserComponent() {

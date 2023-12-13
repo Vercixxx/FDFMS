@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import MyMessages
 
-# Register your models here.
+@admin.register(MyMessages)
+class MyMessagesAdmin(admin.ModelAdmin):
+    pass
+    
