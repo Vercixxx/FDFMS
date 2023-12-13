@@ -84,7 +84,7 @@
             <!-- Add -->
 
             <!-- Manage -->
-            <v-list-item prepend-icon="mdi-list-status" title="Manage" @click="showMessages()">
+            <v-list-item prepend-icon="mdi-email-multiple-outline" title="Mailbox" @click="showMessages()">
             </v-list-item>
             <!-- Manage -->
 
@@ -232,7 +232,8 @@ export default {
 
         showMessages() {
             closeDrawer();
-            emit('showMessageManager', '');
+            this.$root.changeCurrentComponent('MailBoxComponent');
+            // emit('showMessageManager', '');
         },
     },
 
