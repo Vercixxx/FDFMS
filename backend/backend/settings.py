@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'administrator',
     'fleet',
     'posts',
+    'my_messages',
     
     # My packages
     'rest_framework',
