@@ -66,5 +66,5 @@ class GeneralUserRegistrationSerializer(serializers.ModelSerializer):
 class getAllUsernames(serializers.ModelSerializer):
     class Meta:
         model = GeneralUser
-        fields = ['username', 'id']
+        fields = ['username']
         

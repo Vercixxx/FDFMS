@@ -11,7 +11,8 @@
                     <v-card-text>
 
                         <!-- Target -->
-                        <v-select label="Choose recivers" variant="solo-filled" :items="['Users', 'Groups']" v-model="target" :disabled="target"></v-select>
+                        <v-select label="Choose recivers" variant="solo-filled" :items="['Users', 'Groups']"
+                            v-model="target" :disabled="target"></v-select>
                         <!-- Target -->
 
 
@@ -26,7 +27,8 @@
                         <!-- If Users selected -->
                         <v-select v-else-if="target === 'Users'" chips multiple label="Selected users"
                             :items="selectedUsers" v-model="selectedUsers" variant="solo-filled" @click="dialogUsers = true"
-                            item-title="username" readonly :rules="[selectedUsers.length >= 1 || 'Select at least one user.']" immediate>
+                            item-title="username" readonly
+                            :rules="[selectedUsers.length >= 1 || 'Select at least one user.']" immediate>
 
                         </v-select>
                         <!-- If Users selected -->
@@ -61,10 +63,8 @@
 
                                                     <v-data-table :headers="tableHeaders" :items="availableUsers"
                                                         :search="searchTableAvailable" class="elevation-4 rounded-xl"
-                                                        item-value="id" v-model:items-per-page="itemsPerPage" hover
-                                                        select-strategy="all" show-current-page>
-
-
+                                                        v-model:items-per-page="itemsPerPage" hover select-strategy="all"
+                                                        show-current-page>
 
 
                                                         <template v-slot:no-data>
@@ -75,8 +75,19 @@
                                                             </p>
                                                         </template>
 
-
-
+                                                        <template v-slot:item="{ item }">
+                                                            <tr align="center" @click="selectUser(item.username)"
+                                                                role="button">
+                                                                <v-tooltip v-if="!form" activator="parent" location="top"
+                                                                    no-overflow>
+                                                                    Click to select
+                                                                </v-tooltip>
+                                                                <td v-for="header in tableHeaders" :key="header.key">
+                                                                    {{ item.username }}
+                                                                </td>
+                                                            </tr>
+                                                        </template>
+                                                        <!-- 
                                                         <template #item="{ item }">
                                                             <tr @click="selectUser(item.columns.id)" role="button">
                                                                 <td v-for="(cell, columnIndex) in item.columns"
@@ -86,7 +97,7 @@
 
                                                                 </td>
                                                             </tr>
-                                                        </template>
+                                                        </template> -->
 
                                                     </v-data-table>
 
@@ -130,7 +141,20 @@
 
 
 
-                                                        <template #item="{ item }">
+                                                        <template v-slot:item="{ item }">
+                                                            <tr align="center" @click="unselectUser(item.username)"
+                                                                role="button">
+                                                                <v-tooltip v-if="!form" activator="parent" location="top"
+                                                                    no-overflow>
+                                                                    Click to unselect
+                                                                </v-tooltip>
+                                                                <td v-for="header in tableHeaders" :key="header.key">
+                                                                    {{ item.username }}
+                                                                </td>
+                                                            </tr>
+                                                        </template>
+
+                                                        <!-- <template #item="{ item }">
                                                             <tr @click="unselectUser(item.columns.id)" role="button">
                                                                 <td v-for="(cell, columnIndex) in item.columns"
                                                                     :key="item.columns.id" class="text-center">
@@ -139,7 +163,7 @@
 
                                                                 </td>
                                                             </tr>
-                                                        </template>
+                                                        </template> -->
 
                                                     </v-data-table>
 
@@ -277,7 +301,6 @@ export default {
             itemsPerPage: 10,
             tableHeaders: [
                 { title: 'Username', key: 'username', align: 'center', sortable: true },
-                { title: 'Id', key: 'id', align: 'center', sortable: true },
             ],
             // Search
             searchQueryAvailable: '',
@@ -301,12 +324,12 @@ export default {
             ([showAddMessage]) => {
                 if (showAddMessage) {
                     this.dialog = true
+                    // Get list of users
+                    this.getUsers();
                 }
             }
         );
 
-        // Get list of users
-        this.getUsers();
     },
 
     computed: {
@@ -315,8 +338,11 @@ export default {
         // },
 
         availableUsers() {
-            return this.allUsers.filter(user => !this.selectedUsers.some(selectedUser => selectedUser.id === user.id));
-        },
+            return this.allUsers.filter(user => !this.selectedUsers.some(selectedUser => selectedUser.username === user.username));
+        }
+
+
+
     },
 
 
@@ -350,16 +376,17 @@ export default {
 
         // Get all Usernames
         async getUsers() {
-            const response = await axios.get('api/users/get-usernames/');
+            const response = await axios.get(`api/users/get-usernames/?role=All`);
             this.allUsers = response.data;
+            console.log(this.allUsers)
         },
         // Get all Usernames
 
 
 
         // Move user to selected
-        selectUser(userID) {
-            const userIndex = this.allUsers.findIndex(user => user.id === userID);
+        selectUser(username) {
+            const userIndex = this.allUsers.findIndex(user => user.username === username);
             if (userIndex !== -1) {
                 const userToCopy = this.allUsers[userIndex];
                 const copiedUser = Object.assign({}, userToCopy);
@@ -372,8 +399,8 @@ export default {
 
 
         // Move user to unselected
-        unselectUser(userID) {
-            const userIndex = this.selectedUsers.findIndex(user => user.id === userID);
+        unselectUser(username) {
+            const userIndex = this.selectedUsers.findIndex(user => user.username === username);
             if (userIndex !== -1) {
                 this.selectedUsers.splice(userIndex, 1);
             }
