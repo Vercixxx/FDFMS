@@ -29,4 +29,4 @@ class GetMessagesSerializer(serializers.ModelSerializer):
         
     class Meta:
         model = MyMessages
-        fields = ['id', 'sender', 'receiver', 'title', 'content', 'posted_date']
+        fields = '__all__'
