@@ -261,6 +261,7 @@ export default {
                 localStorage.setItem('message', JSON.stringify(messageData));
                 emit('message', '');
                 this.selected = [];
+                this.fetchData();
             } catch (error) {
                 const messageData = {
                     message: error,
