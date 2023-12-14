@@ -19,26 +19,26 @@
                 <v-col cols="12" align="center">
 
                     <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" variant="outlined"
-                        hide-details></v-text-field>
+                        hide-details @keydown.enter="fetchData()"></v-text-field>
+                    
 
-
-                    <span v-if="container === 'all'">
+                    <span v-if="mailVersion === 'all'">
                         <p class="text-h4 my-5">
                             All messages
                         </p>
                     </span>
-                    <span v-else-if="container === 'get'">
+                    <span v-else-if="mailVersion === 'inbox'">
                         <p class="text-h4 my-5">
                             Inbox
                         </p>
                     </span>
-                    <span v-else-if="container === 'sent'">
+                    <span v-else-if="mailVersion === 'sent'">
                         <p class="text-h4 my-5">
                             Sent
                         </p>
                     </span>
 
-                    <v-data-table v-model="selected" :items="items" :headers="headers" :loading="loading" item-value="id"
+                    <v-data-table v-model="selected" :items="mails" :headers="headers" :loading="loading" item-value="id"
                         show-select show-expand v-model:expanded="expanded">
 
                         <template v-slot:expanded-row="{ columns, item }">
@@ -66,13 +66,10 @@
                             <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
                         </template>
 
-                        <template v-slot:header.data-table-select="{ selectAll, getSortIcon }">
+                        <!-- <template v-slot:header.data-table-select="{ selectAll, getSortIcon }">
                            <v-btn @click="selectAll" variant="plain">Select all</v-btn>
                            <v-btn @click="getSortIcon" variant="plain">Select all</v-btn>
-                            {{ getSortIcon }}
-                           
-                           
-                        </template>
+                        </template> -->
 
                     </v-data-table>
                 </v-col>
@@ -87,6 +84,7 @@
 
 
 <script>
+import axios from 'axios'
 
 export default {
     name: 'App',
@@ -95,9 +93,9 @@ export default {
     data() {
         return {
 
-            container: 'get',
+            mailVersion: 'inbox',
 
-            loading: false,
+            loading: true,
 
             selected: [],
             expanded: [],
@@ -130,25 +128,6 @@ export default {
                 },
             ],
 
-            items: [
-                {
-                    id: 1,
-                    sender: 'Adam',
-                    receiver: 'Thomas',
-                    title: 'Hello world!',
-                    content: 'Hi! Adam speaking',
-                    posted_date: 2020
-                },
-                {
-                    id: 2,
-                    sender: 'Cokrki',
-                    receiver: 'Thomas',
-                    title: 'Hello world!',
-                    content: 'Hi! Adam speaking',
-                    posted_date: 2020
-                },
-            ],
-
             buttons: [
                 {
                     name: 'All mail',
@@ -158,7 +137,7 @@ export default {
                 {
                     name: 'Inbox',
                     icon: 'mdi-email-arrow-left-outline',
-                    component: 'get'
+                    component: 'inbox'
                 },
                 {
                     name: 'Sent',
@@ -169,10 +148,38 @@ export default {
         }
     },
 
+
+
+    mounted() {
+        this.fetchData();
+    },
+
+
+
     methods: {
         menuClickHandle(component) {
-            this.container = component
+            this.mailVersion = component
+            this.fetchData()
         },
+
+
+
+        //Get data
+        async fetchData() {
+            this.loading = true
+            try {
+                this.mails = [];
+                const response = await axios.get(`api/messages/get/?version=${this.mailVersion}&query=${this.search}`);
+                console.log(response);
+                this.mails = response.data;
+                
+            } catch(error) {
+                
+            }
+            this.loading = false;
+        },
+        //Get data
+
     },
 
 }
