@@ -20,6 +20,7 @@ class GetMessages(APIView):
     def get(self, request):
         query = self.request.query_params.get('query', '').strip()
         mail_version = self.request.query_params.get('version', '').strip()
+        username = self.request.query_params.get('user', '').strip()
             
         # if not query:
         #     return all_messages
@@ -29,7 +30,7 @@ class GetMessages(APIView):
             
         else:
             try:
-                user = GeneralUser.objects.get(username='viktot697')
+                user = GeneralUser.objects.get(username=username)
                 if mail_version == 'inbox':
                     all_messages = MyMessages.objects.filter(receiver=user)
                 else:

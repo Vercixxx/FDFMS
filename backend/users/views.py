@@ -50,6 +50,7 @@ from django.db.models import F
 class GlobalDictionaries:
     dicts = {
         'UserModels': {
+            'All' : GeneralUser,
             'Manager': RestManager,
             'Asset': AssetUser,
             'Clients': ClientsUser,
@@ -152,7 +153,11 @@ class GetUsernames(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        users = GeneralUser.objects.all()
+        desired_role = self.request.query_params.get('role', '').strip()
+        
+        user_model = GlobalDictionaries.get_serializer('UserModels', desired_role)
+        
+        users = user_model.objects.all()
         serializer = getAllUsernames(users, many=True)
         return JsonResponse(serializer.data, safe=False)
     

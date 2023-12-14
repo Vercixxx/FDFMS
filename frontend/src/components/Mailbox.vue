@@ -76,6 +76,7 @@
                 {{ selected }}, {{ expanded }}
             </v-row>
 
+            {{ loggedUser }}
 
         </v-col>
     </v-row>
@@ -94,6 +95,7 @@ export default {
         return {
 
             mailVersion: 'inbox',
+            loggedUser: null,
 
             loading: true,
 
@@ -152,6 +154,7 @@ export default {
 
     mounted() {
         this.fetchData();
+        this.loggedUser = this.$store.getters.responseData.username;
     },
 
 
@@ -169,7 +172,7 @@ export default {
             this.loading = true
             try {
                 this.mails = [];
-                const response = await axios.get(`api/messages/get/?version=${this.mailVersion}&query=${this.search}`);
+                const response = await axios.get(`api/messages/get/?user=${this.loggedUser}&version=${this.mailVersion}&query=${this.search}`);
                 console.log(response);
                 this.mails = response.data;
                 
