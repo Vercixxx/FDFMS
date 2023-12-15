@@ -154,10 +154,19 @@ class GetUsernames(APIView):
     
     def get(self, request):
         desired_role = self.request.query_params.get('role', '').strip()
+        search = self.request.query_params.get('search', '').strip()
+        
         
         user_model = GlobalDictionaries.get_serializer('UserModels', desired_role)
         
-        users = user_model.objects.all()
+        if search:
+            users = user_model.objects.all()
+            users = [user for user in users if
+                    search.lower() in user.username.lower()]
+        else:
+            users = user_model.objects.all()
+            
+        
         serializer = getAllUsernames(users, many=True)
         return JsonResponse(serializer.data, safe=False)
     
@@ -221,7 +230,6 @@ class AddUser(APIView):
         serializer = serializer_class(data=request.data)
         data = {}
         
-
         if serializer.is_valid():
             account = serializer.save()
             data['message'] = f'Succesfully registered {account.username}'
