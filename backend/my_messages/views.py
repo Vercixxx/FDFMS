@@ -45,7 +45,15 @@ class GetMessages(APIView):
         serialized_data = GetMessagesSerializer(all_messages, many=True)
 
         return JsonResponse(serialized_data.data, safe=False)
+    
+    
+    
+    
+class CreateMessage(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request):
+        data = request.data
 
 
     
