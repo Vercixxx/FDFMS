@@ -7,5 +7,8 @@ urlpatterns = [
     
     # Delete messages
     path('api/messages/delete/', views.DeleteMessages.as_view(), name="delete-messages"),
+    
+    # Create message
+    path('api/messages/create/', views.CreateMessage.as_view(), name="create-message"),
 
 ]

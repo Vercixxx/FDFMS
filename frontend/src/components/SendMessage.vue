@@ -395,7 +395,27 @@ export default {
             console.log(data);
             this.loading = false;
             this.close();
-            // await axios.post('')
+
+            try{
+                const response = await axios.post('api/messages/create/', data);
+                console.log(reponse)
+                const messageData = {
+                    message: response.data.message,
+                    type: 'success'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+
+            } catch(error) {
+                const messageData = {
+                    message: error,
+                    type: 'error'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+            }
 
         },
         // Send message
