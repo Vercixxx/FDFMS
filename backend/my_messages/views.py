@@ -8,7 +8,7 @@ from django.db.models import Q
 from .models import MyMessages
 from users.models import GeneralUser
 
-from .serializers import GetMessagesSerializer
+from .serializers import GetMessagesSerializer, CreateMessageSerializer
 
 
 class GetMessages(APIView):
@@ -54,6 +54,31 @@ class CreateMessage(APIView):
 
     def post(self, request):
         data = request.data
+        print(data)
+        
+        if data.get('taget') == 'Users':
+            for receiver_username in data.get('to', []):
+                user_data = {
+                    'content': data.get('content'),
+                    'sender': data.get('from'),
+                    'receiver': receiver_username,
+                    'title': data.get('title'),
+                }
+
+                serializer = CreateMessageSerializer(data=user_data)
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    return JsonResponse({'errors': serializer.errors}, status=400)
+
+            return JsonResponse({'message': 'Messages sent successfully'}, status=201)
+        else:
+            pass
+            # serializer = CreateMessageSerializer(data=data)
+        
+
+        
+        
 
 
     

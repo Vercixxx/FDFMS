@@ -30,3 +30,13 @@ class GetMessagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyMessages
         fields = '__all__'
+        
+        
+class CreateMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyMessages
+        fields = ['sender', 'receiver', 'title', 'content']
+    
+    def create(self, validated_data):
+        post = MyMessages.objects.create(**validated_data)
+        return post
