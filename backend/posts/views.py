@@ -10,7 +10,6 @@ from .serializers import GetPostsSerializer, CreatePostSerializer, CreateDriverP
 from .models import Posts, DriverPosts
 
 # Rest
-from rest_framework import viewsets, filters
 from rest_framework.views import APIView
 from rest_framework.generics import DestroyAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated

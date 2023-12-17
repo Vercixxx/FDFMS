@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'fleet',
     'posts',
     'my_messages',
+    'other',
     
     # My packages
     'rest_framework',
