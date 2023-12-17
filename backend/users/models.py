@@ -22,30 +22,6 @@ class GeneralUser(AbstractUser):
     
     phone = models.CharField(max_length=25, blank=True, null=True)
     
-    # Country Choices
-    COUNTRY_CHOICES = (
-        ('Poland', 'Poland'),
-        )
-    
-    POLAND_STATE_CHOICES = (
-        ('Mazowieckie', 'Mazowieckie'),
-        ('Małopolskie', 'Małopolskie'),
-        ('Wielkopolskie', 'Wielkopolskie'),
-        ('Dolnośląskie', 'Dolnośląskie'),
-        ('Kujawsko-Pomorskie', 'Kujawsko-Pomorskie'),
-        ('Lubelskie', 'Lubelskie'),
-        ('Lubuskie', 'Lubuskie'),
-        ('Łódzkie', 'Łódzkie'),
-        ('Opolskie', 'Opolskie'),
-        ('Podkarpackie', 'Podkarpackie'),
-        ('Podlaskie', 'Podlaskie'),
-        ('Pomorskie', 'Pomorskie'),
-        ('Śląskie', 'Śląskie'),
-        ('Świętokrzyskie', 'Warmińsko-Mazurskie'),
-        ('Warmińsko-Mazurskie', 'Śląskie'),
-        ('Zachodniopomorskie', 'Zachodniopomorskie'),
-    )
-    
     
     #address of residence
     residence_country = models.CharField(max_length=100, blank=True, null=True)

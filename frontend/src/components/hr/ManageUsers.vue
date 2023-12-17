@@ -71,9 +71,8 @@
 
         <v-col cols="12" sm="4">
           <!-- Search bar -->
-          <v-text-field variant="solo-filled" v-model="searchInput" @keydown.enter="searchTable = searchInput"
-            label="Search" class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions clearable
-            hint="Press enter to search" />
+          <v-text-field variant="solo-filled" v-model="query" @keydown.enter="loadUsers()" label="Search" class="px-1 "
+            prepend-inner-icon="mdi-magnify" hide-actions clearable hint="Press enter to search" />
           <!-- Search bar -->
         </v-col>
 
@@ -83,7 +82,7 @@
 
 
       <!-- Combobox columns selection -->
-      <v-col cols="12">
+      <v-col cols="10">
         <v-expansion-panels>
           <v-expansion-panel title="Choose columns" elevation="1">
 
@@ -98,6 +97,10 @@
           </v-expansion-panel>
         </v-expansion-panels>
       </v-col>
+      <v-col cols="6">
+        <v-select v-model="itemsPerPage" variant="solo-filled" :items="[1,2, 5, 10, 25, 50, 100]"
+          :label="`Items per page - ${itemsPerPage}`"></v-select>
+      </v-col>
       <!-- Combobox columns selection -->
 
     </v-card>
@@ -108,11 +111,10 @@
       Users
     </div>
 
-
     <!-- Table -->
-    <v-data-table :headers="updatedColumns" :items="users" :search="searchTable" :loading="tableLoading"
-      class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
-      show-current-page>
+    <v-data-table :headers="updatedColumns" :items="users" :loading="loading" density="compact"
+      class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover show-current-page
+      @update:options="loadUsers()">
 
 
 
@@ -157,7 +159,8 @@
                 :text="item.is_active ? `Make ${item.username} not active` : `Make ${item.username} active`">
                 <template v-slot:activator="{ props }">
                   <v-btn v-bind="props" variant="plain" :icon="item.is_active ? 'mdi-check-bold' : 'mdi-close-thick'"
-                    :style="item.is_active ? 'color:green' : 'color:red'" @click="changeStateConfirm(item.username, item.user_role, item.is_active)"></v-btn>
+                    :style="item.is_active ? 'color:green' : 'color:red'"
+                    @click="changeStateConfirm(item.username, item.user_role, item.is_active)"></v-btn>
                 </template>
               </v-tooltip>
 
@@ -203,6 +206,23 @@
         </tr>
       </template>
       <!-- Accessing table cells -->
+
+
+      <template v-slot:bottom="{ page, itemsPerPage }">
+        <v-row>
+          <v-col align="center">
+            <v-pagination v-model="paginationPage" :length="page_flip.total_pages" @next="nextPage()" @prev="prevPage()">
+              <template v-slot:item="{ key, page }">
+                <v-btn class="mt-1" variant="text" disabled rounded="xl">{{ key }}</v-btn>
+              </template>
+            </v-pagination>
+            <p>Page {{ page_flip.currentPage }} of {{page_flip.total_pages}}</p>
+          </v-col>
+
+        </v-row>
+      </template>
+
+
 
     </v-data-table>
     <!-- Table -->
@@ -331,7 +351,7 @@
       </v-card>
     </v-dialog>
     <!-- dialog -->
-
+    {{ page_flip }}
     <!-- Dialaogs section -->
   </div>
 </template>
@@ -351,12 +371,12 @@ export default {
 
   data() {
     return {
+      loading: true,
       users: [],
 
-
-      users_per_site: 20,
-      page_flip: {
-      },
+      itemsPerPage: 10,
+      paginationPage: 1,
+      page_flip: {},
       query: '',
 
 
@@ -374,9 +394,6 @@ export default {
       UserDetailsDialog: false,
       userDetailData: {},
 
-      searchInput: '',
-      searchTable: '',
-      itemsPerPage: 25,
 
       dialogState: false,
       dialogDelete: false,
@@ -429,7 +446,6 @@ export default {
         },
       ],
 
-      tableLoading: true,
 
       necessaryHeaders: [
         { title: 'NO', align: 'center', sortable: false, key: 'rownumber' },
@@ -535,7 +551,6 @@ export default {
   },
 
   created() {
-    this.reloadComponent();
     this.chooseRole('All')
   },
 
@@ -559,22 +574,26 @@ export default {
 
 
   methods: {
-    async loadUsers() {
+    async loadUsers(url) {
+      this.loading = true;
       try {
-        const response = await axios.get('api/get-gu/', {
+        const response = await axios.get(url || 'api/get-users/', {
           params: {
-            limit: this.users_per_site,
-            offset: this.currentPage,
+            limit: this.itemsPerPage,
             search: this.query,
             role: this.selectedRole,
             status: this.selectedActive,
           }
         });
 
+        console.log(response)
+
         this.page_flip = {
-          count: response.data.count,
+          total_pages: response.data.total_pages,
+          posts_amount: response.data.posts_amount,
           next: response.data.next,
           previous: response.data.previous,
+          currentPage: response.data.current_page,
         }
 
         this.users = response.data.results;
@@ -585,7 +604,7 @@ export default {
         });
 
 
-        this.tableLoading = false;
+        this.loading = false;
       }
       catch (error) {
 
@@ -598,6 +617,18 @@ export default {
         emit('message', '');
       }
     },
+
+    // Previous page
+    async prevPage() {
+      await this.loadUsers(this.page_flip.previous);
+    },
+    // Previous page
+
+    // Next page
+    async nextPage() {
+      await this.loadUsers(this.page_flip.next);
+    },
+    // Next page
 
 
 
@@ -766,18 +797,3 @@ export default {
 
 };
 </script>
-  
-<style>
-.no-spinners {
-  -moz-appearance: textfield;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  appearance: none;
-  margin: 0;
-}
-</style>
