@@ -157,7 +157,7 @@
                 :text="item.is_active ? `Make ${item.username} not active` : `Make ${item.username} active`">
                 <template v-slot:activator="{ props }">
                   <v-btn v-bind="props" variant="plain" :icon="item.is_active ? 'mdi-check-bold' : 'mdi-close-thick'"
-                    :style="item.is_active ? 'color:green' : 'color:red'"></v-btn>
+                    :style="item.is_active ? 'color:green' : 'color:red'" @click="changeStateConfirm(item.username, item.user_role, item.is_active)"></v-btn>
                 </template>
               </v-tooltip>
 
@@ -583,7 +583,6 @@ export default {
         this.users.forEach((user, index) => {
           user.rownumber = index + 1;
         });
-
 
 
         this.tableLoading = false;
