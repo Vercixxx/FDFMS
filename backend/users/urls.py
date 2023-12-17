@@ -5,7 +5,7 @@ from . import views
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register(r"get-gu", views.GUViewSet, basename='get-gu')
+router.register(r"get-users", views.GetGeneralUsers, basename='get-users')
 
 
 
@@ -36,14 +36,6 @@ urlpatterns = [
     
     # Change user state
     path('api/users/change-state/<str:username>/', views.ChangeUserState.as_view(), name="change-user-state"),
-    
-
-    # Get All Countries
-    path('api/users/get-countries/', views.GetAllCountries.as_view(), name="get-countries"),
-
-    # Get Cities for Given Country
-    path("api/users/get-cities/<str:selected_country>/", views.GetCities.as_view(), name="get-cities"),
-
 
     # Get usernames
     path('api/users/get-usernames/', views.GetUsernames.as_view(), name="get-usernames"),
