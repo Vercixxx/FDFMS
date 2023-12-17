@@ -11,5 +11,6 @@ urlpatterns = [
     path('', include('restaurant.urls')),
     path('', include('posts.urls')),
     path('', include('my_messages.urls')),
+    path('', include('other.urls')),
     
 ]

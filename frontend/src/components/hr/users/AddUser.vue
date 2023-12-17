@@ -94,14 +94,14 @@
                         <!-- Country and State -->
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                v-model="resSelectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
+                                v-model="resSelectedCountry" @update:search="getStates('residence')" :rules="fieldRequired">
 
                             </v-autocomplete>
 
                         </v-col>
 
                         <v-col cols="12" sm="6">
-                            <v-autocomplete label="State" :items="resCitiesList" variant="outlined"
+                            <v-autocomplete label="State" :items="resStatesList" variant="outlined"
                                 v-model="resSelectedState" :disabled="resSelectedCountry === null" :rules="fieldRequired">
                             </v-autocomplete>
 
@@ -152,13 +152,13 @@
                             <!-- Country and City -->
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                    v-model="corSelectedCountry" @update:search="getCities('correspodence')"
+                                    v-model="corSelectedCountry" @update:search="getStates('correspodence')"
                                     :rules="show_corespondece ? [] : fieldRequired">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6">
-                                <v-autocomplete label="State" :items="corCitiesList" variant="outlined"
+                                <v-autocomplete label="State" :items="corStatesList" variant="outlined"
                                     v-model="corSelectedState" :disabled="corSelectedCountry === null"
                                     :rules="show_corespondece ? [] : fieldRequired">
                                 </v-autocomplete>
@@ -212,13 +212,13 @@
                             <!-- Country and City -->
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                    v-model="regSelectedCountry" @update:search="getCities('registered')"
+                                    v-model="regSelectedCountry" @update:search="getStates('registered')"
                                     :rules="show_registered ? [] : fieldRequired">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6">
-                                <v-autocomplete label="State" :items="regCitiesList" variant="outlined"
+                                <v-autocomplete label="State" :items="regStatesList" variant="outlined"
                                     v-model="regSelectedState" :disabled="regSelectedCountry === null"
                                     :rules="show_registered ? [] : fieldRequired">
                                 </v-autocomplete>
@@ -597,9 +597,9 @@ export default {
             corSelectedCountry: null,
             regSelectedCountry: null,
 
-            resCitiesList: [],
-            corCitiesList: [],
-            regCitiesList: [],
+            resStatesList: [],
+            corStatesList: [],
+            regStatesList: [],
 
             resSelectedState: null,
             corSelectedState: null,
@@ -817,15 +817,15 @@ export default {
 
         // Get countries
         async getCountries() {
-            const response = await axios.get("api/users/get-countries/");
-            this.allCountries = response.data;
+            const response = await axios.get("api/countries/get/");
+            this.allCountries = response.data.map(country => country.name);
         },
         // Get countries
 
 
 
-        // Get cities
-        async getCities(country) {
+        // Get States
+        async getStates(country) {
             const propertyMap = {
                 residence: this.resSelectedCountry,
                 correspodence: this.corSelectedCountry,
@@ -833,21 +833,22 @@ export default {
             };
 
             const choosen_country = propertyMap[country];
-            const response = await axios.get(`api/users/get-cities/${choosen_country}/`);
+            const response = await axios.get(`api/states/get/?country=${choosen_country}`);
+            const result = response.data.map(state => state.name)
 
             switch (country) {
                 case ('residence'):
-                    this.resCitiesList = response.data
+                    this.resStatesList = result
                     break;
                 case ('correspodence'):
-                    this.corCitiesList = response.data
+                    this.corStatesList = result
                     break;
                 case ('registered'):
-                    this.regCitiesList = response.data
+                    this.regStatesList = result
                     break;
             }
         },
-        // Get cities
+        // Get States
 
 
 

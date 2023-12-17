@@ -72,7 +72,7 @@
                         <!-- Country and State -->
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                v-model="selectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
+                                v-model="selectedCountry" @update:search="getStates('residence')" :rules="fieldRequired">
                             </v-autocomplete>
                         </v-col>
 
@@ -326,19 +326,19 @@ export default {
 
         // Country
         async getCountries() {
-            const response = await axios.get("api/users/get-countries/");
-            this.allCountries = response.data;
+            const response = await axios.get("api/countries/get/");
+            this.allCountries = response.data.map(country => country.name);
         },
         // Country
 
 
 
-        // City
-        async getCities(country) {
-            const response = await axios.get(`api/users/get-cities/${this.selectedCountry}/`);
-            this.allStates = response.data
+        // State
+        async getStates(country) {
+            const response = await axios.get(`api/states/get/?country=${this.selectedCountry}`);
+            this.allStates = response.data.map(state => state.name)
         },
-        // City
+        // State
 
 
 

@@ -175,12 +175,12 @@
                         <!-- Country and City -->
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                v-model="resSelectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
+                                v-model="resSelectedCountry" @update:search="getStates('residence')" :rules="fieldRequired">
                             </v-autocomplete>
                         </v-col>
 
                         <v-col cols="12" sm="6">
-                            <v-autocomplete label="State" :items="resCitiesList" variant="outlined"
+                            <v-autocomplete label="State" :items="resStatesList" variant="outlined"
                                 v-model="resSelectedState" :disabled="resSelectedCountry === ''" :rules="fieldRequired">
                             </v-autocomplete>
 
@@ -231,13 +231,13 @@
                             <!-- Country and City -->
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                    v-model="corSelectedCountry" @update:search="getCities('correspodence')"
+                                    v-model="corSelectedCountry" @update:search="getStates('correspodence')"
                                     :rules="show_corespondece ? [] : fieldRequired">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6">
-                                <v-autocomplete label="State" :items="corCitiesList" variant="outlined"
+                                <v-autocomplete label="State" :items="corStatesList" variant="outlined"
                                     v-model="corSelectedState" :disabled="corSelectedCountry === ''"
                                     :rules="show_corespondece ? [] : fieldRequired">
                                 </v-autocomplete>
@@ -291,13 +291,13 @@
                             <!-- Country and City -->
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                    v-model="regSelectedCountry" @update:search="getCities('registered')"
+                                    v-model="regSelectedCountry" @update:search="getStates('registered')"
                                     :rules="show_registered ? [] : fieldRequired">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6">
-                                <v-autocomplete label="State" :items="regCitiesList" variant="outlined"
+                                <v-autocomplete label="State" :items="regStatesList" variant="outlined"
                                     v-model="regSelectedState" :disabled="regSelectedCountry === ''"
                                     :rules="show_registered ? [] : fieldRequired">
                                 </v-autocomplete>
@@ -726,9 +726,9 @@ export default {
             corSelectedCountry: '',
             regSelectedCountry: '',
 
-            resCitiesList: [],
-            corCitiesList: [],
-            regCitiesList: [],
+            resStatesList: [],
+            corStatesList: [],
+            regStatesList: [],
 
             resSelectedState: '',
             corSelectedState: '',
@@ -914,8 +914,11 @@ export default {
             // Additional fields for driver
             this.input_data['ln_release_date'] = this.formattedReleaseDate;
             this.input_data['ln_expire_date'] = this.formattedExpireDate;
-
         },
+
+
+        
+        // Generate username based on first and last name
         generateUsername() {
             let firstName = '';
             let lastName = '';
@@ -935,18 +938,29 @@ export default {
 
             this.input_data.username = `${firstName}${lastName}${randomDigits}`;
         },
+        // Generate username based on first and last name
 
 
+
+        // Random digits generator
         generateRandomDigits() {
             return Math.floor(100 + Math.random() * 900);
         },
+        // Random digits generator
 
+
+
+        // Get countries
         async getCountries() {
-            const response = await axios.get("api/users/get-countries/");
-            this.allCountries = response.data;
+            const response = await axios.get("api/countries/get/");
+            this.allCountries = response.data.map(country => country.name);
         },
+        // Get countries
 
-        async getCities(country) {
+
+
+        // Get States
+        async getStates(country) {
             const propertyMap = {
                 residence: this.resSelectedCountry,
                 correspodence: this.corSelectedCountry,
@@ -954,22 +968,25 @@ export default {
             };
 
             const choosen_country = propertyMap[country];
-            const response = await axios.get(`api/users/get-cities/${choosen_country}/`);
+            const response = await axios.get(`api/states/get/?country=${choosen_country}`);
+            const result = response.data.map(state => state.name)
 
             switch (country) {
                 case ('residence'):
-                    this.resCitiesList = response.data
+                    this.resStatesList = result
                     break;
                 case ('correspodence'):
-                    this.corCitiesList = response.data
+                    this.corStatesList = result
                     break;
                 case ('registered'):
-                    this.regCitiesList = response.data
+                    this.regStatesList = result
                     break;
             }
         },
+        // Get States
 
 
+        // Create user function
         async createUser() {
             this.getDataFromInputs();
 
@@ -1000,31 +1017,43 @@ export default {
             }
 
         },
+        // Create user function
+
+
+
         resetForm() {
             for (const field of this.allInputs) {
                 this.input_data[field.model] = '';
             }
         },
 
-        async getUserData(username, user_role) {
 
+
+        // Get user data from server when editing
+        async getUserData(username, user_role) {
+            
             const response = await axios.get(`api/users/get/${username}/${user_role}`);
             this.editUser = response.data;
-
+            
             for (const field of this.allInputs) {
                 this.input_data[field.model] = this.editUser[field.model];
             }
-
+            
             // Country and States
             this.resSelectedCountry = this.editUser['residence_country'];
             this.corSelectedCountry = this.editUser['correspondence_country'];
             this.regSelectedCountry = this.editUser['registered_country'];
-
+            
             this.resSelectedState = this.editUser['residence_state'];
             this.corSelectedState = this.editUser['correspondence_state'];
             this.regSelectedState = this.editUser['registered_state'];
         },
+        // Get user data from server when editing
 
+
+
+        
+        // Update user function
         async updateUser() {
             // Generate dict for sending
             this.input_data['user_role'] = 'Driver'
@@ -1056,10 +1085,12 @@ export default {
                 emit('message', '');
 
             }
-
-
         },
+        // Update user function
 
+
+
+        // Go back
         goBack() {
             if (this.user_role === null) {
                 this.$root.changeCurrentComponent('AddUserComponent');
@@ -1067,6 +1098,7 @@ export default {
                 this.$root.changeCurrentComponent('ModifyUserComponent');
             }
         },
+        // Go back
 
     }
 };
