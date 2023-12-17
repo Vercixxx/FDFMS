@@ -16,36 +16,41 @@
 
             <v-row>
 
-                <v-col cols="12" align="center">
+                <v-col cols="12">
+                    <span align="center">
+                        <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" variant="outlined"
+                            hide-details @keydown.enter="fetchData()"></v-text-field>
 
-                    <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" variant="outlined"
-                        hide-details @keydown.enter="fetchData()"></v-text-field>
 
-                    <v-row class="my-3">
-                        <v-col></v-col>
+                        <p v-if="mailVersion === 'all'" class="text-h4 my-5">
+                            All messages
+                        </p>
+                        <p v-else-if="mailVersion === 'inbox'" class="text-h4 my-5">
+                            Inbox
+                        </p>
+                        <p v-else-if="mailVersion === 'sent'" class="text-h4 my-5">
+                            Sent
+                        </p>
+
+                    </span>
+
+                    <v-row>
                         <v-col>
-                            <p v-if="mailVersion === 'all'" class="text-h4 my-5">
-                                All messages
-                            </p>
-                            <p v-else-if="mailVersion === 'inbox'" class="text-h4 my-5">
-                                Inbox
-                            </p>
-                            <p v-else-if="mailVersion === 'sent'" class="text-h4 my-5">
-                                Sent
-                            </p>
+                            <v-btn class="mb-3" prepend-icon="mdi-refresh" @click="fetchData()" variant="outlined"> Reload
+                            </v-btn>
                         </v-col>
-
-                        <v-col align="end">
-                            <v-tooltip :text="`Delete selected messages (${selected.length})`"
-                                v-if="mailVersion === 'inbox'">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn icon="mdi-delete" color="red" variant="plain" v-bind="props"
-                                        :disabled="selected.length < 1" @click="dialogDelete = true"></v-btn>
-                                </template>
-                            </v-tooltip>
-                        </v-col>
+                        <!-- <v-col>
+                            <v-col align="end">
+                                <v-tooltip :text="`Delete selected messages (${selected.length})`"
+                                    v-if="mailVersion === 'inbox'">
+                                    <template v-slot:activator="{ props }">
+                                        <v-btn icon="mdi-delete" color="red" variant="plain" v-bind="props"
+                                            :disabled="selected.length < 1" @click="dialogDelete = true"></v-btn>
+                                    </template>
+                                </v-tooltip>
+                            </v-col>
+                        </v-col> -->
                     </v-row>
-
 
                     <v-data-table-server v-model="selected" :items="mails" :headers="headers" :loading="loading"
                         item-value="id" show-select show-expand v-model:expanded="expanded"
@@ -76,14 +81,9 @@
                             <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
                         </template>
 
-                        <!-- <template v-slot:header.data-table-select="{ selectAll, getSortIcon }">
-                           <v-btn @click="selectAll" variant="plain">Select all</v-btn>
-                           <v-btn @click="getSortIcon" variant="plain">Select all</v-btn>
-                        </template> -->
-
                     </v-data-table-server>
                 </v-col>
-                selected {{ selected }}
+
             </v-row>
 
         </v-col>

@@ -246,12 +246,12 @@ export default {
             target: null,
 
             groups: [
-                'Drivers',
-                'Managers',
+                'Driver',
+                'Manager',
                 'HR',
                 'Payroll',
                 'Clients',
-                'Assets',
+                'Asset',
             ],
             selectedGroups: [],
 
@@ -298,7 +298,10 @@ export default {
 
     computed: {
         availableUsers() {
-            return this.allUsers.filter(user => !this.selectedUsers.some(selectedUser => selectedUser.username === user.username));
+            return this.allUsers.filter(user =>
+                !this.selectedUsers.some(selectedUser => selectedUser.username === user.username) &&
+                user.username !== this.loggedUser
+            );
         }
     },
 
@@ -392,13 +395,11 @@ export default {
                 data['taget'] = 'Users';
                 data['to'] = this.selectedUsers.map(user => user.username);
             }
-            console.log(data);
             this.loading = false;
-            this.close();
+            // this.close();
 
-            try{
+            try {
                 const response = await axios.post('api/messages/create/', data);
-                console.log(reponse)
                 const messageData = {
                     message: response.data.message,
                     type: 'success'
@@ -407,7 +408,7 @@ export default {
                 localStorage.setItem('message', JSON.stringify(messageData));
                 emit('message', '');
 
-            } catch(error) {
+            } catch (error) {
                 const messageData = {
                     message: error,
                     type: 'error'

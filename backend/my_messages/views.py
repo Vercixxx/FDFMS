@@ -10,6 +10,8 @@ from users.models import GeneralUser
 
 from .serializers import GetMessagesSerializer, CreateMessageSerializer
 
+from users.views import GlobalDictionaries
+
 
 class GetMessages(APIView):
     permission_classes = [IsAuthenticated]
@@ -23,13 +25,13 @@ class GetMessages(APIView):
             user = GeneralUser.objects.get(username=username)
         
             if mail_version == 'all':
-                all_messages = MyMessages.objects.filter(Q(receiver=user) | Q(sender=user))
+                all_messages = MyMessages.objects.filter(Q(receiver=user) | Q(sender=user)).order_by('-posted_date')
                 
             else:
                 if mail_version == 'inbox':
-                    all_messages = MyMessages.objects.filter(receiver=user)
+                    all_messages = MyMessages.objects.filter(receiver=user).order_by('-posted_date')
                 else:
-                    all_messages = MyMessages.objects.filter(sender=user)
+                    all_messages = MyMessages.objects.filter(sender=user).order_by('-posted_date')
                     
         except GeneralUser.DoesNotExist as error:
             return JsonResponse((''), status=404, safe=False)
@@ -54,15 +56,22 @@ class CreateMessage(APIView):
 
     def post(self, request):
         data = request.data
-        print(data)
         
         if data.get('taget') == 'Users':
-            for receiver_username in data.get('to', []):
+            targets = data.get('to')
+            title = data.get('title')
+            content = data.get('content')
+            sender_id = GeneralUser.objects.get(username=data.get('from')).id
+
+            for receiver in targets:
+
+                receiver_id = GeneralUser.objects.get(username=receiver).id
+
                 user_data = {
-                    'content': data.get('content'),
-                    'sender': data.get('from'),
-                    'receiver': receiver_username,
-                    'title': data.get('title'),
+                    'title': title,
+                    'content': content,
+                    'sender': sender_id,
+                    'receiver': receiver_id,
                 }
 
                 serializer = CreateMessageSerializer(data=user_data)
@@ -73,8 +82,31 @@ class CreateMessage(APIView):
 
             return JsonResponse({'message': 'Messages sent successfully'}, status=201)
         else:
-            pass
-            # serializer = CreateMessageSerializer(data=data)
+            groups = data.get('to')
+            title = data.get('title')
+            content = data.get('content')
+            sender_id = GeneralUser.objects.get(username=data.get('from')).id
+            
+            for group in groups:
+                user_model = GlobalDictionaries.get_serializer('UserModels', group)
+
+                users = user_model.objects.all()
+
+                for user in users:
+                    user_data = {
+                        'title': title,
+                        'content': content,
+                        'sender': sender_id,
+                        'receiver': user_model.objects.get(username=user.username).id,
+                    }
+
+                    serializer = CreateMessageSerializer(data=user_data)
+                    if serializer.is_valid():
+                        serializer.save()
+                    else:
+                        return JsonResponse({'errors': serializer.errors}, status=400)
+                    
+            return JsonResponse({'message': 'Messages sent successfully'}, status=201)
         
 
         
@@ -83,20 +115,12 @@ class CreateMessage(APIView):
 
     
 # Delete 
-class DeleteMessages(DestroyAPIView):
+class DeleteMessages(APIView):
     permission_classes = [IsAuthenticated]
-    lookup_field = 'id'
-    queryset = MyMessages.objects.all()
-    serializer_class = GetMessagesSerializer
-
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request):
         message_ids = request.data.get('message_ids', [])
-        print(message_ids)
-        if message_ids:
-            messages = MyMessages.objects.filter(id__in=message_ids)
-            messages.delete()
-            return JsonResponse({'message': 'Messages deleted successfully.'}, status=204,)
-
-        return super().delete(request, *args, **kwargs)
-
+        for message_id in message_ids:
+            message = MyMessages.objects.get(id=message_id)
+            message.delete()
+        return JsonResponse({'message': 'Messages deleted successfully'}, status=200)
 # Delete 
