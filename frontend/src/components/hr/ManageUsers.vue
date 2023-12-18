@@ -98,7 +98,7 @@
         </v-expansion-panels>
       </v-col>
       <v-col cols="6">
-        <v-select v-model="itemsPerPage" variant="solo-filled" :items="[1, 2, 5, 10, 25, 50, 100]"
+        <v-select v-model="itemsPerPage" variant="solo-filled" :items="[5, 10, 25, 50, 100]"
           :label="`Items per page - ${itemsPerPage}`"></v-select>
       </v-col>
       <!-- Combobox columns selection -->
@@ -113,8 +113,7 @@
 
     <!-- Table -->
     <v-data-table :headers="updatedColumns" :items="users" :loading="loading" density="compact"
-      class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover show-current-page
-      @update:options="loadUsers()">
+      class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover show-current-page>
 
 
 
@@ -211,14 +210,15 @@
       <template v-slot:bottom="{ page, itemsPerPage }">
         <v-row>
           <v-col align="center">
-            <v-pagination v-model="paginationPage" :length="page_flip.total_pages" @next="nextPage()" @prev="prevPage()">
+            <v-pagination v-model="paginationPage" :length="pagiController.total_pages" @next="nextPage()"
+              @prev="prevPage()">
               <template v-slot:item="{ key, page }">
                 <v-btn class="mt-1" variant="text" disabled rounded="xl">{{ key }}</v-btn>
               </template>
             </v-pagination>
-            <p>Page {{ page_flip.currentPage }} of {{ page_flip.total_pages }}</p>
+            <p>Page {{ pagiController.currentPage }} of {{ pagiController.total_pages }}</p>
+            <p>{{ pagiController.totalRecors }} Records total</p>
           </v-col>
-
         </v-row>
       </template>
 
@@ -351,7 +351,7 @@
       </v-card>
     </v-dialog>
     <!-- dialog -->
-    {{ page_flip }}
+
     <!-- Dialaogs section -->
   </div>
 </template>
@@ -376,7 +376,7 @@ export default {
 
       itemsPerPage: 10,
       paginationPage: 1,
-      page_flip: {},
+      pagiController: {},
       query: '',
 
 
@@ -588,14 +588,13 @@ export default {
             }
           });
 
-        console.log(response)
-
-        this.page_flip = {
+        this.pagiController = {
           total_pages: response.data.total_pages,
           posts_amount: response.data.posts_amount,
           next: response.data.next,
           previous: response.data.previous,
           currentPage: response.data.current_page,
+          totalRecors: response.data.total_results,
         }
 
         this.users = response.data.results;
@@ -605,8 +604,6 @@ export default {
           user.rownumber = index + 1;
         });
 
-
-        this.loading = false;
       }
       catch (error) {
 
@@ -618,17 +615,18 @@ export default {
         localStorage.setItem('message', JSON.stringify(messageData));
         emit('message', '');
       }
+      this.loading = false;
     },
 
     // Previous page
     async prevPage() {
-      await this.loadUsers(this.page_flip.previous);
+      await this.loadUsers(this.pagiController.previous);
     },
     // Previous page
 
     // Next page
     async nextPage() {
-      await this.loadUsers(this.page_flip.next);
+      await this.loadUsers(this.pagiController.next);
     },
     // Next page
 

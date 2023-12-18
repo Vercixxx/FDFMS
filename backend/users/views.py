@@ -153,7 +153,6 @@ class GetGeneralUsers(viewsets.ModelViewSet):
 
         # Sort by date
         queryset = queryset.order_by(F('date_joined').desc(nulls_last=True))
-        print(f"Filtered Data: {queryset}")
         return queryset
 
     def list(self, request, *args, **kwargs):
@@ -171,6 +170,7 @@ class GetGeneralUsers(viewsets.ModelViewSet):
             'results': serializer.data,
             'next': paginator.get_next_link(),
             'previous': paginator.get_previous_link(),
+            'total_results': queryset.count(),
         }
 
         return JsonResponse(response_data, status=200)
@@ -181,17 +181,15 @@ class GetUsernames(APIView):
 
     def get(self, request):
         desired_role = self.request.query_params.get('role', '').strip()
-        search = self.request.query_params.get('search', '').strip()
+        search_query = self.request.query_params.get('search', '').strip()
 
         user_model = GlobalDictionaries.get_serializer(
             'UserModels', desired_role)
 
-        if search:
-            users = user_model.objects.all()
-            users = [user for user in users if
-                     search.lower() in user.username.lower()]
-        else:
-            users = user_model.objects.all()
+        users = user_model.objects.all()
+
+        if search_query:
+            users = users.filter(Q(username__icontains=search_query))
 
         serializer = getAllUsernames(users, many=True)
         return JsonResponse(serializer.data, safe=False)
