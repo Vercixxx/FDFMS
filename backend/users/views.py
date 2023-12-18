@@ -44,6 +44,7 @@ from administrator.models import Administrator
 
 # DB
 from django.db.models import F
+from django.db.models import Q
 
 # Pagination
 from rest_framework.pagination import PageNumberPagination
@@ -125,8 +126,6 @@ class GetGeneralUsers(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = UsersPagination
     
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['username', 'email']
 
     def get_queryset(self):
         # Choosing correct serializer
@@ -144,6 +143,13 @@ class GetGeneralUsers(viewsets.ModelViewSet):
             queryset = queryset.filter(is_active=True)
         elif status == 'False':
             queryset = queryset.filter(is_active=False)
+            
+        # Additional filtering using Q
+        search_query = self.request.query_params.get('search')
+        if search_query:
+            queryset = queryset.filter(Q(username__icontains=search_query) | Q(email__icontains=search_query))
+
+            
 
         # Sort by date
         queryset = queryset.order_by(F('date_joined').desc(nulls_last=True))
@@ -336,5 +342,3 @@ class ChangeUserState(APIView):
         user.save()
         return JsonResponse({'message': 'Changed successfully'}, status=200)
 
-
-5

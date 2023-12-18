@@ -98,7 +98,7 @@
         </v-expansion-panels>
       </v-col>
       <v-col cols="6">
-        <v-select v-model="itemsPerPage" variant="solo-filled" :items="[1,2, 5, 10, 25, 50, 100]"
+        <v-select v-model="itemsPerPage" variant="solo-filled" :items="[1, 2, 5, 10, 25, 50, 100]"
           :label="`Items per page - ${itemsPerPage}`"></v-select>
       </v-col>
       <!-- Combobox columns selection -->
@@ -216,7 +216,7 @@
                 <v-btn class="mt-1" variant="text" disabled rounded="xl">{{ key }}</v-btn>
               </template>
             </v-pagination>
-            <p>Page {{ page_flip.currentPage }} of {{page_flip.total_pages}}</p>
+            <p>Page {{ page_flip.currentPage }} of {{ page_flip.total_pages }}</p>
           </v-col>
 
         </v-row>
@@ -577,14 +577,16 @@ export default {
     async loadUsers(url) {
       this.loading = true;
       try {
-        const response = await axios.get(url || 'api/get-users/', {
-          params: {
-            limit: this.itemsPerPage,
-            search: this.query,
-            role: this.selectedRole,
-            status: this.selectedActive,
-          }
-        });
+        const response = url
+          ? await axios.get(url)
+          : await axios.get('api/get-users/', {
+            params: {
+              limit: this.itemsPerPage,
+              search: this.query,
+              role: this.selectedRole,
+              status: this.selectedActive,
+            }
+          });
 
         console.log(response)
 
