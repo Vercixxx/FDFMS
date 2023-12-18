@@ -134,18 +134,14 @@
                                     <p class="text-h4 text-md-h5 text-lg-h5">Available managers</p>
 
                                     <!-- Search bar -->
-                                    <v-text-field variant="solo-filled" v-model="searchQueryAvailable"
-                                        @keydown.enter="searchTableAvailable = searchQueryAvailable" label="Search"
-                                        class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions
+                                    <v-text-field variant="solo-filled" v-model="query" @keydown.enter="getManagers()"
+                                        label="Search" class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions
                                         hint="Press enter to search" />
                                     <!-- Search bar -->
 
                                     <!-- Available managers -->
-                                    <v-data-table :headers="tableHeaders" :items="availableManagers"
-                                        :search="searchTableAvailable" :loading="tableLoading"
-                                        class="elevation-4 rounded-xl" v-model:items-per-page="itemsPerPage" hover
-                                        select-strategy="all" show-current-page>
-
+                                    <v-data-table :headers="tableHeaders" :items="availableManagers" :loading="loading"
+                                        class="elevation-4 rounded-xl" v-model:items-per-page="itemsPerPage" hover>
 
 
                                         <!-- No data -->
@@ -168,6 +164,7 @@
                                                 </td>
                                             </tr>
                                         </template>
+
 
                                     </v-data-table>
                                     <!-- Available managers -->
@@ -193,7 +190,7 @@
 
                                     <!-- Selected managers -->
                                     <v-data-table :headers="tableHeaders" :items="selectedManagers"
-                                        :search="searchTableSelected" :loading="tableLoading" class="elevation-4 rounded-xl"
+                                        :search="searchTableSelected" class="elevation-4 rounded-xl"
                                         v-model:items-per-page="itemsPerPage" hover select-strategy="all" show-current-page>
 
 
@@ -283,7 +280,7 @@ export default {
         return {
             theme: true,
             form: false,
-            loading: false,
+            loading: true,
             editing: false,
             restId: null,
             editRest: {},
@@ -303,13 +300,13 @@ export default {
             availableManagers: [],
             selectedManagers: [],
 
-            itemsPerPage: 10,
+            itemsPerPage: 5,
             tableHeaders: [
-                { title: 'Username', key: 'username', align: 'center', sortable: true },
+                { title: 'Username', key: 'username', align: 'center', sortable: false },
             ],
 
             // Search
-            searchTableAvailable: '',
+            query: '',
             searchTableSelected: '',
 
             // Inputs definisions
@@ -571,17 +568,33 @@ export default {
 
         // Get all managers
         async getManagers() {
-            const response = await axios.get('api/managers/get_username_all/', {
-                params: {
-                    search: this.query,
-                }
-            });
-            this.availableManagers = response.data;
-            this.availableManagers = this.availableManagers.filter(username => !this.selectedManagers.includes(username));
+            this.loading = true;
+            try {
+                const response = await axios.get('api/users/get-usernames/', {
+                    params: {
+                        role: 'Manager',
+                        search: this.query,
+                    }
+                });
+
+                this.availableManagers = response.data.map(user => user.username);
+                this.availableManagers = this.availableManagers.filter(username => !this.selectedManagers.includes(username));
+                
+
+            } catch (error) {
+                const messageData = {
+                    message: `Error, please try again`,
+                    type: 'error'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+            };
+
+            this.loading = false;
 
         },
         // Get all managers
-
 
 
         // Create restaurant
