@@ -10,8 +10,6 @@ class Driver(GeneralUser):
     ln_expire_date = models.DateField(max_length=50, blank=True, null=True)
     ln_published_by = models.CharField(max_length=70, blank=True, null=True)
     ln_code = models.CharField(max_length=15, blank=True, null=True)
-
-    
     
 
     class Meta:
@@ -22,7 +20,7 @@ class Driver(GeneralUser):
 
 
 class DailyWork(models.Model):
-    user = models.ForeignKey(Driver, on_delete=models.CASCADE)
+    driver = models.ForeignKey(Driver, db_column='driver', on_delete=models.CASCADE)
     day = models.CharField(max_length=10)
     start_work = models.TimeField()
     end_work = models.TimeField()
