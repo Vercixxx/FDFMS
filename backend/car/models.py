@@ -4,9 +4,8 @@ from django.utils import timezone
 from driver.models import Driver
 
 class Car(models.Model):
-    id = models.AutoField(primary_key=True)
-    
-    vin = models.TextField(max_length=17)
+
+    vin = models.TextField(max_length=17, primary_key = True)
     
     brand = models.TextField()
     model = models.TextField()
@@ -49,8 +48,8 @@ class Car(models.Model):
 class DriverCar(models.Model):
     date =  models.DateTimeField(null=True)
     
-    user = models.ForeignKey(Driver, on_delete=models.CASCADE)
-    car = models.ForeignKey(Car, on_delete=models.CASCADE)
+    driver = models.ForeignKey(Driver, db_column='driver', on_delete=models.CASCADE)
+    car = models.ForeignKey(Car, db_column='car', on_delete=models.CASCADE)
     
     car_mileage = models.IntegerField(null=True)
     

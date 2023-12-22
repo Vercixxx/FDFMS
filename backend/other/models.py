@@ -13,7 +13,7 @@ class State(models.Model):
     name = models.CharField(
         max_length=100,
     )
-    country = models.ForeignKey(Country, on_delete = models.SET_NULL, null=True)
+    country = models.ForeignKey(Country, db_column='country', on_delete = models.SET_NULL, null=True)
     
     def __str__(self):
         return f"{self.name} ({self.country.name})"

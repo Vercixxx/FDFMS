@@ -570,7 +570,7 @@ export default {
         async getManagers() {
             this.loading = true;
             try {
-                const response = await axios.get('api/users/get-usernames/', {
+                const response = await aAdministrator.get('api/users/get-usernames/', {
                     params: {
                         role: 'Manager',
                         search: this.query,
