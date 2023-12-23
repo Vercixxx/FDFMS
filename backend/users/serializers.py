@@ -9,7 +9,7 @@ class GeneralUserSerializer(serializers.ModelSerializer):
     date_joined = serializers.DateTimeField(format='%Y-%m-%d')
     class Meta:
         model = GeneralUser
-        fields = ['username', 'email' , 'user_role', 'is_active', 'id', 'date_joined']
+        fields = ['username', 'email' , 'user_role', 'is_active', 'date_joined']
         
 class GeneralUserRegistrationSerializer(serializers.ModelSerializer):
     
@@ -63,7 +63,7 @@ class GeneralUserRegistrationSerializer(serializers.ModelSerializer):
         account.save()
         return account
 
-class getAllUsernames(serializers.ModelSerializer):
+class GetAllUsernamesSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeneralUser
         fields = ['username']
