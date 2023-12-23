@@ -250,17 +250,13 @@ export default {
             try {
                 const response = await axios.post('api/v1/login/', data)
 
-
-
                 if (response.data.error) {
                     // alert
                     this.errorContent = response.data.error;
                     this.alert = true;
-                    this.loading = false;
                 }
                 else {
                     // Authentication was successfull
-
 
                     // Vuex
                     this.$store.dispatch('setResponseData', response.data.data);
@@ -278,11 +274,14 @@ export default {
                 if (error.message === "Network Error") {
                     this.errorContent = "Server Error. Please try again.";
                     this.alert = true;
-                    this.loading = false;
+                }
+                else {
+                    this.errorContent = "Error. Please try again.";
+                    this.alert = true;
                 }
             }
 
-
+            this.loading = false;
         },
 
 

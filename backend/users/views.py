@@ -10,7 +10,7 @@ import string
 from django.http import JsonResponse
 
 
-from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer, getAllUsernames
+from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer, GetAllUsernamesSerializer
 from rest_manager.serializers import AddManagerSerializer, RestManagerSerializer, GetRestManager, UpdateRestManager
 from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer, GetAssetUser, UpdateAssetUser
 from clients_dept.serializers import AddClientsUserSerializer, ClientsSerializer, GetClientsUser, UpdateClientsUser
@@ -191,7 +191,7 @@ class GetUsernames(APIView):
         if search_query:
             users = users.filter(Q(username__icontains=search_query))
 
-        serializer = getAllUsernames(users, many=True)
+        serializer = GetAllUsernamesSerializer(users, many=True)
         return JsonResponse(serializer.data, safe=False)
 
 
@@ -215,7 +215,7 @@ class UserAuth(APIView):
 
             user_model = GlobalDictionaries.get_serializer(
                 'UserModels', user_role)
-            logged_user = user_model.objects.get(id=general_user.id)
+            logged_user = user_model.objects.get(username=general_user.pk)
 
             serializer_class = GlobalDictionaries.get_serializer(
                 'UserSerializers', user_role)

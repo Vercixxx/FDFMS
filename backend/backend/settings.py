@@ -178,6 +178,7 @@ SIMPLE_JWT = {
     
     # "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     # "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    'USER_ID_FIELD': 'username',
     'AUTH_HEADER_TYPES': ('JWT',),
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
