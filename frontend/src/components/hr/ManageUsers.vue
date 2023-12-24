@@ -8,64 +8,67 @@
       <!-- Search bar section -->
       <v-row class="mb-5 d-flex justify-content-between">
 
-        <v-col cols="auto">
-          <!-- User role -->
-          <span>
+        <v-col cols="12" sm="8">
+          <v-expansion-panels>
+            <v-expansion-panel title="Filters" elevation="1">
 
-            <div class="btn-group dropdown mx-2 mb-2">
+              <v-expansion-panel-text>
+                <v-row justify="center" align="center">
+                  <v-col cols="auto">
+                    <!-- User role -->
+                    <v-menu transition="slide-y-transition">
+                      <template v-slot:activator="{ props }">
+                        <v-btn color="grey" v-bind="props" variant="outlined">
+                          User role - {{ selectedRole }}
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item v-for="option in userRoleList" :key="option.name">
+                          <v-list-item-title role="button" @click="chooseRole(option.property)">
+                            {{ option.name }}
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                    <!-- User role -->
+                  </v-col>
+                  <v-col cols="auto">
+                    <!-- User status -->
+                    <v-menu transition="slide-y-transition">
+                      <template v-slot:activator="{ props }">
+                        <v-btn color="grey" v-bind="props" variant="outlined">
+                          <span class="pr-2">User status - </span>
+                          <span v-if="selectedActive === 'True'">Active</span>
+                          <span v-else-if="selectedActive === 'False'">Not active</span>
+                          <span v-else>All</span>
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item v-for="option in userStatusList" :key="option.name">
+                          <v-list-item-title role="button" @click="chooseStatus(option.property)">
+                            {{ option.name }}
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                    <!-- User status -->
+                  </v-col>
 
-              <v-btn id="role-activator" variant="tonal"
-                class="rounded-xl rounded-0 text-white bg-teal-darken-4 font-weight-bold">
-                <span class="pr-2">User role - </span>
-                {{ selectedRole }}
+                  <v-col cols="auto">
+                    <v-combobox variant="outlined" v-model="selectedColumns" :items="avaliableColumns"
+                      label="Select columns" prepend-icon="mdi-table-edit" multiple chips>
+                    </v-combobox>
+                  </v-col>
 
-                <v-icon class="text-h5" icon="mdi-menu-down" />
-              </v-btn>
-            </div>
+                  <v-col cols="12" sm="2">
+                    <v-select v-model="itemsPerPage" variant="solo-filled" :items="[5, 10, 25, 50, 100]"
+                      :label="`Items per page - ${itemsPerPage}`"></v-select>
+                  </v-col>
+                </v-row>
 
-            <v-menu activator="#role-activator">
-              <v-list>
-                <v-list-item v-for="option in userRoleList" :key="option.name" :value="option.property"
-                  @click="chooseRole(option.property)">
-                  <v-list-item-title>
-                    {{ option.name }}
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-
-          </span>
-          <!-- User role -->
-
-          <!-- User status -->
-          <span>
-
-            <div class="btn-group dropdown mx-2 mb-2">
-
-              <v-btn id="status-activator" variant="tonal"
-                class="rounded-xl rounded-0 text-white  bg-teal-darken-4 font-weight-bold">
-                <span class="pr-2">User status - </span>
-                <span v-if="selectedActive === 'True'">Active</span>
-                <span v-else-if="selectedActive === 'False'">Not active</span>
-                <span v-else>All</span>
-
-                <v-icon class="text-h5" icon="mdi-menu-down" />
-              </v-btn>
-
-            </div>
-            <v-menu activator="#status-activator">
-
-              <v-list>
-                <v-list-item v-for="option in userStatusList" :key="option.name" :value="option.property"
-                  @click="chooseStatus(option.property)">
-                  <v-list-item-title>{{ option.name }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-
-            </v-menu>
-
-          </span>
-          <!-- User status -->
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
 
         </v-col>
 
@@ -77,31 +80,6 @@
         </v-col>
 
       </v-row>
-
-      <!-- End of search bar section -->
-
-
-      <!-- Combobox columns selection -->
-      <v-col cols="10">
-        <v-expansion-panels>
-          <v-expansion-panel title="Choose columns" elevation="1">
-
-            <v-expansion-panel-text>
-
-              <v-combobox variant="outlined" v-model="selectedColumns" :items="avaliableColumns" label="Select columns"
-                prepend-icon="mdi-table-edit" multiple chips>
-
-              </v-combobox>
-            </v-expansion-panel-text>
-
-          </v-expansion-panel>
-        </v-expansion-panels>
-      </v-col>
-      <v-col cols="6">
-        <v-select v-model="itemsPerPage" variant="solo-filled" :items="[5, 10, 25, 50, 100]"
-          :label="`Items per page - ${itemsPerPage}`"></v-select>
-      </v-col>
-      <!-- Combobox columns selection -->
 
     </v-card>
 
