@@ -8,9 +8,10 @@ import string
 
 
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
 
-from .serializers import GeneralUserSerializer, GeneralUserRegistrationSerializer, GetAllUsernamesSerializer
+from .serializers import GeneralUserSerializer, GetAllUsernamesSerializer, CreateAddressesSerializer, GetAddressesSerializer
 from rest_manager.serializers import AddManagerSerializer, RestManagerSerializer, GetRestManager, UpdateRestManager
 from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer, GetAssetUser, UpdateAssetUser
 from clients_dept.serializers import AddClientsUserSerializer, ClientsSerializer, GetClientsUser, UpdateClientsUser
@@ -41,6 +42,7 @@ from hr_dept.models import HRUser
 from payroll_dept.models import PayrollUser
 from driver.models import Driver
 from administrator.models import Administrator
+from other.models import State, Country
 
 # DB
 from django.db.models import F
@@ -172,7 +174,6 @@ class GetGeneralUsers(viewsets.ModelViewSet):
             'previous': paginator.get_previous_link(),
             'total_results': queryset.count(),
         }
-
         return JsonResponse(response_data, status=200)
 
 
@@ -243,28 +244,86 @@ class AddUser(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        user_role = request.data.get('user_role')
+        data = request.data
+        
+        user_role = data['user_role']
 
         # Password generating
         generated_password = self.generate_password()
-        request.data['password'] = generated_password
-        request.data['password2'] = generated_password
+        data['password'] = generated_password
+        data['password2'] = generated_password
 
         serializer_class = GlobalDictionaries.get_serializer(
             'AddUserSerializers', user_role)
 
-        serializer = serializer_class(data=request.data)
-        data = {}
+        serializer = serializer_class(data=data)
+        
+        
+
+        # correspondence_state_name = request.data.pop('correspondence_state')
+        # registered_state_name = request.data.pop('registered_state')
+        # residence_state_name = request.data.pop('residence_state')
+
+        # correspondence_state = get_object_or_404(State, name=correspondence_state_name, country__name=request.data['correspondence_country'])
+        # registered_state = get_object_or_404(State, name=registered_state_name, country__name=request.data['registered_country'])
+        # residence_state = get_object_or_404(State, name=residence_state_name, country__name=request.data['residence_country'])
+
+        # request.data['correspondence_state'] = correspondence_state
+        # request.data['registered_state'] = registered_state
+        # request.data['residence_state'] = residence_state
+
+        # correspondence_country_name = request.data.pop('correspondence_country')
+        # registered_country_name = request.data.pop('registered_country')
+        # residence_country_name = request.data.pop('residence_country')
+
+        # correspondence_country = get_object_or_404(Country, name=correspondence_country_name)
+        # registered_country = get_object_or_404(Country, name=registered_country_name)
+        # residence_country = get_object_or_404(Country, name=residence_country_name)
+
+        # request.data['correspondence_country'] = correspondence_country
+        # request.data['registered_country'] = registered_country
+        # request.data['residence_country'] = residence_country
+        
+
+        
+        response_data = {}
 
         if serializer.is_valid():
             account = serializer.save()
-            data['message'] = f'Succesfully registered {account.username}'
+            
+        else:
+            response_data = serializer.errors
+            return JsonResponse(response_data, status=400)
+        
+            
+        # Address
+        residence_state_name = data['residence_state']
+        registered_state_name = data['registered_state']
+        correspondence_state_name = data['correspondence_state']
+
+        residence_state = State.objects.get(name=residence_state_name)
+        registered_state = State.objects.get(name=registered_state_name)
+        correspondence_state = State.objects.get(name=correspondence_state_name)
+
+        data['residence_state'] = residence_state.id
+        data['registered_state'] = registered_state.id
+        data['correspondence_state'] = correspondence_state.id
+        
+        addres_serializer = CreateAddressesSerializer(data=data)
+        # Address 
+            
+        if addres_serializer.is_valid():
+            addres_serializer.save()
+            
+            response_data['message'] = f'Succesfully registered {account.username}'
             print("Created ", account.username,
                   " with password: ", generated_password)
+            
         else:
-            data = serializer.errors
-
-        return JsonResponse(data)
+            response_data = addres_serializer.errors
+            return JsonResponse(response_data, status=400)
+            
+        return JsonResponse(response_data, status=201)
 
     def generate_password(self):
         characters = string.ascii_letters + string.digits + string.punctuation
@@ -283,6 +342,8 @@ class getUser(APIView):
         user_serializer = GlobalDictionaries.get_serializer(
             'GetUserSerializers', user_role)
         serializer_instance = user_serializer(user)
+        
+        
         output = serializer_instance.data
         return JsonResponse(output, status=200, safe=False)
 

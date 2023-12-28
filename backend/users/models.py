@@ -57,7 +57,7 @@ class Addresses(models.Model):
     residence_zip_code = models.CharField(max_length=10, blank=True, null=True)
     
     
-    # Address of registered
+    # Address of registeredresidence_country
     registered_country = models.ForeignKey(Country, db_column="registered_country", on_delete=models.CASCADE, related_name='registered_addresses')
     registered_state = models.ForeignKey(State, db_column="registered_state", on_delete=models.CASCADE, related_name='registered_addresses')
     

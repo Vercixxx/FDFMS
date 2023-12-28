@@ -626,7 +626,7 @@ export default {
     mounted() {
         // Check for user class
         this.addingRole = localStorage.getItem('addingRole');
-        localStorage.removeItem('addingRole');
+        // localStorage.removeItem('addingRole');
 
         this.username = localStorage.getItem('username');
 
@@ -858,10 +858,10 @@ export default {
 
             this.input_data['user_role'] = this.addingRole;
 
-            const response = await axios.post('api/create/', this.input_data);
-
-            if (response.status === 200) {
-
+            try {
+                console.log(this.input_data)
+                const response = await axios.post('api/create/', this.input_data);
+                console.log(response)
                 const messageData = {
                     message: `Successfully added ${this.input_data.username}`,
                     type: 'success'
@@ -872,11 +872,15 @@ export default {
 
 
                 this.$root.changeCurrentComponent('AddUserComponent');
+            } catch (error) {
+                console.log(error)
+                const messageData = {
+                    message: error.response.data,
+                    type: 'error'
+                };
 
-            }
-            else {
-                this.errorContent = response.message;
-                this.alert = true;
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
             }
 
         },

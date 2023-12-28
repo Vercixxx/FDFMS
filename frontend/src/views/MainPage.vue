@@ -221,7 +221,7 @@
                 </template>
             </v-snackbar>
             <!-- Snackbar -->
-
+            
 
         </v-layout>
 
@@ -251,7 +251,7 @@
         <!-- Add post dialog -->
         <AddPost ref="addPost" style="display: none;" :key="forceReload" />
         <!-- Add post dialog -->
-
+        
     </v-app>
 </template>
 
@@ -354,7 +354,7 @@ export default {
             darkModeEnabled: true,
 
             alert: false,
-            snackContent: '',
+            snackContent: {type:'success'},
 
             forceReload: 0,
 
