@@ -11,7 +11,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 
-from .serializers import GeneralUserSerializer, GetAllUsernamesSerializer, CreateAddressesSerializer, GetAddressesSerializer
+from .serializers import GeneralUserSerializer, GetAllUsernamesSerializer, CreateAddressesSerializer, ResidenceAddressSerializer
 from rest_manager.serializers import AddManagerSerializer, RestManagerSerializer, GetRestManager, UpdateRestManager
 from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer, GetAssetUser, UpdateAssetUser
 from clients_dept.serializers import AddClientsUserSerializer, ClientsSerializer, GetClientsUser, UpdateClientsUser
@@ -34,7 +34,7 @@ from rest_framework.generics import DestroyAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # Models
-from .models import GeneralUser
+from .models import GeneralUser, Addresses
 from rest_manager.models import RestManager
 from asset_dept.models import AssetUser
 from clients_dept.models import ClientsUser
@@ -124,57 +124,68 @@ class UsersPagination(PageNumberPagination):
         return page_size
 
 
-class GetGeneralUsers(viewsets.ModelViewSet):
+class GetGeneralUsers(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = UsersPagination
     
+    @staticmethod
+    def get_addresses(username):
+        try:
+            user = GeneralUser.objects.get(username=username)
+            address = Addresses.objects.get(username=user)
+            return ResidenceAddressSerializer(instance=address).data
+        except GeneralUser.DoesNotExist:
+            return {'error': 'User not found'}
+        except Addresses.DoesNotExist:
+            return {'error': 'Address not found'}
+    
+    def get(self, request):
+        limit = self.request.query_params.get('limit', '').strip()
+        query = self.request.query_params.get('search', '').strip()
+        role = self.request.query_params.get('role', '').strip()
+        status = self.request.query_params.get('status', '').strip()
 
-    def get_queryset(self):
-        # Choosing correct serializer
-        role = self.request.query_params.get('role')
-        serializer_class = GlobalDictionaries.get_serializer(
-            'UserSerializers', role)
+        # Choosing correct serializer and user model
+        serializer_class = GlobalDictionaries.get_serializer('UserSerializers', role)
         serializer_class = serializer_class or GeneralUserSerializer
+        user_model = GlobalDictionaries.get_serializer('UserModels', role)
 
-        queryset = serializer_class.Meta.model.objects.all()
+        queryset = user_model.objects.all()
 
         # Filtering by status
-        status = self.request.query_params.get('status')
-
         if status == 'True':
             queryset = queryset.filter(is_active=True)
         elif status == 'False':
             queryset = queryset.filter(is_active=False)
             
         # Additional filtering using Q
-        search_query = self.request.query_params.get('search')
-        if search_query:
-            queryset = queryset.filter(Q(username__icontains=search_query) | Q(email__icontains=search_query))
-
-            
+        if query:
+            queryset = queryset.filter(Q(username__icontains=query) | Q(email__icontains=query))
 
         # Sort by date
         queryset = queryset.order_by(F('date_joined').desc(nulls_last=True))
-        return queryset
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-
-        # Pagination
         paginator = UsersPagination()
         result_page = paginator.paginate_queryset(queryset, request)
-        serializer = GeneralUserSerializer(result_page, many=True)
+        
+        serialized_data = []
+        for user in result_page:
+            user_data = serializer_class(user).data
+            address_data = self.get_addresses(user.username)
+            user_data.update(address_data)
+            serialized_data.append(user_data)
 
         response_data = {
             'posts_amount': paginator.page.paginator.count,
             'total_pages': paginator.page.paginator.num_pages,
             'current_page': paginator.page.number,
-            'results': serializer.data,
+            'results': serialized_data,
             'next': paginator.get_next_link(),
             'previous': paginator.get_previous_link(),
             'total_results': queryset.count(),
         }
         return JsonResponse(response_data, status=200)
+
 
 
 class GetUsernames(APIView):

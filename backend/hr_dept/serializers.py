@@ -39,13 +39,6 @@ class GetHRUser(serializers.ModelSerializer):
 class HRUserSerializer(serializers.ModelSerializer):
     date_joined = serializers.DateTimeField(format='%Y-%m-%d')
 
-    residence_country = serializers.CharField(source='addresses.residence_country')
-    residence_city = serializers.CharField(source='addresses.residence_city')
-    residence_state = serializers.CharField(source='addresses.residence_state')
-    residence_street = serializers.CharField(source='addresses.residence_street')
-    residence_home_number = serializers.CharField(source='addresses.residence_home_number')
-    residence_apartament_number = serializers.CharField(source='addresses.residence_apartament_number')
-    residence_zip_code = serializers.CharField(source='addresses.residence_zip_code')
 
     class Meta:
         model = HRUser
@@ -56,14 +49,7 @@ class HRUserSerializer(serializers.ModelSerializer):
                   'user_role', 
                   'username', 
                   'phone' ,
-                  'date_joined',
-                  'residence_country',
-                  'residence_city',
-                  'residence_state',
-                  'residence_street',
-                  'residence_home_number',
-                  'residence_apartament_number',
-                  'residence_zip_code']
+                  'date_joined']
 
         
 class AddHRUserSerializer(serializers.ModelSerializer):

@@ -557,7 +557,7 @@ export default {
       try {
         const response = url
           ? await axios.get(url)
-          : await axios.get('api/get-users/', {
+          : await axios.get('api/users/getall', {
             params: {
               limit: this.itemsPerPage,
               search: this.query,
@@ -565,7 +565,7 @@ export default {
               status: this.selectedActive,
             }
           });
-
+          console.log(response)
         this.pagiController = {
           total_pages: response.data.total_pages,
           posts_amount: response.data.posts_amount,
