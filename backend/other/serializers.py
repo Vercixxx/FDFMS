@@ -35,4 +35,9 @@ class StateDeleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = State
         fields = []
+        
+class StateNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = State
+        fields = ['name']
 # State

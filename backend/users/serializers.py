@@ -4,7 +4,7 @@ from django.contrib.auth.password_validation import validate_password
 
 from .models import GeneralUser, Addresses
 from other.models import Country, State
-from other.serializers import CountryCreateSerializer,StateCreateSerializer
+from other.serializers import StateNameSerializer
 
 
 class GeneralUserSerializer(serializers.ModelSerializer):
@@ -26,6 +26,18 @@ class CreateAddressesSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
    
+class ResidenceAddressSerializer(serializers.ModelSerializer):
+    residence_state = serializers.StringRelatedField(source='residence_state.name')
+    class Meta:
+        model = Addresses
+        fields = ['residence_country',
+                  'residence_state',
+                  'residence_city',
+                  'residence_street',
+                  'residence_home_number',
+                  'residence_apartment_number',
+                  'residence_zip_code',
+                  ]
 
     
 class GetAddressesSerializer(serializers.Serializer):
