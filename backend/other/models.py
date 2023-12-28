@@ -7,7 +7,9 @@ class Country(models.Model):
         unique=True,
         primary_key=True
     )
-
+    
+    def __str__(self):
+        return f"{self.name}"
 
 class State(models.Model):
     name = models.CharField(
