@@ -257,6 +257,23 @@ class AddUser(APIView):
     def post(self, request):
         data = request.data
         
+        
+        # Checking for duplicates
+        fields_to_check = ['email']
+        conflicting_fields = []
+
+        for field_name in fields_to_check:
+            if field_name in data:
+                field_value = data[field_name]
+                exclude_conditions = {field_name: field_value}
+                if GeneralUser.objects.exclude(username=data['username']).filter(**exclude_conditions).exists():
+                    conflicting_fields.append(field_name)
+
+        if conflicting_fields:
+            error_message = f'The following fields are already taken: {", ".join(conflicting_fields)}. Please try another.'
+            return JsonResponse({'error': error_message}, status=400)
+        # Checking for duplicates
+        
         user_role = data['user_role']
 
         # Password generating
@@ -268,33 +285,6 @@ class AddUser(APIView):
             'AddUserSerializers', user_role)
 
         serializer = serializer_class(data=data)
-        
-        
-
-        # correspondence_state_name = request.data.pop('correspondence_state')
-        # registered_state_name = request.data.pop('registered_state')
-        # residence_state_name = request.data.pop('residence_state')
-
-        # correspondence_state = get_object_or_404(State, name=correspondence_state_name, country__name=request.data['correspondence_country'])
-        # registered_state = get_object_or_404(State, name=registered_state_name, country__name=request.data['registered_country'])
-        # residence_state = get_object_or_404(State, name=residence_state_name, country__name=request.data['residence_country'])
-
-        # request.data['correspondence_state'] = correspondence_state
-        # request.data['registered_state'] = registered_state
-        # request.data['residence_state'] = residence_state
-
-        # correspondence_country_name = request.data.pop('correspondence_country')
-        # registered_country_name = request.data.pop('registered_country')
-        # residence_country_name = request.data.pop('residence_country')
-
-        # correspondence_country = get_object_or_404(Country, name=correspondence_country_name)
-        # registered_country = get_object_or_404(Country, name=registered_country_name)
-        # residence_country = get_object_or_404(Country, name=residence_country_name)
-
-        # request.data['correspondence_country'] = correspondence_country
-        # request.data['registered_country'] = registered_country
-        # request.data['residence_country'] = residence_country
-        
 
         
         response_data = {}
@@ -400,7 +390,7 @@ class UpdateUser(APIView):
                 return JsonResponse(serializer.errors, status=400)
 
         except GeneralUser.DoesNotExist:
-            return JsonResponse({'error': 'Brand does not exist.'}, status=404)
+            return JsonResponse({'error': 'User does not exist.'}, status=404)
 
 
 class ChangeUserState(APIView):
