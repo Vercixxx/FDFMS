@@ -457,11 +457,11 @@ export default {
                     ]
                 },
                 {
-                    name: 'Apartament',
-                    model: 'residence_apartament_number',
+                    name: 'Apartment',
+                    model: 'residence_apartment_number',
                     icon: 'mdi-home',
                     rules: [
-                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
+                        v => !v || /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
@@ -509,11 +509,11 @@ export default {
                     ]
                 },
                 {
-                    name: 'Apartament',
-                    model: 'correspondence_apartament_number',
+                    name: 'Apartment',
+                    model: 'correspondence_apartment_number',
                     icon: 'mdi-home',
                     rules: [
-                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
+                        v => !v || /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
@@ -561,11 +561,11 @@ export default {
                     ]
                 },
                 {
-                    name: 'Apartament',
-                    model: 'registered_apartament_number',
+                    name: 'Apartment',
+                    model: 'registered_apartment_number',
                     icon: 'mdi-home',
                     rules: [
-                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
+                        v => !v || /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
@@ -859,9 +859,7 @@ export default {
             this.input_data['user_role'] = this.addingRole;
 
             try {
-                console.log(this.input_data)
                 const response = await axios.post('api/create/', this.input_data);
-                console.log(response)
                 const messageData = {
                     message: `Successfully added ${this.input_data.username}`,
                     type: 'success'
@@ -873,7 +871,6 @@ export default {
 
                 this.$root.changeCurrentComponent('AddUserComponent');
             } catch (error) {
-                console.log(error)
                 const messageData = {
                     message: error.response.data,
                     type: 'error'
@@ -913,37 +910,39 @@ export default {
 
         // Update user function
         async updateUser() {
-            // Generate dict for sending
+            // Generate dict for put
+            this.getDataFromInputs();
             this.input_data['user_role'] = this.user_role;
-            const ready_data = this.input_data;
+            const input_data = this.input_data;
+            console.log(input_data)
 
 
             // Send put request
             try {
-                const response = await axios.put(`api/users/save/${ready_data.username}/${ready_data.user_role}/`, ready_data);
-
+                const response = await axios.put(`api/users/save/${input_data.username}/${input_data.user_role}/`, input_data);
+                console.log(response)
                 const messageData = {
-                    message: `Successfully modified ${ready_data.username}`,
+                    message: `Successfully modified ${input_data.username}`,
                     type: 'success'
                 };
 
                 localStorage.setItem('message', JSON.stringify(messageData));
 
                 emit('message', '');
-                this.loading = false;
                 this.$root.changeCurrentComponent('ModifyUserComponent');
-
+                
             }
             catch (error) {
-                this.loading = false;
+                console.error(error)
                 const messageData = {
-                    message: error.response.data.error,
+                    message: error.response.data,
                     type: 'danger'
                 };
                 localStorage.setItem('message', JSON.stringify(messageData));
                 emit('message', '');
-                this.$root.changeCurrentComponent('ModifyUserComponent');
+
             }
+            this.loading = false;
 
 
         },
