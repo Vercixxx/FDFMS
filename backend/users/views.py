@@ -354,7 +354,8 @@ class UpdateUser(APIView):
 
     def put(self, request, username, user_role):
         data = request.data
-
+        print(data)
+        
         try:
             user_model = GlobalDictionaries.get_serializer(
                 'UserModels', user_role)
@@ -381,13 +382,46 @@ class UpdateUser(APIView):
             serializer_class = GlobalDictionaries.get_serializer(
                 'UpdateUserSerializers', user_role)
             serializer = serializer_class(user, data=data)
+            
+            # Address
+            residence_state_name = data['residence_state']
+            registered_state_name = data['registered_state']
+            correspondence_state_name = data['correspondence_state']
 
-            if serializer.is_valid():
+            residence_state = State.objects.get(name__icontains=residence_state_name.split(' (')[0].strip())
+            registered_state = State.objects.get(name__icontains=registered_state_name.split(' (')[0].strip())
+            correspondence_state = State.objects.get(name__icontains=correspondence_state_name.split(' (')[0].strip())
+
+            data['residence_state'] = residence_state.id
+            data['registered_state'] = registered_state.id
+            data['correspondence_state'] = correspondence_state.id
+            
+            # for key, value in data.items():
+            #     if value is None:
+            #         data[key] = ''
+
+
+            print("-------------------------")
+            print(data)
+            print("-------------------------")
+            
+            
+            address_instance = Addresses.objects.get(username=data['username'])
+            address_serializer = CreateAddressesSerializer(address_instance, data=data)
+            # Address 
+
+            
+            if serializer.is_valid() and address_serializer.is_valid():
                 serializer.update(user, data)
+                address_serializer.save()
                 return JsonResponse({'message': 'Successfully updated'}, status=200)
-
             else:
-                return JsonResponse(serializer.errors, status=400)
+                errors = {}
+                errors.update(serializer.errors)
+                errors.update(address_serializer.errors)
+                print(errors)
+                return JsonResponse(errors, status=400)
+            
 
         except GeneralUser.DoesNotExist:
             return JsonResponse({'error': 'User does not exist.'}, status=404)
@@ -401,4 +435,6 @@ class ChangeUserState(APIView):
         user.is_active = not user.is_active
         user.save()
         return JsonResponse({'message': 'Changed successfully'}, status=200)
-
+    
+    
+    
