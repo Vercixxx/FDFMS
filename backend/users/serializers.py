@@ -20,7 +20,7 @@ class GetAllUsernamesSerializer(serializers.ModelSerializer):
         fields = ['username']
         
         
-class CreateAddressesSerializer(serializers.ModelSerializer):
+class GeneralAddressesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Addresses
         fields = '__all__'
