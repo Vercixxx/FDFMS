@@ -754,7 +754,12 @@ export default {
     async userDetails(username, role) {
       try {
         const response = await axios.get(`api/users/get/${username}/${role}/`);
-        this.userDetailData = response.data;
+        this.userDetailData = {};
+        Object.keys(response.data).forEach(key => {
+          let formattedKey = key.replace(/_/g, ' ');
+          formattedKey = formattedKey.replace(/\b\w/g, firstChar => firstChar.toUpperCase());
+          this.userDetailData[formattedKey] = response.data[key];
+        });
         this.UserDetailsDialog = true;
       }
       catch (error) {
