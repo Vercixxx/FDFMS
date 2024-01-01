@@ -94,14 +94,14 @@
                         <!-- Country and State -->
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                v-model="resSelectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
+                                v-model="resSelectedCountry" @update:search="getStates('residence')" :rules="fieldRequired">
 
                             </v-autocomplete>
 
                         </v-col>
 
                         <v-col cols="12" sm="6">
-                            <v-autocomplete label="State" :items="resCitiesList" variant="outlined"
+                            <v-autocomplete label="State" :items="resStatesList" variant="outlined"
                                 v-model="resSelectedState" :disabled="resSelectedCountry === null" :rules="fieldRequired">
                             </v-autocomplete>
 
@@ -152,13 +152,13 @@
                             <!-- Country and City -->
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                    v-model="corSelectedCountry" @update:search="getCities('correspodence')"
+                                    v-model="corSelectedCountry" @update:search="getStates('correspodence')"
                                     :rules="show_corespondece ? [] : fieldRequired">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6">
-                                <v-autocomplete label="State" :items="corCitiesList" variant="outlined"
+                                <v-autocomplete label="State" :items="corStatesList" variant="outlined"
                                     v-model="corSelectedState" :disabled="corSelectedCountry === null"
                                     :rules="show_corespondece ? [] : fieldRequired">
                                 </v-autocomplete>
@@ -212,13 +212,13 @@
                             <!-- Country and City -->
                             <v-col cols="12" sm="6">
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                    v-model="regSelectedCountry" @update:search="getCities('registered')"
+                                    v-model="regSelectedCountry" @update:search="getStates('registered')"
                                     :rules="show_registered ? [] : fieldRequired">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6">
-                                <v-autocomplete label="State" :items="regCitiesList" variant="outlined"
+                                <v-autocomplete label="State" :items="regStatesList" variant="outlined"
                                     v-model="regSelectedState" :disabled="regSelectedCountry === null"
                                     :rules="show_registered ? [] : fieldRequired">
                                 </v-autocomplete>
@@ -256,8 +256,8 @@
                             Fill all required fields first
                         </v-tooltip>
                         <span>
-                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
-                                class="mt-10 mb-5">
+                            <v-btn :disabled="!form" :loading="loading" :color="!form ? 'danger' : 'success'" size="large"
+                                type="submit" class="mt-10 mb-5 font-weight-black" block>
                                 Create
                             </v-btn>
                         </span>
@@ -270,8 +270,8 @@
                             Fill all required fields first
                         </v-tooltip>
                         <span>
-                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
-                                class="mt-10 mb-5">
+                            <v-btn :disabled="!form" :loading="loading" :color="!form ? 'danger' : 'success'" size="large"
+                                type="submit" class="mt-10 mb-5 font-weight-black" block>
                                 Save
                             </v-btn>
                         </span>
@@ -457,11 +457,11 @@ export default {
                     ]
                 },
                 {
-                    name: 'Apartament',
-                    model: 'residence_apartament_number',
+                    name: 'Apartment',
+                    model: 'residence_apartment_number',
                     icon: 'mdi-home',
                     rules: [
-                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
+                        v => !v || /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
@@ -509,11 +509,11 @@ export default {
                     ]
                 },
                 {
-                    name: 'Apartament',
-                    model: 'correspondence_apartament_number',
+                    name: 'Apartment',
+                    model: 'correspondence_apartment_number',
                     icon: 'mdi-home',
                     rules: [
-                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
+                        v => !v || /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
@@ -561,11 +561,11 @@ export default {
                     ]
                 },
                 {
-                    name: 'Apartament',
-                    model: 'registered_apartament_number',
+                    name: 'Apartment',
+                    model: 'registered_apartment_number',
                     icon: 'mdi-home',
                     rules: [
-                        v => /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
+                        v => !v || /^[a-zA-Z0-9-]+$/.test(v) || 'Only letters and numbers are allowed',
                     ]
                 },
                 {
@@ -597,9 +597,9 @@ export default {
             corSelectedCountry: null,
             regSelectedCountry: null,
 
-            resCitiesList: [],
-            corCitiesList: [],
-            regCitiesList: [],
+            resStatesList: [],
+            corStatesList: [],
+            regStatesList: [],
 
             resSelectedState: null,
             corSelectedState: null,
@@ -626,7 +626,7 @@ export default {
     mounted() {
         // Check for user class
         this.addingRole = localStorage.getItem('addingRole');
-        localStorage.removeItem('addingRole');
+        // localStorage.removeItem('addingRole');
 
         this.username = localStorage.getItem('username');
 
@@ -817,15 +817,15 @@ export default {
 
         // Get countries
         async getCountries() {
-            const response = await axios.get("api/users/get-countries/");
-            this.allCountries = response.data;
+            const response = await axios.get("api/countries/get/");
+            this.allCountries = response.data.map(country => country.name);
         },
         // Get countries
 
 
 
-        // Get cities
-        async getCities(country) {
+        // Get States
+        async getStates(country) {
             const propertyMap = {
                 residence: this.resSelectedCountry,
                 correspodence: this.corSelectedCountry,
@@ -833,21 +833,22 @@ export default {
             };
 
             const choosen_country = propertyMap[country];
-            const response = await axios.get(`api/users/get-cities/${choosen_country}/`);
+            const response = await axios.get(`api/states/get/?country=${choosen_country}`);
+            const result = response.data.map(state => state.name)
 
             switch (country) {
                 case ('residence'):
-                    this.resCitiesList = response.data
+                    this.resStatesList = result
                     break;
                 case ('correspodence'):
-                    this.corCitiesList = response.data
+                    this.corStatesList = result
                     break;
                 case ('registered'):
-                    this.regCitiesList = response.data
+                    this.regStatesList = result
                     break;
             }
         },
-        // Get cities
+        // Get States
 
 
 
@@ -857,10 +858,8 @@ export default {
 
             this.input_data['user_role'] = this.addingRole;
 
-            const response = await axios.post('api/create/', this.input_data);
-
-            if (response.status === 200) {
-
+            try {
+                const response = await axios.post('api/create/', this.input_data);
                 const messageData = {
                     message: `Successfully added ${this.input_data.username}`,
                     type: 'success'
@@ -871,11 +870,14 @@ export default {
 
 
                 this.$root.changeCurrentComponent('AddUserComponent');
+            } catch (error) {
+                const messageData = {
+                    message: error.response.data,
+                    type: 'error'
+                };
 
-            }
-            else {
-                this.errorContent = response.message;
-                this.alert = true;
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
             }
 
         },
@@ -908,37 +910,39 @@ export default {
 
         // Update user function
         async updateUser() {
-            // Generate dict for sending
+            // Generate dict for put
+            this.getDataFromInputs();
             this.input_data['user_role'] = this.user_role;
-            const ready_data = this.input_data;
+            const input_data = this.input_data;
+            console.log(input_data)
 
 
             // Send put request
             try {
-                const response = await axios.put(`api/users/save/${ready_data.username}/${ready_data.user_role}/`, ready_data);
-
+                const response = await axios.put(`api/users/save/${input_data.username}/${input_data.user_role}/`, input_data);
+                console.log(response)
                 const messageData = {
-                    message: `Successfully modified ${ready_data.username}`,
+                    message: `Successfully modified ${input_data.username}`,
                     type: 'success'
                 };
 
                 localStorage.setItem('message', JSON.stringify(messageData));
 
                 emit('message', '');
-                this.loading = false;
                 this.$root.changeCurrentComponent('ModifyUserComponent');
-
+                
             }
             catch (error) {
-                this.loading = false;
+                console.error(error)
                 const messageData = {
-                    message: error.response.data.error,
+                    message: error.response.data,
                     type: 'danger'
                 };
                 localStorage.setItem('message', JSON.stringify(messageData));
                 emit('message', '');
-                this.$root.changeCurrentComponent('ModifyUserComponent');
+
             }
+            this.loading = false;
 
 
         },

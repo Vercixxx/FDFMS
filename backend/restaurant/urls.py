@@ -7,6 +7,9 @@ urlpatterns = [
     # Creating restaurant
     path('api/restaurant/create/', views.CreateRestaurant.as_view(), name="create-restaurant"),
     
+    # Updating restaurant
+    path('api/restaurant/update/<str:name>/', views.UpdateRestaurant.as_view(), name="update-restaurant"),
+    
     # Deliting restaurant
     path('api/restaurant/delete/<int:id>/', views.DeleteRestaurant.as_view(), name='delete-restaurant'),
     

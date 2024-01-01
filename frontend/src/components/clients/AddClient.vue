@@ -81,7 +81,7 @@
                         <!-- Country and State -->
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
-                                v-model="selectedCountry" @update:search="getCities('residence')" :rules="fieldRequired">
+                                v-model="selectedCountry" @update:search="getStates('residence')" :rules="fieldRequired">
                             </v-autocomplete>
                         </v-col>
 
@@ -128,24 +128,20 @@
                     <v-row>
                         <v-col cols="12" sm="6" align="center">
 
-                            <v-card class="pa-3 ma-1 border-xl rounded-xl" :color="theme ? 'grey-darken-3' : ''">
-                                <v-col cols="10" align="center">
+                            <v-card class="border-xl rounded-xl" :color="theme ? 'grey-darken-3' : ''">
+                                <v-col cols="12" align="center">
 
                                     <p class="text-h4 text-md-h5 text-lg-h5">Available managers</p>
 
                                     <!-- Search bar -->
-                                    <v-text-field variant="solo-filled" v-model="searchQueryAvailable"
-                                        @keydown.enter="searchTableAvailable = searchQueryAvailable" label="Search"
-                                        class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions
+                                    <v-text-field variant="solo-filled" v-model="query" @keydown.enter="getManagers()"
+                                        label="Search" class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions
                                         hint="Press enter to search" />
                                     <!-- Search bar -->
 
                                     <!-- Available managers -->
-                                    <v-data-table :headers="tableHeaders" :items="availableManagers"
-                                        :search="searchTableAvailable" :loading="tableLoading"
-                                        class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage"
-                                        hover select-strategy="all" show-current-page>
-
+                                    <v-data-table :headers="tableHeaders" :items="availableManagers" :loading="loading"
+                                        class="elevation-4 rounded-xl" v-model:items-per-page="itemsPerPage" hover>
 
 
                                         <!-- No data -->
@@ -159,15 +155,16 @@
 
 
                                         <template v-slot:item="{ item }">
-                                            <tr align="center" @click="selectUser(item.id)" role="button">
+                                            <tr align="center" @click="selectUser(item)" role="button">
                                                 <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
                                                     Click to select
                                                 </v-tooltip>
                                                 <td v-for="header in tableHeaders" :key="header.key">
-                                                    {{ item[header.key] }}
+                                                    {{ item }}
                                                 </td>
                                             </tr>
                                         </template>
+
 
                                     </v-data-table>
                                     <!-- Available managers -->
@@ -178,8 +175,8 @@
 
                         <v-col cols="12" sm="6" align="center">
 
-                            <v-card class="pa-3 ma-1 border-xl rounded-xl" :color="theme ? 'grey-darken-3' : ''">
-                                <v-col cols="10" align="center">
+                            <v-card class="border-xl rounded-xl" :color="theme ? 'grey-darken-3' : ''">
+                                <v-col cols="12" align="center">
 
                                     <p align="center" class="text-h4 text-md-h5 text-lg-h5">Selected managers</p>
 
@@ -193,9 +190,8 @@
 
                                     <!-- Selected managers -->
                                     <v-data-table :headers="tableHeaders" :items="selectedManagers"
-                                        :search="searchTableSelected" :loading="tableLoading" class="elevation-4 rounded-xl"
-                                        item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
-                                        show-current-page>
+                                        :search="searchTableSelected" class="elevation-4 rounded-xl"
+                                        v-model:items-per-page="itemsPerPage" hover select-strategy="all" show-current-page>
 
 
 
@@ -209,12 +205,12 @@
                                         <!-- No data -->
 
                                         <template v-slot:item="{ item }">
-                                            <tr align="center" @click="unselectUser(item.id)" role="button">
+                                            <tr align="center" @click="unselectUser(item)" role="button">
                                                 <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
                                                     Click to unselect
                                                 </v-tooltip>
                                                 <td v-for="header in tableHeaders" :key="header.key">
-                                                    {{ item[header.key] }}
+                                                    {{ item }}
                                                 </td>
                                             </tr>
                                         </template>
@@ -228,40 +224,44 @@
                     </v-row>
                     <!-- Managers -->
 
+                    <v-row>
 
-                    <!-- Button submit -->
-                    <span v-if="!editing">
-                        <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
-                            Fill all required fields first
-                        </v-tooltip>
-                        <span>
-                            <v-btn :disabled="!form" :loading="loading" block :color="!form ? 'danger' : 'success'"
-                                size="large" type="submit" class="mt-10 mb-5">
-                                Create
-                            </v-btn>
-                        </span>
-                    </span>
-                    <!-- Button submit -->
+                        <v-col align="center">
 
-                    <!-- Button submit when editing -->
-                    <span v-else>
-                        <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
-                            Fill all required fields first
-                        </v-tooltip>
-                        <span>
-                            <v-btn :disabled="!form" :loading="loading" block :color="!form ? 'danger' : 'success'"
-                                size="large" type="submit" class="mt-10 mb-5">
-                                Save
-                            </v-btn>
-                        </span>
-                    </span>
-                    <!-- Button submit when editing -->
+                            <!-- Button submit -->
+                            <span v-if="!editing">
+                                <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                                    Fill all required fields first
+                                </v-tooltip>
+                                <span>
+                                    <v-btn :disabled="!form" :loading="loading" :color="!form ? 'danger' : 'success'"
+                                        size="large" type="submit" class="mt-10 mb-5 font-weight-black" block>
+                                        Create
+                                    </v-btn>
+                                </span>
+                            </span>
+                            <!-- Button submit -->
+
+                            <!-- Button submit when editing -->
+                            <span v-else>
+                                <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                                    Fill all required fields first
+                                </v-tooltip>
+                                <span>
+                                    <v-btn :disabled="!form" :loading="loading" :color="!form ? 'danger' : 'success'"
+                                        size="large" type="submit" class="mt-10 mb-5 font-weight-black" block>
+                                        Save
+                                    </v-btn>
+                                </span>
+                            </span>
+                            <!-- Button submit when editing -->
+                        </v-col>
+                    </v-row>
 
                 </v-container>
             </v-form>
 
         </div>
-
     </div>
 </template>
 
@@ -280,7 +280,7 @@ export default {
         return {
             theme: true,
             form: false,
-            loading: false,
+            loading: true,
             editing: false,
             restId: null,
             editRest: {},
@@ -300,14 +300,14 @@ export default {
             availableManagers: [],
             selectedManagers: [],
 
-            itemsPerPage: 10,
+            itemsPerPage: 5,
             tableHeaders: [
-                { title: 'Username', key: 'username', align: 'center', sortable: true },
-                { title: 'Id', key: 'id', align: 'center', sortable: true },
+                { title: 'Username', key: 'username', align: 'center', sortable: false },
             ],
 
             // Search
-            searchTableAvailable: '',
+            query: '',
+            searchTableSelected: '',
 
             // Inputs definisions
             basicInfoInputs: [
@@ -397,6 +397,8 @@ export default {
 
 
     mounted() {
+
+
         // Check for editing or creating
         this.restId = localStorage.getItem('restaurantID')
 
@@ -464,7 +466,7 @@ export default {
             // Adding country, state and choosen managers
             this.input_data['country'] = this.selectedCountry;
             this.input_data['state'] = this.selectedState;
-            this.input_data['managers'] = this.selectedManagers.map(manager => manager.id);
+            this.input_data['managers'] = this.selectedManagers;
             this.input_data['brand'] = this.selectedBrand;
 
         },
@@ -504,25 +506,26 @@ export default {
 
         // Country
         async getCountries() {
-            const response = await axios.get("api/users/get-countries/");
-            this.allCountries = response.data;
+            const response = await axios.get("api/countries/get/");
+            this.allCountries = response.data.map(country => country.name);
         },
         // Country
 
 
 
-        // City
-        async getCities(country) {
-            const response = await axios.get(`api/users/get-cities/${this.selectedCountry}/`);
-            this.allStates = response.data
+        // State
+        async getStates(country) {
+            const response = await axios.get(`api/states/get/?country=${this.selectedCountry}`);
+            this.allStates = response.data.map(state => state.name)
         },
-        // City
+        // State
 
 
 
         // Move user to selected
-        selectUser(userID) {
-            const userIndex = this.availableManagers.findIndex(user => user.id === userID);
+        selectUser(username) {
+            const userIndex = this.availableManagers.findIndex(user => user === username);
+
             if (userIndex !== -1) {
                 const selectedUser = this.availableManagers.splice(userIndex, 1)[0];
                 this.selectedManagers.push(selectedUser);
@@ -533,8 +536,8 @@ export default {
 
 
         // Move user to unselected
-        unselectUser(userID) {
-            const userIndex = this.selectedManagers.findIndex(user => user.id === userID);
+        unselectUser(username) {
+            const userIndex = this.selectedManagers.findIndex(user => user === username);
             if (userIndex !== -1) {
                 const unselectedUser = this.selectedManagers.splice(userIndex, 1)[0];
                 this.availableManagers.push(unselectedUser);
@@ -565,16 +568,33 @@ export default {
 
         // Get all managers
         async getManagers() {
-            const response = await axios.get('api/managers/get_username_all/', {
-                params: {
-                    search: this.query,
-                }
-            });
-            this.availableManagers = response.data;
+            this.loading = true;
+            try {
+                const response = await aAdministrator.get('api/users/get-usernames/', {
+                    params: {
+                        role: 'Manager',
+                        search: this.query,
+                    }
+                });
+
+                this.availableManagers = response.data.map(user => user.username);
+                this.availableManagers = this.availableManagers.filter(username => !this.selectedManagers.includes(username));
+                
+
+            } catch (error) {
+                const messageData = {
+                    message: `Error, please try again`,
+                    type: 'error'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+            };
+
+            this.loading = false;
 
         },
         // Get all managers
-
 
 
         // Create restaurant
@@ -584,7 +604,6 @@ export default {
 
             try {
                 const response = await axios.post('api/restaurant/create/', this.input_data);
-                console.log(response);
 
                 const messageData = {
                     message: response.data.message,
@@ -607,6 +626,37 @@ export default {
             }
         },
         // Create restaurant
+
+
+
+        // Update restaurant
+        async updateRestaurant() {
+            this.getDataFromInputs();
+
+            try {
+                const response = await axios.put(`api/restaurant/update/${this.editRest['name']}/`, this.input_data);
+                console.log(response);
+
+                const messageData = {
+                    message: response.data.message,
+                    type: 'success'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+
+                emit('message', '');
+                this.goBack()
+            } catch (error) {
+                this.loading = false;
+                const messageData = {
+                    message: error.response.data,
+                    type: 'danger'
+                };
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+            }
+        },
+        // Update restaurant
 
 
 

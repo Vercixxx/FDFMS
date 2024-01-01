@@ -23,7 +23,7 @@ class Restaurant(models.Model):
     id = models.AutoField(primary_key=True) 
     
     name = models.CharField(max_length=150)
-    brand = models.ForeignKey(Brands, on_delete=models.CASCADE, null=True)
+    brand = models.ForeignKey(Brands, db_column='brand', on_delete=models.CASCADE, null=True)
     managers = models.ManyToManyField(RestManager, blank=True)
     
     phone = models.CharField(max_length=25, blank=True, null=True)
@@ -41,13 +41,13 @@ class WorkChange(models.Model):
     time_start = models.CharField(max_length=5)
     time_end = models.CharField(max_length=5)
     
-    driver = models.ForeignKey(Driver, on_delete=models.SET_NULL, null=True, default=None)
+    driver = models.ForeignKey(Driver, db_column='driver', on_delete=models.SET_NULL, null=True, default=None)
     
     
 class DailyCarSchedule(models.Model):
     date = models.DateTimeField()
     
-    car = models.ForeignKey(Car, on_delete=models.CASCADE)
+    car = models.ForeignKey(Car, db_column='car', on_delete=models.CASCADE)
     work_changes = models.ManyToManyField(WorkChange, blank=True)
     
 

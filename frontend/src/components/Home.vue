@@ -12,27 +12,29 @@
   <!-- Variant -->
   <v-row>
     <v-col cols="5">
-      <v-select v-if="logged_role !== 'Driver'" class="ma-5" label="Choose home variant"
-        v-model="version" :items="versions" variant="outlined"></v-select>
+      <v-select v-if="logged_role !== 'Driver'" class="ma-5" label="Choose home variant" v-model="version"
+        :items="versions" variant="outlined"></v-select>
     </v-col>
   </v-row>
   <!-- Variant -->
 
+  <p v-if="posts.length === 0">
+    No data
+  </p>
+
   <v-card v-for="post in posts" :key="post.id" class="mx-auto my-8 pa-5 border-2">
     <v-card-item>
-      <v-card-title class="text-md-h5 text-lg-h4" :class="
-        isDarkModeEnabled ? 'text-teal-lighten-2' : 'text-teal-darken-3'
-      ">
+      <v-card-title class="text-md-h5 text-lg-h4" :class="isDarkModeEnabled ? 'text-teal-lighten-2' : 'text-teal-darken-3'
+        ">
         <v-row>
           <v-col class="text-wrap font-weight-bold">
             {{ post.title }}
           </v-col>
           <v-col align="end">
             <!-- Detele button -->
-            <v-btn v-if="
-              post.author_username === logged_username ||
+            <v-btn v-if="post.author_username === logged_username ||
               logged_role === 'Administrator'
-            " variant="plain" icon="mdi-delete" color="red" @click="deletePostDialog(post.id)"></v-btn>
+              " variant="plain" icon="mdi-delete" color="red" @click="deletePostDialog(post.id)"></v-btn>
             <!-- Detele button -->
           </v-col>
         </v-row>
@@ -47,7 +49,7 @@
     </v-card-text>
   </v-card>
 
-  <v-pagination v-model="page" class="my-3" :length="pageAmount" :total-visible="5" @next="nextPage()"
+  <v-pagination v-if="posts.length > 0" v-model="page" class="my-3" :length="pageAmount" :total-visible="5" @next="nextPage()"
     @prev="prevPage()"></v-pagination>
 
   <!-- Delete post dialog -->
@@ -124,12 +126,12 @@ export default {
     }, 60000);
 
 
-    
+
 
     this.logged_username = this.$store.getters.responseData.username;
     this.logged_role = this.$store.getters.responseData.user_role;
 
-    if(this.logged_role === 'Driver'){
+    if (this.logged_role === 'Driver') {
       this.version = 'Driver';
     }
     else {
@@ -202,7 +204,7 @@ export default {
       this.dialogDelete = false;
       try {
         const response = await axios.delete(
-          `api/posts/delete/${this.deleteId}`
+          `api/posts/delete/${this.version}/${this.deleteId}/`
         );
         emit("forceReload", "");
 
@@ -221,7 +223,6 @@ export default {
 
     // Get posts
     async getPosts(url) {
-      console.log(this.version);
 
       let response;
 
@@ -231,8 +232,6 @@ export default {
         response = await axios.get(url || `api/posts/get/${this.version}/`);
       }
 
-      // emit("forceReload", "");
-      console.log(response);
       this.posts = response.data.results;
       this.pageAmount = response.data.total_pages;
       this.prev = response.data.previous;

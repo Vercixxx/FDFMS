@@ -9,6 +9,6 @@ urlpatterns = [
     path('api/posts/create/<str:target>', views.CreatePost.as_view(), name="create-post"),
     
     # Delete post
-    path('api/posts/delete/<int:id>', views.DeletePost.as_view(), name="delete-post"),
+    path('api/posts/delete/<str:target>/<int:id>/', views.DeletePost.as_view(), name="delete-post"),
     
 ]

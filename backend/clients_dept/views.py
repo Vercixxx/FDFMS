@@ -20,8 +20,8 @@ class DisablePagination(PageNumberPagination):
 
 class GetUsernames(APIView):
 
-    def get(self, request, format=None):
+    def get(self, request):
         users = RestManager.objects.all()
-        serializer = GetAllManagersUI(users, many=True)
+        usernames = [user.username for user in users]
 
-        return Response(serializer.data)
+        return Response(usernames)

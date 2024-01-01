@@ -22,7 +22,7 @@
                         <v-row class="ms-2 text-h6" align="center" justify="center">
                             <v-col cols="auto">
                                 <v-btn icon="mdi-truck-fast" @click="changeComponent('HomeComponent')"></v-btn>
-                                <span class="font-weight-medium" v-if="!$vuetify.display.smAndDown">
+                                <span class="font-weight-bold" v-if="!$vuetify.display.smAndDown">
                                     FDFMS
                                 </span>
                             </v-col>
@@ -30,7 +30,7 @@
 
                             <v-col>
                                 <!-- Visible on larger devices -->
-                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown" class="mt-3">
+                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown" class="mt-3 font-weight-bold">
                                     <template v-slot:divider>
                                         <v-icon icon="mdi-chevron-right"></v-icon>
                                     </template>
@@ -113,7 +113,7 @@
                             <v-menu transition="slide-y-transition">
                                 <template v-slot:activator="{ props }">
 
-                                    <v-btn v-bind="props" ripple="false" variant="plain" icon="mdi-account-circle-outline">
+                                    <v-btn v-bind="props" :ripple="false" variant="plain" icon="mdi-account-circle-outline">
                                     </v-btn>
 
                                 </template>
@@ -127,9 +127,6 @@
 
                                     </v-list-item>
 
-                                    <v-list-item class="p-0">
-                                        <v-btn block variant="flat" prepend-icon="mdi-email">Messages</v-btn>
-                                    </v-list-item>
 
                                     <v-list-item class="p-0">
                                         <v-dialog transition="dialog-top-transition" width="400">
@@ -224,7 +221,7 @@
                 </template>
             </v-snackbar>
             <!-- Snackbar -->
-
+            
 
         </v-layout>
 
@@ -254,7 +251,7 @@
         <!-- Add post dialog -->
         <AddPost ref="addPost" style="display: none;" :key="forceReload" />
         <!-- Add post dialog -->
-
+        
     </v-app>
 </template>
 
@@ -290,14 +287,18 @@ const { emit } = useEventsBus()
 import HelpDialog from '../components/HelpDialog.vue'
 // Help dialog
 
-
 // Messages
 import CreateMessage from '../components/SendMessage.vue'
+import MailBox from '../components/Mailbox.vue'
 // Messages
 
 // Posts
 import AddPost from '../components/AddPost.vue'
 // Posts
+
+// Country and state
+import ManageCountryState from '../components/ManageCountryState.vue'
+// Country and state
 
 // Home components
 import Home from '../components/Home.vue';
@@ -353,7 +354,7 @@ export default {
             darkModeEnabled: true,
 
             alert: false,
-            snackContent: '',
+            snackContent: {type:'success'},
 
             forceReload: 0,
 
@@ -470,6 +471,34 @@ export default {
 
             ];
         },
+
+
+
+
+        // Messages
+        MailBoxComponent() {
+            this.currentComponent = MailBox;
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Messages",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Mail Box',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+        },
+        // Messages
+
+
 
         // HR
         AddUserComponent() {

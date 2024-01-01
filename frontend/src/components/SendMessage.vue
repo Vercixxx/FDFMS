@@ -11,7 +11,8 @@
                     <v-card-text>
 
                         <!-- Target -->
-                        <v-select label="Choose recivers" variant="solo-filled" :items="['Users', 'Groups']" v-model="target" :disabled="target"></v-select>
+                        <v-select label="Choose recivers" variant="solo-filled" :items="['Users', 'Groups']"
+                            v-model="target" :disabled="target"></v-select>
                         <!-- Target -->
 
 
@@ -26,7 +27,7 @@
                         <!-- If Users selected -->
                         <v-select v-else-if="target === 'Users'" chips multiple label="Selected users"
                             :items="selectedUsers" v-model="selectedUsers" variant="solo-filled" @click="dialogUsers = true"
-                            item-title="username" readonly :rules="[selectedUsers.length >= 1 || 'Select at least one user.']" immediate>
+                            item-title="username" readonly immediate>
 
                         </v-select>
                         <!-- If Users selected -->
@@ -52,19 +53,15 @@
 
 
                                                     <!-- Search bar -->
-                                                    <v-text-field variant="solo-filled" v-model="searchQueryAvailable"
-                                                        @keydown.enter="searchTableAvailable = searchQueryAvailable"
-                                                        label="Search" class="px-1 " prepend-inner-icon="mdi-magnify"
-                                                        hide-actions hint="Press enter to search" />
+                                                    <v-text-field variant="solo-filled" v-model="searchUsers"
+                                                        @keydown.enter="getUsers" label="Search" class="px-1 "
+                                                        prepend-inner-icon="mdi-magnify" hide-actions
+                                                        hint="Press enter to search" />
                                                     <!-- Search bar -->
 
 
-                                                    <v-data-table :headers="tableHeaders" :items="availableUsers"
-                                                        :search="searchTableAvailable" class="elevation-4 rounded-xl"
-                                                        item-value="id" v-model:items-per-page="itemsPerPage" hover
-                                                        select-strategy="all" show-current-page>
-
-
+                                                    <v-data-table-server :headers="tableHeaders" :items="availableUsers"
+                                                        :loading="loading" class="elevation-4 rounded-xl" hover>
 
 
                                                         <template v-slot:no-data>
@@ -75,32 +72,23 @@
                                                             </p>
                                                         </template>
 
-
-
-                                                        <template #item="{ item }">
-                                                            <tr @click="selectUser(item.columns.id)" role="button">
-                                                                <td v-for="(cell, columnIndex) in item.columns"
-                                                                    :key="item.columns.id" class="text-center">
-
-                                                                    {{ cell }}
-
+                                                        <template v-slot:item="{ item }">
+                                                            <tr align="center" @click="selectUser(item.username)"
+                                                                role="button">
+                                                                <v-tooltip v-if="!form" activator="parent" location="top"
+                                                                    no-overflow>
+                                                                    Click to select
+                                                                </v-tooltip>
+                                                                <td v-for="header in tableHeaders" :key="header.key">
+                                                                    {{ item.username }}
                                                                 </td>
                                                             </tr>
                                                         </template>
 
-                                                    </v-data-table>
-
-
-
+                                                    </v-data-table-server>
                                                 </v-col>
-
                                             </v-card>
-
                                         </v-col>
-
-
-
-
 
 
                                         <v-col cols="12" sm="6" align="center">
@@ -113,7 +101,7 @@
                                                     </p>
 
                                                     <v-data-table :headers="tableHeaders" :items="selectedUsers"
-                                                        class="elevation-4 rounded-xl" item-value="id"
+                                                        class="elevation-4 rounded-xl" item-value="username"
                                                         v-model:items-per-page="itemsPerPage" hover select-strategy="all"
                                                         show-current-page>
 
@@ -130,13 +118,15 @@
 
 
 
-                                                        <template #item="{ item }">
-                                                            <tr @click="unselectUser(item.columns.id)" role="button">
-                                                                <td v-for="(cell, columnIndex) in item.columns"
-                                                                    :key="item.columns.id" class="text-center">
-
-                                                                    {{ cell }}
-
+                                                        <template v-slot:item="{ item }">
+                                                            <tr align="center" @click="unselectUser(item.username)"
+                                                                role="button">
+                                                                <v-tooltip v-if="!form" activator="parent" location="top"
+                                                                    no-overflow>
+                                                                    Click to unselect
+                                                                </v-tooltip>
+                                                                <td v-for="header in tableHeaders" :key="header.key">
+                                                                    {{ item.username }}
                                                                 </td>
                                                             </tr>
                                                         </template>
@@ -144,12 +134,8 @@
                                                     </v-data-table>
 
                                                 </v-col>
-
                                             </v-card>
-
                                         </v-col>
-
-
                                     </v-row>
 
 
@@ -237,7 +223,6 @@
                         </v-col>
                     </v-row>
                     <!-- Buttons at the bottom -->
-
                 </v-card>
             </v-form>
         </v-dialog>
@@ -248,6 +233,7 @@
 <script>
 import axios from 'axios';
 import useEventsBus from '../plugins/eventBus.js'
+const { emit } = useEventsBus()
 import { watch } from "vue";
 export default {
     data() {
@@ -255,16 +241,17 @@ export default {
             dialog: false,
             loading: false,
             form: false,
+            loggedUser: null,
 
             target: null,
 
             groups: [
-                'Drivers',
-                'Managers',
+                'Driver',
+                'Manager',
                 'HR',
                 'Payroll',
                 'Clients',
-                'Assets',
+                'Asset',
             ],
             selectedGroups: [],
 
@@ -276,12 +263,10 @@ export default {
             selectedUsersDisplay: [],
             itemsPerPage: 10,
             tableHeaders: [
-                { title: 'Username', key: 'username', align: 'center', sortable: true },
-                { title: 'Id', key: 'id', align: 'center', sortable: true },
+                { title: 'Username', key: 'username', align: 'center', sortable: false },
             ],
             // Search
-            searchQueryAvailable: '',
-            searchTableAvailable: '',
+            searchUsers: '',
             // Users
 
 
@@ -301,22 +286,23 @@ export default {
             ([showAddMessage]) => {
                 if (showAddMessage) {
                     this.dialog = true
+                    // Get list of users
+                    this.getUsers();
                 }
             }
         );
 
-        // Get list of users
-        this.getUsers();
+        this.loggedUser = this.$store.getters.responseData.username;
+
     },
 
     computed: {
-        // selectedUsernames() {
-        //     return this.selectedUsersDisplay.map(user => user.username);
-        // },
-
         availableUsers() {
-            return this.allUsers.filter(user => !this.selectedUsers.some(selectedUser => selectedUser.id === user.id));
-        },
+            return this.allUsers.filter(user =>
+                !this.selectedUsers.some(selectedUser => selectedUser.username === user.username) &&
+                user.username !== this.loggedUser
+            );
+        }
     },
 
 
@@ -350,35 +336,46 @@ export default {
 
         // Get all Usernames
         async getUsers() {
-            const response = await axios.get('api/users/get-usernames/');
-            this.allUsers = response.data;
+            this.loading = true
+            try {
+                const response = await axios.get(`api/users/get-usernames/?role=All&search=${this.searchUsers}`);
+                this.allUsers = response.data;
+                this.loading = false
+            } catch (error) {
+                const messageData = {
+                    message: error,
+                    type: 'error'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+            }
+
         },
         // Get all Usernames
 
 
 
         // Move user to selected
-        selectUser(userID) {
-            const userIndex = this.allUsers.findIndex(user => user.id === userID);
+        selectUser(username) {
+            const userIndex = this.allUsers.findIndex(user => user.username === username);
             if (userIndex !== -1) {
                 const userToCopy = this.allUsers[userIndex];
                 const copiedUser = Object.assign({}, userToCopy);
                 this.selectedUsers.push(copiedUser);
             }
         },
-
         // Move user to selected
 
 
 
         // Move user to unselected
-        unselectUser(userID) {
-            const userIndex = this.selectedUsers.findIndex(user => user.id === userID);
+        unselectUser(username) {
+            const userIndex = this.selectedUsers.findIndex(user => user.username === username);
             if (userIndex !== -1) {
                 this.selectedUsers.splice(userIndex, 1);
             }
         },
-
         // Move user to unselected
 
 
@@ -388,6 +385,7 @@ export default {
             const data = {
                 'title': this.title,
                 'content': this.content,
+                'from': this.loggedUser,
             }
             if (this.target === 'Groups') {
                 data['taget'] = 'Groups';
@@ -395,12 +393,30 @@ export default {
             }
             else {
                 data['taget'] = 'Users';
-                data['to'] = this.selectedUsers;
+                data['to'] = this.selectedUsers.map(user => user.username);
             }
-            console.log(data);
             this.loading = false;
-            this.close();
-            // await axios.post('')
+            // this.close();
+
+            try {
+                const response = await axios.post('api/messages/create/', data);
+                const messageData = {
+                    message: response.data.message,
+                    type: 'success'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+
+            } catch (error) {
+                const messageData = {
+                    message: error,
+                    type: 'error'
+                };
+
+                localStorage.setItem('message', JSON.stringify(messageData));
+                emit('message', '');
+            }
 
         },
         // Send message
