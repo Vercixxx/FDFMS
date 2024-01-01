@@ -71,7 +71,7 @@
     <!-- Messages -->
     <v-menu transition="slide-y-transition">
         <template v-slot:activator="{ props }">
-            <v-list-item prepend-icon="mdi-forum" v-bind="props" class="my-3 font-weight-bold">
+            <v-list-item prepend-icon="mdi-email" v-bind="props" class="my-3 font-weight-bold">
                 Messages
             </v-list-item>
 
@@ -84,7 +84,7 @@
             <!-- Add -->
 
             <!-- Manage -->
-            <v-list-item prepend-icon="mdi-list-status" title="Manage" @click="showMessages()">
+            <v-list-item prepend-icon="mdi-email-multiple-outline" title="Mailbox" @click="showMessages()">
             </v-list-item>
             <!-- Manage -->
 
@@ -175,6 +175,20 @@ export default {
                         },
                     ],
                 },
+
+                {
+                    name: 'Other',
+                    mainIcon: 'mdi-lightning-bolt',
+                    disabled: false,
+                    options: [
+                        {
+                            name: 'Country/state',
+                            click: '',
+                            icon: 'mdi-city-variant',
+                        },
+
+                    ],
+                },
             ]
 
         };
@@ -218,7 +232,8 @@ export default {
 
         showMessages() {
             closeDrawer();
-            emit('showMessageManager', '');
+            this.$root.changeCurrentComponent('MailBoxComponent');
+            // emit('showMessageManager', '');
         },
     },
 

@@ -4,14 +4,14 @@ from . import views
 # Rest
 from rest_framework.routers import DefaultRouter
 
-router = DefaultRouter()
-router.register(r"get-gu", views.GUViewSet, basename='get-gu')
+# router = DefaultRouter()
+# router.register(r"get-users", views.GetGeneralUsers, basename='get-users')
 
 
 
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    # path('api/', include(router.urls)),
     
     # Creating account
     path('api/create/', views.AddUser.as_view(), name="add-user"),
@@ -31,19 +31,14 @@ urlpatterns = [
     # Get User data
     path('api/users/get/<str:username>/<str:user_role>/', views.getUser.as_view(), name="get-user"),
     
+    # Get users
+    path('api/users/getall', views.GetGeneralUsers.as_view(), name="get-users"),
+    
     # Save User data
     path('api/users/save/<str:username>/<str:user_role>/', views.UpdateUser.as_view(), name="save-user"),
     
     # Change user state
     path('api/users/change-state/<str:username>/', views.ChangeUserState.as_view(), name="change-user-state"),
-    
-
-    # Get All Countries
-    path('api/users/get-countries/', views.GetAllCountries.as_view(), name="get-countries"),
-
-    # Get Cities for Given Country
-    path("api/users/get-cities/<str:selected_country>/", views.GetCities.as_view(), name="get-cities"),
-
 
     # Get usernames
     path('api/users/get-usernames/', views.GetUsernames.as_view(), name="get-usernames"),

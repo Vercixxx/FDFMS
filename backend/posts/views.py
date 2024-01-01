@@ -10,7 +10,6 @@ from .serializers import GetPostsSerializer, CreatePostSerializer, CreateDriverP
 from .models import Posts, DriverPosts
 
 # Rest
-from rest_framework import viewsets, filters
 from rest_framework.views import APIView
 from rest_framework.generics import DestroyAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -69,6 +68,22 @@ class CreatePost(APIView):
         
 class DeletePost(DestroyAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Posts.objects.all()
-    serializer_class = GetPostsSerializer
     lookup_field = 'id'
+    def get_queryset(self):
+        target = self.kwargs.get('target')
+
+        if target == 'Users':
+            return Posts.objects.all()
+        else:
+            return DriverPosts.objects.all()
+
+    def get_serializer_class(self):
+        target = self.kwargs.get('target')
+
+        if target == 'Users':
+            return GetPostsSerializer
+        else:
+            return GetDriverPostsSerializer
+
+
+    

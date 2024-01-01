@@ -118,16 +118,22 @@
 
                     </v-row>
 
-                    <v-row class="d-flex justify-center">
-                        <!-- OC and AC -->
-                        <v-col>
+
+                    
+                    <!-- OC and AC -->
+                    <v-row class="d-flex justify-center" v-if="!editing">
+                        <v-col cols="auto">
                             <v-switch v-model="oc" label="Does car has OC" inset :color="oc ? 'green' : ''"></v-switch>
                         </v-col>
-                        <v-col>
+                    </v-row>
+
+                    <v-row class="d-flex justify-center" v-if="!editing">
+                        <v-col cols="auto">
                             <v-switch v-model="ac" label="Does car has AC" inset :color="ac ? 'green' : ''"></v-switch>
                         </v-col>
-                        <!-- OC and AC -->
                     </v-row>
+                    <!-- OC and AC -->
+                    
 
 
                     <!-- Button submit -->
@@ -136,8 +142,8 @@
                             Fill all required fields first
                         </v-tooltip>
                         <span>
-                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
-                                class="mt-10 mb-5">
+                            <v-btn :disabled="!form" :loading="loading" :color="!form ? 'danger' : 'success'" size="large"
+                                type="submit" class="mt-10 mb-5 font-weight-black" block>
                                 Create
                             </v-btn>
                         </span>
@@ -150,8 +156,8 @@
                             Fill all required fields first
                         </v-tooltip>
                         <span>
-                            <v-btn :disabled="!form" :loading="loading" block color="success" size="large" type="submit"
-                                class="mt-10 mb-5">
+                            <v-btn :disabled="!form" :loading="loading" :color="!form ? 'danger' : 'success'" size="large"
+                                type="submit" class="mt-10 mb-5 font-weight-black" block>
                                 Save
                             </v-btn>
                         </span>
@@ -422,7 +428,7 @@ export default {
                 localStorage.setItem('message', JSON.stringify(messageData));
                 emit('message', '');
 
-                
+
                 this.goBack()
             }
             catch (error) {
@@ -467,7 +473,7 @@ export default {
             this.input_data['is_oc'] = this.oc;
             this.input_data['is_ac'] = this.ac;
 
-        
+
 
 
             // Send put request
