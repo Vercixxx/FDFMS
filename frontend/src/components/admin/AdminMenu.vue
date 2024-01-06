@@ -2,7 +2,9 @@
     <div class="mb-15" v-for="menu in menus" :key="menu.name">
         <!-- <p class="text-center">{{ menu.name }}</p> -->
         <component :is="menu.menu"></component>
+        <v-divider></v-divider>
     </div>
+
 </template>
 
 <script>
@@ -36,10 +38,10 @@ export default {
                 //     name: 'Payroll menu',
                 //     menu: PayrollMenu
                 // },
-                {
-                    name: 'Manager menu',
-                    menu: ManagerMenu
-                },
+                // {
+                //     name: 'Manager menu',
+                //     menu: ManagerMenu
+                // },
                 // {
                 //     name: 'Driver menu',
                 //     menu: DriverMenu

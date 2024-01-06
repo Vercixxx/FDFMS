@@ -1,19 +1,14 @@
 <template>
-  <v-row>
-    <v-col class="text-h5">
-      {{ date }}
-    </v-col>
-    <v-col align="end">
-      <v-btn variant="plain" prepend-icon="mdi-plus" class="bg-teal-darken-2" @click="addPost()">
-        Add post</v-btn>
-    </v-col>
-  </v-row>
 
   <!-- Variant -->
   <v-row>
     <v-col cols="5">
       <v-select v-if="logged_role !== 'Driver'" class="ma-5" label="Choose home variant" v-model="version"
         :items="versions" variant="outlined"></v-select>
+    </v-col>
+    <v-col align="end">
+      <v-btn variant="plain" prepend-icon="mdi-plus" class="bg-teal-darken-2" @click="addPost()">
+        Add post</v-btn>
     </v-col>
   </v-row>
   <!-- Variant -->
@@ -94,7 +89,6 @@ import { useTheme } from "vuetify";
 export default {
   data() {
     return {
-      date: "",
       posts: [],
       logged_username: "",
       logged_role: "",
@@ -119,14 +113,6 @@ export default {
   },
 
   mounted() {
-    this.getDate();
-
-    this.intervalId = setInterval(() => {
-      this.getDate();
-    }, 60000);
-
-
-
 
     this.logged_username = this.$store.getters.userData.username;
     this.logged_role = this.$store.getters.userData.user_role;
@@ -161,32 +147,6 @@ export default {
   },
 
   methods: {
-    // Get date
-    getDate() {
-      const now = new Date();
-
-      const daysOfWeek = [
-        "Niedziela",
-        "Poniedziałek",
-        "Wtorek",
-        "Środa",
-        "Czwartek",
-        "Piątek",
-        "Sobota",
-      ];
-      const dayOfWeek = daysOfWeek[now.getDay()];
-
-      const hours = now.getHours();
-      const minutes = now.getMinutes();
-
-      const day = now.getDate();
-      const month = now.getMonth() + 1;
-      const year = now.getFullYear();
-
-      this.date = `${dayOfWeek}, ${hours}:${minutes < 10 ? "0" : ""
-        }${minutes}, ${day}-${month}-${year}`;
-    },
-    // Get date
 
     // Add post
     addPost() {
