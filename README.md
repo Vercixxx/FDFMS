@@ -1,6 +1,6 @@
-# Project Title
+# FDFMS
 
-This project is a full-stack application built with Python and JavaScript. It's designed to manage various aspects of a business, including HR, assets, clients, and payroll.
+This project is a full-stack application built with Python, JavaScript, Vue.js, Vuetify, Vuex, Django, Django rest framework. It's designed to manage various aspects of a business, including HR, assets, clients, and payroll.
 
 ## Project Structure
 
@@ -42,3 +42,24 @@ Navigate to the `backend` directory and run the following command to install the
 
 ```sh
 pip install -r requirements.txt
+```
+
+After installing the dependencies, you can start the frontend server with the following command:
+```sh
+python manage.py runserver
+```
+
+
+### Frontend
+
+Navigate to the `frontend` directory and run the following command to install the JavaScript dependencies:
+
+```sh
+npm install
+```
+
+After installing the dependencies, you can start the frontend server with the following command:
+
+```sh
+npm run dev
+```
