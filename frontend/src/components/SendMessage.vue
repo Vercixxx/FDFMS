@@ -292,7 +292,7 @@ export default {
             }
         );
 
-        this.loggedUser = this.$store.getters.responseData.username;
+        this.loggedUser = this.$store.getters.userData.username;
 
     },
 
