@@ -1,11 +1,29 @@
 <template>
-    <p align="center" class="text-blue">Clients</p>
-    <v-list>
-        <v-list-item prepend-icon="mdi-home" @click="handleButtonClick('HomeComponent')"
-            class="rounded-xl bg-teal-darken-2 font-weight-bold">
-            Home
-        </v-list-item>
-    </v-list>
+    <v-list-item prepend-icon="mdi-truck-fast" @click="changeComponent('HomeComponent')" class="font-weight-bold" disabled>
+        FDFMS
+    </v-list-item>
+
+    <v-divider></v-divider>
+
+    <!-- Temporary -->
+    <p align="center">Clients</p>
+    <!-- Temporary -->
+
+    <!-- Home -->
+    <v-menu transition="slide-y-transition">
+        <template v-slot:activator="{ props }">
+
+            <v-list-item @click="homeButton()" v-bind="props" class=" font-weight-bold text-teal">
+                <template v-slot:prepend>
+                    <v-icon icon="mdi-home" color="teal"></v-icon>
+                </template>
+                Home
+            </v-list-item>
+
+        </template>
+
+    </v-menu>
+    <!-- Home -->
 
     <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name">
         <template v-slot:activator="{ props }">
@@ -26,8 +44,6 @@
 
 
 <script>
-import { closeDrawer } from '../../store/store.js'
-
 export default {
     data() {
         return {
@@ -72,8 +88,11 @@ export default {
 
     methods: {
         handleButtonClick(functionName) {
-            closeDrawer();
             this.$root.changeCurrentComponent(functionName);
+        },
+
+        homeButton() {
+            this.$root.changeCurrentComponent('HomeComponent');
         },
     },
 
