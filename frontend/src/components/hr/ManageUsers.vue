@@ -163,7 +163,7 @@
 
 
             <template v-else>
-              <span v-if="item[header.key] === null || item[header.key] === ''">
+              <span v-if="item[header.key] === null || item[header.key] === undefined || item[header.key] === ''">
                 <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
               </span>
               <span v-else-if="item[header.key] === true">
