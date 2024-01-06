@@ -11,7 +11,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 
-from .serializers import GeneralUserSerializer, GetAllUsernamesSerializer, CreateAddressesSerializer, ResidenceAddressSerializer
+from .serializers import GeneralUserSerializer, GetAllUsernamesSerializer, GeneralAddressesSerializer, ResidenceAddressSerializer
 from rest_manager.serializers import AddManagerSerializer, RestManagerSerializer, GetRestManager, UpdateRestManager
 from asset_dept.serializers import AddAssetUserSerializer, AssetSerializer, GetAssetUser, UpdateAssetUser
 from clients_dept.serializers import AddClientsUserSerializer, ClientsSerializer, GetClientsUser, UpdateClientsUser
@@ -291,6 +291,8 @@ class AddUser(APIView):
 
         if serializer.is_valid():
             account = serializer.save()
+            account.set_password(generated_password)
+            account.save()
             
         else:
             response_data = serializer.errors
@@ -310,7 +312,7 @@ class AddUser(APIView):
         data['registered_state'] = registered_state.id
         data['correspondence_state'] = correspondence_state.id
         
-        addres_serializer = CreateAddressesSerializer(data=data)
+        addres_serializer = GeneralAddressesSerializer(data=data)
         # Address 
             
         if addres_serializer.is_valid():
@@ -396,27 +398,19 @@ class UpdateUser(APIView):
             data['registered_state'] = registered_state.id
             data['correspondence_state'] = correspondence_state.id
             
-            # for key, value in data.items():
-            #     if value is None:
-            #         data[key] = ''
-
-
-            print("-------------------------")
-            print(data)
-            print("-------------------------")
-            
-            
             address_instance = Addresses.objects.get(username=data['username'])
-            address_serializer = CreateAddressesSerializer(address_instance, data=data)
+            address_serializer = GeneralAddressesSerializer(address_instance, data=data)
             # Address 
 
-            
+
             if serializer.is_valid() and address_serializer.is_valid():
-                serializer.update(user, data)
+                serializer.save()
                 address_serializer.save()
                 return JsonResponse({'message': 'Successfully updated'}, status=200)
             else:
                 errors = {}
+                serializer.is_valid()
+                address_serializer.is_valid()
                 errors.update(serializer.errors)
                 errors.update(address_serializer.errors)
                 print(errors)

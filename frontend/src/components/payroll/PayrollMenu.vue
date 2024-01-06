@@ -1,59 +1,71 @@
 <template>
-    <v-sheet>
+    <v-list-item prepend-icon="mdi-truck-fast" @click="changeComponent('HomeComponent')" class="font-weight-bold" disabled>
+        FDFMS
+    </v-list-item>
 
-        <v-list-item>
-            <v-btn block @click="handleButtonClick('HomeComponent')">
-                <span class="material-symbols-outlined">
-                    home
-                </span>
+    <v-divider></v-divider>
+
+    <!-- Temporary -->
+    <p align="center">Payroll</p>
+    <!-- Temporary -->
+
+    <!-- Home -->
+    <v-menu transition="slide-y-transition">
+        <template v-slot:activator="{ props }">
+
+            <v-list-item @click="homeButton()" v-bind="props" class=" font-weight-bold text-teal">
+                <template v-slot:prepend>
+                    <v-icon icon="mdi-home" color="teal"></v-icon>
+                </template>
                 Home
-            </v-btn>
-        </v-list-item>
+            </v-list-item>
 
-        <v-menu transition="scale-transition" v-for="button in buttons" :key="button.name">
-            <template v-slot:activator="{ props }">
-                <v-btn block color="success" v-bind="props" variant="tonal" class="my-5">
-                    {{ button.name }}
-                </v-btn>
-            </template>
+        </template>
 
-            <v-list>
-                <v-list-item v-for="option in button.options" :key="option">
-                    <v-list-item-title>
-                        <v-btn block @click="handleButtonClick(option.click)">
-                            <span v-html="option.icon"></span>
-                            {{ option.name }}
-                        </v-btn>
-                    </v-list-item-title>
+    </v-menu>
+    <!-- Home -->
 
-                </v-list-item>
-            </v-list>
-        </v-menu>
 
-    </v-sheet>
+    <!-- Other -->
+    <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name" :disabled="button.disabled">
+        <template v-slot:activator="{ props }">
+            <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="font-weight-bold">
+                {{ button.name }}
+            </v-list-item>
+        </template>
+
+        <v-list density="compact" nav>
+
+            <v-list-item v-for="option in button.options" :key="option.name" :prepend-icon="option.icon"
+                :title="option.name" @click="handleButtonClick(option)">
+            </v-list-item>
+
+        </v-list>
+    </v-menu>
+    <!-- Other -->
 </template>
 
 
 <script>
-import { closeDrawer } from '../../store/store.js'
-
 export default {
     data() {
         return {
             buttons: [
                 {
-                    name: 'Users',
+                    name: 'Test',
+                    mainIcon: 'mdi-presentation',
+                    disabled: true,
                     options: [
-                        // {
-                        //     name: 'Daily driver report',
-                        //     click: 'AddUserComponent',
-                        //     icon: '<span class="material-symbols-outlined">add</span>',
-                        // },
-                        // {
-                        //     name: 'Show drivers',
-                        //     click: 'ModifyUserComponent',
-                        //     icon: ' <span class="material-symbols-outlined">edit</span>',
-                        // },
+                        {
+                            name: 'Drivers statistics',
+                            click: 'AddUserComponent',
+                            icon: 'mdi-database-edit',
+                        },
+                        {
+                            name: 'Managers statistics',
+                            click: 'ModifyUserComponent',
+                            icon: ' mdi-database-edit',
+                        },
                     ],
                 },
             ]
@@ -63,8 +75,11 @@ export default {
 
     methods: {
         handleButtonClick(functionName) {
-            closeDrawer();
             this.$root.changeCurrentComponent(functionName);
+        },
+
+        homeButton() {
+            this.$root.changeCurrentComponent('HomeComponent');
         },
     },
 

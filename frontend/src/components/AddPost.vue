@@ -126,7 +126,7 @@ export default {
             }
         );
 
-        this.creatorId = this.$store.getters.responseData.id;
+        this.creatorId = this.$store.getters.userData.id;
     },
 
     methods: {

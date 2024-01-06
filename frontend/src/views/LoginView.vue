@@ -259,7 +259,7 @@ export default {
                     // Authentication was successfull
 
                     // Vuex
-                    this.$store.dispatch('setResponseData', response.data.data);
+                    this.$store.dispatch('setuserData', response.data.data);
 
                     this.$store.commit('setAccessToken', response.data.jwt.access);
                     this.$store.commit('setRefreshToken', response.data.jwt.refresh);
