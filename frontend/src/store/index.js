@@ -2,23 +2,29 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    responseData: null,
+    userData: null,
     jwt: {
       accessToken: null,
       refreshToken: null,
     },
   },
+
+
+
   getters: {
-    responseData: state => state.responseData,
+    userData: state => state.userData,
     jwt: state => state.jwt,
     isAuthenticated(state) {
       return state.jwt.accessToken !== null;
     },
 
   },
+
+
+
   mutations: {
-    setResponseData(state, data) {
-      state.responseData = data;
+    setuserData(state, data) {
+      state.userData = data;
     },
     setAccessToken(state, accessToken) {
       if (!state.jwt) {
@@ -30,15 +36,21 @@ export default createStore({
       state.jwt.refreshToken = refreshToken;
     },
     resetState(state) {
-      state.responseData = null;
+      state.userData = null;
       state.jwt = null;
     },
   },
+
+
+
   actions: {
-    setResponseData({ commit }, data) {
-      commit('setResponseData', data);
+    setuserData({ commit }, data) {
+      commit('setuserData', data);
     },
   },
+
+
+
   modules: {
   }
 })

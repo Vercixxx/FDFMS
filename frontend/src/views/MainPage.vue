@@ -9,7 +9,7 @@
 
                     <!-- Menu button -->
                     <v-col cols="auto" align="start">
-                        <v-app-bar-nav-icon @click.stop="drawer = !drawer" @mouseenter="drawer = true">
+                        <v-app-bar-nav-icon @click.stop="drawer = !drawer">
                             <v-icon icon="mdi-menu" />
                         </v-app-bar-nav-icon>
                     </v-col>
@@ -181,8 +181,12 @@
 
 
             <!-- Menu -->
-            <v-navigation-drawer app v-model="drawer" location="left"
-                :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }">
+            <v-navigation-drawer
+              v-model="drawer"
+              location="left"
+              expand-on-hover
+              rail
+              :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }">
 
                 <v-list density="compact" nav class="pa-3">
 
@@ -196,7 +200,7 @@
 
 
             <!-- Content -->
-            <v-main :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }" @click="drawer = false">
+            <v-main :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }">
 
                 <!-- content -->
                 <div class="cointainter m-2 p-2" :key="forceReload">
@@ -257,14 +261,9 @@
 
 <script setup>
 import { useTheme } from 'vuetify'
-import { drawer, closeDrawer } from '../store/store.js';
 import useEventsBus from '../plugins/eventBus.js'
 import { watch } from "vue";
 const { emit } = useEventsBus()
-
-const toggleDrawer = () => {
-    drawer.value = !drawer.value
-}
 
 const theme = useTheme()
 let isDarkModeEnabled = theme.global.current.value.dark
@@ -340,7 +339,7 @@ import CreateSchedule from '../components/manager/ManageSchedules.vue';
 export default {
     data() {
         return {
-            userData: this.$store.getters.responseData,
+            userData: this.$store.getters.userData,
             currentComponent: NonReactiveHome,
             path: [
                 {
@@ -349,7 +348,7 @@ export default {
                 }
             ],
             confirmLogout: null,
-            drawer: false,
+            drawer: true,
             group: null,
             darkModeEnabled: true,
 

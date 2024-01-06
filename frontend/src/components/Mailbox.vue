@@ -207,7 +207,7 @@ export default {
 
 
     mounted() {
-        this.loggedUser = this.$store.getters.responseData.username;
+        this.loggedUser = this.$store.getters.userData.username;
         this.fetchData();
     },
 

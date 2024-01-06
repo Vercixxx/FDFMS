@@ -128,8 +128,8 @@ export default {
 
 
 
-    this.logged_username = this.$store.getters.responseData.username;
-    this.logged_role = this.$store.getters.responseData.user_role;
+    this.logged_username = this.$store.getters.userData.username;
+    this.logged_role = this.$store.getters.userData.user_role;
 
     if (this.logged_role === 'Driver') {
       this.version = 'Driver';

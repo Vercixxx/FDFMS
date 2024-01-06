@@ -31,8 +31,6 @@
 
 
 <script>
-import { closeDrawer } from '../../store/store.js'
-
 export default {
     data() {
         return {
@@ -100,7 +98,6 @@ export default {
 
     methods: {
         handleButtonClick(functionName) {
-            closeDrawer();
             this.$root.changeCurrentComponent(functionName);
         },
     },

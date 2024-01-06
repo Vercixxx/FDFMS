@@ -4,7 +4,7 @@
         <v-col cols="auto">
             <v-autocomplete label="Select restaurant" :items="['Sosnowiec plaza KFC']" variant="outlined"></v-autocomplete>
 
-            <v-date-picker v-model="date" border="2" rounded=4 elevation="4" hide-header></v-date-picker>
+            <v-date-picker v-model="date" border="2" rounded="4" elevation="4" hide-header></v-date-picker>
 
             <v-row>
                 <v-col align="center">
@@ -21,118 +21,69 @@
                 </v-col>
             </v-row>
             <v-row border="2" class="pa-2">
-
                 <v-row>
-                    <!-- <v-col cols="auto">
-                        <table class="custom-table">
+                    <v-col cols="auto">
+                        <table style="height: 20vh">
                             <thead>
                                 <tr align="center">
-                                    <th class="text-left font-weight-black">
-                                        Hours
-                                    </th>
+                                    <th class="text-left font-weight-black">Hours</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="hour in hoursList" :key="hour.hour" align="center">
-                                    <td>{{ hour }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </v-col> -->
-
-                    <!-- <v-col v-for="car in cars" :key="car.carId">
-                        <span v-if="car.schedules.length > 0">
-                            
-                            <table>
-                                <thead>
-                                    <tr align="center">
-                                        <th class="text-center font-weight-black">
-                                            Car {{ car.carId }}
-                                            
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="hour in hoursList" :key="hour" align="center">
-                                        <td align="center" v-if="isHourScheduled(hour, car.schedules) === true"
-                                        class="bg-teal" style="width: 200px;" role="button" @click="editSchedule(car.schedules)">
-                                        &nbsp
-                                    </td>
-                                    <td v-else>
-                                        {{ isHourScheduled(hour, car.schedules) }}
-                                        &nbsp
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </span>
-                    </v-col>
-                     -->
-
-
-
-                    <!-- Alternative -->
-
-                    <v-col cols="auto">
-                        <table style="height: 56vh;">
-                            <thead>
-                                <tr align="center">
-                                    <th class="text-left font-weight-black">
-                                        Hours
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="custom-table">
-                                <tr v-for="hour in hoursList" :key="hour.hour" align="center">
                                     <td v-if="hour[3] != 3 && hour !== '9:30'">
                                         {{ hour }}
                                     </td>
-                                    <td v-else>
-                                        &nbsp
-                                    </td>
+                                    <td v-else>&nbsp;</td>
                                 </tr>
                             </tbody>
                         </table>
                     </v-col>
-
 
                     <v-col v-for="car in cars" :key="car.carId">
                         <v-row :style="{ position: 'relative' }">
                             <v-col align="center">
                                 Car {{ car.carId }}
-                                <v-card v-for="schedule in car.schedules" :key="schedule.start" color="teal"
-                                class="elevation-20" :style="{
-                                    'height': `${schedule.blockHeight}px`,
-                                    'top': `${schedule.blockMarginTop + car.topOffset}px`,
-                                }">
-                                <v-row align="center">
-                                    <v-col>
-                                        <div class="text-center">
-                                            {{ schedule.start }} - {{ schedule.end }}
-                                        </div>
-                                    </v-col>
-                                </v-row>
-                            </v-card>
-                        </v-col>
+                            </v-col>
+                        </v-row>
+
+                        <v-row :style="{ position: 'relative'}">
+                            <v-col>
+                                <v-card v-for="schedule in car.schedules" :key="schedule.id">
+                                    <!-- Card content here -->a
+                                </v-card>
+                            </v-col>
                         </v-row>
                     </v-col>
                 </v-row>
-
-
             </v-row>
         </v-col>
     </v-row>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <v-row justify="center">
         <v-col cols="3">
-            <v-btn block color="teal-darken-3">
-                Save
-            </v-btn>
+            <v-btn block color="teal-darken-3"> Save </v-btn>
         </v-col>
     </v-row>
-    <ScheduleSelector ref="sreateMessage" style="display: none;" />
+    <ScheduleSelector ref="sreateMessage" style="display: none" />
 </template>
 
 <script>
@@ -152,6 +103,7 @@ export default {
 
             date: null,
             hoursList: [],
+            rows: 29,
             cars: [
                 {
                     carId: 1,
@@ -181,7 +133,7 @@ export default {
 
 
             hoursListDict: {},
-
+            unitHeight: 1.93103448276,
 
 
 
@@ -267,19 +219,29 @@ export default {
                         start: start,
                         end: end,
                     };
-                    newSingleSchedule.startMinutes = this.hourToMinutes(newSingleSchedule.start);
-                    newSingleSchedule.endMinutes = this.hourToMinutes(newSingleSchedule.end);
-
-                    const columnHeight = 56; 
-                    const scalePerMinute = columnHeight / 60;
-
-                    newSingleSchedule.blockHeight = (newSingleSchedule.endMinutes - newSingleSchedule.startMinutes) * scalePerMinute;
-                    newSingleSchedule.blockMarginTop = (newSingleSchedule.startMinutes - this.hourToMinutes('9:00')) * scalePerMinute;
-
+                    newSingleSchedule.startRow = this.calculateStartPosition(newSingleSchedule.start, newSingleSchedule.end);
+                    newSingleSchedule.blockHeight = this.calculateUnits(newSingleSchedule.start, newSingleSchedule.end) + 1;;
 
                     this.cars[carIndex].schedules.push(newSingleSchedule);
                 }
             }
+        },
+
+
+        calculateUnits(startTime, endTime) {
+            const start = new Date(`2000-01-01 ${startTime}`);
+            const end = new Date(`2000-01-01 ${endTime}`);
+            const timeDiff = end - start;
+            const unitDiff = timeDiff / (30 * 60 * 1000);
+            return Math.floor(unitDiff);
+        },
+
+        calculateStartPosition(start) {
+            const referenceTime = new Date(`2000-01-01 09:00`);
+            const startTime = new Date(`2000-01-01 ${start}`);
+            const timeDiff = startTime - referenceTime;
+            const unitDiff = timeDiff / (30 * 60 * 1000);
+            return Math.floor(unitDiff);
         },
 
 

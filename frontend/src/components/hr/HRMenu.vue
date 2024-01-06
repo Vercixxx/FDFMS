@@ -1,12 +1,21 @@
 <template>
-    <p align="center" class="text-blue">HR</p>
-    <v-list>
-        <v-list-item prepend-icon="mdi-home" @click="homeButton('HomeComponent')"
-            class="rounded-xl bg-teal-darken-2 font-weight-bold">
-            Home
-        </v-list-item>
-    </v-list>
+    <p align="center">HR</p>
 
+    <!-- Home -->
+    <v-menu transition="slide-y-transition">
+        <template v-slot:activator="{ props }">
+
+            <v-list-item @click="homeButton()" v-bind="props" class="my-3 font-weight-bold text-teal">
+                <template v-slot:prepend>
+                    <v-icon icon="mdi-home" color="teal"></v-icon>
+                </template>
+                Home
+            </v-list-item>
+
+        </template>
+
+    </v-menu>
+    <!-- Home -->
 
     <!-- Users -->
     <v-menu transition="slide-y-transition">
@@ -95,9 +104,7 @@
 
 
 <script>
-import { closeDrawer } from '../../store/store.js'
 import useEventsBus from '../../plugins/eventBus.js'
-import { ref, watch } from "vue";
 const { emit } = useEventsBus()
 
 export default {
@@ -196,22 +203,20 @@ export default {
 
     methods: {
         handleButtonClick(option) {
-            closeDrawer();
-            this.$root.changeCurrentComponent(option.name);
+              this.$root.changeCurrentComponent(option.name);
         },
 
-        homeButton(functionName) {
-            closeDrawer();
-            this.$root.changeCurrentComponent(functionName);
+        homeButton() {
+            this.$root.changeCurrentComponent('HomeComponent');
         },
 
         addUserButtonClick(option) {
             if (option.name === 'Driver') {
-                closeDrawer();
+
                 this.$root.changeCurrentComponent('AddDriverComponent');
             }
             else {
-                closeDrawer();
+
                 localStorage.setItem('addingRole', option.name);
                 emit('forceReload', '');
                 this.$root.changeCurrentComponent('AddUserComponent');
@@ -219,19 +224,19 @@ export default {
         },
 
         manageUsersClick() {
-            closeDrawer();
+
             this.$root.changeCurrentComponent('ModifyUserComponent');
         },
 
 
         createMessage() {
-            closeDrawer();
+
             emit('showAddMessage', '');
         },
 
 
         showMessages() {
-            closeDrawer();
+
             this.$root.changeCurrentComponent('MailBoxComponent');
             // emit('showMessageManager', '');
         },
