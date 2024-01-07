@@ -7,6 +7,12 @@ export default createStore({
       accessToken: null,
       refreshToken: null,
     },
+
+    alertData : {
+      show: false,
+      message: '',
+      type: '',
+    },
   },
 
 
@@ -17,6 +23,8 @@ export default createStore({
     isAuthenticated(state) {
       return state.jwt.accessToken !== null;
     },
+
+    alertData: state => state.alertData,
 
   },
 
@@ -39,6 +47,10 @@ export default createStore({
       state.userData = null;
       state.jwt = null;
     },
+
+    setAlertData(state, data) {
+      state.alertData = data;
+    },
   },
 
 
@@ -47,6 +59,10 @@ export default createStore({
     setuserData({ commit }, data) {
       commit('setuserData', data);
     },
+
+    triggerAlert({ commit }, data) {
+      commit('setAlertData', { show: true, ...data});
+    }
   },
 
 

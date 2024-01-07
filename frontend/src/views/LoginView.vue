@@ -1,18 +1,21 @@
 <template>
     <v-app>
-        <div :class="isDarkModeEnabled ? 'bg-grey-darken-4' : ''" class="min-vh-100">
+        <div :class="isDarkModeEnabled ? 'bg-grey-darken-4' : ''" class="min-vh-100"
+            style="background: linear-gradient(to bottom right, rgba(0, 225, 255, 1), rgb(47, 111, 172), rgb(211, 94, 114));">
 
-            <v-list-item class="mx-auto pa-12" max-width="700" rounded="lg" align="center" justify="center">
+
+            <v-list-item class="mx-auto pa-12" max-width="700" rounded="lg" align="center" justify="center"
+                v-if="!$vuetify.display.smAndDown">
 
                 <v-row>
-                    <v-col cols="12">
+                    <v-col cols="12" style="text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);">
                         <v-icon icon="mdi-truck-fast" class="text-h1" />
                     </v-col>
                 </v-row>
 
                 <v-row>
 
-                    <v-col class="text-h3">
+                    <v-col class="text-h3 pa-4" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
                         <span class="fw-bold">F</span>ood
                         <span class="fw-bold">D</span>elivery
                         <span class="fw-bold">F</span>leet
@@ -23,131 +26,134 @@
                 </v-row>
             </v-list-item>
 
+            <!-- Mobile -->
+            <v-list-item class="mt-10" align="center" justify="center" v-else>
 
+                <v-row justify=center>
+                    <v-col cols="auto" style="text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);">
+                        <v-icon icon="mdi-truck-fast" class="text-h3" />
+                    </v-col>
+                </v-row>
 
-            <v-main>
+                <v-row>
 
-
-                <v-container fluid fill-height>
-                    <v-row align="center" justify="center">
-                        <v-col cols="12" sm="8" md="6">
-
-                            <v-card class="mx-auto pa-5" elevation="8" max-width="520" rounded="lg">
-
-                                <v-row justify="end" class="mb-4">
-                                    <v-btn :ripple="false" variant="plain"
-                                        :icon="isDarkModeEnabled ? 'mdi-weather-night' : 'mdi-white-balance-sunny'"
-                                        @click="toggleTheme">
-                                    </v-btn>
-                                </v-row>
-
-                                <div class="px-12 pb-12 pt-5">
-
-
-                                    <v-form v-model="form" @submit.prevent="onSubmit" class="text-h5">
-
-                                        <!-- Username field -->
-                                        <v-text-field v-model="username" variant="outlined" label="Username"
-                                            ref="usernameInput" :readonly="loading" :rules="usernameRules" class="mb-2"
-                                            clearable density="compact" prepend-icon="mdi-account-tie"
-                                            autocomplete="username">
-                                        </v-text-field>
-                                        <!-- Username field -->
+                    <v-col class="text-h4" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+                        <span class="fw-bold">F</span>ood
+                        <span class="fw-bold">D</span>elivery
+                        <span class="fw-bold">F</span>leet
+                        <span class="fw-bold">M</span>anagement
+                        <span class="fw-bold">S</span>ystem
+                    </v-col>
+                </v-row>
+            </v-list-item>
+            <!-- Mobile -->
 
 
 
-                                        <!-- Password recovery -->
-                                        <div
-                                            class="text-subtitle-1 text-medium-emphasis d-flex align-end justify-space-between">
-                                            <span></span>
 
-                                            <v-btn variant="plain" size="x-small" @click="passwordRecoverDialog = true"
-                                                class="text-cyan-darken-1 font-weight-bold" prepend-icon="mdi-restore">
-                                                Forgot password?
-                                            </v-btn>
-                                        </div>
-                                        <!-- Password recovery -->
 
-                                        <!-- Password field -->
-                                        <v-text-field v-model="password" variant="outlined" label="Password"
-                                            ref="passwordInput" :readonly="loading" :rules="passwordRules" density="compact"
-                                            :type="passwordVisible ? 'text' : 'password'" prepend-icon="mdi-key"
-                                            :append-inner-icon="passwordVisible ? 'mdi-eye' : ' mdi-eye-off'"
-                                            @click:append-inner="passwordVisible = !passwordVisible"
-                                            autocomplete="current-password">
-                                        </v-text-field>
-                                        <!-- Password field -->
+            <v-row justify="center">
+                <v-col cols="11" sm="8" md="5">
+
+                    <v-form v-model="form" @submit.prevent="onSubmit" class="text-h5">
+
+                        <!-- Username field -->
+                        <v-text-field v-model="username" variant="outlined" label="Username" ref="usernameInput"
+                            :readonly="loading" :rules="usernameRules" class="mb-2" clearable density="compact"
+                            prepend-icon="mdi-account-tie" autocomplete="username">
+                        </v-text-field>
+                        <!-- Username field -->
 
 
 
-                                        <!-- Button login -->
-                                        <span>
-                                            <v-tooltip v-if="!form" activator="parent" location="top"
-                                                no-overflow>
-                                                Fill required fields
-                                            </v-tooltip>
-                                            <span>
-                                                <v-btn :disabled="!form" :loading="loading" block
-                                                    class="bg-teal-darken-2 mt-10" size="large" type="submit"
-                                                    append-icon="mdi-login" v-autofocus>
-                                                    Login
-                                                </v-btn>
-                                            </span>
-                                        </span>
-                                        <!-- Button login -->
+                        <!-- Password recovery -->
+                        <div class="text-subtitle-1 text-medium-emphasis d-flex align-end justify-space-between">
+                            <span></span>
 
-                                    </v-form>
-                                </div>
+                            <v-btn variant="plain" size="x-small" @click="passwordRecoverDialog = true"
+                                class="text-cyan-darken-1 font-weight-bold" prepend-icon="mdi-restore">
+                                Forgot password?
+                            </v-btn>
+                        </div>
+                        <!-- Password recovery -->
 
-                            </v-card>
-
-
-                        </v-col>
-                    </v-row>
-                </v-container>
-
-                <v-snackbar v-model="alert" :timeout="3000" location="top" color="red">
-                    <span class="fs-5">{{ errorContent }}</span>
-                    <template v-slot:actions>
-                        <v-btn variant="tonal" @click="alert = false">
-                            Close
-                        </v-btn>
-                    </template>
-                </v-snackbar>
+                        <!-- Password field -->
+                        <v-text-field v-model="password" variant="outlined" label="Password" ref="passwordInput"
+                            :readonly="loading" :rules="passwordRules" density="compact"
+                            :type="passwordVisible ? 'text' : 'password'" prepend-icon="mdi-key"
+                            :append-inner-icon="passwordVisible ? 'mdi-eye' : ' mdi-eye-off'"
+                            @click:append-inner="passwordVisible = !passwordVisible" autocomplete="current-password">
+                        </v-text-field>
+                        <!-- Password field -->
 
 
 
-                <!-- Password recovery -->
-                <v-dialog v-model="passwordRecoverDialog" width="400">
-                    <v-card>
-                        <v-card-text>
-                            <p>Type your email below</p>
-                            <v-text-field v-model="emailPasswordRecover" density="compact" hide-details="auto"
-                                label="Email address" placeholder="example@example.com" type="email" class="mb-3"
-                                prepend-icon="mdi-email">
-                            </v-text-field>
-                            <v-btn block color="success" @click="passwordReset()">Recover password</v-btn>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-btn color="primary" block @click="passwordRecoverDialog = false">Close</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
+                        <!-- Button login -->
+                        <span>
+                            <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                                Fill required fields
+                            </v-tooltip>
+                            <span>
+                                <v-btn :disabled="!form" :loading="loading" block class="bg-teal-darken-2 mt-10"
+                                    size="large" type="submit" append-icon="mdi-login" v-autofocus>
+                                    Login
+                                </v-btn>
+                            </span>
+                        </span>
+                        <!-- Button login -->
 
-                <v-dialog v-model="passwordRecoverDialogConfirm" width="auto">
-                    <v-card>
-                        <v-card-text>
-                            Email has been sent to {{ emailPasswordRecover }}. Please check your email box (mail might be in
-                            spam).
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-btn color="primary" block @click="passwordRecoverDialogConfirm = false">Close</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-                <!-- Password recovery -->
+                    </v-form>
 
-            </v-main>
+
+
+
+
+                </v-col>
+            </v-row>
+
+
+            <v-snackbar v-model="alert" :timeout="3000" location="top" color="red">
+                <span class="fs-5">{{ errorContent }}</span>
+                <template v-slot:actions>
+                    <v-btn variant="tonal" @click="alert = false">
+                        Close
+                    </v-btn>
+                </template>
+            </v-snackbar>
+
+
+
+            <!-- Password recovery -->
+            <v-dialog v-model="passwordRecoverDialog" width="400">
+                <v-card>
+                    <v-card-text>
+                        <p>Type your email below</p>
+                        <v-text-field v-model="emailPasswordRecover" density="compact" hide-details="auto"
+                            label="Email address" placeholder="example@example.com" type="email" class="mb-3"
+                            prepend-icon="mdi-email">
+                        </v-text-field>
+                        <v-btn block color="success" @click="passwordReset()">Recover password</v-btn>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn color="primary" block @click="passwordRecoverDialog = false">Close</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
+            <v-dialog v-model="passwordRecoverDialogConfirm" width="auto">
+                <v-card>
+                    <v-card-text>
+                        Email has been sent to {{ emailPasswordRecover }}. Please check your email box (mail might be in
+                        spam).
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn color="primary" block @click="passwordRecoverDialogConfirm = false">Close</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <!-- Password recovery -->
+
+
         </div>
     </v-app>
 </template>

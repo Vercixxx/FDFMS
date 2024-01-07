@@ -20,7 +20,7 @@
                     <v-col>
 
                         <v-row class="ms-2 text-h6" align="center" justify="center">
-                           
+
 
 
                             <v-col>
@@ -75,16 +75,14 @@
                     <!-- Title and location -->
 
 
-                    <!-- Log out -->
+                    <!-- Right menu -->
                     <v-col cols="auto" align="end">
                         <v-col cols="auto">
 
-                            <v-tooltip text="Help"
-                                location="bottom">
+                            <v-tooltip text="Help" location="bottom">
                                 <template v-slot:activator="{ props }">
-                                    <v-btn :ripple="false" variant="plain" v-bind="props"
-                                        icon="mdi-help" color="blue-darken-4"
-                                        @click="showHelp">
+                                    <v-btn :ripple="false" variant="plain" v-bind="props" icon="mdi-help"
+                                        color="blue-darken-4" @click="showHelp">
 
                                     </v-btn>
                                 </template>
@@ -102,71 +100,44 @@
                                 </template>
                             </v-tooltip>
 
-
-
-
-                            <v-menu transition="slide-y-transition">
+                            <v-tooltip text="Logout" location="bottom">
                                 <template v-slot:activator="{ props }">
-
-                                    <v-btn v-bind="props" :ripple="false" variant="plain" icon="mdi-account-circle-outline">
+                                    <v-btn :ripple="false" variant="plain" v-bind="props" icon="mdi-logout" @click="logoutDialog = true">
                                     </v-btn>
-
                                 </template>
-
-                                <v-list class="p-0">
-                                    <v-list-item class="p-0">
-
-                                        <v-list-item-title class="text-center">
-                                            Hi, {{ userData.username }}
-                                        </v-list-item-title>
-
-                                    </v-list-item>
+                            </v-tooltip>
 
 
-                                    <v-list-item class="p-0">
-                                        <v-dialog transition="dialog-top-transition" width="400">
-                                            <template v-slot:activator="{ props }">
-                                                <v-btn v-bind="props" block variant="flat" append-icon="mdi-logout">
-                                                    Logout
-                                                </v-btn>
-                                            </template>
-                                            <template v-slot:default="{ isActive }">
-                                                <v-card>
-                                                    <div class="text-warning text-h6 text-md-h5 text-lg-h4">
+                            <v-dialog v-model="logoutDialog" width="400">
+                                <v-card>
+                                    <div class="text-warning text-h6 text-md-h5 text-lg-h4">
+                                        <div class="d-flex justify-content-between align-items-center px-4 pt-4">
+                                            <v-icon icon="mdi-alert" class="text-h4" />
+                                            Logout
+                                            <v-icon icon="mdi-alert" class="text-h4" />
+                                        </div>
+                                        <hr>
+                                    </div>
 
-                                                        <div
-                                                            class="d-flex justify-content-between align-items-center px-4 pt-4">
-                                                            <v-icon icon="mdi-alert" class="text-h4" />
-                                                            Logout
-                                                            <v-icon icon="mdi-alert" class="text-h4" />
-                                                        </div>
-                                                        <hr>
-                                                    </div>
+                                    <div class="h2 text-h6 text-md-h5 text-lg-h4" align="center">
+                                        Are you sure?
+                                    </div>
+                                    <hr>
 
-                                                    <div class="h2 text-h6 text-md-h5 text-lg-h4" align="center">
-                                                        Are you sure?
-                                                    </div>
-                                                    <hr>
-
-                                                    <div class="d-flex align-items-center justify-content-evenly mb-3">
-                                                        <v-btn variant="outlined" width="130" class="mr-5"
-                                                            @click="isActive.value = false">No</v-btn>
-                                                        <v-btn variant="outlined" width="130" @click="logout" color="red"
-                                                            append-icon="mdi-logout">Yes</v-btn>
-                                                    </div>
-                                                </v-card>
-                                            </template>
-                                        </v-dialog>
-                                    </v-list-item>
-
-                                </v-list>
-                            </v-menu>
+                                    <div class="d-flex align-items-center justify-content-evenly mb-3">
+                                        <v-btn variant="outlined" width="130" class="mr-5"
+                                            @click="logoutDialog = false">No</v-btn>
+                                        <v-btn variant="outlined" width="130" @click="logout" color="red"
+                                            append-icon="mdi-logout">Yes</v-btn>
+                                    </div>
+                                </v-card>
+                            </v-dialog>
 
 
                         </v-col>
 
                     </v-col>
-                    <!-- Log out -->
+                    <!-- Right menu -->
 
 
                 </v-row>
@@ -176,12 +147,8 @@
 
 
             <!-- Menu -->
-            <v-navigation-drawer
-              v-model="drawer"
-              location="left"
-              expand-on-hover
-              rail
-              :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }">
+            <v-navigation-drawer v-model="drawer" location="left" expand-on-hover rail
+                :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }">
 
                 <v-list density="compact" nav class="pa-3">
 
@@ -206,21 +173,6 @@
             </v-main>
             <!-- Content -->
 
-
-
-
-
-            <!-- Snackbar -->
-            <v-snackbar v-model="alert" :timeout="3000" location="bottom" :color="snackContent.type">
-                {{ snackContent.message }}
-                <template v-slot:actions>
-                    <v-btn @click="alert = false">
-                        Close
-                    </v-btn>
-                </template>
-            </v-snackbar>
-            <!-- Snackbar -->
-            
 
         </v-layout>
 
@@ -250,7 +202,11 @@
         <!-- Add post dialog -->
         <AddPost ref="addPost" style="display: none;" :key="forceReload" />
         <!-- Add post dialog -->
-        
+
+        <!-- Alert -->
+        <MyAlert></MyAlert>
+        <!-- Alert -->
+
     </v-app>
 </template>
 
@@ -276,6 +232,10 @@ function toggleTheme() {
 import { markRaw } from 'vue';
 import useEventsBus from '../plugins/eventBus.js'
 const { emit } = useEventsBus()
+
+// MyAlert
+import MyAlert from '../components/MyAlert.vue'
+// MyAlert
 
 // Help dialog
 import HelpDialog from '../components/HelpDialog.vue'
@@ -342,13 +302,13 @@ export default {
                     component: 'HomeComponent',
                 }
             ],
-            confirmLogout: null,
+            logoutDialog: false,
             drawer: true,
             group: null,
             darkModeEnabled: true,
 
             alert: false,
-            snackContent: {type:'success'},
+            snackContent: { type: 'success' },
 
             forceReload: 0,
 
@@ -374,6 +334,7 @@ export default {
         CreateMessage,
         AddPost,
         HelpDialog,
+        MyAlert,
     },
 
     computed: {
@@ -418,8 +379,6 @@ export default {
 
 
     methods: {
-
-
 
         toggleDarkMode() {
             this.darkModeEnabled = !this.darkModeEnabled;
