@@ -364,7 +364,9 @@ export default {
                     icon: 'mdi-phone',
                     rules: [
                         v => !!v || 'Phone number is required',
-                        v => /^[0-9+ -]+$/.test(v) || 'Only numbers, "+" and "-" are allowed',
+                        v => /^[0-9]+$/.test(v) || 'Only digits are allowed',
+                        v => v.length >= 9 || 'Phone number must be at least 9 digits',
+                        v => v.length <= 15 || 'Phone number must not exceed 15 digits',
                     ]
 
                 },
@@ -930,7 +932,7 @@ export default {
 
                 emit('message', '');
                 this.$root.changeCurrentComponent('ModifyUserComponent');
-                
+
             }
             catch (error) {
                 console.error(error)
