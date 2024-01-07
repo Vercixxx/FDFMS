@@ -25,7 +25,7 @@
 
                             <v-col>
                                 <!-- Visible on larger devices -->
-                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown" class="mt-3">
+                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown" class="mt-3 text-body-1">
                                     <template v-slot:divider>
                                         <v-icon icon="mdi-chevron-right"></v-icon>
                                     </template>
