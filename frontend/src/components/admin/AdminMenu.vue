@@ -30,10 +30,10 @@ export default {
                 //     name: 'Asset menu',
                 //     menu: AssetMenu
                 // },
-                // {
-                //     name: 'Clients menu',
-                //     menu: ClientsMenu
-                // },
+                {
+                    name: 'Clients menu',
+                    menu: ClientsMenu
+                },
                 // {
                 //     name: 'Payroll menu',
                 //     menu: PayrollMenu
