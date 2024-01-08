@@ -167,7 +167,7 @@
 
             <template v-else>
               <span v-if="item[header.key] === null || item[header.key] === undefined || item[header.key] === ''">
-                <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
+                <v-icon icon="mdi-minus" />
               </span>
               <span v-else-if="item[header.key] === true">
                 <v-icon icon="mdi-check-bold" style="color:green" />
@@ -304,8 +304,8 @@
             <tbody>
               <tr v-for="(value, key) in userDetailData" :key="key">
                 <td>{{ key }}</td>
-                <td v-if="value === null">
-                  <v-icon icon="mdi-minus-thick"></v-icon>
+                <td v-if="value === null || value === undefined || value === ''">
+                  <v-icon icon="mdi-minus" />
                 </td>
 
                 <td v-else-if="value === true">
