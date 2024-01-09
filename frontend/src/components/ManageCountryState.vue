@@ -1,48 +1,173 @@
 <template>
-    <v-dialog v-model="showDialog" persistent max-width="500px">
-        <v-card>
-            <v-card-title align="center">
-                Countries and states
-            </v-card-title>
-            <v-card-text>
-                <v-row>
-                    <v-col cols="12" md="6">
-                        <v-select label="Choose type" variant="solo-filled" :items="options" v-model="type" 
-                            @update:modelValue="handleChange"></v-select>
-                    </v-col>
-                </v-row>
+    <v-card-title align="center">
+        Countries and states
+    </v-card-title>
+    <v-card-text>
+        <v-row>
+            <v-col cols="12" md="2">
+                <v-select label="Choose type" variant="solo-filled" :items="options" v-model="type"
+                    @update:modelValue="handleChange"></v-select>
+            </v-col>
+        </v-row>
 
-                <v-row v-if="type !== null">
-                    <!-- Table -->
-                    <v-col cols="12">
-                        <v-data-table :headers="headers" :items="items" :items-per-page="5" class="elevation-1"
-                            :loading="tableLoading" item-value="name">
-                            <template v-slot:item.action="{ item }">
-                                <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-                                <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-                            </template>
-                        </v-data-table>
-                        <!-- Table -->
-                    </v-col>
-                </v-row>
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="primary" text @click="closeDialog()">Close</v-btn>
-            </v-card-actions>
+        <v-row v-if="type != null">
+            <v-btn @click="addItem()" color="success" variant="outlined"
+                :text="type === 'Country' ? 'Add Country' : 'Add State'" prepend-icon="mdi-plus" class="mb-2"></v-btn>
+        </v-row>
+
+
+        <!-- Adding -->
+        <v-dialog v-model="countryDialog" max-width="500" persistent>
+            <v-card align="center">
+
+                <v-form v-model="form">
+                    <v-card-title>
+                        <span v-if="editing">
+                            Edit {{ addingCountryName }}
+                        </span>
+                        <span v-else>
+                            Add Country
+                        </span>
+                    </v-card-title>
+
+                    <v-card-text>
+                        <v-row>
+                            <v-col>
+                                <v-text-field label="Country name" v-model="addingCountryName"
+                                    :rules="rules"></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+
+                    <v-card-actions>
+                        <v-row class="ma-1">
+                            <v-col>
+                                <v-btn color="primary" block @click="closeCountryDialog()">Close</v-btn>
+                            </v-col>
+                            <v-col>
+                                <v-btn color="success" block @click="addCountry()" :disabled="!form"
+                                    :text="editing ? 'Edit' : 'Add'"></v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-card-actions>
+                </v-form>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="addStateDialog" max-width="500" persistent>
+            <v-card align="center">
+
+                <v-form v-model="form">
+                    <v-card-title>
+                        <span v-if="editing">
+                            Edit {{ addingStateName }} in {{ addingStateCountryName }}
+                        </span>
+                        <span v-else>
+                            Add State
+                        </span>
+                    </v-card-title>
+
+                    <v-card-text>
+                        <v-row>
+                            <v-col cols="12" md="6">
+                                <v-select label="Choose country" variant="solo-filled"
+                                    :items="items.map(item => item.country)" v-model="addingStateCountryName"
+                                    @update:modelValue="handleChange"></v-select>
+                            </v-col>
+
+                            <v-col cols="12" md="6">
+                                <v-text-field label="State name" v-model="addingStateName"
+                                    :disabled="addingStateCountryName === null" :rules="rules"></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+
+                    <v-card-actions>
+                        <v-row class="ma-1">
+                            <v-col>
+                                <v-btn color="primary" block @click="closeStateDialog()">Close</v-btn>
+                            </v-col>
+                            <v-col>
+                                <v-btn color="success" block @click="addCountry()" :disabled="!form"
+                                    :text="editing ? 'Edit' : 'Add'"></v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-card-actions>
+                </v-form>
+
+            </v-card>
+        </v-dialog>
+        <!-- Adding -->
+
+
+        <v-row v-if="type !== null">
+            <!-- Table -->
+            <v-col cols="12">
+                <v-data-table :headers="headersComputed" :items="items" :items-per-page="5" class="elevation-1"
+                    :loading="tableLoading" item-value="name">
+                    <template v-slot:item.action="{ item }">
+
+                        <v-btn variant="plain" color="green" @click="editItem(item)">
+                            <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
+                            <v-tooltip activator="parent" location="top">Edit {{ item.name }}</v-tooltip>
+                        </v-btn>
+
+                        <v-btn variant="plain" color="red" @click="deleteConfirm(item)">
+                            <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
+                            <v-tooltip activator="parent" location="top">Delete {{ item.name }}</v-tooltip>
+                        </v-btn>
+
+                    </template>
+                </v-data-table>
+                <!-- Table -->
+            </v-col>
+        </v-row>
+        {{ type }}
+    </v-card-text>
+
+
+    <!-- Delete dialog -->
+    <v-dialog v-model="dialogDelete" width="400" persistent>
+        <v-card>
+            <div class="text-danger text-h6 text-md-h5 text-lg-h4">
+                <div class="d-flex justify-content-between align-items-center px-4 pt-4">
+                    <v-icon icon="mdi-alert" class="text-h4" />
+                    Warning
+                    <v-icon icon="mdi-alert" class="text-h4" />
+                </div>
+
+                <hr />
+            </div>
+
+            <div class="pa-3" align="center">
+
+                You are trying to delete
+                <span class='fw-bolder'>
+                    {{ deleteItem.name }}
+                </span>
+                , this operation is <span class="fw-bold">irreversible</span>.
+                Are you sure?
+
+            </div>
+            <hr>
+
+            <div class="justify-center d-flex align-items-center mb-3">
+                <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
+                <v-btn width="150" @click="delteItem(deleteItem)" color="red">Yes</v-btn>
+            </div>
+
         </v-card>
     </v-dialog>
+    <!-- Delete dialog -->
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import axios from 'axios';
 
 export default {
     name: 'ManageCountryState',
     data() {
         return {
-            showDialog: false,
-
             options: [
                 'Country',
                 'State',
@@ -52,26 +177,73 @@ export default {
 
             tableLoading: true,
 
-            headers: [
+            countryHeaders: [
                 { title: 'Name', key: 'name', align: 'center' },
-                { title: 'Action', key: 'action', sortable: false, align: 'center' },
+                { title: 'Actions', key: 'action', sortable: false, align: 'center' },
+            ],
+
+            statesHeaders: [
+                { title: 'Country', key: 'country', align: 'center' },
+                { title: 'Name', key: 'name', align: 'center' },
+                { title: 'Actions', key: 'action', sortable: false, align: 'center' },
             ],
 
             items: [],
+
+            countryDialog: false,
+            addStateDialog: false,
+
+            addingCountryName: null,
+
+            addingStateCountryName: null,
+            addingStateName: null,
+
+            rules: [
+                v => !!v || 'Required',
+                v => (v && v.length <= 30) || 'Name must be less than 30 characters',
+                v => (v && v.length >= 3) || 'Name must be more than 3 characters',
+                v => /^[a-zA-Z]*$/.test(v) || 'Only letters are allowed',
+            ],
+
+            form: false,
+            editing: false,
+
+            dialogDelete: false,
+            deleteItem: null,
+
         };
     },
     computed: {
-        ...mapState(['modifyStateDialog']),
-    },
-    watch: {
-        modifyStateDialog(newVal) {
-            this.showDialog = newVal;
+        headersComputed() {
+            if (this.type === 'Country') {
+                return this.countryHeaders;
+            } else if (this.type === 'State') {
+                return this.statesHeaders;
+            }
+            return [];
         },
     },
+
     methods: {
-        closeDialog() {
-            this.$store.commit('setModifyStateDialog', false);
+
+        handleChange() {
+            if (this.type === 'Country') {
+                this.fetchCountries();
+            } else if (this.type === 'State') {
+                this.fetchStates();
+            }
         },
+
+
+        addItem() {
+            if (this.type === 'Country') {
+                this.countryDialog = true;
+            } else if (this.type === 'State') {
+                this.addStateDialog = true;
+            }
+        },
+
+        // Country
 
         async fetchCountries() {
             this.tableLoading = true;
@@ -85,27 +257,118 @@ export default {
             this.tableLoading = false;
         },
 
+
+        async addCountry() {
+            try {
+                await axios.post('api/countries/add/', {
+                    name: this.addingCountryName,
+                });
+                this.$store.dispatch('triggerAlert', { message: 'Country added', type: 'success' });
+                this.fetchCountries();
+
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+            }
+            this.countryDialog = false;
+            this.type = 'Country';
+            this.stateName = null;
+        },
+
+        closeCountryDialog() {
+            this.countryDialog = false;
+            this.type = 'Country';
+            this.stateName = null;
+        },
+        // Country
+
+
+        // States
+
         async fetchStates() {
             this.tableLoading = true;
             try {
                 const response = await axios.get('api/states/get/');
                 this.items = response.data;
+                console.log(response);
             } catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
             this.tableLoading = false;
         },
 
-        handleChange() {
-            if (this.type === 'Country') {
-                this.fetchCountries();
-            } else if (this.type === 'State') {
+        async addState() {
+            try {
+                await axios.post('api/states/add/', {
+                    name: this.addingStateName,
+                    country: this.addingStateCountryName,
+                });
+                this.$store.dispatch('triggerAlert', { message: 'State added', type: 'success' });
                 this.fetchStates();
-            }
-        },
-    },
-    mounted() {
 
-    },
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+            }
+            this.addStateDialog = false;
+            this.type = 'State';
+            this.addingStateCountryName = null;
+            this.addingStateName = null;
+        },
+
+        closeStateDialog() {
+            this.addStateDialog = false;
+            this.type = 'State';
+            this.addingStateCountryName = null;
+            this.addingStateName = null;
+        },
+        // States
+
+
+        // Edit item
+        editItem(item) {
+            this.editing = true;
+            if (this.type === 'Country') {
+                this.countryDialog = true;
+                this.addingCountryName = item.name;
+            } else if (this.type === 'State') {
+                this.addStateDialog = true;
+                this.addingStateCountryName = item.country;
+                this.addingStateName = item.name;
+            }
+
+        },
+        // Edit item
+
+        // Delete confirm
+        deleteConfirm(item) {
+            this.dialogDelete = true;
+            this.deleteItem = item;
+        },
+        // Delete confirm
+
+        // Delete item
+        async delteItem(item) {
+            if (this.type == 'Country') {
+                try {
+                    await axios.delete(`api/countries/delete/${item.name}/`);
+                    this.$store.dispatch('triggerAlert', { message: 'Country deleted', type: 'success' });
+                    this.fetchCountries();
+                } catch (error) {
+                    this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+                }
+
+            } else if (this.type =='State') {
+                try {
+                    await axios.delete(`api/states/delete/${item.country}/${item.name}/`);
+                    this.$store.dispatch('triggerAlert', { message: 'State deleted', type: 'success' });
+                    this.fetchStates();
+                } catch (error) {
+                    this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+                }
+            }
+            this.dialogDelete = false;
+        },
+        // Delete item
+    }
+
 };
 </script>

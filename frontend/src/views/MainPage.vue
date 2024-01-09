@@ -206,9 +206,6 @@
         <MyAlert></MyAlert>
         <!-- Alert -->
 
-        <!-- Country/State -->
-        <ManageCountryState></ManageCountryState>
-        <!-- Country/State -->
 
     </v-app>
 </template>
@@ -455,6 +452,29 @@ export default {
         },
         // Messages
 
+
+        // Country and state
+        ModifyCountryStateComponent() {
+            this.currentComponent = ManageCountryState;
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Country and state",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Manage country and state',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+        },
+        // Country and state
 
 
         // HR

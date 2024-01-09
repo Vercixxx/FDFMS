@@ -21,8 +21,18 @@ class GetStates(APIView):
     
     def get(self, request):
         country = self.request.query_params.get('country', '').strip()
-        states = State.objects.filter(country__name=country)
-        serialized = StateSerializer(states, many=True)
-        return JsonResponse(serialized.data, safe=False, status=200)
+        
+        output = []
+        if country:
+            states = State.objects.filter(country__name=country)
+            serialized = StateSerializer(states, many=True)
+            output = serialized.data
+            
+        else:
+            states = State.objects.all().order_by('name')
+            serialized = StateSerializer(states, many=True)
+            output = serialized.data
+            
+        return JsonResponse(output, safe=False, status=200)
     
     
