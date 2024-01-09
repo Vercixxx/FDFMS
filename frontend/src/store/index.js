@@ -14,7 +14,6 @@ export default createStore({
       type: '',
     },
 
-    modifyStateDialog: false,
   },
 
 
@@ -54,9 +53,6 @@ export default createStore({
       state.alertData = data;
     },
 
-    setModifyStateDialog(state, value) {
-      state.modifyStateDialog = value;
-    },
   },
 
 
@@ -69,10 +65,7 @@ export default createStore({
     triggerAlert({ commit }, data) {
       commit('setAlertData', { show: true, ...data});
     },
-    
-    openModifyStateDialog({ commit }) {
-      commit('setModifyStateDialog', true);
-    },
+
   },
 
 

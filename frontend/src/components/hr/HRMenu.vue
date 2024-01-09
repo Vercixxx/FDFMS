@@ -75,7 +75,7 @@
         <v-list density="compact" nav>
 
             <v-list-item v-for="option in button.options" :key="option.name" :prepend-icon="option.icon"
-                :title="option.name" @click="openStateDialog">
+                :title="option.name" @click="handleButtonClick(option)"> 
             </v-list-item>
 
         </v-list>
@@ -198,7 +198,7 @@ export default {
                     options: [
                         {
                             name: 'Country/state',
-                            click: '',
+                            click: 'ModifyCountryStateComponent',
                             icon: 'mdi-city-variant',
                         },
 
@@ -215,7 +215,7 @@ export default {
         },
 
         handleButtonClick(option) {
-            this.$root.changeCurrentComponent(option.name);
+            this.$root.changeCurrentComponent(option.click);
         },
 
         homeButton() {
