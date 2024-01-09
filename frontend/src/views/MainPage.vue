@@ -176,9 +176,8 @@
 
         </v-layout>
 
-        <v-sheet app>
-            <div class="pa-1 text-center w-100 " :class="isDarkModeEnabled ? 'bg-grey-darken-4' : ''">
-
+        <footer>
+            <div class="" align=center justify=center :class="isDarkModeEnabled ? 'bg-grey-darken-4' : ''">
 
                 <span v-for="social in socials" :key="social.id" class="pa-3">
                     <a :href="social.link" target="_blank"
@@ -186,11 +185,11 @@
                         <v-icon :icon="social.icon" />
                     </a>
                 </span>
-
+                
                 {{ new Date().getFullYear() }} — Krzysztof Służałek
 
             </div>
-        </v-sheet>
+        </footer>
 
 
         <CreateMessage ref="createMessage" style="display: none;" :key="forceReload" />
@@ -206,6 +205,10 @@
         <!-- Alert -->
         <MyAlert></MyAlert>
         <!-- Alert -->
+
+        <!-- Country/State -->
+        <ManageCountryState></ManageCountryState>
+        <!-- Country/State -->
 
     </v-app>
 </template>
@@ -335,6 +338,7 @@ export default {
         AddPost,
         HelpDialog,
         MyAlert,
+        ManageCountryState,
     },
 
     computed: {

@@ -12,7 +12,10 @@
                         <v-icon icon="mdi-truck-fast" class="text-h2" />
                     </v-col>
 
-                    <v-col align="center" class="text-h5 pa-4" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+
+                </v-row>
+                <v-row>
+                    <v-col align="center" class="text-h4 pa-4" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
                         <span class="fw-bold">F</span>ood
                         <span class="fw-bold">D</span>elivery
                         <span class="fw-bold">F</span>leet
@@ -23,30 +26,30 @@
                 </v-row>
 
                 <!-- Form -->
-                <v-row align="center" justify="center" style="min-height: 70dvh;">
+                <v-row align="center" justify="center" style="min-height: 60dvh;">
 
                     <v-card class="bg-blue-grey-darken-3 rounded-xl pa-10 elevation-20" style="width: 90dvw;">
                         <v-form v-model="form" @submit.prevent="onSubmit" class="text-h4"
-                        style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
-                        
-                        <!-- Username field -->
-                        <v-text-field v-model="username" variant="outlined" label="Username" ref="usernameInput"
+                            style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);">
+
+                            <!-- Username field -->
+                            <v-text-field v-model="username" variant="outlined" label="Username" ref="usernameInput"
                                 :readonly="loading" :rules="usernameRules" class="mb-2" clearable density="compact"
                                 prepend-icon="mdi-account-tie" autocomplete="username">
                             </v-text-field>
                             <!-- Username field -->
-                            
+
                             <!-- Password recovery -->
                             <div class="text-subtitle-1 text-medium-emphasis d-flex align-end justify-space-between">
                                 <span></span>
-                                
+
                                 <v-btn variant="plain" size="x-small" @click="passwordRecoverDialog = true"
-                                class="text-cyan-darken-1 font-weight-bold" prepend-icon="mdi-restore">
+                                    class="text-cyan-darken-1 font-weight-bold" prepend-icon="mdi-restore">
                                     Forgot password?
                                 </v-btn>
                             </div>
                             <!-- Password recovery -->
-                            
+
                             <!-- Password field -->
                             <v-text-field v-model="password" variant="outlined" label="Password" ref="passwordInput"
                                 :readonly="loading" :rules="passwordRules" density="compact"
@@ -55,7 +58,7 @@
                                 @click:append-inner="passwordVisible = !passwordVisible" autocomplete="current-password">
                             </v-text-field>
                             <!-- Password field -->
-                            
+
                             <!-- Button login -->
                             <span>
                                 <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
@@ -63,14 +66,14 @@
                                 </v-tooltip>
                                 <span>
                                     <v-btn :disabled="!form" :loading="loading" block class="mt-10"
-                                    :class="form ? 'bg-green-darken-1' : ''" size="large" type="submit"
-                                    append-icon="mdi-login" v-autofocus>
-                                    Login
-                                </v-btn>
-                            </span>
+                                        :class="form ? 'bg-green-darken-1' : ''" size="large" type="submit"
+                                        append-icon="mdi-login" v-autofocus>
+                                        Login
+                                    </v-btn>
+                                </span>
                             </span>
                             <!-- Button login -->
-                            
+
                         </v-form>
                     </v-card>
 
@@ -79,12 +82,12 @@
 
             </v-container>
             <!-- Mobile -->
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
             <!-- Desktop -->
             <v-container fill-height fluid v-else>
 
@@ -114,7 +117,7 @@
                     <!-- Right column -->
                     <v-col style="height: 99dvh">
 
-                        <v-row align="center" justify="center" style="min-height: 100dvh;">
+                        <v-row align="center" justify="center" style="min-height: 99dvh;">
 
                             <v-col>
                                 <v-card class="bg-blue-grey-darken-3 rounded-xl pa-16 mx-16 elevation-20">

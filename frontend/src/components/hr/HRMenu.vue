@@ -1,5 +1,4 @@
 <template>
-
     <v-list-item prepend-icon="mdi-truck-fast" @click="changeComponent('HomeComponent')" class="font-weight-bold" disabled>
         FDFMS
     </v-list-item>
@@ -14,7 +13,7 @@
     <v-menu transition="slide-y-transition">
         <template v-slot:activator="{ props }">
 
-            <v-list-item @click="homeButton()" v-bind="props" class=" font-weight-bold text-teal">
+            <v-list-item @click="homeButton()" v-bind="props" class="font-weight-bold text-teal">
                 <template v-slot:prepend>
                     <v-icon icon="mdi-home" color="teal"></v-icon>
                 </template>
@@ -33,7 +32,7 @@
                 Users
             </v-list-item>
         </template>
-        
+
         <v-list density="compact" nav>
 
             <!-- Add -->
@@ -76,9 +75,9 @@
         <v-list density="compact" nav>
 
             <v-list-item v-for="option in button.options" :key="option.name" :prepend-icon="option.icon"
-                :title="option.name" @click="handleButtonClick(option)">
+                :title="option.name" @click="openStateDialog">
             </v-list-item>
-            
+
         </v-list>
     </v-menu>
     <!-- Other -->
@@ -108,6 +107,7 @@
         </v-list>
     </v-menu>
     <!-- Messages -->
+
 </template>
 
 
@@ -210,6 +210,10 @@ export default {
     },
 
     methods: {
+        openStateDialog() {
+            this.$store.dispatch('openModifyStateDialog');
+        },
+
         handleButtonClick(option) {
             this.$root.changeCurrentComponent(option.name);
         },
@@ -246,7 +250,7 @@ export default {
         showMessages() {
 
             this.$root.changeCurrentComponent('MailBoxComponent');
-            // emit('showMessageManager', '');
+
         },
     },
 
