@@ -23,7 +23,7 @@
                 <v-form v-model="form">
                     <v-card-title>
                         <span v-if="editing">
-                            Edit {{ addingCountryName }}
+                            Edit {{ editingItem.name }}
                         </span>
                         <span v-else>
                             Add Country
@@ -45,12 +45,13 @@
                                 <v-btn color="primary" block @click="closeCountryDialog()">Close</v-btn>
                             </v-col>
                             <v-col>
-                                <v-btn color="success" block @click="addCountry()" :disabled="!form"
+                                <v-btn color="success" block @click="addEditCountry()" :disabled="!form"
                                     :text="editing ? 'Edit' : 'Add'"></v-btn>
                             </v-col>
                         </v-row>
                     </v-card-actions>
                 </v-form>
+                {{ editing }}
             </v-card>
         </v-dialog>
 
@@ -60,7 +61,7 @@
                 <v-form v-model="form">
                     <v-card-title>
                         <span v-if="editing">
-                            Edit {{ addingStateName }} in {{ addingStateCountryName }}
+                            Edit {{ editingItem.name }} in {{ editingItem.country }}
                         </span>
                         <span v-else>
                             Add State
@@ -88,7 +89,7 @@
                                 <v-btn color="primary" block @click="closeStateDialog()">Close</v-btn>
                             </v-col>
                             <v-col>
-                                <v-btn color="success" block @click="addCountry()" :disabled="!form"
+                                <v-btn color="success" block @click="addEditState()" :disabled="!form"
                                     :text="editing ? 'Edit' : 'Add'"></v-btn>
                             </v-col>
                         </v-row>
@@ -122,7 +123,7 @@
                 <!-- Table -->
             </v-col>
         </v-row>
-        {{ type }}
+
     </v-card-text>
 
 
@@ -207,9 +208,12 @@ export default {
 
             form: false,
             editing: false,
+            editingItem: {},
 
             dialogDelete: false,
             deleteItem: null,
+
+            errorContent: null,
 
         };
     },
@@ -258,26 +262,44 @@ export default {
         },
 
 
-        async addCountry() {
-            try {
-                await axios.post('api/countries/add/', {
-                    name: this.addingCountryName,
-                });
-                this.$store.dispatch('triggerAlert', { message: 'Country added', type: 'success' });
-                this.fetchCountries();
-
-            } catch (error) {
-                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+        async addEditCountry() {
+            if (this.editing) {
+                try {
+                    await axios.put(`api/countries/edit/${this.editingItem.name}/`, {
+                        name: this.addingCountryName,
+                    });
+                    this.$store.dispatch('triggerAlert', { message: 'Country edited', type: 'success' });
+                    this.fetchCountries();
+                } catch (error) {
+                    this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+                }
+                this.countryDialog = false;
+                this.type = 'Country';
+                this.stateName = null;
+            }
+            else {
+                try {
+                    await axios.post('api/countries/add/', {
+                        name: this.addingCountryName,
+                    });
+                    this.$store.dispatch('triggerAlert', { message: 'Country added', type: 'success' });
+                    this.fetchCountries();
+                } catch (error) {
+                    const response = error.response;
+                    this.$store.dispatch('triggerAlert', { message: response.data.error, type: 'error' });
+                }
             }
             this.countryDialog = false;
             this.type = 'Country';
             this.stateName = null;
+
         },
 
         closeCountryDialog() {
             this.countryDialog = false;
             this.type = 'Country';
-            this.stateName = null;
+            this.addingCountryName = null;
+            this.editing = false;
         },
         // Country
 
@@ -296,22 +318,41 @@ export default {
             this.tableLoading = false;
         },
 
-        async addState() {
-            try {
-                await axios.post('api/states/add/', {
-                    name: this.addingStateName,
-                    country: this.addingStateCountryName,
-                });
-                this.$store.dispatch('triggerAlert', { message: 'State added', type: 'success' });
-                this.fetchStates();
-
-            } catch (error) {
-                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+        async addEditState() {
+            if (this.editing) {
+                try {
+                    await axios.put(`api/states/edit/${this.editingItem.country}/${this.editingItem.name}/`, {
+                        name: this.addingStateName,
+                        country: this.addingStateCountryName,
+                    });
+                    this.$store.dispatch('triggerAlert', { message: 'State edited', type: 'success' });
+                    this.fetchStates();
+                } catch (error) {
+                    this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+                }
+                this.addStateDialog = false;
+                this.type = 'State';
+                this.addingStateCountryName = null;
+                this.addingStateName = null;
             }
-            this.addStateDialog = false;
-            this.type = 'State';
-            this.addingStateCountryName = null;
-            this.addingStateName = null;
+            else {
+                try {
+                    await axios.post('api/states/add/', {
+                        name: this.addingStateName,
+                        country: this.addingStateCountryName,
+                    });
+                    this.$store.dispatch('triggerAlert', { message: 'State added', type: 'success' });
+                    this.fetchStates();
+
+                } catch (error) {
+                    const response = error.response;
+                    this.$store.dispatch('triggerAlert', { message: response.data.error, type: 'error' });
+                }
+                this.addStateDialog = false;
+                this.type = 'State';
+                this.addingStateCountryName = null;
+                this.addingStateName = null;
+            }
         },
 
         closeStateDialog() {
@@ -319,6 +360,7 @@ export default {
             this.type = 'State';
             this.addingStateCountryName = null;
             this.addingStateName = null;
+            this.editing = false;
         },
         // States
 
@@ -328,9 +370,16 @@ export default {
             this.editing = true;
             if (this.type === 'Country') {
                 this.countryDialog = true;
+                this.editingItem = {
+                    name: item.name,
+                }
                 this.addingCountryName = item.name;
             } else if (this.type === 'State') {
                 this.addStateDialog = true;
+                this.editingItem = {
+                    name: item.name,
+                    country: item.country,
+                }
                 this.addingStateCountryName = item.country;
                 this.addingStateName = item.name;
             }
@@ -356,7 +405,7 @@ export default {
                     this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
                 }
 
-            } else if (this.type =='State') {
+            } else if (this.type == 'State') {
                 try {
                     await axios.delete(`api/states/delete/${item.country}/${item.name}/`);
                     this.$store.dispatch('triggerAlert', { message: 'State deleted', type: 'success' });
@@ -368,6 +417,7 @@ export default {
             this.dialogDelete = false;
         },
         // Delete item
+
     }
 
 };
