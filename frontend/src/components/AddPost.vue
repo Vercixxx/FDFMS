@@ -95,7 +95,7 @@ export default {
                 'Drivers'
             ],
             target: null,
-            creatorId: '',
+            author: '',
             title: '',
 
             maxTitleLen: 200,
@@ -126,7 +126,7 @@ export default {
             }
         );
 
-        this.creatorId = this.$store.getters.userData.id;
+        this.author = this.$store.getters.userData.username;
     },
 
     methods: {
@@ -156,38 +156,19 @@ export default {
         // Send message
         async addPost() {
             const data = {
-                'author': this.creatorId,
+                'author': this.author,
                 'title': this.title,
                 'content': this.content,
             }
             const target = this.target;
 
-            const response = await axios.post(`api/posts/create/${target}`, data);
+            try {
+                await axios.post(`api/posts/create/${target}`, data);
+                this.$store.dispatch('triggerAlert', { message: 'Succesfully added post', type: 'success' });
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+            }
             this.loading = false;
-
-            if (response.status === 201) {
-                this.close();
-                emit('forceReload', '');
-
-                const messageData = {
-                    message: response.data.message,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
-
-            }
-
-            else {
-                const messageData = {
-                    message: response.error,
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
-            }
 
         },
         // Send message

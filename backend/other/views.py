@@ -68,17 +68,11 @@ class EditCountry(APIView):
 
     def put(self, request, name):
         name = name.strip()
-        print(name)
-        print(request.data)
+
         if name:
             country = Country.objects.get(name=name)
-
-            serialized = CountrySerializer(country, data=request.data, partial=True)
-            
-            if serialized.is_valid():
-                serialized.save()
-                return JsonResponse({'message': 'Ok'}, status=200)
-            else:
-                return JsonResponse(serialized.errors, status=400)
-        
-        return JsonResponse({'error': 'Country name is required'}, safe=False, status=400)
+            country.name = self.request.data['name'].strip()
+            country.save()
+            return JsonResponse({'message': 'Ok'}, status=200)
+        else:
+            return JsonResponse({'error': 'Country name is required'}, safe=False, status=400)

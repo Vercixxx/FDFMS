@@ -108,7 +108,7 @@
                     :loading="tableLoading" item-value="name">
                     <template v-slot:item.action="{ item }">
 
-                        <v-btn variant="plain" color="green" @click="editItem(item)">
+                        <v-btn v-if="type == 'State'" variant="plain" color="green" @click="editItem(item)">
                             <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
                             <v-tooltip activator="parent" location="top">Edit {{ item.name }}</v-tooltip>
                         </v-btn>
