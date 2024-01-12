@@ -3,24 +3,35 @@ from . import views
 
 
 urlpatterns = [
-    # Countries
     
-    # Add Country
+    # ========== Countries ==========
+    
+    # Add
     path('api/countries/add/', views.AddCountry.as_view(), name="add-country"),
     
-    # Delete Country
+    # Delete
     path('api/countries/delete/<str:name>/', views.DeleteCountry.as_view(), name="delete-country"),
     
-    # Edit Country
-    path('api/countries/edit/<str:name>/', views.EditCountry.as_view(), name="edit-country"),
-    
-    # GetCountries
+    # Get
     path('api/countries/get/', views.GetCountries.as_view(), name="get-countries"),
     
+    # ========== Countries ==========
     
-    # Countries
     
-    # GetStates
+    # ========== States ==========
+    
+    # Add
+    path('api/states/add/', views.AddState.as_view(), name="add-state"),
+    
+    # Delete
+    path('api/states/delete/<int:id>/', views.DeleteState.as_view(), name="delete-state"),
+    
+    # Edit
+    path('api/states/edit/<int:id>/', views.EditState.as_view(), name="edit-state"),
+    
+    # Get
     path('api/states/get/', views.GetStates.as_view(), name="get-states"),
+
+    # ========== States ==========
     
 ]

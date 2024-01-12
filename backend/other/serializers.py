@@ -24,7 +24,7 @@ class CountryDeleteSerializer(serializers.ModelSerializer):
 class StateSerializer(serializers.ModelSerializer):
     class Meta:
         model = State
-        fields = ['name', 'country']
+        fields = '__all__'
 
 class StateCreateSerializer(serializers.ModelSerializer):
     class Meta:
