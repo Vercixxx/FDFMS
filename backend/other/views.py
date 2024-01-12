@@ -120,3 +120,5 @@ class DeleteState(DestroyAPIView):
     queryset = State.objects.all()
     serializer_class = StateSerializer
 # ========== States ==========
+
+
