@@ -16,18 +16,13 @@
         </v-row>
 
 
-        <!-- Adding -->
+        <!-- Adding and editing -->
         <v-dialog v-model="countryDialog" max-width="500" persistent>
             <v-card align="center">
 
                 <v-form v-model="form">
                     <v-card-title>
-                        <span v-if="editing">
-                            Edit {{ editingItem.name }}
-                        </span>
-                        <span v-else>
-                            Add Country
-                        </span>
+                        Add Country
                     </v-card-title>
 
                     <v-card-text>
@@ -45,13 +40,12 @@
                                 <v-btn color="primary" block @click="closeCountryDialog()">Close</v-btn>
                             </v-col>
                             <v-col>
-                                <v-btn color="success" block @click="addEditCountry()" :disabled="!form"
-                                    :text="editing ? 'Edit' : 'Add'"></v-btn>
+                                <v-btn color="success" block @click="addEditCountry()" :disabled="!form" text="Add"></v-btn>
                             </v-col>
                         </v-row>
                     </v-card-actions>
                 </v-form>
-                {{ editing }}
+
             </v-card>
         </v-dialog>
 
@@ -72,8 +66,8 @@
                         <v-row>
                             <v-col cols="12" md="6">
                                 <v-select label="Choose country" variant="solo-filled"
-                                    :items="items.map(item => item.country)" v-model="addingStateCountryName"
-                                    @update:modelValue="handleChange"></v-select>
+                                    :items="items.map(item => item.country).filter((value, index, self) => self.indexOf(value) === index)"
+                                    v-model="addingStateCountryName" @update:modelValue="handleChange"></v-select>
                             </v-col>
 
                             <v-col cols="12" md="6">
@@ -90,7 +84,7 @@
                             </v-col>
                             <v-col>
                                 <v-btn color="success" block @click="addEditState()" :disabled="!form"
-                                    :text="editing ? 'Edit' : 'Add'"></v-btn>
+                                    :text="editing ? 'Save' : 'Add'"></v-btn>
                             </v-col>
                         </v-row>
                     </v-card-actions>
@@ -98,8 +92,7 @@
 
             </v-card>
         </v-dialog>
-        <!-- Adding -->
-
+        <!-- Adding and editing -->
 
         <v-row v-if="type !== null">
             <!-- Table -->
@@ -263,32 +256,18 @@ export default {
 
 
         async addEditCountry() {
-            if (this.editing) {
-                try {
-                    await axios.put(`api/countries/edit/${this.editingItem.name}/`, {
-                        name: this.addingCountryName,
-                    });
-                    this.$store.dispatch('triggerAlert', { message: 'Country edited', type: 'success' });
-                    this.fetchCountries();
-                } catch (error) {
-                    this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
-                }
-                this.countryDialog = false;
-                this.type = 'Country';
-                this.stateName = null;
+
+            try {
+                await axios.post('api/countries/add/', {
+                    name: this.addingCountryName,
+                });
+                this.$store.dispatch('triggerAlert', { message: 'Country added', type: 'success' });
+                this.fetchCountries();
+            } catch (error) {
+                const response = error.response;
+                this.$store.dispatch('triggerAlert', { message: response.data.error, type: 'error' });
             }
-            else {
-                try {
-                    await axios.post('api/countries/add/', {
-                        name: this.addingCountryName,
-                    });
-                    this.$store.dispatch('triggerAlert', { message: 'Country added', type: 'success' });
-                    this.fetchCountries();
-                } catch (error) {
-                    const response = error.response;
-                    this.$store.dispatch('triggerAlert', { message: response.data.error, type: 'error' });
-                }
-            }
+
             this.countryDialog = false;
             this.type = 'Country';
             this.stateName = null;
@@ -321,7 +300,7 @@ export default {
         async addEditState() {
             if (this.editing) {
                 try {
-                    await axios.put(`api/states/edit/${this.editingItem.country}/${this.editingItem.name}/`, {
+                    await axios.put(`api/states/edit/${this.editingItem.id}/`, {
                         name: this.addingStateName,
                         country: this.addingStateCountryName,
                     });
@@ -334,6 +313,7 @@ export default {
                 this.type = 'State';
                 this.addingStateCountryName = null;
                 this.addingStateName = null;
+                this.editing = false;
             }
             else {
                 try {
@@ -368,21 +348,15 @@ export default {
         // Edit item
         editItem(item) {
             this.editing = true;
-            if (this.type === 'Country') {
-                this.countryDialog = true;
-                this.editingItem = {
-                    name: item.name,
-                }
-                this.addingCountryName = item.name;
-            } else if (this.type === 'State') {
-                this.addStateDialog = true;
-                this.editingItem = {
-                    name: item.name,
-                    country: item.country,
-                }
-                this.addingStateCountryName = item.country;
-                this.addingStateName = item.name;
+            this.addStateDialog = true;
+            this.editingItem = {
+                id: item.id,
+                name: item.name,
+                country: item.country,
             }
+            this.addingStateCountryName = item.country;
+            this.addingStateName = item.name;
+
 
         },
         // Edit item
@@ -407,7 +381,7 @@ export default {
 
             } else if (this.type == 'State') {
                 try {
-                    await axios.delete(`api/states/delete/${item.country}/${item.name}/`);
+                    await axios.delete(`api/states/delete/${item.id}/`);
                     this.$store.dispatch('triggerAlert', { message: 'State deleted', type: 'success' });
                     this.fetchStates();
                 } catch (error) {
