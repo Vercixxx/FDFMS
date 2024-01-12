@@ -167,17 +167,10 @@ export default {
           `api/posts/delete/${this.version}/${this.deleteId}/`
         );
         emit("forceReload", "");
-
-        const messageData = {
-          message: `Succesfully deleted post id ${this.deleteId}`,
-          type: "error",
-        };
-
-        localStorage.setItem("message", JSON.stringify(messageData));
-        emit("message", "");
+        this.$store.dispatch('triggerAlert', { message: 'Succesfully deleted post', type: 'success' });
       } catch (error) {
-        console.log(error);
-      }
+        this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+        }
     },
     // Delete post
 

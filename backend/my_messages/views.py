@@ -61,17 +61,17 @@ class CreateMessage(APIView):
             targets = data.get('to')
             title = data.get('title')
             content = data.get('content')
-            sender_id = GeneralUser.objects.get(username=data.get('from')).id
+            sender = GeneralUser.objects.get(username=data.get('from')).pk
 
             for receiver in targets:
 
-                receiver_id = GeneralUser.objects.get(username=receiver).id
+                receiver = GeneralUser.objects.get(username=receiver).pk
 
                 user_data = {
                     'title': title,
                     'content': content,
-                    'sender': sender_id,
-                    'receiver': receiver_id,
+                    'sender': sender,
+                    'receiver': receiver,
                 }
 
                 serializer = CreateMessageSerializer(data=user_data)
@@ -85,7 +85,7 @@ class CreateMessage(APIView):
             groups = data.get('to')
             title = data.get('title')
             content = data.get('content')
-            sender_id = GeneralUser.objects.get(username=data.get('from')).id
+            sender = GeneralUser.objects.get(username=data.get('from')).pk
             
             for group in groups:
                 user_model = GlobalDictionaries.get_serializer('UserModels', group)
@@ -96,8 +96,8 @@ class CreateMessage(APIView):
                     user_data = {
                         'title': title,
                         'content': content,
-                        'sender': sender_id,
-                        'receiver': user_model.objects.get(username=user.username).id,
+                        'sender': sender,
+                        'receiver': user_model.objects.get(username=user.username).pk,
                     }
 
                     serializer = CreateMessageSerializer(data=user_data)

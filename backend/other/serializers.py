@@ -6,7 +6,7 @@ from .models import Country, State
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
-        fields = ['name']
+        fields = '__all__'
 
 class CountryCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,7 +24,7 @@ class CountryDeleteSerializer(serializers.ModelSerializer):
 class StateSerializer(serializers.ModelSerializer):
     class Meta:
         model = State
-        fields = ['name', 'country']
+        fields = '__all__'
 
 class StateCreateSerializer(serializers.ModelSerializer):
     class Meta:

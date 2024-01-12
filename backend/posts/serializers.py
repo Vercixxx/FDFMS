@@ -11,9 +11,10 @@ class GetPostsSerializer(serializers.ModelSerializer):
         fields = ['id', 'posted_date', 'author_username', 'title', 'content']
 
     def get_author_username(self, obj):
-        user_id = obj.author.id
+        user = obj.author
+        print(user)
         try:
-            user = GeneralUser.objects.get(id=user_id)
+            user = GeneralUser.objects.get(username=user)
             return user.username
         except GeneralUser.DoesNotExist:
             return None
@@ -28,9 +29,9 @@ class GetDriverPostsSerializer(serializers.ModelSerializer):
         fields = ['id', 'posted_date', 'author_username', 'title', 'content']
 
     def get_author_username(self, obj):
-        user_id = obj.author.id
+        user = obj.author.pk
         try:
-            user = GeneralUser.objects.get(id=user_id)
+            user = GeneralUser.objects.get(username=user)
             return user.username
         except GeneralUser.DoesNotExist:
             return None
@@ -41,6 +42,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Posts
         fields = ['author', 'title', 'content']
+                
     
     def create(self, validated_data):
         post = Posts.objects.create(**validated_data)

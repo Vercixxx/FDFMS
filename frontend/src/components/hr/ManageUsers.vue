@@ -1,16 +1,15 @@
 <template>
   <div>
 
-    <v-card elevation="1" class="pa-5 rounded-xl" color="teal-darken-2">
+    <div class="mt-5 mb-5">
 
-      <p class="p-2 text-h4 font-weight-bold">Filters</p>
 
       <!-- Search bar section -->
-      <v-row class="mb-5 d-flex justify-content-between">
+      <v-row>
 
-        <v-col cols="12" sm="8">
+        <v-col cols="12" sm="12">
           <v-expansion-panels>
-            <v-expansion-panel title="Filters" elevation="1">
+            <v-expansion-panel title="Filters" elevation="1" style="border: 1px solid teal;">
 
               <v-expansion-panel-text>
                 <v-row justify="center" align="center">
@@ -72,22 +71,26 @@
 
         </v-col>
 
-        <v-col cols="12" sm="4">
-          <!-- Search bar -->
-          <v-text-field variant="solo-filled" v-model="query" @keydown.enter="loadUsers()" label="Search" class="px-1 "
-            prepend-inner-icon="mdi-magnify" hide-actions clearable hint="Press enter to search" />
-          <!-- Search bar -->
-        </v-col>
 
       </v-row>
 
-    </v-card>
-
-    <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
-
-    <div class="text-h4 ma-5 font-weight-bold">
-      Users
     </div>
+
+    <v-row>
+      <v-col justify="start">
+        <div class="text-h4 ma-5 font-weight-bold">
+          Users
+        </div>
+      </v-col>
+      <v-col justify="end" cols="12" sm="4">
+
+        <!-- Search bar -->
+        <v-text-field variant="solo-filled" v-model="query" @keydown.enter="loadUsers()" label="Search" class="px-1 "
+          prepend-inner-icon="mdi-magnify" hide-actions clearable hint="Press enter to search" />
+        <!-- Search bar -->
+
+      </v-col>
+    </v-row>
 
     <!-- Table -->
     <v-data-table :headers="updatedColumns" :items="users" :loading="loading" density="compact"
@@ -164,7 +167,7 @@
 
             <template v-else>
               <span v-if="item[header.key] === null || item[header.key] === undefined || item[header.key] === ''">
-                <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
+                <v-icon icon="mdi-minus" />
               </span>
               <span v-else-if="item[header.key] === true">
                 <v-icon icon="mdi-check-bold" style="color:green" />
@@ -301,8 +304,8 @@
             <tbody>
               <tr v-for="(value, key) in userDetailData" :key="key">
                 <td>{{ key }}</td>
-                <td v-if="value === null">
-                  <v-icon icon="mdi-minus-thick"></v-icon>
+                <td v-if="value === null || value === undefined || value === ''">
+                  <v-icon icon="mdi-minus" />
                 </td>
 
                 <td v-else-if="value === true">
@@ -339,7 +342,6 @@
 <script>
 import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
-const { emit } = useEventsBus()
 import { watch } from "vue";
 import { useTheme } from 'vuetify'
 
@@ -565,7 +567,7 @@ export default {
               status: this.selectedActive,
             }
           });
-          console.log(response)
+
         this.pagiController = {
           total_pages: response.data.total_pages,
           posts_amount: response.data.posts_amount,
@@ -584,14 +586,7 @@ export default {
 
       }
       catch (error) {
-
-        const messageData = {
-          message: `Error, please try again`,
-          type: 'error'
-        };
-
-        localStorage.setItem('message', JSON.stringify(messageData));
-        emit('message', '');
+        this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
       }
       this.loading = false;
     },
@@ -682,23 +677,11 @@ export default {
         this.reloadComponent()
 
         // Call message
-        const messageData = {
-          message: `Successfully deleted ${delUsername}`,
-          type: 'success'
-        };
-
-        localStorage.setItem('message', JSON.stringify(messageData));
-        emit('message', '')
+        this.$store.dispatch('triggerAlert', { message: `Successfully deleted ${delUsername}`, type: 'success' });
       }
 
       catch (error) {
-        const messageData = {
-          message: 'Error, please try again',
-          type: 'error'
-        };
-
-        localStorage.setItem('message', JSON.stringify(messageData));
-        emit('message', '');
+        this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
       }
     },
 
@@ -741,13 +724,7 @@ export default {
       this.reloadComponent()
 
       // Call message
-      const messageData = {
-        message: `Successfully changed state of ${username}`,
-        type: 'success'
-      };
-
-      localStorage.setItem('message', JSON.stringify(messageData));
-      emit('message', '');
+      this.$store.dispatch('triggerAlert', { message: `Successfully changed state of ${username}`, type: 'success' });
 
     },
 
@@ -763,14 +740,7 @@ export default {
         this.UserDetailsDialog = true;
       }
       catch (error) {
-        // Call message
-        const messageData = {
-          message: 'Error',
-          type: 'error'
-        };
-
-        localStorage.setItem('message', JSON.stringify(messageData));
-        emit('message', '');
+        this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
       }
 
     },
