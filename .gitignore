@@ -1,2 +1,3 @@
 backend/venv
 secret_data.json
+.vscode/
