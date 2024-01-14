@@ -420,26 +420,14 @@ export default {
             try {
 
                 const response = await axios.post('api/car/create/', this.input_data);
-                const messageData = {
-                    message: response.data.message,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
-
+                this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
 
                 this.goBack()
             }
             catch (error) {
-                this.loading = false;
-                const messageData = {
-                    message: error.response.data.error,
-                    type: 'danger'
-                };
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
+            this.loading = false;
 
 
         },
@@ -479,27 +467,13 @@ export default {
             // Send put request
             try {
                 const response = await axios.put(`api/car/edit/${this.editingCar.id}/`, this.input_data);
-
-                const messageData = {
-                    message: response.data.message,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
                 this.goBack()
             }
             catch (error) {
-                this.loading = false;
-                const messageData = {
-                    message: error.response.data.error,
-                    type: 'danger'
-                };
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
-
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
+            this.loading = false;
 
 
         },

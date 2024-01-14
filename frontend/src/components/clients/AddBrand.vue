@@ -368,26 +368,12 @@ export default {
 
             try {
                 const response = await axios.post('api/brands/create/', this.input_data);
-
-                const messageData = {
-                    message: response.data.message,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-
-                emit('message', '');
-                this.goBack()
+                this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
             }
             catch (error) {
-                this.loading = false;
-                const messageData = {
-                    message: error.response.data.error,
-                    type: 'danger'
-                };
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
+            this.loading = false;
 
         },
         // Create Brand
@@ -401,26 +387,13 @@ export default {
             try {
                 const input_data = this.input_data;
                 const response = await axios.put(`api/brands/update/${this.brandID}/`, input_data);
-
-                const messageData = {
-                    message: response.data.message,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-
-                emit('message', '');
                 this.goBack()
+                this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
             }
             catch (error) {
-                this.loading = false;
-                const messageData = {
-                    message: error.response.data.error,
-                    type: 'danger'
-                };
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
+            this.loading = false;
 
         },
         // Update brand

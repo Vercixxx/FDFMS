@@ -320,13 +320,7 @@ export default {
                 this.tableLoading = false;
             }
             catch (error) {
-                const messageData = {
-                    message: `Error, please try again`,
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
 
         },
@@ -367,27 +361,12 @@ export default {
             this.dialogDelete = false;
             try {
                 const response = await axios.delete(`api/restaurant/delete/${this.deleteRestId}`);
-
-                const messageData = {
-                    message: `Successfully deleted ${this.deleteRestName}`,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
-
+                this.$store.dispatch('triggerAlert', { message: `Successfully deleted ${this.deleteRestName}`, type: 'success' });
                 this.loadRestaurants();
-
 
             }
             catch (error) {
-                const messageData = {
-                    message: `Error, please try again`,
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
         },
         // Deleting Restaurant method

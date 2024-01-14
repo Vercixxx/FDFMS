@@ -342,13 +342,7 @@ export default {
                 this.allUsers = response.data;
                 this.loading = false
             } catch (error) {
-                const messageData = {
-                    message: error,
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
 
         },
@@ -400,22 +394,10 @@ export default {
 
             try {
                 const response = await axios.post('api/messages/create/', data);
-                const messageData = {
-                    message: response.data.message,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
 
             } catch (error) {
-                const messageData = {
-                    message: error,
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
 
         },

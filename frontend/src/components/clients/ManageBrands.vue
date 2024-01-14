@@ -294,14 +294,7 @@ export default {
 
             }
             catch (error) {
-
-                const messageData = {
-                    message: `Error, please try again`,
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
         },
         // Load all brands
@@ -323,24 +316,10 @@ export default {
             try {
                 const response = await axios.delete(`api/brands/delete/${this.deleteBrandId}`);
                 this.loadBrands()
-
-                const messageData = {
-                    message: `Successfully deleted brand id - ${this.deleteBrandId}`,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: `Successfully deleted brand id - ${this.deleteBrandId}`, type: 'success' });
             }
             catch (error) {
-
-                const messageData = {
-                    message: `Error, please try again`,
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
         },
         // Deleting brand method

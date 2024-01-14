@@ -231,13 +231,7 @@ export default {
                 this.mails = response.data;
 
             } catch (error) {
-                const messageData = {
-                    message: error,
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
             this.loading = false;
         },
@@ -253,23 +247,12 @@ export default {
                     data: { message_ids: this.selected },
                 })
 
-                const messageData = {
-                    message: `Successfully deleted ${this.selected.length} messages`,
-                    type: 'success'
-                };
+                this.$store.dispatch('triggerAlert', { message: `Successfully deleted ${this.selected.length} messages`, type: 'success' });
 
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
                 this.selected = [];
                 this.fetchData();
             } catch (error) {
-                const messageData = {
-                    message: error,
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
         },
         // Delete messages

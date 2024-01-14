@@ -492,12 +492,7 @@ export default {
 
             }
             catch (error) {
-                const messageData = {
-                    message: "Error, please try again",
-                    type: 'danger'
-                };
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
         },
         // Get restaurant info
@@ -554,12 +549,7 @@ export default {
                 this.availableBrands = response.data.map(item => item.name);
             }
             catch (error) {
-                const messageData = {
-                    message: "Error, please try again",
-                    type: 'danger'
-                };
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
         },
         // Load all brands
@@ -582,13 +572,7 @@ export default {
                 
 
             } catch (error) {
-                const messageData = {
-                    message: `Error, please try again`,
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             };
 
             this.loading = false;
@@ -604,26 +588,13 @@ export default {
 
             try {
                 const response = await axios.post('api/restaurant/create/', this.input_data);
-
-                const messageData = {
-                    message: response.data.message,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
                 this.goBack()
             }
             catch (error) {
-                this.loading = false;
-                const messageData = {
-                    message: error.response.data.error,
-                    type: 'danger'
-                };
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
+            this.loading = false;
         },
         // Create restaurant
 
@@ -635,26 +606,12 @@ export default {
 
             try {
                 const response = await axios.put(`api/restaurant/update/${this.editRest['name']}/`, this.input_data);
-                console.log(response);
-
-                const messageData = {
-                    message: response.data.message,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
                 this.goBack()
             } catch (error) {
-                this.loading = false;
-                const messageData = {
-                    message: error.response.data,
-                    type: 'danger'
-                };
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
+            this.loading = false;
         },
         // Update restaurant
 

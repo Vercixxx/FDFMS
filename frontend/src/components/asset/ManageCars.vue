@@ -295,13 +295,7 @@ export default {
 
             }
             catch (error) {
-                const messageData = {
-                    message: "Error when fetching",
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
         },
 
@@ -318,24 +312,11 @@ export default {
             try {
                 const response = await axios.delete(`api/car/delete/${this.deleteCarId}`);
                 this.loadCars()
-
-                const messageData = {
-                    message: `Successfully deleted car id - ${this.deleteCarId}`,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: `Successfully deleted car id - ${this.deleteCarId}`, type: 'success' });
 
             }
             catch (error) {
-                const messageData = {
-                    message: "Error",
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
         },
 
