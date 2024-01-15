@@ -96,6 +96,13 @@
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
                                 v-model="resSelectedCountry" @update:search="getStates('residence')" :rules="fieldRequired">
 
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
+
                             </v-autocomplete>
 
                         </v-col>
@@ -103,6 +110,14 @@
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="State" :items="resStatesList" variant="outlined"
                                 v-model="resSelectedState" :disabled="resSelectedCountry === null" :rules="fieldRequired">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
+
                             </v-autocomplete>
 
                         </v-col>
@@ -154,6 +169,14 @@
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
                                     v-model="corSelectedCountry" @update:search="getStates('correspodence')"
                                     :rules="show_corespondece ? [] : fieldRequired">
+
+                                    <!-- Icons -->
+                                    <template v-slot:append-inner>
+                                        <v-icon icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                    </template>
+                                    <!-- Icons -->
+
                                 </v-autocomplete>
                             </v-col>
 
@@ -161,6 +184,14 @@
                                 <v-autocomplete label="State" :items="corStatesList" variant="outlined"
                                     v-model="corSelectedState" :disabled="corSelectedCountry === null"
                                     :rules="show_corespondece ? [] : fieldRequired">
+
+                                    <!-- Icons -->
+                                    <template v-slot:append-inner>
+                                        <v-icon icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                    </template>
+                                    <!-- Icons -->
+
                                 </v-autocomplete>
 
                             </v-col>
@@ -214,6 +245,14 @@
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
                                     v-model="regSelectedCountry" @update:search="getStates('registered')"
                                     :rules="show_registered ? [] : fieldRequired">
+
+                                    <!-- Icons -->
+                                    <template v-slot:append-inner>
+                                        <v-icon icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                    </template>
+                                    <!-- Icons -->
+
                                 </v-autocomplete>
                             </v-col>
 
@@ -221,6 +260,14 @@
                                 <v-autocomplete label="State" :items="regStatesList" variant="outlined"
                                     v-model="regSelectedState" :disabled="regSelectedCountry === null"
                                     :rules="show_registered ? [] : fieldRequired">
+
+                                    <!-- Icons -->
+                                    <template v-slot:append-inner>
+                                        <v-icon icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                    </template>
+                                    <!-- Icons -->
+
                                 </v-autocomplete>
 
                             </v-col>
@@ -284,20 +331,6 @@
         </div>
 
     </div>
-
-    <!-- Error -->
-    <v-snackbar v-model="alert" :timeout="3000" location="top" color="orange-darken-4">
-        <p class="fs-6" v-for="(content, field) in errorContent" :key="name">
-            {{ field }} : {{ content.join(', ') }}
-        </p>
-        <template v-slot:actions>
-            <v-btn variant="tonal" @click="alert = false">
-                Close
-            </v-btn>
-        </template>
-    </v-snackbar>
-    <!-- Error -->
-    <!-- Message -->
 </template>
 
 <script>
@@ -861,25 +894,11 @@ export default {
             this.input_data['user_role'] = this.addingRole;
 
             try {
-                const response = await axios.post('api/create/', this.input_data);
-                const messageData = {
-                    message: `Successfully added ${this.input_data.username}`,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
-
-
+                await axios.post('api/create/', this.input_data);
                 this.$root.changeCurrentComponent('AddUserComponent');
+                this.$store.dispatch('triggerAlert', { message: `Successfully added ${this.input_data.username}`, type: 'success' });
             } catch (error) {
-                const messageData = {
-                    message: error.response.data,
-                    type: 'error'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
             }
 
         },
@@ -890,21 +909,27 @@ export default {
         // Get user data from server when editing
         async getUserData(username, user_role) {
 
-            const response = await axios.get(`api/users/get/${username}/${user_role}`);
-            this.editUser = response.data;
+            try {
+                const response = await axios.get(`api/users/get/${username}/${user_role}`);
+                this.editUser = response.data;
 
-            for (const field of this.allInputs) {
-                this.input_data[field.model] = this.editUser[field.model];
+                for (const field of this.allInputs) {
+                    this.input_data[field.model] = this.editUser[field.model];
+                }
+
+                // Country and States
+                this.resSelectedCountry = this.editUser['residence_country'];
+                this.corSelectedCountry = this.editUser['correspondence_country'];
+                this.regSelectedCountry = this.editUser['registered_country'];
+
+                this.resSelectedState = this.editUser['residence_state'];
+                this.corSelectedState = this.editUser['correspondence_state'];
+                this.regSelectedState = this.editUser['registered_state'];
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
 
-            // Country and States
-            this.resSelectedCountry = this.editUser['residence_country'];
-            this.corSelectedCountry = this.editUser['correspondence_country'];
-            this.regSelectedCountry = this.editUser['registered_country'];
 
-            this.resSelectedState = this.editUser['residence_state'];
-            this.corSelectedState = this.editUser['correspondence_state'];
-            this.regSelectedState = this.editUser['registered_state'];
         },
         // Get user data from server when editing
 
@@ -916,37 +941,16 @@ export default {
             this.getDataFromInputs();
             this.input_data['user_role'] = this.user_role;
             const input_data = this.input_data;
-            console.log(input_data)
 
-
-            // Send put request
             try {
                 const response = await axios.put(`api/users/save/${input_data.username}/${input_data.user_role}/`, input_data);
-                console.log(response)
-                const messageData = {
-                    message: `Successfully modified ${input_data.username}`,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-
-                emit('message', '');
+                this.$store.dispatch('triggerAlert', { message: `Successfully updated ${input_data.username}`, type: 'success' });
                 this.$root.changeCurrentComponent('ModifyUserComponent');
-
             }
             catch (error) {
-                console.error(error)
-                const messageData = {
-                    message: error.response.data,
-                    type: 'danger'
-                };
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
-
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
             }
             this.loading = false;
-
-
         },
         // Update user function
 

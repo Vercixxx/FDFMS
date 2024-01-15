@@ -1,6 +1,6 @@
 <template>
     <!-- Snackbar -->
-    <v-snackbar v-model="alert" :timeout="3000" location="top" :color="snackContent.type" style="position: absolute; top:8dvh;">
+    <v-snackbar v-model="alert" :timeout="3000" location="top" :color="snackContent.type" style="position: fixed; top: 8vh;">
         {{ snackContent.message }}
         <template v-slot:actions>
             <v-btn @click="alert = false">
@@ -38,4 +38,3 @@ export default {
     },
 };
 </script>
-

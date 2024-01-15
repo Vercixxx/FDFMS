@@ -2,15 +2,15 @@
     <div class="containter m-2 p-2 d-flex justify-content-center">
         <div class="col-12 col-md-9">
 
-            <div class="d-flex justify-content-between mb-5">
-                <!-- <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
-                    Manage
-                </v-btn> -->
+            <v-btn v-if="editing" @click="goBack" prepend-icon="mdi-undo" color="danger"
+                :variant="theme ? undefined : 'outlined'">
+                Back
+            </v-btn>
 
-                <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new Driver user</div>
+            <div class="d-flex justify-center mb-5">
+                <div v-if="user_role === null" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new Driver user
+                </div>
                 <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit {{ editUser.username }} user</div>
-                <div></div>
-
             </div>
 
 
@@ -20,7 +20,7 @@
                     :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-4': theme }">
 
                     <div class="fw-light">
-                        <span class="filled-star-example"></span> - field required
+                        <v-icon icon="mdi-star" color="red" style="font-size:medium;"></v-icon> - field required
                     </div>
 
 
@@ -41,8 +41,8 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -69,8 +69,8 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -88,11 +88,12 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span class="filled-star">
-                                    </span>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon class="icon" style="opacity: 0.4;" icon="mdi-calendar"></v-icon>
                                 </template>
                                 <!-- Icons -->
+
                             </v-text-field>
 
                             <v-date-picker v-if="show_ln_release" ok-text="Select" v-model="ln_release"
@@ -112,11 +113,12 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span class="filled-star">
-                                    </span>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon class="icon" style="opacity: 0.4;" icon="mdi-calendar"></v-icon>
                                 </template>
                                 <!-- Icons -->
+
                             </v-text-field>
 
                             <v-date-picker v-if="show_ln_expire" ok-text="Select" v-model="ln_expire"
@@ -149,8 +151,8 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -176,12 +178,28 @@
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
                                 v-model="resSelectedCountry" @update:search="getStates('residence')" :rules="fieldRequired">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
+
                             </v-autocomplete>
                         </v-col>
 
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="State" :items="resStatesList" variant="outlined"
                                 v-model="resSelectedState" :disabled="resSelectedCountry === ''" :rules="fieldRequired">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
+
                             </v-autocomplete>
 
                         </v-col>
@@ -194,8 +212,8 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -233,6 +251,14 @@
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
                                     v-model="corSelectedCountry" @update:search="getStates('correspodence')"
                                     :rules="show_corespondece ? [] : fieldRequired">
+
+                                    <!-- Icons -->
+                                    <template v-slot:append-inner>
+                                        <v-icon icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                    </template>
+                                    <!-- Icons -->
+
                                 </v-autocomplete>
                             </v-col>
 
@@ -240,6 +266,14 @@
                                 <v-autocomplete label="State" :items="corStatesList" variant="outlined"
                                     v-model="corSelectedState" :disabled="corSelectedCountry === ''"
                                     :rules="show_corespondece ? [] : fieldRequired">
+
+                                    <!-- Icons -->
+                                    <template v-slot:append-inner>
+                                        <v-icon icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                    </template>
+                                    <!-- Icons -->
+
                                 </v-autocomplete>
 
                             </v-col>
@@ -253,8 +287,8 @@
 
                                     <!-- Icons -->
                                     <template v-slot:append-inner>
-                                        <span v-if="!show_corespondece && input.required" class="filled-star">
-                                        </span>
+                                        <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                         <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon
                                         }}</v-icon>
                                     </template>
@@ -293,6 +327,14 @@
                                 <v-autocomplete label="Country" :items="allCountries" variant="outlined"
                                     v-model="regSelectedCountry" @update:search="getStates('registered')"
                                     :rules="show_registered ? [] : fieldRequired">
+
+                                    <!-- Icons -->
+                                    <template v-slot:append-inner>
+                                        <v-icon icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                    </template>
+                                    <!-- Icons -->
+
                                 </v-autocomplete>
                             </v-col>
 
@@ -300,6 +342,14 @@
                                 <v-autocomplete label="State" :items="regStatesList" variant="outlined"
                                     v-model="regSelectedState" :disabled="regSelectedCountry === ''"
                                     :rules="show_registered ? [] : fieldRequired">
+
+                                    <!-- Icons -->
+                                    <template v-slot:append-inner>
+                                        <v-icon icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                    </template>
+                                    <!-- Icons -->
+
                                 </v-autocomplete>
 
                             </v-col>
@@ -313,8 +363,8 @@
 
                                     <!-- Icons -->
                                     <template v-slot:append-inner>
-                                        <span v-if="!show_registered && input.required" class="filled-star">
-                                        </span>
+                                        <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                            style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                         <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon
                                         }}</v-icon>
                                     </template>
@@ -363,27 +413,8 @@
         </div>
 
     </div>
-
-    <!-- Error -->
-    <v-snackbar v-model="alert" :timeout="3000" location="top" color="orange-darken-4">
-        <p class="fs-6" v-for="(content, field) in errorContent" :key="name">
-            {{ field }} : {{ content.join(', ') }}
-        </p>
-        <template v-slot:actions>
-            <v-btn variant="tonal" @click="alert = false">
-                Close
-            </v-btn>
-        </template>
-    </v-snackbar>
-    <!-- Error -->
-    <!-- Message -->
 </template>
 
-
-<!-- 
-<script setup>
-import { VDatePicker } from 'vuetify/labs/VDatePicker'
-</script> -->
 
 <script>
 import axios from 'axios';
@@ -451,7 +482,9 @@ export default {
                     icon: 'mdi-phone',
                     rules: [
                         v => !!v || 'Phone number is required',
-                        v => /^[0-9+ -]+$/.test(v) || 'Only numbers, "+" and "-" are allowed',
+                        v => /^[0-9]+$/.test(v) || 'Only digits are allowed',
+                        v => v.length >= 9 || 'Phone number must be at least 9 digits',
+                        v => v.length <= 15 || 'Phone number must not exceed 15 digits',
                     ]
 
                 },
@@ -826,6 +859,7 @@ export default {
 
     methods: {
 
+        // Method called on submiting form
         onSubmit() {
             if (!this.form) return;
 
@@ -837,13 +871,19 @@ export default {
             else {
                 this.updateUser();
             }
-
-
         },
+        // Method called on submiting form
+
+
+
+        // Field required rule
         required(v) {
             return !!v || 'Field is required';
         },
+        // Field required rule
 
+
+        // Get date
         getCurrentDate() {
             const today = new Date();
             const day = today.getDate();
@@ -854,7 +894,10 @@ export default {
 
             return formattedDate;
         },
+        // Get date
 
+
+        // Adding correspondence form
         copyResidenceToCorrespondence() {
             if (this.show_corespondece) {
                 for (let i = 0; i < this.residenceAddress.length; i++) {
@@ -873,7 +916,11 @@ export default {
                 this.input_data['correspondence_state'] = this.corSelectedState;
             }
         },
+        // Adding correspondence form
 
+
+
+        // Adding registered form
         copyResidenceToRegistered() {
             if (this.show_registered) {
                 for (let i = 0; i < this.residenceAddress.length; i++) {
@@ -892,7 +939,11 @@ export default {
                 this.input_data['registered_state'] = this.regSelectedState;
             }
         },
+        // Adding registered form
 
+
+
+        // Getting data from inputs
         getDataFromInputs() {
             this.copyResidenceToCorrespondence();
             this.copyResidenceToRegistered();
@@ -917,7 +968,7 @@ export default {
         },
 
 
-        
+
         // Generate username based on first and last name
         generateUsername() {
             let firstName = '';
@@ -992,29 +1043,14 @@ export default {
 
             this.input_data['user_role'] = 'Driver';
 
-
-
-
-            const response = await axios.post('api/create/', this.input_data);
-
-            if (response.status === 200) {
-
-                const messageData = {
-                    message: `Successfully added ${this.input_data.username}`,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
-
-
+            try {
+                const response = await axios.post('api/create/', this.input_data);
+                this.$store.dispatch('triggerAlert', { message: `Successfully added ${this.input_data.username}`, type: 'success' });
                 this.$root.changeCurrentComponent('AddUserComponent');
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
+            }
 
-            }
-            else {
-                this.errorContent = response.message;
-                this.alert = true;
-            }
 
         },
         // Create user function
@@ -1031,60 +1067,51 @@ export default {
 
         // Get user data from server when editing
         async getUserData(username, user_role) {
-            
-            const response = await axios.get(`api/users/get/${username}/${user_role}`);
-            this.editUser = response.data;
-            
-            for (const field of this.allInputs) {
-                this.input_data[field.model] = this.editUser[field.model];
+
+            try {
+                const response = await axios.get(`api/users/get/${username}/${user_role}`);
+                this.editUser = response.data;
+
+                for (const field of this.allInputs) {
+                    this.input_data[field.model] = this.editUser[field.model];
+                }
+
+                // Country and States
+                this.resSelectedCountry = this.editUser['residence_country'];
+                this.corSelectedCountry = this.editUser['correspondence_country'];
+                this.regSelectedCountry = this.editUser['registered_country'];
+
+                this.resSelectedState = this.editUser['residence_state'];
+                this.corSelectedState = this.editUser['correspondence_state'];
+                this.regSelectedState = this.editUser['registered_state'];
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
-            
-            // Country and States
-            this.resSelectedCountry = this.editUser['residence_country'];
-            this.corSelectedCountry = this.editUser['correspondence_country'];
-            this.regSelectedCountry = this.editUser['registered_country'];
-            
-            this.resSelectedState = this.editUser['residence_state'];
-            this.corSelectedState = this.editUser['correspondence_state'];
-            this.regSelectedState = this.editUser['registered_state'];
+
         },
         // Get user data from server when editing
 
 
 
-        
+
         // Update user function
         async updateUser() {
             // Generate dict for sending
+            this.getDataFromInputs();
             this.input_data['user_role'] = 'Driver'
-            const ready_data = this.input_data;
+            const input_data = this.input_data;
 
 
             // Send put request
             try {
-                const response = await axios.put(`api/users/save/${ready_data.username}/${ready_data.user_role}/`, ready_data);
-
-                const messageData = {
-                    message: `Successfully modified ${ready_data.username}`,
-                    type: 'success'
-                };
-
-                localStorage.setItem('message', JSON.stringify(messageData));
-
-                emit('message', '');
-                this.loading = false;
+                const response = await axios.put(`api/users/save/${input_data.username}/${input_data.user_role}/`, input_data);
+                this.$store.dispatch('triggerAlert', { message: `Successfully updated ${input_data.username}`, type: 'success' });
                 this.$root.changeCurrentComponent('ModifyUserComponent');
             }
             catch (error) {
-                this.loading = false;
-                const messageData = {
-                    message: error.response.data.error,
-                    type: 'danger'
-                };
-                localStorage.setItem('message', JSON.stringify(messageData));
-                emit('message', '');
-
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
             }
+            this.loading = false;
         },
         // Update user function
 
@@ -1092,31 +1119,10 @@ export default {
 
         // Go back
         goBack() {
-            if (this.user_role === null) {
-                this.$root.changeCurrentComponent('AddUserComponent');
-            } else {
-                this.$root.changeCurrentComponent('ModifyUserComponent');
-            }
+            this.$root.changeCurrentComponent('ModifyUserComponent');
         },
         // Go back
 
     }
 };
 </script>
-
-<style >
-.filled-star::before {
-    content: '\2605';
-    color: #ff6666;
-    font-weight: bold;
-    position: absolute;
-    left: 3px;
-    top: 0px;
-}
-
-.filled-star-example::before {
-    content: '\2605';
-    color: #ff0000;
-
-}
-</style>

@@ -155,41 +155,41 @@ export default {
 
 
             buttons: [
-                {
-                    name: 'Statistics',
-                    mainIcon: 'mdi-presentation',
-                    disabled: true,
-                    options: [
-                        {
-                            name: 'Drivers statistics',
-                            click: 'AddUserComponent',
-                            icon: 'mdi-database-edit',
-                        },
-                        {
-                            name: 'Managers statistics',
-                            click: 'ModifyUserComponent',
-                            icon: ' mdi-database-edit',
-                        },
-                    ],
-                },
+                // {
+                //     name: 'Statistics',
+                //     mainIcon: 'mdi-presentation',
+                //     disabled: true,
+                //     options: [
+                //         {
+                //             name: 'Drivers statistics',
+                //             click: 'AddUserComponent',
+                //             icon: 'mdi-database-edit',
+                //         },
+                //         {
+                //             name: 'Managers statistics',
+                //             click: 'ModifyUserComponent',
+                //             icon: ' mdi-database-edit',
+                //         },
+                //     ],
+                // },
 
-                {
-                    name: 'Hr data',
-                    mainIcon: 'mdi-account-group',
-                    disabled: true,
-                    options: [
-                        {
-                            name: 'Overtime',
-                            click: 'AddUserComponent',
-                            icon: 'mdi-database-edit',
-                        },
-                        {
-                            name: 'Vacation',
-                            click: 'ModifyUserComponent',
-                            icon: ' mdi-database-edit',
-                        },
-                    ],
-                },
+                // {
+                //     name: 'Hr data',
+                //     mainIcon: 'mdi-account-group',
+                //     disabled: true,
+                //     options: [
+                //         {
+                //             name: 'Overtime',
+                //             click: 'AddUserComponent',
+                //             icon: 'mdi-database-edit',
+                //         },
+                //         {
+                //             name: 'Vacation',
+                //             click: 'ModifyUserComponent',
+                //             icon: ' mdi-database-edit',
+                //         },
+                //     ],
+                // },
 
                 {
                     name: 'Other',

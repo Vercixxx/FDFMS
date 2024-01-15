@@ -66,7 +66,7 @@
                         <v-row>
                             <v-col cols="12" md="6">
                                 <v-select label="Choose country" variant="solo-filled"
-                                    :items="items.map(item => item.country).filter((value, index, self) => self.indexOf(value) === index)"
+                                    :items="items.map(item => item.country)"
                                     v-model="addingStateCountryName" @update:modelValue="handleChange"></v-select>
                             </v-col>
 
