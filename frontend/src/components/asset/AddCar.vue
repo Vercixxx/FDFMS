@@ -2,30 +2,26 @@
     <div class="containter m-2 p-2 d-flex justify-content-center">
         <div class="col-12 col-md-9">
 
-            <div class="d-flex justify-content-between mb-5">
+            <v-btn v-if="editing" @click="goBack" prepend-icon="mdi-undo" color="danger"
+                :variant="theme ? undefined : 'outlined'">
+                Back
+            </v-btn>
 
-                <v-row class="text-h4" prepend-icon="mdi-car">
-                    <v-col cols="5">
-                        <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger"
-                            :variant="theme ? undefined : 'outlined'">
-                            Back
-                        </v-btn>
-                    </v-col>
-
-                    <v-col>
-                        <span v-if="!editing">
-                            Add Car
-                        </span>
-                        <span v-else>
-                            Edit Car
-                        </span>
-                        <v-icon icon="mdi-car"></v-icon>
-                    </v-col>
-
-                </v-row>
-
+            <div class="d-flex justify-center mb-5">
+                <div v-if="!editing" class="text-h6 text-md-h5 text-lg-h4 fw-bold">
+                    <v-icon icon="mdi-car"></v-icon>
+                    Add new car
+                    <v-icon icon="mdi-car"></v-icon>
+                </div>
+                <div v-else class="text-h6 text-md-h5 text-lg-h4">
+                    <v-icon icon="mdi-car"></v-icon>
+                    Edit car vin
+                    <span class="font-weight-bold">
+                        {{ carVin }}
+                    </span>
+                    <v-icon icon="mdi-car"></v-icon>
+                </div>
             </div>
-
 
 
             <v-form v-model="form" @submit.prevent="onSubmit">
@@ -33,8 +29,9 @@
                     :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-4': theme }">
 
                     <div class="fw-light">
-                        <span class="filled-star-example"></span> - field required
+                        <v-icon icon="mdi-star" color="red" style="font-size:medium;"></v-icon> - field required
                     </div>
+
 
 
 
@@ -48,14 +45,31 @@
 
 
                     <v-row>
+                        <!-- Vin -->
+                        <v-col cols="12" sm="6">
+                            <v-text-field variant="outlined" v-model="vin" label="Vin"
+                                :readonly="editing" hint="Vin is immutable when set" :rules="vinRules">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner v-if="!editing">
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
+
+                            </v-text-field>
+                        </v-col>
+                        <!-- Vin -->
+
+
                         <v-col cols="12" sm="6" v-for="input in basicInfoInputs" :key="input.name">
                             <v-text-field variant="outlined" v-model="input_data[input.model]" :label="input.name"
                                 :readonly="input.readonly || false" :hint="input.hint || undefined" :rules="input.rules">
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -71,6 +85,13 @@
                             <v-combobox variant="outlined" v-model="year_of_prod" :items="avaliableYears"
                                 label="Year of production" prepend-inner-icon="mdi-calendar" :rules="fieldRequired">
 
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
+
                             </v-combobox>
 
                         </v-col>
@@ -81,6 +102,13 @@
                             <v-combobox variant="outlined" v-model="transmission" :items="avaliableTransmission"
                                 label="Select Transmission" prepend-inner-icon="mdi-car-shift-pattern"
                                 :rules="fieldRequired">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
 
                             </v-combobox>
                             <!-- Transmission -->
@@ -106,8 +134,8 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
                                     <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
@@ -119,7 +147,7 @@
                     </v-row>
 
 
-                    
+
                     <!-- OC and AC -->
                     <v-row class="d-flex justify-center" v-if="!editing">
                         <v-col cols="auto">
@@ -129,11 +157,13 @@
 
                     <v-row class="d-flex justify-center" v-if="!editing">
                         <v-col cols="auto">
-                            <v-switch v-model="ac" label="Does car has AC" inset :color="ac ? 'green' : ''"></v-switch>
+                            <v-switch v-model="ac" label="Does car has AC" inset :color="ac ? 'green' : ''">
+                            </v-switch>
+
                         </v-col>
                     </v-row>
                     <!-- OC and AC -->
-                    
+
 
 
                     <!-- Button submit -->
@@ -169,20 +199,6 @@
         </div>
 
     </div>
-
-    <!-- Error -->
-    <v-snackbar v-model="alert" :timeout="3000" location="top" color="orange-darken-4">
-        <p class="fs-6" v-for="(content, field) in errorContent" :key="name">
-            {{ field }} : {{ content.join(', ') }}
-        </p>
-        <template v-slot:actions>
-            <v-btn variant="tonal" @click="alert = false">
-                Close
-            </v-btn>
-        </template>
-    </v-snackbar>
-    <!-- Error -->
-    <!-- Message -->
 </template>
 
 
@@ -191,25 +207,20 @@
 import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
 import { watch } from "vue";
-const { emit } = useEventsBus()
 import { useTheme } from 'vuetify'
-import { drawer } from '../../store/store.js';
 
 export default {
     data() {
         return {
 
+            vinRules: [
+                v => !!v || 'Vin is required',
+                v => (v && v.length >= 3) || 'Vin must containt at least 3 characters',
+                v => /^[a-zA-Z0-9]+$/.test(v) || 'Vin can only contain numbers and letters',
+            ],
+            vin: '',
+
             basicInfoInputs: [
-                {
-                    name: 'Vin',
-                    model: 'vin',
-                    required: true,
-                    rules: [
-                        v => !!v || 'Vin is required',
-                        v => (v && v.length >= 3) || 'Vin must containt at least 3 characters',
-                        v => /^[a-zA-Z0-9]+$/.test(v) || 'Vin can only contain numbers and letters',
-                    ],
-                },
                 {
                     name: 'Brand',
                     model: 'brand',
@@ -249,6 +260,7 @@ export default {
                     required: true,
                     rules: [
                         v => !!v || 'Mileage is required',
+                        v => /^\d+$/.test(v) || 'Mileage can only contain digits',
                     ]
 
                 },
@@ -307,21 +319,17 @@ export default {
             oc: true,
             ac: true,
 
-
             form: false,
             loading: false,
             input_data: {},
             theme: true,
-
-            alert: false,
-            errorContent: '',
 
             fieldRequired: [v => !!v || 'Field is required',],
 
             editing: false,
             editingCar: {},
 
-            carid: null,
+            carVin: null,
             year_of_prod: null,
             avaliableYears: [],
 
@@ -338,11 +346,12 @@ export default {
 
 
     mounted() {
-        this.carid = localStorage.getItem('carid')
 
-        if (this.carid !== null) {
-            this.getCarData(this.carid);
-            localStorage.removeItem('carid');
+        this.carVin = localStorage.getItem('carVin')
+
+        if (this.carVin !== null) {
+            this.getCarData(this.carVin);
+            localStorage.removeItem('carVin');
             this.editing = true;
         }
 
@@ -368,6 +377,7 @@ export default {
 
     methods: {
 
+        // Method called on submiting form
         onSubmit() {
             if (!this.form) return;
 
@@ -379,24 +389,33 @@ export default {
             else {
                 this.updateCar();
             }
-
-
         },
+        // Method called on submiting form
+
+
+
+        // Field required rule
         required(v) {
             return !!v || 'Field is required';
         },
+        // Field required rule
 
+
+        // Years list
         yearsList() {
             const currentYear = new Date().getFullYear();
 
             const yearsList = this.avaliableYears;
-            for (let year = 1990; year <= currentYear; year++) {
+            for (let year = currentYear; year >= 1990; year--) {
                 yearsList.push(year);
             }
 
         },
+        // Years list
 
 
+
+        // Get data from inputs
         getDataFromInputs() {
             for (const field of this.allInputs) {
                 if (typeof this.input_data[field.model] === 'string') {
@@ -407,8 +426,13 @@ export default {
                 }
             }
 
+            this.input_data['vin'] = this.vin;
         },
+        // Get data from inputs
 
+
+
+        // Create car
         async createCar() {
             this.getDataFromInputs();
 
@@ -418,92 +442,85 @@ export default {
             this.input_data['is_ac'] = this.ac;
 
             try {
-
                 const response = await axios.post('api/car/create/', this.input_data);
                 this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
 
                 this.goBack()
             }
             catch (error) {
-                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
             }
             this.loading = false;
-
-
         },
+        // Create car
+
+
+        // Reset form
         resetForm() {
             for (const field of this.allInputs) {
                 this.input_data[field.model] = '';
             }
         },
+        // Reset form
 
-        async getCarData(carid) {
 
-            const response = await axios.get(`api/car/get/${carid}/`);
-            this.editingCar = response.data;
 
-            for (const field of this.allInputs) {
-                this.input_data[field.model] = this.editingCar[field.model];
+        // Get car data
+        async getCarData(carVin) {
+
+            try {
+                const response = await axios.get(`api/car/get/${carVin}/`);
+                this.editingCar = response.data;
+
+                for (const field of this.allInputs) {
+                    this.input_data[field.model] = this.editingCar[field.model];
+                }
+
+                this.year_of_prod = this.editingCar['year_of_prod'];
+                this.transmission = this.editingCar['transmission'];
+                this.oc = this.editingCar['is_oc'];
+                this.ac = this.editingCar['is_ac'];
+                this.vin = this.editingCar['vin'];
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
-
-            this.year_of_prod = this.editingCar['year_of_prod'];
-            this.transmission = this.editingCar['transmission'];
-            this.oc = this.editingCar['is_oc'];
-            this.ac = this.editingCar['is_ac'];
 
 
         },
+        // Get car data
 
+
+
+        // Update car
         async updateCar() {
             // Generate dict for sending
             this.input_data['year_of_prod'] = this.year_of_prod;
             this.input_data['transmission'] = this.transmission.title;
             this.input_data['is_oc'] = this.oc;
             this.input_data['is_ac'] = this.ac;
-
-
-
+            this.input_data['vin'] = this.vin;
 
             // Send put request
             try {
-                const response = await axios.put(`api/car/edit/${this.editingCar.id}/`, this.input_data);
+                const response = await axios.put(`api/car/edit/${this.carVin}/`, this.input_data);
                 this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
                 this.goBack()
             }
             catch (error) {
-                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
             }
             this.loading = false;
-
-
         },
+        // Update car
 
+
+
+        // Go back
         goBack() {
-            if (!this.editing) {
-                this.$root.changeCurrentComponent('HomeComponent');
-                drawer.value = !drawer.value;
-            } else {
-                this.$root.changeCurrentComponent('ShowCarsComponent');
-            }
+            this.$root.changeCurrentComponent('ShowCarsComponent');
         },
+        // Go back
 
     }
 };
 </script>
-
-<style >
-.filled-star::before {
-    content: '\2605';
-    color: #ff6666;
-    font-weight: bold;
-    position: absolute;
-    left: 3px;
-    top: 0px;
-}
-
-.filled-star-example::before {
-    content: '\2605';
-    color: #ff0000;
-
-}
-</style>

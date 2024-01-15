@@ -17,11 +17,11 @@ urlpatterns = [
     path('api/car/create/', views.AddCar.as_view(), name="add-cars"),
     
     # Delete car
-    path('api/car/delete/<int:id>', views.DeleteCar.as_view(), name="delete-cars"),
+    path('api/car/delete/<int:vin>', views.DeleteCar.as_view(), name="delete-cars"),
     
     # Get car info
-    path('api/car/get/<int:id>/', views.getCar.as_view(), name="get-car"),
+    path('api/car/get/<int:vin>/', views.GetCar.as_view(), name="get-car"),
     
-    # Save car info
-    path('api/car/edit/<int:id>/', views.EditCar.as_view(), name="edit-car")
+    # Edit car
+    path('api/car/edit/<int:vin>/', views.EditCar.as_view(), name="edit-car")
 ]

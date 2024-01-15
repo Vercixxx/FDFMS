@@ -67,12 +67,12 @@
                     <td v-for="header in updatedColumns" :key="header.key">
                         <template v-if="header.key === 'action'">
                             <span>
-                                <v-btn variant="plain" color="blue" @click="carDetailsFunct(item.id)">
+                                <v-btn variant="plain" color="blue" @click="carDetailsFunct(item.vin)">
                                     <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
                                     <v-tooltip activator="parent" location="top">Show car details</v-tooltip>
                                 </v-btn>
 
-                                <v-btn variant="plain" color="green" @click="editCar(item.id)">
+                                <v-btn variant="plain" color="green" @click="editCar(item.vin)">
                                     <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
                                     <v-tooltip activator="parent" location="top">Edit</v-tooltip>
                                 </v-btn>
@@ -137,7 +137,7 @@
 
                 You are trying to delete car vin -
                 <span class='fw-bolder'>
-                    {{ deleteCarId }}
+                    {{ deleteCarVin }}
                 </span>
                 , this operation is <span class="fw-bold">irreversible</span>.
                 Are you sure?
@@ -147,7 +147,7 @@
 
             <div class="justify-center d-flex align-items-center mb-3">
                 <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
-                <v-btn width="150" @click="deleteCar(deleteCarId)" color="red">Yes</v-btn>
+                <v-btn width="150" @click="deleteCar(deleteCarVin)" color="red">Yes</v-btn>
             </div>
 
         </v-card>
@@ -207,10 +207,6 @@
 
     <!-- Dialog details -->
 </template>
-<!-- 
-<script setup>
-import { VDataTable } from 'vuetify/labs/VDataTable'
-</script> -->
 
 
 <script>
@@ -233,7 +229,7 @@ export default {
             avaliableColumns: [],
 
             dialogDelete: false,
-            deleteCarId: '',
+            deleteCarVin: '',
 
             carDetailsDialog: false,
             carDetails: [],
@@ -300,8 +296,8 @@ export default {
         },
 
 
-        deleteConfirm(carid) {
-            this.deleteCarId = carid;
+        deleteConfirm(carVin) {
+            this.deletecarVin = carVin;
             this.dialogDelete = true;
         },
 
@@ -310,9 +306,9 @@ export default {
             this.dialogDelete = false;
 
             try {
-                const response = await axios.delete(`api/car/delete/${this.deleteCarId}`);
+                const response = await axios.delete(`api/car/delete/${this.deleteCarVin}`);
                 this.loadCars()
-                this.$store.dispatch('triggerAlert', { message: `Successfully deleted car id - ${this.deleteCarId}`, type: 'success' });
+                this.$store.dispatch('triggerAlert', { message: `Successfully deleted car Vin - ${this.deleteCarVin}`, type: 'success' });
 
             }
             catch (error) {
@@ -320,14 +316,14 @@ export default {
             }
         },
 
-        editCar(carid) {
-            localStorage.setItem('carid', carid);
+        editCar(carVin) {
+            localStorage.setItem('carVin', carVin);
             this.$root.changeCurrentComponent('AddCarsComponent');
         },
 
 
-        async carDetailsFunct(car_id) {
-            const response = await axios.get(`api/car/get/${car_id}/`);
+        async carDetailsFunct(carVin) {
+            const response = await axios.get(`api/car/get/${carVin}/`);
             this.carDetails = response.data;
             this.carDetailsDialog = true;
 

@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from .serializers import CarSerializer, CreateCarSerializer, UpdateCarSerializer
+from .serializers import CarSerializer
 
 from .models import Car
 
@@ -20,37 +20,36 @@ class AddCar(APIView):
         # Check for unique 
         fields_to_check = ['vin']
 
-        for field_name in fields_to_check:
-            if field_name in data:
-                field_value = data[field_name]
+        errors = [
+            f'Given {field} is already taken. Please try another.'
+            for field in fields_to_check
+            if Car.objects.filter(**{field: data.get(field, None)}).exists()
+        ]
 
-                duplicate_exists = Car.objects.filter(**{field_name: field_value}).exists()
-                if duplicate_exists:
-                    return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400) 
-        
+        if errors:
+            return JsonResponse({'error': ' '.join(errors)}, status=400)
+        # Check for unique 
 
-        serializer = CreateCarSerializer(data=data)
+        serializer = CarSerializer(data=data)
 
         if serializer.is_valid():
             car = serializer.save()
             return JsonResponse({'message' : f'Successfully created car vin - {car.vin}'}, status=200)
         else:
             return JsonResponse(serializer.errors, status=400)
-        
-    def get(self, request):
-        serializer = CarSerializer
-        return JsonResponse(serializer)
+
     
 
 class DeleteCar(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Car.objects.all()
     serializer_class = CarSerializer
-    lookup_field = 'id'
+    lookup_field = 'vin'
     
     
 class CarsViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
+    
     # query
     filter_backends = (filters.SearchFilter, )
     search_fields = ('brand', 'model')
@@ -63,11 +62,11 @@ class CarsViewSet(viewsets.ModelViewSet):
 
         self.queryset = self.serializer_class.Meta.model.objects.all()
         
-class getCar(APIView):
+class GetCar(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, id):
-        car = Car.objects.get(id=id)
+    def get(self, request, vin):
+        car = Car.objects.get(vin=vin)
         serializer = CarSerializer(car)
 
         return JsonResponse(serializer.data, status=200)
@@ -76,27 +75,15 @@ class getCar(APIView):
 class EditCar(APIView):
     permission_classes = [IsAuthenticated]
     
-    def put(self, request, id):
+    def put(self, request, vin):
         data = request.data
 
         try:
-            car = Car.objects.get(id=id)
-
-            fields_to_check = ['vin']
-
-            for field_name in fields_to_check:
-                if field_name in data:
-                    field_value = data[field_name]
-
-                    if field_value != getattr(car, field_name) and Car.objects.exclude(id=id).filter(**{field_name: field_value}).exists():
-                        return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400) 
-        
-        
-            car = Car.objects.get(id = id)
-            serializer = UpdateCarSerializer(car, data=data)
+            car = Car.objects.get(vin = vin)
+            serializer = CarSerializer(car, data=data)
             
             if serializer.is_valid():
-                serializer.update(car, data)  
+                serializer.save()  
                 return JsonResponse({'message' : 'Success'},status=200)
             
             else:

@@ -336,8 +336,7 @@
 <script>
 import axios from 'axios';
 import useEventsBus from '../../../plugins/eventBus.js'
-import { ref, watch } from "vue";
-const { emit } = useEventsBus()
+import { watch } from "vue";
 import { useTheme } from 'vuetify'
 
 export default {
@@ -623,9 +622,6 @@ export default {
             input_data: {},
             theme: true,
 
-            alert: false,
-            errorContent: '',
-
             allCountries: [],
 
             resSelectedCountry: null,
@@ -719,8 +715,6 @@ export default {
 
 
     methods: {
-
-
 
         // Method called on submiting form
         onSubmit() {
