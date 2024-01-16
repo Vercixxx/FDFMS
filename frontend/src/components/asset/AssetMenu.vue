@@ -25,6 +25,8 @@
     </v-menu>
     <!-- Home -->
 
+
+    <!-- Other buttons -->
     <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name" :disabled="button.disabled">
         <template v-slot:activator="{ props }">
             <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3 font-weight-bold">
@@ -40,10 +42,41 @@
 
         </v-list>
     </v-menu>
+    <!-- Other buttons -->
+
+
+    <!-- Messages -->
+    <v-menu transition="slide-y-transition">
+        <template v-slot:activator="{ props }">
+            <v-list-item prepend-icon="mdi-email" v-bind="props" class="font-weight-bold">
+                Messages
+            </v-list-item>
+
+        </template>
+
+        <v-list density="compact" nav>
+
+            <!-- Add -->
+            <v-list-item prepend-icon="mdi-plus" title="Add" @click="createMessage()">
+            </v-list-item>
+            <!-- Add -->
+
+            <!-- Manage -->
+            <v-list-item prepend-icon="mdi-email-multiple-outline" title="Mailbox" @click="showMessages()">
+            </v-list-item>
+            <!-- Manage -->
+
+        </v-list>
+    </v-menu>
+    <!-- Messages -->
 </template>
 
 
 <script>
+import useEventsBus from '../../plugins/eventBus.js'
+const { emit } = useEventsBus()
+
+
 export default {
     data() {
         return {
@@ -88,20 +121,16 @@ export default {
                     ],
                 },
                 {
-                    name: 'Messages',
-                    mainIcon: 'mdi-forum',
-                    disabled: true,
+                    name: 'Other',
+                    mainIcon: 'mdi-lightning-bolt',
+                    disabled: false,
                     options: [
                         {
-                            name: 'Create',
-                            click: 'AddUserComponent',
-                            icon: 'mdi-plus',
+                            name: 'Country/state',
+                            click: 'ModifyCountryStateComponent',
+                            icon: 'mdi-city-variant',
                         },
-                        {
-                            name: 'Show log',
-                            click: 'ModifyUserComponent',
-                            icon: 'mdi-database',
-                        },
+
                     ],
                 },
 
@@ -117,6 +146,15 @@ export default {
 
         homeButton() {
             this.$root.changeCurrentComponent('HomeComponent');
+        },
+
+
+        showMessages() {
+            this.$root.changeCurrentComponent('MailBoxComponent');
+        },
+
+        createMessage() {
+            emit('showAddMessage', '');
         },
     },
 

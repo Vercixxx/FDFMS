@@ -64,7 +64,8 @@
     <!-- Users -->
 
 
-    <!-- Other -->
+
+    <!-- Other buttons -->
     <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name" :disabled="button.disabled">
         <template v-slot:activator="{ props }">
             <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="font-weight-bold">
@@ -75,12 +76,12 @@
         <v-list density="compact" nav>
 
             <v-list-item v-for="option in button.options" :key="option.name" :prepend-icon="option.icon"
-                :title="option.name" @click="handleButtonClick(option)"> 
+                :title="option.name" @click="handleButtonClick(option)">
             </v-list-item>
 
         </v-list>
     </v-menu>
-    <!-- Other -->
+    <!-- Other buttons -->
 
 
     <!-- Messages -->
@@ -107,7 +108,6 @@
         </v-list>
     </v-menu>
     <!-- Messages -->
-
 </template>
 
 
@@ -242,15 +242,12 @@ export default {
 
 
         createMessage() {
-
             emit('showAddMessage', '');
         },
 
 
         showMessages() {
-
             this.$root.changeCurrentComponent('MailBoxComponent');
-
         },
     },
 
