@@ -25,6 +25,8 @@
     </v-menu>
     <!-- Home -->
 
+
+    <!-- Other buttons -->
     <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name">
         <template v-slot:activator="{ props }">
             <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3 font-weight-bold">
@@ -40,10 +42,40 @@
 
         </v-list>
     </v-menu>
+    <!-- Other buttons -->
+
+
+    <!-- Messages -->
+    <v-menu transition="slide-y-transition">
+        <template v-slot:activator="{ props }">
+            <v-list-item prepend-icon="mdi-email" v-bind="props" class="font-weight-bold">
+                Messages
+            </v-list-item>
+
+        </template>
+
+        <v-list density="compact" nav>
+
+            <!-- Add -->
+            <v-list-item prepend-icon="mdi-plus" title="Send message" @click="createMessage()">
+            </v-list-item>
+            <!-- Add -->
+
+            <!-- Manage -->
+            <v-list-item prepend-icon="mdi-email-multiple-outline" title="Mailbox" @click="showMessages()">
+            </v-list-item>
+            <!-- Manage -->
+
+        </v-list>
+    </v-menu>
+    <!-- Messages -->
 </template>
 
 
 <script>
+import useEventsBus from '../../plugins/eventBus.js'
+const { emit } = useEventsBus()
+
 export default {
     data() {
         return {
@@ -53,12 +85,12 @@ export default {
                     mainIcon: 'mdi-silverware-fork-knife',
                     options: [
                         {
-                            name: 'Add',
+                            name: 'Add restaurant',
                             click: 'AddRestaurantComponent',
                             icon: 'mdi-plus',
                         },
                         {
-                            name: 'Manage',
+                            name: 'Manage restaurants',
                             click: 'ManageRestaurantComponent',
                             icon: 'mdi-list-status',
                         },
@@ -70,15 +102,29 @@ export default {
                     mainIcon: 'mdi-domain',
                     options: [
                         {
-                            name: 'Add',
+                            name: 'Add brand',
                             click: 'AddBrandComponent',
                             icon: 'mdi-plus',
                         },
                         {
-                            name: 'Manage',
+                            name: 'Manage brands',
                             click: 'ManageBrandsComponent',
                             icon: 'mdi-list-status',
                         },
+                    ],
+                },
+
+                {
+                    name: 'Other',
+                    mainIcon: 'mdi-lightning-bolt',
+                    disabled: false,
+                    options: [
+                        {
+                            name: 'Manage countries/states',
+                            click: 'ModifyCountryStateComponent',
+                            icon: 'mdi-city-variant',
+                        },
+
                     ],
                 },
             ]
@@ -93,6 +139,14 @@ export default {
 
         homeButton() {
             this.$root.changeCurrentComponent('HomeComponent');
+        },
+
+        showMessages() {
+            this.$root.changeCurrentComponent('MailBoxComponent');
+        },
+
+        createMessage() {
+            emit('showAddMessage', '');
         },
     },
 
