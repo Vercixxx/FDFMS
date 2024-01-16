@@ -61,7 +61,7 @@
 
                   <v-col cols="12" sm="2">
                     <v-select v-model="itemsPerPage" variant="solo-filled" :items="[5, 10, 25, 50, 100]"
-                      :label="`Items per page - ${itemsPerPage}`"></v-select>
+                      :label="`Items per page - ${itemsPerPage}`" @update:model-value="loadUsers()"></v-select>
                   </v-col>
                 </v-row>
 
@@ -178,8 +178,6 @@
               <span v-else>
                 {{ item[header.key] }}
               </span>
-
-
             </template>
 
           </td>

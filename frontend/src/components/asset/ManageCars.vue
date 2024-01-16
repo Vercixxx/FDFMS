@@ -1,52 +1,59 @@
 <template>
     <div>
 
-        <v-card elevation="1" class="pa-5 rounded-xl" color="teal-darken-2">
+        <div class="mt-5 mb-5">
 
-            <p class="p-2 fw-bolder text-h4">Options</p>
 
             <v-row>
-                <v-col cols="7">
-                    <!-- Combobox columns selection -->
-
+                <v-col cols="12" sm="12">
                     <v-expansion-panels>
-                        <v-expansion-panel title="Choose columns" elevation="1">
+                        <v-expansion-panel title="Filters" elevation="1" style="border: 1px solid teal;">
 
                             <v-expansion-panel-text>
 
-                                <v-combobox variant="outlined" v-model="selectedColumns" :items="avaliableColumns"
-                                    label="Select columns" prepend-icon="mdi-table-edit" multiple chips>
+                                <v-row justify="center" align="center">
+                                    <v-col cols="auto">
+                                        <v-combobox variant="outlined" v-model="selectedColumns" :items="avaliableColumns"
+                                            label="Select columns" prepend-icon="mdi-table-edit" multiple chips>
+                                        </v-combobox>
+                                    </v-col>
 
-                                </v-combobox>
+                                    <v-col cols="12" sm="2">
+                                        <v-select v-model="itemsPerPage" variant="solo-filled" :items="[5, 10, 25, 50, 100]"
+                                            :label="`Items per page - ${itemsPerPage}`" @update:model-value="loadCars()"></v-select>
+                                    </v-col>
+                                </v-row>
+
                             </v-expansion-panel-text>
 
                         </v-expansion-panel>
                     </v-expansion-panels>
+                </v-col>
 
-                    <!-- Combobox columns selection -->
-                </v-col>
-                <v-col cols="5">
-                    <!-- Search bar -->
-                    <v-text-field variant="solo-filled" v-model="searchInput" @keydown.enter="searchTable = searchInput"
-                        label="Search" class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions clearable
-                        hint="Press enter to search" />
-                    <!-- Search bar -->
-                </v-col>
             </v-row>
 
-        </v-card>
-
-
-        <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
-
-        <div class="text-h4 ma-5 font-weight-bold">
-            Cars
         </div>
 
+        <v-row>
+            <v-col justify="start">
+                <div class="text-h4 ma-5 font-weight-bold">
+                    Cars
+                </div>
+            </v-col>
+            <v-col justify="end" cols="12" sm="4">
+
+                <!-- Search bar -->
+                <v-text-field variant="solo-filled" v-model="query" @keydown.enter="loadCars()" label="Search"
+                    prepend-inner-icon="mdi-magnify" hide-actions clearable hint="Press enter to search" />
+                <!-- Search bar -->
+
+            </v-col>
+        </v-row>
+
+
         <!-- Table -->
-        <v-data-table :headers="updatedColumns" :items="cars" :search="searchTable" :loading="tableLoading"
-            class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
-            show-current-page>
+        <v-data-table :headers="updatedColumns" :items="cars" :loading="loading" density="compact"
+            class="elevation-4 rounded-xl" item-value="vin" v-model:items-per-page="itemsPerPage" hover show-current-page>
 
 
 
@@ -69,25 +76,29 @@
                             <span>
                                 <v-btn variant="plain" color="blue" @click="carDetailsFunct(item.vin)">
                                     <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
-                                    <v-tooltip activator="parent" location="top">Show car details</v-tooltip>
+                                    <v-tooltip activator="parent" location="top">Show {{ item.brand }} {{ item.model }}
+                                        details</v-tooltip>
                                 </v-btn>
 
                                 <v-btn variant="plain" color="green" @click="editCar(item.vin)">
                                     <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
-                                    <v-tooltip activator="parent" location="top">Edit</v-tooltip>
+                                    <v-tooltip activator="parent" location="top">Edit {{ item.brand }} {{ item.model }}
+                                    </v-tooltip>
                                 </v-btn>
 
                                 <v-btn variant="plain" color="red" @click="deleteConfirm(item.id)">
                                     <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
-                                    <v-tooltip activator="parent" location="top">Delete</v-tooltip>
+                                    <v-tooltip activator="parent" location="top">Delete {{ item.brand }} {{ item.model }}
+                                    </v-tooltip>
                                 </v-btn>
                             </span>
                         </template>
 
 
                         <template v-else>
-                            <span v-if="item[header.key] === null || item[header.key] === ''">
-                                <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
+                            <span
+                                v-if="item[header.key] === null || item[header.key] === undefined || item[header.key] === ''">
+                                <v-icon icon="mdi-minus" />
                             </span>
                             <span v-else-if="item[header.key] === true">
                                 <v-icon icon="mdi-check-bold" style="color:green" />
@@ -98,8 +109,6 @@
                             <span v-else>
                                 {{ item[header.key] }}
                             </span>
-
-
                         </template>
 
                     </td>
@@ -108,6 +117,20 @@
             <!-- Accessing table cells -->
 
 
+            <template v-slot:bottom="{ page, itemsPerPage }">
+                <v-row>
+                    <v-col align="center">
+                        <v-pagination v-model="paginationPage" :length="pagiController.total_pages" @next="nextPage()"
+                            @prev="prevPage()">
+                            <template v-slot:item="{ key, page }">
+                                <v-btn class="mt-1" variant="text" disabled rounded="xl">{{ key }}</v-btn>
+                            </template>
+                        </v-pagination>
+                        <p>Page {{ pagiController.currentPage }} of {{ pagiController.total_pages }}</p>
+                        <p>{{ pagiController.totalRecors }} Records total</p>
+                    </v-col>
+                </v-row>
+            </template>
 
 
         </v-data-table>
@@ -171,14 +194,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(value, key) in carDetails" :key="key">
+                        <tr v-for="(value, key) in userDetailData" :key="key">
                             <td>{{ key }}</td>
-                            <td v-if="value === null">
-                                <v-icon icon="mdi-minus-thick"></v-icon>
-                            </td>
-
-                            <td v-else-if="value === ''">
-                                <v-icon icon="mdi-minus-thick"></v-icon>
+                            <td v-if="value === null || value === undefined || value === ''">
+                                <v-icon icon="mdi-minus" />
                             </td>
 
                             <td v-else-if="value === true">
@@ -193,6 +212,7 @@
                                 {{ value }}
                             </td>
 
+
                         </tr>
                     </tbody>
                 </v-table>
@@ -205,26 +225,29 @@
     </v-dialog>
     <!-- dialog -->
 
+
     <!-- Dialog details -->
 </template>
 
 
 <script>
 import axios from 'axios';
-import useEventsBus from '../../plugins/eventBus.js'
-const { emit } = useEventsBus()
 
 export default {
     name: 'App',
 
     data() {
         return {
+            loading: true,
+
             cars: [],
             columns: [],
-            itemsPerPage: 25,
-            searchInput: '',
-            searchTable: '',
-            tableLoading: false,
+
+            itemsPerPage: 10,
+            paginationPage: 1,
+            pagiController: {},
+            query: '',
+
             selectedColumns: [],
             avaliableColumns: [],
 
@@ -234,10 +257,8 @@ export default {
             carDetailsDialog: false,
             carDetails: [],
 
-
-
             necessaryHeaders: [
-                { title: 'Id', align: 'center', sortable: false, key: 'id' },
+                { title: 'No', align: 'center', sortable: false, key: 'rownumber' },
                 { title: 'VIN', key: 'vin', align: 'center', sortable: false },
             ],
             columns: [
@@ -283,17 +304,56 @@ export default {
     },
 
     methods: {
-        async loadCars() {
+        async loadCars(url) {
+            this.loading = true;
             try {
-                const response = await axios.get('api/cars/get-cars/');
-                this.cars = response.data;
-                this.tableLoading = false;
+                const response = url
+                    ? await axios.get(url)
+                    : await axios.get('api/car/getall/', {
+                        params: {
+                            limit: this.itemsPerPage,
+                            search: this.query,
+                        }
+                    });
+
+
+                this.pagiController = {
+                    total_pages: response.data.total_pages,
+                    posts_amount: response.data.posts_amount,
+                    next: response.data.next,
+                    previous: response.data.previous,
+                    currentPage: response.data.current_page,
+                    totalRecors: response.data.total_results,
+                }
+
+                this.cars = response.data.results;
+
+
+                // Add number for each row
+                this.cars.forEach((car, index) => {
+                    car.rownumber = index + 1;
+                });
 
             }
             catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
+            this.loading = false;
+
         },
+
+
+        // Previous page
+        async prevPage() {
+            await this.loadCars(this.pagiController.previous);
+        },
+        // Previous page
+
+        // Next page
+        async nextPage() {
+            await this.loadCars(this.pagiController.next);
+        },
+        // Next page
 
 
         deleteConfirm(carVin) {
