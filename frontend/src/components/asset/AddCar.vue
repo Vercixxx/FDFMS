@@ -47,8 +47,8 @@
                     <v-row>
                         <!-- Vin -->
                         <v-col cols="12" sm="6">
-                            <v-text-field variant="outlined" v-model="vin" label="Vin"
-                                :readonly="editing" hint="Vin is immutable when set" :rules="vinRules">
+                            <v-text-field variant="outlined" v-model="vin" label="Vin" :readonly="editing"
+                                hint="Vin is immutable when set" :rules="vinRules">
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner v-if="!editing">
@@ -222,6 +222,14 @@ export default {
 
             basicInfoInputs: [
                 {
+                    name: 'License plate',
+                    model: 'license_plate',
+                    required: false,
+                    rules: [
+                        v => /^[a-zA-Z 0-9]+$/.test(v) || 'Only letters and numbers are allowed',
+                    ]
+                },
+                {
                     name: 'Brand',
                     model: 'brand',
                     required: true,
@@ -230,8 +238,6 @@ export default {
                         v => (v && v.length >= 3) || 'Brand must containt at least 3 characters',
                         v => /^[a-zA-Z]+$/.test(v) || 'Brand can only contain letters',
                     ],
-
-
                 },
                 {
                     name: 'Model',
@@ -304,8 +310,10 @@ export default {
                     required: true,
                     icon: 'mdi-bank',
                     rules: [
-                        v => !!v || 'Insurance phone number address is required',
-                        v => /^[0-9+ -]+$/.test(v) || 'Only numbers, "+" and "-" are allowed',
+                        v => !!v || 'Phone number is required',
+                        v => /^[0-9]+$/.test(v) || 'Only digits are allowed',
+                        v => v.length >= 9 || 'Phone number must be at least 9 digits',
+                        v => v.length <= 15 || 'Phone number must not exceed 15 digits',
                     ]
                 },
             ],

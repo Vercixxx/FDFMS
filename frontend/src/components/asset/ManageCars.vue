@@ -263,6 +263,7 @@ export default {
                 { title: 'VIN', key: 'vin', align: 'center', sortable: false },
             ],
             columns: [
+                { title: 'License plate', key: 'license_plate', align: 'center', sortable: false},
                 { title: 'Brand', key: 'brand', align: 'center', sortable: false },
                 { title: 'Model', key: 'model', align: 'center', sortable: false },
                 { title: 'Color', key: 'color', align: 'center', sortable: false },
@@ -375,7 +376,6 @@ export default {
         async deleteCar() {
             this.dialogDelete = false;
 
-            console.log(this.deleteCarVin);
             try {
                 const response = await axios.delete(`api/car/delete/${this.deleteCarVin}/`);
                 this.loadCars()
