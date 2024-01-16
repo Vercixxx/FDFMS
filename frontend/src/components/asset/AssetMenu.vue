@@ -57,7 +57,7 @@
         <v-list density="compact" nav>
 
             <!-- Add -->
-            <v-list-item prepend-icon="mdi-plus" title="Add" @click="createMessage()">
+            <v-list-item prepend-icon="mdi-plus" title="Send message" @click="createMessage()">
             </v-list-item>
             <!-- Add -->
 
@@ -87,12 +87,12 @@ export default {
                     disabled: false,
                     options: [
                         {
-                            name: 'Add',
+                            name: 'Add car',
                             click: 'AddCarsComponent',
                             icon: 'mdi-plus',
                         },
                         {
-                            name: 'Manage',
+                            name: 'Manage cars',
                             click: 'ShowCarsComponent',
                             icon: 'mdi-list-status',
                         },
@@ -101,23 +101,23 @@ export default {
                 {
                     name: 'Fleet',
                     mainIcon: 'mdi-bus-multiple',
-                    disabled: true,
+                    disabled: false,
                     options: [
                         {
-                            name: 'Add',
-                            click: 'AddUserComponent',
+                            name: 'Add fleet',
+                            click: 'AddFleetComponent',
                             icon: 'mdi-plus',
                         },
                         {
-                            name: 'Manage',
-                            click: 'ModifyUserComponent',
+                            name: 'Manage fleets',
+                            click: 'ManageFleetsComponent',
                             icon: 'mdi-list-status',
                         },
-                        {
-                            name: 'Transfer cars',
-                            click: 'ModifyUserComponent',
-                            icon: 'mdi-transfer',
-                        },
+                        // {
+                        //     name: 'Transfer cars',
+                        //     click: '',
+                        //     icon: 'mdi-transfer',
+                        // },
                     ],
                 },
                 {
@@ -126,7 +126,7 @@ export default {
                     disabled: false,
                     options: [
                         {
-                            name: 'Country/state',
+                            name: 'Manage countries/states',
                             click: 'ModifyCountryStateComponent',
                             icon: 'mdi-city-variant',
                         },

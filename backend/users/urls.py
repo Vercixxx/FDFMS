@@ -1,17 +1,7 @@
 from django.urls import path, include
 from . import views
 
-# Rest
-from rest_framework.routers import DefaultRouter
-
-# router = DefaultRouter()
-# router.register(r"get-users", views.GetGeneralUsers, basename='get-users')
-
-
-
-
 urlpatterns = [
-    # path('api/', include(router.urls)),
     
     # Creating account
     path('api/create/', views.AddUser.as_view(), name="add-user"),

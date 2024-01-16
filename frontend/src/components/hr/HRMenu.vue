@@ -40,7 +40,7 @@
                 <v-menu transition="slide-y-transition">
                     <template v-slot:activator="{ props }">
                         <v-list-item prepend-icon="mdi-plus" v-bind="props">
-                            Add
+                            Add user
                         </v-list-item>
 
                     </template>
@@ -55,7 +55,7 @@
 
             <!-- Manage -->
             <v-list-item prepend-icon="mdi-list-status" @click="manageUsersClick()">
-                Manage
+                Manage users
             </v-list-item>
             <!-- Manage -->
 
@@ -96,7 +96,7 @@
         <v-list density="compact" nav>
 
             <!-- Add -->
-            <v-list-item prepend-icon="mdi-plus" title="Add" @click="createMessage()">
+            <v-list-item prepend-icon="mdi-plus" title="Send message" @click="createMessage()">
             </v-list-item>
             <!-- Add -->
 
@@ -197,7 +197,7 @@ export default {
                     disabled: false,
                     options: [
                         {
-                            name: 'Country/state',
+                            name: 'Manage countries/states',
                             click: 'ModifyCountryStateComponent',
                             icon: 'mdi-city-variant',
                         },
