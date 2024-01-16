@@ -101,58 +101,22 @@ class GetAllRestaurants(serializers.ModelSerializer):
         return obj.brand.name
 
 
+
+
 # Brand serializers
-class CreateBrandSerializer(serializers.ModelSerializer):
-
+class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brands
         fields = '__all__'
+        
+     
+# Restaurant serializers   
+class RestaurantSerializer(serializers.ModelSerializer):
+    brand_name = serializers.SerializerMethodField()
 
-    def save(self):
-        request_data = self.initial_data
-        brand_data = {
-            'name': self.validated_data.get('name', None),
-            'phone': self.validated_data.get('phone', None),
-            'country': request_data.get('country', None),
-            'city': request_data.get('city', None),
-            'state': request_data.get('state', None),
-            'street': request_data.get('street', None),
-            'home': request_data.get('home', None),
-            'apartament': request_data.get('apartament', None),
-            'zip': request_data.get('zip', None),
-
-        }
-
-        brand = Brands(**brand_data)
-        brand.save()
-        return brand
-
-
-# Get brands
-class GetBrandSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Brands
-        fields = '__all__'
-
-
-# Update brand
-class UpdateBrandSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Brands
-        fields = '__all__'
-
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.phone = validated_data.get('phone', instance.phone)
-        instance.country = validated_data.get('country', instance.country)
-        instance.city = validated_data.get('city', instance.city)
-        instance.state = validated_data.get('state', instance.state)
-        instance.street = validated_data.get('street', instance.street)
-        instance.home = validated_data.get('home', instance.home)
-        instance.apartament = validated_data.get(
-            'apartament', instance.apartament)
-        instance.zip = validated_data.get('zip', instance.zip)
-
-        instance.save()
-        return instance
-# Brand serializers
+        model = Restaurant
+        fields = ['id', 'name', 'city', 'brand_name', 'phone', 'country', 'state', 'street', 'home', 'apartament', 'zip', 'managers']
+        
+    def get_brand_name(self, obj):
+        return obj.brand.name

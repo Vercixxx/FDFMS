@@ -2,21 +2,17 @@
     <div class="containter m-2 p-2 d-flex justify-content-center">
         <div class="col-12 col-md-9">
 
-            <!-- Top -->
-            <div class="d-flex justify-content-between mb-5">
-                <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
-                    Back
-                </v-btn>
 
-                <div v-if="!editing" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new Brand</div>
-                <div v-else class="text-h6 text-md-h5 text-lg-h4 fw-bold">Edit {{ editingBrand.name }}</div>
-                <div></div>
+            <v-btn v-if="editing" @click="goBack" prepend-icon="mdi-undo" color="danger"
+                :variant="theme ? undefined : 'outlined'">
+                Back
+            </v-btn>
 
+            <div class="d-flex justify-center mb-5">
+                <div v-if="!editing" class="text-h6 text-md-h5 text-lg-h4 fw-bold">Add new brand
+                </div>
+                <div v-else class="text-h6 text-md-h5 text-lg-h4">Edit {{ editingBrand.name }}</div>
             </div>
-            <!-- Top -->
-
-
-
 
 
             <!-- Form -->
@@ -25,8 +21,9 @@
                     :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-4': theme }">
 
                     <div class="fw-light">
-                        <span class="filled-star-example"></span> - field required
+                        <v-icon icon="mdi-star" color="red" style="font-size:medium;"></v-icon> - field required
                     </div>
+
 
 
 
@@ -46,10 +43,9 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
-                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon
-                                    }}</v-icon>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
 
@@ -73,12 +69,28 @@
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
                                 v-model="selectedCountry" @update:search="getStates('residence')" :rules="fieldRequired">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
+
                             </v-autocomplete>
                         </v-col>
 
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="State" :items="allStates" variant="outlined" v-model="selectedState"
                                 :disabled="selectedCountry === null" :rules="fieldRequired">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
+
                             </v-autocomplete>
 
                         </v-col>
@@ -91,10 +103,9 @@
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
-                                    <span v-if="input.required" class="filled-star">
-                                    </span>
-                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon
-                                    }}</v-icon>
+                                    <v-icon v-if="input.required" icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                    <v-icon v-if="input.icon" class="icon" style="opacity: 0.4;">{{ input.icon }}</v-icon>
                                 </template>
                                 <!-- Icons -->
 
@@ -143,8 +154,7 @@
 <script>
 import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
-import { ref, watch } from "vue";
-const { emit } = useEventsBus()
+import { watch } from "vue";
 import { useTheme } from 'vuetify'
 import { drawer } from '../../store/store.js';
 
@@ -160,6 +170,7 @@ export default {
             fieldRequired: [v => !!v || 'Field is required',],
 
             editing: false,
+
             editingBrand: {},
             brandID: null,
 
@@ -190,7 +201,9 @@ export default {
                     icon: 'mdi-phone',
                     rules: [
                         v => !!v || 'Phone number is required',
-                        v => /^[0-9+ -]+$/.test(v) || 'Only numbers, "+" and "-" are allowed',
+                        v => /^[0-9]+$/.test(v) || 'Only digits are allowed',
+                        v => v.length >= 9 || 'Phone number must be at least 9 digits',
+                        v => v.length <= 15 || 'Phone number must not exceed 15 digits',
                     ]
 
                 },
@@ -260,14 +273,15 @@ export default {
 
     mounted() {
 
-        // Check if user dont want to edit existing brand
+        // Check if editing existing brand
         this.brandID = localStorage.getItem('brandID');
+
         if (this.brandID !== null) {
             this.getBrandData(this.brandID);
             localStorage.removeItem('brandID');
             this.editing = true;
         }
-        // Check if user dont want to edit existing brand
+        // Check if editing existing brand
 
 
 
@@ -313,12 +327,7 @@ export default {
 
         // Go back
         goBack() {
-            if (!this.editing) {
-                this.$root.changeCurrentComponent('HomeComponent');
-                drawer.value = !drawer.value;
-            } else {
-                this.$root.changeCurrentComponent('ManageBrandsComponent');
-            }
+            this.$root.changeCurrentComponent('ManageBrandsComponent');
         },
         // Go back
 
@@ -368,10 +377,11 @@ export default {
 
             try {
                 const response = await axios.post('api/brands/create/', this.input_data);
+                this.$root.changeCurrentComponent('ManageBrandsComponent');
                 this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
             }
             catch (error) {
-                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
             }
             this.loading = false;
 
@@ -383,15 +393,15 @@ export default {
         // Update brand
         async updateBrand() {
             this.getDataFromInputs();
+            const input_data = this.input_data;
 
             try {
-                const input_data = this.input_data;
                 const response = await axios.put(`api/brands/update/${this.brandID}/`, input_data);
-                this.goBack()
-                this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
+                this.$root.changeCurrentComponent('ManageBrandsComponent');
+                this.$store.dispatch('triggerAlert', { message: `Successfully updated ${input_data.name}`, type: 'success' });
             }
             catch (error) {
-                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
             }
             this.loading = false;
 
@@ -412,8 +422,6 @@ export default {
             this.selectedCountry = this.editingBrand['country'];
             this.selectedState = this.editingBrand['state'];
 
-            console.log(this.editingBrand);
-
         },
         // Get brand data
 
@@ -424,20 +432,3 @@ export default {
 }
 
 </script>
-
-<style >
-.filled-star::before {
-    content: '\2605';
-    color: #ff6666;
-    font-weight: bold;
-    position: absolute;
-    left: 3px;
-    top: 0px;
-}
-
-.filled-star-example::before {
-    content: '\2605';
-    color: #ff0000;
-
-}
-</style>

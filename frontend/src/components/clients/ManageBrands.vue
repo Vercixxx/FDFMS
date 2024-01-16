@@ -1,60 +1,62 @@
 <template>
     <div>
 
-        <v-card elevation="1" class="pa-5 rounded-xl" color="teal-darken-2">
 
-            <p class="p-2 fw-bolder text-h4">Options</p>
+        <div class="mt-5 mb-5">
 
             <v-row>
-                <v-col cols="7">
-                    <!-- Combobox columns selection -->
-
+                <v-col cols="12" sm="12">
                     <v-expansion-panels>
-                        <v-expansion-panel title="Choose columns" elevation="1">
+                        <v-expansion-panel title="Filters" elevation="1" style="border: 1px solid teal;">
 
                             <v-expansion-panel-text>
 
-                                <v-combobox variant="outlined" v-model="selectedColumns" :items="avaliableColumns"
-                                    label="Select columns" prepend-icon="mdi-table-edit" multiple chips>
+                                <v-row justify="center" align="center">
+                                    <v-col cols="auto">
+                                        <v-combobox variant="outlined" v-model="selectedColumns" :items="avaliableColumns"
+                                            label="Select columns" prepend-icon="mdi-table-edit" multiple chips>
+                                        </v-combobox>
+                                    </v-col>
 
-                                </v-combobox>
+                                    <v-col cols="12" sm="2">
+                                        <v-select v-model="itemsPerPage" variant="solo-filled" :items="[5, 10, 25, 50, 100]"
+                                            :label="`Items per page - ${itemsPerPage}`"
+                                            @update:model-value="loadBrands()"></v-select>
+                                    </v-col>
+                                </v-row>
+
                             </v-expansion-panel-text>
 
                         </v-expansion-panel>
                     </v-expansion-panels>
+                </v-col>
 
-                    <!-- Combobox columns selection -->
-                </v-col>
-                <v-col cols="5">
-                    <!-- Search bar -->
-                    <v-text-field variant="solo-filled" v-model="searchInput" @keydown.enter="searchTable = searchInput"
-                        label="Search" class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions clearable
-                        hint="Press enter to search" />
-                    <!-- Search bar -->
-                </v-col>
             </v-row>
 
-        </v-card>
-
-
-        <v-divider thickness="12" class="rounded-xl my-7"></v-divider>
-
-
-        <div class="text-h4 ma-5 font-weight-bold">
-            Brands
         </div>
 
 
+        <v-row>
+            <v-col justify="start">
+                <div class="text-h4 ma-5 font-weight-bold">
+                    Brands
+                </div>
+            </v-col>
+            <v-col justify="end" cols="12" sm="4">
 
+                <!-- Search bar -->
+                <v-text-field variant="solo-filled" v-model="query" @keydown.enter="loadBrands()" label="Search"
+                    prepend-inner-icon="mdi-magnify" hide-actions clearable hint="Press enter to search" />
+                <!-- Search bar -->
 
+            </v-col>
+        </v-row>
 
 
         <!-- Table -->
-        <v-data-table :headers="updatedColumns" :items="brands" :search="searchTable" :loading="tableLoading"
+        <v-data-table :headers="updatedColumns" :items="brands" :loading="loading" density="compact"
             class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
             show-current-page>
-
-
 
             <!-- No data -->
             <template v-slot:no-data>
@@ -64,8 +66,6 @@
                 </p>
             </template>
             <!-- No data -->
-
-
 
             <!-- Accessing table cells -->
             <template v-slot:item="{ item }">
@@ -94,8 +94,9 @@
 
 
                         <template v-else>
-                            <span v-if="item[header.key] === null || item[header.key] === ''">
-                                <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
+                            <span
+                                v-if="item[header.key] === null || item[header.key] === undefined || item[header.key] === ''">
+                                <v-icon icon="mdi-minus" />
                             </span>
                             <span v-else-if="item[header.key] === true">
                                 <v-icon icon="mdi-check-bold" style="color:green" />
@@ -106,14 +107,29 @@
                             <span v-else>
                                 {{ item[header.key] }}
                             </span>
-
-
                         </template>
 
                     </td>
                 </tr>
             </template>
             <!-- Accessing table cells -->
+
+
+            <template v-slot:bottom="{ page, itemsPerPage }">
+                <v-row>
+                    <v-col align="center">
+                        <v-pagination v-model="paginationPage" :length="pagiController.total_pages" @next="nextPage()"
+                            @prev="prevPage()">
+                            <template v-slot:item="{ key, page }">
+                                <v-btn class="mt-1" variant="text" disabled rounded="xl">{{ key }}</v-btn>
+                            </template>
+                        </v-pagination>
+                        <p>Page {{ pagiController.currentPage }} of {{ pagiController.total_pages }}</p>
+                        <p>{{ pagiController.totalRecors }} Records total</p>
+                    </v-col>
+                </v-row>
+            </template>
+
 
         </v-data-table>
         <!-- Table -->
@@ -176,12 +192,8 @@
                     <tbody>
                         <tr v-for="(value, key) in brandDetails" :key="key">
                             <td>{{ key }}</td>
-                            <td v-if="value === null">
-                                <v-icon icon="mdi-minus-thick"></v-icon>
-                            </td>
-
-                            <td v-else-if="value === ''">
-                                <v-icon icon="mdi-minus-thick"></v-icon>
+                            <td v-if="value === null || value === undefined || value === ''">
+                                <v-icon icon="mdi-minus" />
                             </td>
 
                             <td v-else-if="value === true">
@@ -195,6 +207,7 @@
                             <td v-else>
                                 {{ value }}
                             </td>
+
 
                         </tr>
                     </tbody>
@@ -215,8 +228,6 @@
 
 <script>
 import axios from 'axios';
-import useEventsBus from '../../plugins/eventBus.js'
-const { emit } = useEventsBus()
 
 export default {
     name: 'App',
@@ -225,10 +236,13 @@ export default {
         return {
             brands: [],
             columns: [],
-            itemsPerPage: 25,
-            searchInput: '',
-            searchTable: '',
-            tableLoading: false,
+
+            itemsPerPage: 10,
+            paginationPage: 1,
+            pagiController: {},
+            query: '',
+
+            loading: true,
             selectedColumns: [],
             avaliableColumns: [],
 
@@ -241,7 +255,7 @@ export default {
 
             // Headers
             necessaryHeaders: [
-                { title: 'Id', align: 'center', sortable: true, key: 'id' },
+                { title: 'No', align: 'center', sortable: true, key: 'rownumber' },
             ],
             columns: [
                 { title: 'Name', key: 'name', align: 'center', sortable: true },
@@ -284,20 +298,61 @@ export default {
     methods: {
 
         // Load all brands
-        async loadBrands() {
+        async loadBrands(url) {
+            this.loading = true;
+
             try {
-                const response = await axios.get('api/brands/get-all/');
+                const response = url
+                    ? await axios.get(url)
+                    : await axios.get('api/brands/get-all/', {
+                        params: {
+                            limit: this.itemsPerPage,
+                            search: this.query,
+                        }
+                    });
 
-                this.brands = response.data;
+                this.pagiController = {
+                    total_pages: response.data.total_pages,
+                    posts_amount: response.data.posts_amount,
+                    next: response.data.next,
+                    previous: response.data.previous,
+                    currentPage: response.data.current_page,
+                    totalRecors: response.data.total_results,
+                }
 
-                this.tableLoading = false;
+                this.brands = response.data.results;
+
+
+                // Add number for each row
+                this.brands.forEach((brand, index) => {
+                    brand.rownumber = index + 1;
+                });
 
             }
             catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
+
+            this.loading = false;
         },
         // Load all brands
+
+
+
+
+        // Previous page
+        async prevPage() {
+            await this.loadBrands(this.pagiController.previous);
+        },
+        // Previous page
+
+
+
+        // Next page
+        async nextPage() {
+            await this.loadBrands(this.pagiController.next);
+        },
+        // Next page
 
 
 
@@ -313,6 +368,7 @@ export default {
         // Deleting brand method
         async deleteBrand() {
             this.dialogDelete = false;
+
             try {
                 const response = await axios.delete(`api/brands/delete/${this.deleteBrandId}`);
                 this.loadBrands()
@@ -337,8 +393,20 @@ export default {
 
         // Brand details
         async brandDetailsFunct(brandID) {
-            const response = await axios.get(`api/brands/get-info/${brandID}/`);
-            this.brandDetails = response.data;
+
+            try {
+                const response = await axios.get(`api/brands/get-info/${brandID}/`);
+
+                this.brandDetails = {};
+                Object.keys(response.data).forEach(key => {
+                    let formattedKey = key.replace(/_/g, ' ');
+                    formattedKey = formattedKey.replace(/\b\w/g, firstChar => firstChar.toUpperCase());
+                    this.brandDetails[formattedKey] = response.data[key];
+                });
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+            }
+
             this.brandDetailsDialog = true;
 
         },

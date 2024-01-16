@@ -2,35 +2,29 @@
     <div class="containter m-2 p-2 d-flex justify-content-center">
         <div class="col-12 col-md-9">
 
-            <!-- Top -->
-            <div class="d-flex justify-content-between mb-5">
-                <v-btn @click="goBack" prepend-icon="mdi-undo" color="danger" :variant="theme ? undefined : 'outlined'">
-                    Manage
-                </v-btn>
 
+            <v-btn v-if="editing" @click="goBack" prepend-icon="mdi-undo" color="danger"
+                :variant="theme ? undefined : 'outlined'">
+                Back
+            </v-btn>
 
+            <div class="d-flex justify-center mb-5">
                 <div v-if="!editing" class="text-h6 text-md-h5 text-lg-h4 fw-bold">
                     <v-icon icon="mdi-silverware-fork-knife"></v-icon>
                     Add Restaurant
                 </div>
-                <div v-else class="text-h6 text-md-h5 text-lg-h4 fw-bold">
+                <div v-else class="text-h6 text-md-h5 text-lg-h4">
                     <v-icon icon="mdi-silverware-fork-knife"></v-icon>
                     Edit {{ editRest.name }}
                 </div>
-                <div></div>
-
             </div>
-            <!-- Top -->
-
-
-
 
             <v-form v-model="form" @submit.prevent="onSubmit">
                 <v-container class=" mb-5  rounded-xl elevation-5"
                     :class="{ 'bg-green-lighten-5': !theme, 'bg-grey-darken-4': theme }">
 
                     <div class="fw-light">
-                        <v-icon icon="mdi-star" color="red" style="font-size:medium"></v-icon> - field required
+                        <v-icon icon="mdi-star" color="red" style="font-size:medium;"></v-icon> - field required
                     </div>
 
 
@@ -63,6 +57,14 @@
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Brand" :items="availableBrands" variant="outlined"
                                 v-model="selectedBrand" :rules="fieldRequired">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
+
                             </v-autocomplete>
                         </v-col>
                     </v-row>
@@ -82,12 +84,28 @@
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="Country" :items="allCountries" variant="outlined"
                                 v-model="selectedCountry" @update:search="getStates('residence')" :rules="fieldRequired">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
+
                             </v-autocomplete>
                         </v-col>
 
                         <v-col cols="12" sm="6">
                             <v-autocomplete label="State" :items="allStates" variant="outlined" v-model="selectedState"
                                 :disabled="selectedCountry === null" :rules="fieldRequired">
+
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
+
                             </v-autocomplete>
 
                         </v-col>
@@ -329,7 +347,9 @@ export default {
                     icon: 'mdi-phone',
                     rules: [
                         v => !!v || 'Phone number is required',
-                        v => /^[0-9+ -]+$/.test(v) || 'Only numbers, "+" and "-" are allowed',
+                        v => /^[0-9]+$/.test(v) || 'Only digits are allowed',
+                        v => v.length >= 9 || 'Phone number must be at least 9 digits',
+                        v => v.length <= 15 || 'Phone number must not exceed 15 digits',
                     ]
 
                 },
@@ -403,9 +423,9 @@ export default {
         this.restId = localStorage.getItem('restaurantID')
 
         if (this.restId !== null) {
-            this.editing = true;
             this.getRestInfo();
             localStorage.removeItem('restaurantID');
+            this.editing = true;
         }
 
 
@@ -483,7 +503,6 @@ export default {
                 for (const field of this.allInputs) {
                     this.input_data[field.model] = this.editRest[field.model];
                 }
-                console.log(this.editRest)
 
                 this.selectedCountry = this.editRest['country'];
                 this.selectedState = this.editRest['state'];
@@ -546,7 +565,8 @@ export default {
         async loadBrands() {
             try {
                 const response = await axios.get('api/brands/get-all/');
-                this.availableBrands = response.data.map(item => item.name);
+                console.log(response.data)
+                this.availableBrands = response.data.results.map(item => item.name);
             }
             catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
@@ -558,9 +578,11 @@ export default {
 
         // Get all managers
         async getManagers() {
+
             this.loading = true;
+
             try {
-                const response = await aAdministrator.get('api/users/get-usernames/', {
+                const response = await axios.get('api/users/get-usernames/', {
                     params: {
                         role: 'Manager',
                         search: this.query,
@@ -569,7 +591,7 @@ export default {
 
                 this.availableManagers = response.data.map(user => user.username);
                 this.availableManagers = this.availableManagers.filter(username => !this.selectedManagers.includes(username));
-                
+
 
             } catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
@@ -583,6 +605,7 @@ export default {
 
         // Create restaurant
         async createRestaurant() {
+            this.loading = true;
 
             this.getDataFromInputs();
 
@@ -592,7 +615,7 @@ export default {
                 this.goBack()
             }
             catch (error) {
-                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
             }
             this.loading = false;
         },
@@ -602,6 +625,8 @@ export default {
 
         // Update restaurant
         async updateRestaurant() {
+            this.loading = true;
+
             this.getDataFromInputs();
 
             try {
@@ -609,7 +634,7 @@ export default {
                 this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
                 this.goBack()
             } catch (error) {
-                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
             }
             this.loading = false;
         },

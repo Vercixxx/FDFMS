@@ -1,17 +1,33 @@
-from django.shortcuts import render
-
 from django.http import JsonResponse
 
-from .models import Restaurant, Brands
 
 # Serializers
-from .serializers import CreateRestaurantSerializer, UpdateRestaurantSerializer, GetAllRestaurants, CreateBrandSerializer, GetBrandSerializer, UpdateBrandSerializer
+from .serializers import BrandSerializer, RestaurantSerializer, CreateRestaurantSerializer, UpdateRestaurantSerializer, GetAllRestaurants
 
 # Rest
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from rest_framework import viewsets, filters
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import DestroyAPIView
+
+# Models
+from .models import Restaurant, Brands
+
+# DB
+from django.db.models import Q
+
+
+# Pagination
+class LocalPaginator(PageNumberPagination):
+    page_size_query_param = 'limit'
+    max_page_size = 100
+
+    def get_page_size(self, request):
+        page_size = super().get_page_size(request)
+        if page_size is None or page_size == 0:
+            return self.max_page_size
+        return page_size
+# Pagination
 
 
 class CreateRestaurant(APIView):
@@ -19,21 +35,22 @@ class CreateRestaurant(APIView):
 
     def post(self, request):
         data = request.data
-        
+
         brand = Brands.objects.get(name=data['brand'])
         data['brand'] = brand.id
 
         # Check for unique
         fields_to_check = ['name']
 
-        for field_name in fields_to_check:
-            if field_name in data:
-                field_value = data[field_name]
+        errors = [
+            f'Given {field} is already taken. Please try another.'
+            for field in fields_to_check
+            if Restaurant.objects.filter(**{field: data.get(field, None)}).exists()
+        ]
 
-                duplicate_exists = Restaurant.objects.filter(
-                    **{field_name: field_value}).exists()
-                if duplicate_exists:
-                    return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400)
+        if errors:
+            return JsonResponse({'error': ' '.join(errors)}, status=400)
+        # Check for unique
 
         serializer = CreateRestaurantSerializer(data=data)
 
@@ -44,14 +61,11 @@ class CreateRestaurant(APIView):
             return JsonResponse(serializer.errors, status=400)
 
 
-
-
 class UpdateRestaurant(APIView):
     permission_classes = [IsAuthenticated]
-    
+
     def put(self, request, name):
         data = request.data
-        print(data)
         
         brand_name = data['brand']
         brand = Brands.objects.get(name=brand_name)
@@ -60,19 +74,23 @@ class UpdateRestaurant(APIView):
         try:
             restaurant = Restaurant.objects.get(name=name)
 
+            # Check for unique
             fields_to_check = ['name']
 
-            for field_name in fields_to_check:
-                if field_name in data:
-                    field_value = data[field_name]
+            errors = [
+                f'Given {field} is already taken. Please try another.'
+                for field in fields_to_check
+                if Restaurant.objects.filter(**{field: data.get(field, None)}).exists() > 1
+            ]
 
-                    if field_value != getattr(restaurant, field_name) and Restaurant.objects.exclude(name=name).filter(**{field_name: field_value}).exists():
-                        return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400)
+            if errors:
+                return JsonResponse({'error': ' '.join(errors)}, status=400)
+            # Check for unique
 
             serializer = UpdateRestaurantSerializer(restaurant, data=data)
 
             if serializer.is_valid():
-                serializer.update(restaurant, data)
+                serializer.save()
                 return JsonResponse({'message': f'Succesfully edited {restaurant.name}'}, status=200)
 
             else:
@@ -82,57 +100,54 @@ class UpdateRestaurant(APIView):
             return JsonResponse({'error': 'Restaurant does not exist.'}, status=404)
 
 
-
-
 class GetRestaurants(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, city="All"):
+    def get(self, request, id=None):
 
-        if city == "All":
-            all_restaurants = Restaurant.objects.all()
+        if id:
+            restaurant = Restaurant.objects.get(id=id)
+            serializer = RestaurantSerializer(restaurant)
+            return JsonResponse(serializer.data, status=200, safe=False)
+
         else:
-            all_restaurants = Restaurant.objects.filter(city=city)
-        
-        serializer = GetAllRestaurants(all_restaurants, many=True)
-        return JsonResponse(serializer.data, status=200, safe=False)
+            limit = self.request.query_params.get('limit', '').strip()
+            query = self.request.query_params.get('search', '').strip()
 
+            queryset = Restaurant.objects.all()
 
-class GetRestaurant(APIView):
-    permission_classes = [IsAuthenticated]
+            if query:
+                queryset = queryset.filter(Q(name__icontains=query)) | (
+                    Q(city__icontains=query) | Q(brand__name__icontains=query))
 
-    def get(self, request, id):
-        restaurant = Restaurant.objects.get(id=id)
-        serializer = GetAllRestaurants(restaurant)
-        return JsonResponse(serializer.data, status=200, safe=False)
+            paginator = LocalPaginator()
+            response_page = paginator.paginate_queryset(queryset, request)
 
+            serialized_data = [RestaurantSerializer(
+                restaurant).data for restaurant in response_page]
 
-class GetPossibleCities(APIView):
-    permission_classes = [IsAuthenticated]
+            response_data = {
+                'posts_amount': paginator.page.paginator.count,
+                'total_pages': paginator.page.paginator.num_pages,
+                'current_page': paginator.page.number,
+                'results': serialized_data,
+                'next': paginator.get_next_link(),
+                'previous': paginator.get_previous_link(),
+                'total_results': queryset.count(),
+            }
 
-    def get(self, request):
-        unique_cities = Restaurant.objects.values('city').distinct()
-        list = [city['city'] for city in unique_cities]
-        return JsonResponse(list, status=200, safe=False)
+            return JsonResponse(response_data, status=200)
 
 
 class DeleteRestaurant(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Restaurant.objects.all()
-    serializer_class = GetAllRestaurants
+    serializer_class = RestaurantSerializer
     lookup_field = 'id'
 
 
 # Brand
 class CreateBrand(APIView):
-
-    """ This class is made for creating new brand instansce in database. 
-    It also checks for unique values, to ensure every instansce has unique primary key.
-
-    Returns:
-        JSON : message of status of operation 
-    """
-
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -141,16 +156,17 @@ class CreateBrand(APIView):
         # Check for unique
         fields_to_check = ['name']
 
-        for field_name in fields_to_check:
-            if field_name in data:
-                field_value = data[field_name]
+        errors = [
+            f'Given {field} is already taken. Please try another.'
+            for field in fields_to_check
+            if Brands.objects.filter(**{field: data.get(field, None)}).exists()
+        ]
 
-                duplicate_exists = Brands.objects.filter(
-                    **{field_name: field_value}).exists()
-                if duplicate_exists:
-                    return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400)
+        if errors:
+            return JsonResponse({'error': ' '.join(errors)}, status=400)
+        # Check for unique
 
-        serializer = CreateBrandSerializer(data=data)
+        serializer = BrandSerializer(data=data)
 
         if serializer.is_valid():
             brand = serializer.save()
@@ -166,20 +182,44 @@ class GetBrands(APIView):
 
         if id:
             brand = Brands.objects.get(id=id)
-            serializer = GetBrandSerializer(brand)
+            serializer = BrandSerializer(brand)
+
+            return JsonResponse(serializer.data, status=200, safe=False)
 
         else:
-            all_brands = Brands.objects.all()
-            serializer = GetBrandSerializer(all_brands, many=True)
+            limit = self.request.query_params.get('limit', '').strip()
+            query = self.request.query_params.get('search', '').strip()
 
-        return JsonResponse(serializer.data, status=200, safe=False)
+            queryset = Brands.objects.all()
+
+            if query:
+                queryset = queryset.filter(name__icontains=query)
+
+            paginator = LocalPaginator()
+            response_page = paginator.paginate_queryset(queryset, request)
+
+            serialized_data = [BrandSerializer(
+                brand).data for brand in response_page]
+
+            response_data = {
+                'posts_amount': paginator.page.paginator.count,
+                'total_pages': paginator.page.paginator.num_pages,
+                'current_page': paginator.page.number,
+                'results': serialized_data,
+                'next': paginator.get_next_link(),
+                'previous': paginator.get_previous_link(),
+                'total_results': queryset.count(),
+            }
+
+            return JsonResponse(response_data, status=200)
 
 
 # Deletion
 class DeleteBrands(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Brands.objects.all()
-    # lookup_field = 'id'
+    serializer_class = BrandSerializer
+    lookup_field = 'id'
 # Deletion
 
 
@@ -193,19 +233,23 @@ class UpdateBrand(APIView):
         try:
             brand = Brands.objects.get(id=brandID)
 
+            # Check for unique
             fields_to_check = ['name']
 
-            for field_name in fields_to_check:
-                if field_name in data:
-                    field_value = data[field_name]
+            errors = [
+                f'Given {field} is already taken. Please try another.'
+                for field in fields_to_check
+                if Brands.objects.filter(**{field: data.get(field, None)}).exists() > 1
+            ]
 
-                    if field_value != getattr(brand, field_name) and Brands.objects.exclude(id=brandID).filter(**{field_name: field_value}).exists():
-                        return JsonResponse({'error': f'Given {field_name} is already taken. Please try another.'}, status=400)
+            if errors:
+                return JsonResponse({'error': ' '.join(errors)}, status=400)
+            # Check for unique
 
-            serializer = UpdateBrandSerializer(brand, data=data)
+            serializer = BrandSerializer(brand, data=data)
 
             if serializer.is_valid():
-                serializer.update(brand, data)
+                serializer.save()
                 return JsonResponse({'message': 'Success'}, status=200)
 
             else:
@@ -214,4 +258,3 @@ class UpdateBrand(APIView):
         except Brands.DoesNotExist:
             return JsonResponse({'error': 'Brand does not exist.'}, status=404)
 # Updating brand
-# Brand
