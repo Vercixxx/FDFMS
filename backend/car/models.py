@@ -7,6 +7,8 @@ class Car(models.Model):
 
     vin = models.TextField(max_length=17, primary_key = True)
     
+    # license_plate = models.TextField(max_length=10, unique=True)
+    
     brand = models.TextField()
     model = models.TextField()
     

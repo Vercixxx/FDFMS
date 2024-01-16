@@ -20,7 +20,8 @@
 
                                     <v-col cols="12" sm="2">
                                         <v-select v-model="itemsPerPage" variant="solo-filled" :items="[5, 10, 25, 50, 100]"
-                                            :label="`Items per page - ${itemsPerPage}`" @update:model-value="loadCars()"></v-select>
+                                            :label="`Items per page - ${itemsPerPage}`"
+                                            @update:model-value="loadCars()"></v-select>
                                     </v-col>
                                 </v-row>
 
@@ -86,7 +87,7 @@
                                     </v-tooltip>
                                 </v-btn>
 
-                                <v-btn variant="plain" color="red" @click="deleteConfirm(item.id)">
+                                <v-btn variant="plain" color="red" @click="deleteConfirm(item.vin)">
                                     <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
                                     <v-tooltip activator="parent" location="top">Delete {{ item.brand }} {{ item.model }}
                                     </v-tooltip>
@@ -194,7 +195,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(value, key) in userDetailData" :key="key">
+                        <tr v-for="(value, key) in carDetails" :key="key">
                             <td>{{ key }}</td>
                             <td v-if="value === null || value === undefined || value === ''">
                                 <v-icon icon="mdi-minus" />
@@ -304,6 +305,9 @@ export default {
     },
 
     methods: {
+
+
+        // Load cars
         async loadCars(url) {
             this.loading = true;
             try {
@@ -316,7 +320,6 @@ export default {
                         }
                     });
 
-
                 this.pagiController = {
                     total_pages: response.data.total_pages,
                     posts_amount: response.data.posts_amount,
@@ -328,7 +331,6 @@ export default {
 
                 this.cars = response.data.results;
 
-
                 // Add number for each row
                 this.cars.forEach((car, index) => {
                     car.rownumber = index + 1;
@@ -339,8 +341,9 @@ export default {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
             this.loading = false;
-
         },
+        // Load cars
+
 
 
         // Previous page
@@ -349,6 +352,8 @@ export default {
         },
         // Previous page
 
+
+
         // Next page
         async nextPage() {
             await this.loadCars(this.pagiController.next);
@@ -356,17 +361,23 @@ export default {
         // Next page
 
 
+
+        // Delete car confirm
         deleteConfirm(carVin) {
-            this.deletecarVin = carVin;
+            this.deleteCarVin = carVin;
             this.dialogDelete = true;
         },
+        // Delete car confirm
 
 
+
+        // Delete car
         async deleteCar() {
             this.dialogDelete = false;
 
+            console.log(this.deleteCarVin);
             try {
-                const response = await axios.delete(`api/car/delete/${this.deleteCarVin}`);
+                const response = await axios.delete(`api/car/delete/${this.deleteCarVin}/`);
                 this.loadCars()
                 this.$store.dispatch('triggerAlert', { message: `Successfully deleted car Vin - ${this.deleteCarVin}`, type: 'success' });
 
@@ -375,19 +386,37 @@ export default {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
         },
+        // Delete car
 
+
+
+        // Edit car
         editCar(carVin) {
             localStorage.setItem('carVin', carVin);
             this.$root.changeCurrentComponent('AddCarsComponent');
         },
+        // Edit car
 
 
+
+        // Show car details
         async carDetailsFunct(carVin) {
-            const response = await axios.get(`api/car/get/${carVin}/`);
-            this.carDetails = response.data;
-            this.carDetailsDialog = true;
+            try {
+                const response = await axios.get(`api/car/get/${carVin}/`);
 
+                this.carDetails = {};
+                Object.keys(response.data).forEach(key => {
+                    let formattedKey = key.replace(/_/g, ' ');
+                    formattedKey = formattedKey.replace(/\b\w/g, firstChar => firstChar.toUpperCase());
+                    this.carDetails[formattedKey] = response.data[key];
+                });
+            }
+            catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+            }
+            this.carDetailsDialog = true;
         },
+        // Show car details
 
 
     },
