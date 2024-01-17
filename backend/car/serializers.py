@@ -8,3 +8,9 @@ class CarSerializer(serializers.ModelSerializer):
         model = Car
         fields = '__all__'
         
+        
+class CarVinLicensePlateSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Car
+        fields = ('vin', 'license_plate')

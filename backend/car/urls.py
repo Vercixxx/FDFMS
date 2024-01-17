@@ -18,5 +18,8 @@ urlpatterns = [
     path('api/car/get/<int:vin>/', views.GetCar.as_view(), name="get-car"),
     
     # Edit car
-    path('api/car/edit/<int:vin>/', views.EditCar.as_view(), name="edit-car")
+    path('api/car/edit/<int:vin>/', views.EditCar.as_view(), name="edit-car"),
+    
+    # Get cars by search
+    path('api/cars/get/', views.GetVinLicensePlate.as_view(), name="get-cars-by-search"),
 ]

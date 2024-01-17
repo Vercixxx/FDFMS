@@ -81,11 +81,13 @@ class GetFleets(APIView):
 class GetFleet(APIView):
     permission_classes = (IsAuthenticated,)
     
-    def get(self, request, id):
+    def get(self, request):
+        id = self.request.query_params.get('id', '').strip()
+
         try:
             fleet = Fleet.objects.get(id=id)
         except Fleet.DoesNotExist:
-            return JsonResponse({'message': 'Fleet not found'}, status=404)
+            return JsonResponse({'message': 'Fleet does not exist'}, status=404)
         
         serializer = FleetSerializer(fleet)
         

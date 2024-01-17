@@ -499,6 +499,7 @@ export default {
             try {
                 const response = await axios.get(`api/restaurant/get/${this.restId}/`);
                 this.editRest = response.data;
+
                 
                 for (const field of this.allInputs) {
                     this.input_data[field.model] = this.editRest[field.model];

@@ -3,18 +3,18 @@ from . import views
 
 urlpatterns = [
     # Add Fleet
-    path('add/', views.AddFleet.as_view()),
+    path('api/fleet/add/', views.AddFleet.as_view()),
     
     # Get Fleets
-    path('get/', views.GetFleets.as_view()),
+    path('api/fleets/get/', views.GetFleets.as_view()),
     
     # Get Fleet
-    path('get/<int:pk>/', views.GetFleet.as_view()),
+    path('api/fleet/get/', views.GetFleet.as_view()),
     
     # Update Fleet
-    path('update/<int:pk>/', views.UpdateFleet.as_view()),
+    path('api/fleet/update/<int:id>/', views.UpdateFleet.as_view()),
     
     # Delete Fleet
-    path('delete/<int:pk>/', views.DeleteFleet.as_view()),
+    path('api/fleet/delete/<int:id>/', views.DeleteFleet.as_view()),
     
 ]

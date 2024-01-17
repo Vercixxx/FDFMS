@@ -1,12 +1,11 @@
 from django.http import JsonResponse
 
-from .serializers import CarSerializer
+from .serializers import CarSerializer, CarVinLicensePlateSerializer
 
 from .models import Car
 
-from rest_framework import viewsets, filters
 from rest_framework.views import APIView
-from rest_framework.generics import DestroyAPIView, UpdateAPIView
+from rest_framework.generics import DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
 # DB
@@ -134,3 +133,21 @@ class EditCar(APIView):
 
         except Car.DoesNotExist:
             return JsonResponse({'error': 'Car does not exist.'}, status=404)
+        
+
+class GetVinLicensePlate(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        query = request.query_params.get('search', '').strip()
+        
+        queryset = Car.objects.all()
+            
+        if query:
+            queryset = queryset.filter(
+                Q(vin__icontains=query) | Q(license_plate__icontains=query)
+            )
+        
+        serializer = CarVinLicensePlateSerializer(queryset, many=True)
+        
+        return JsonResponse(serializer.data, status=200, safe=False)

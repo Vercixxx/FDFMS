@@ -26,14 +26,14 @@ export default {
                     name: 'HR menu',
                     menu: HrMenu
                 },
-                // {
-                //     name: 'Asset menu',
-                //     menu: AssetMenu
-                // },
                 {
-                    name: 'Clients menu',
-                    menu: ClientsMenu
+                    name: 'Asset menu',
+                    menu: AssetMenu
                 },
+                // {
+                //     name: 'Clients menu',
+                //     menu: ClientsMenu
+                // },
                 // {
                 //     name: 'Payroll menu',
                 //     menu: PayrollMenu
