@@ -2,7 +2,7 @@ from django.http import JsonResponse
 
 
 # Serializers
-from .serializers import BrandSerializer, RestaurantSerializer, CreateRestaurantSerializer, UpdateRestaurantSerializer, GetAllRestaurants
+from .serializers import BrandSerializer, RestaurantSerializer, RestaurantInfoSerializer, RestaurantNameIdSerializer
 
 # Rest
 from rest_framework.views import APIView
@@ -52,7 +52,7 @@ class CreateRestaurant(APIView):
             return JsonResponse({'error': ' '.join(errors)}, status=400)
         # Check for unique
 
-        serializer = CreateRestaurantSerializer(data=data)
+        serializer = RestaurantSerializer(data=data)
 
         if serializer.is_valid():
             restaurant = serializer.save()
@@ -66,13 +66,12 @@ class UpdateRestaurant(APIView):
 
     def put(self, request, name):
         data = request.data
-        
+
         brand_name = data['brand']
         brand = Brands.objects.get(name=brand_name)
         data['brand'] = brand.pk
 
         try:
-            restaurant = Restaurant.objects.get(name=name)
 
             # Check for unique
             fields_to_check = ['name']
@@ -80,14 +79,16 @@ class UpdateRestaurant(APIView):
             errors = [
                 f'Given {field} is already taken. Please try another.'
                 for field in fields_to_check
-                if Restaurant.objects.filter(**{field: data.get(field, None)}).exists() > 1
+                if Restaurant.objects.filter(**{field: data.get(field, None)}).exists() >= 1
             ]
 
             if errors:
                 return JsonResponse({'error': ' '.join(errors)}, status=400)
             # Check for unique
 
-            serializer = UpdateRestaurantSerializer(restaurant, data=data)
+            restaurant = Restaurant.objects.get(name=name)
+
+            serializer = RestaurantSerializer(restaurant, data=data)
 
             if serializer.is_valid():
                 serializer.save()
@@ -107,7 +108,8 @@ class GetRestaurants(APIView):
 
         if id:
             restaurant = Restaurant.objects.get(id=id)
-            serializer = RestaurantSerializer(restaurant)
+            serializer = RestaurantInfoSerializer(restaurant)
+
             return JsonResponse(serializer.data, status=200, safe=False)
 
         else:
@@ -123,7 +125,7 @@ class GetRestaurants(APIView):
             paginator = LocalPaginator()
             response_page = paginator.paginate_queryset(queryset, request)
 
-            serialized_data = [RestaurantSerializer(
+            serialized_data = [RestaurantInfoSerializer(
                 restaurant).data for restaurant in response_page]
 
             response_data = {
@@ -137,6 +139,26 @@ class GetRestaurants(APIView):
             }
 
             return JsonResponse(response_data, status=200)
+
+
+class GetRestaurantsNameId(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        query = self.request.query_params.get('search', '').strip()
+
+
+        if query:
+            queryset = queryset.filter(Q(name__icontains=query)) | (
+                Q(id__icontains=query))
+            
+        else:
+            queryset = Restaurant.objects.all()
+            
+
+        serializer = RestaurantNameIdSerializer(queryset, many=True)
+
+        return JsonResponse(serializer.data, status=200, safe=False)
 
 
 class DeleteRestaurant(DestroyAPIView):
@@ -231,7 +253,6 @@ class UpdateBrand(APIView):
         data = request.data
 
         try:
-            brand = Brands.objects.get(id=brandID)
 
             # Check for unique
             fields_to_check = ['name']
@@ -239,12 +260,14 @@ class UpdateBrand(APIView):
             errors = [
                 f'Given {field} is already taken. Please try another.'
                 for field in fields_to_check
-                if Brands.objects.filter(**{field: data.get(field, None)}).exists() > 1
+                if Brands.objects.filter(**{field: data.get(field, None)}).exists() >= 1
             ]
 
             if errors:
                 return JsonResponse({'error': ' '.join(errors)}, status=400)
             # Check for unique
+
+            brand = Brands.objects.get(id=brandID)
 
             serializer = BrandSerializer(brand, data=data)
 

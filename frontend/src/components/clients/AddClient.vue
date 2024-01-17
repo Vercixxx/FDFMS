@@ -499,15 +499,15 @@ export default {
             try {
                 const response = await axios.get(`api/restaurant/get/${this.restId}/`);
                 this.editRest = response.data;
-
+                
                 for (const field of this.allInputs) {
                     this.input_data[field.model] = this.editRest[field.model];
                 }
-
+                
                 this.selectedCountry = this.editRest['country'];
                 this.selectedState = this.editRest['state'];
                 this.selectedManagers = this.editRest['managers'];
-                this.selectedBrand = this.editRest['brand'];
+                this.selectedBrand = this.editRest['brand_name']
 
             }
             catch (error) {

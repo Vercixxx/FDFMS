@@ -111,7 +111,7 @@ class BrandSerializer(serializers.ModelSerializer):
         
      
 # Restaurant serializers   
-class RestaurantSerializer(serializers.ModelSerializer):
+class RestaurantInfoSerializer(serializers.ModelSerializer):
     brand_name = serializers.SerializerMethodField()
 
     class Meta:
@@ -120,3 +120,13 @@ class RestaurantSerializer(serializers.ModelSerializer):
         
     def get_brand_name(self, obj):
         return obj.brand.name
+    
+class RestaurantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Restaurant
+        fields = '__all__'
+        
+class RestaurantNameIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Restaurant
+        fields = ['id', 'name']

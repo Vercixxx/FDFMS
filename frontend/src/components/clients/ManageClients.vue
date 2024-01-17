@@ -39,7 +39,7 @@
         <v-row>
             <v-col justify="start">
                 <div class="text-h4 ma-5 font-weight-bold">
-                    Brands
+                    Restaurants
                 </div>
             </v-col>
             <v-col justify="end" cols="12" sm="4">

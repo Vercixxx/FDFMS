@@ -17,7 +17,10 @@ urlpatterns = [
     path('api/restaurants/get/', views.GetRestaurants.as_view(), name='get-restaurants'),
     
     # Get restaurant
-    path('api/restaurants/get/<int:id>/', views.GetRestaurants.as_view(), name='get-restaurant'),
+    path('api/restaurant/get/<int:id>/', views.GetRestaurants.as_view(), name='get-restaurant'),
+    
+    # Get restaurant name, id
+    path('api/restaurant/get/name-id/', views.GetRestaurantsNameId.as_view(), name='get-restaurant-name-id'),
     
     
     
