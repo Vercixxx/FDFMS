@@ -26,10 +26,10 @@ export default {
                     name: 'HR menu',
                     menu: HrMenu
                 },
-                {
-                    name: 'Asset menu',
-                    menu: AssetMenu
-                },
+                // {
+                //     name: 'Asset menu',
+                //     menu: AssetMenu
+                // },
                 // {
                 //     name: 'Clients menu',
                 //     menu: ClientsMenu
@@ -42,10 +42,10 @@ export default {
                 //     name: 'Manager menu',
                 //     menu: ManagerMenu
                 // },
-                // {
-                //     name: 'Driver menu',
-                //     menu: DriverMenu
-                // },
+                {
+                    name: 'Driver menu',
+                    menu: DriverMenu
+                },
             ]
         };
     },

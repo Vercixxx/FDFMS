@@ -25,11 +25,10 @@
     </v-menu>
     <!-- Home -->
 
-
-    <!-- Other -->
-    <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name" :disabled="button.disabled">
+    <!-- Other buttons -->
+    <v-menu transition="slide-y-transition" v-for="button in buttons" :key="button.name">
         <template v-slot:activator="{ props }">
-            <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="font-weight-bold">
+            <v-list-item :prepend-icon="button.mainIcon" v-bind="props" class="my-3 font-weight-bold">
                 {{ button.name }}
             </v-list-item>
         </template>
@@ -37,12 +36,33 @@
         <v-list density="compact" nav>
 
             <v-list-item v-for="option in button.options" :key="option.name" :prepend-icon="option.icon"
-                :title="option.name" @click="handleButtonClick(option)">
+                :title="option.name" @click="handleButtonClick(option.click)">
             </v-list-item>
 
         </v-list>
     </v-menu>
-    <!-- Other -->
+    <!-- Other buttons -->
+
+
+    <!-- Messages -->
+    <v-menu transition="slide-y-transition">
+        <template v-slot:activator="{ props }">
+            <v-list-item prepend-icon="mdi-email" v-bind="props" class="font-weight-bold">
+                Messages
+            </v-list-item>
+
+        </template>
+
+        <v-list density="compact" nav>
+
+            <!-- Manage -->
+            <v-list-item prepend-icon="mdi-email-multiple-outline" title="Mailbox" @click="showMessages()">
+            </v-list-item>
+            <!-- Manage -->
+
+        </v-list>
+    </v-menu>
+    <!-- Messages -->
 </template>
 
 
@@ -54,11 +74,12 @@ export default {
                 {
                     name: 'Cars',
                     disabled: true,
+                    mainIcon: 'mdi-car',
                     options: [
                         {
                             name: 'Daily report',
                             click: 'AddUserComponent',
-                            icon: '<span class="material-symbols-outlined">add</span>',
+                            icon: 'mdi-plus',
                         },
                         {
                             name: 'Add car damage',
@@ -75,6 +96,7 @@ export default {
                 {
                     name: 'Schedule',
                     disabled: true,
+                    mainIcon: 'mdi-calendar',
                     options: [
                         {
                             name: 'Show my shifts',
@@ -91,6 +113,7 @@ export default {
                 {
                     name: 'Work',
                     disabled: true,
+                    mainIcon: 'mdi-briefcase',
                     options: [
                         {
                             name: 'Statut',
@@ -116,6 +139,10 @@ export default {
 
         homeButton() {
             this.$root.changeCurrentComponent('HomeComponent');
+        },
+
+        showMessages() {
+            this.$root.changeCurrentComponent('MailBoxComponent');
         },
     },
 

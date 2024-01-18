@@ -1,9 +1,9 @@
 <template>
 
   <!-- Variant -->
-  <v-row>
+  <v-row v-if="logged_role !== 'Driver'">
     <v-col cols="5">
-      <v-select v-if="logged_role !== 'Driver'" class="ma-5" label="Choose home variant" v-model="version"
+      <v-select class="ma-5" label="Choose home variant" v-model="version"
         :items="versions" variant="outlined"></v-select>
     </v-col>
     <v-col align="end">

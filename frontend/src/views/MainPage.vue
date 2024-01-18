@@ -263,6 +263,7 @@ const NonReactiveHome = markRaw(Home);
 import AdminNav from '../components/admin/AdminMenu.vue'
 import ClientsNav from "../components/clients/ClientsMenu.vue"
 import HRNav from "../components/hr/HRMenu.vue"
+import DriverNav from "../components/driver/DriverMenu.vue"
 // Navigation Bars
 
 // HR
@@ -400,6 +401,8 @@ export default {
                     return ClientsNav;
                 case "HR":
                     return AdminNav;
+                case "Driver":
+                    return DriverNav;
 
                 default:
                     return null;
