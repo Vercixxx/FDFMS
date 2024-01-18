@@ -12,6 +12,7 @@ urlpatterns = [
     path('', include('fleet.urls')),
     path('', include('posts.urls')),
     path('', include('my_messages.urls')),
+    path('', include('driver.urls')),
     path('', include('other.urls')),
     
 ]
