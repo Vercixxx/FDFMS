@@ -78,18 +78,18 @@ export default {
                     options: [
                         {
                             name: 'Daily report',
-                            click: 'AddUserComponent',
+                            click: 'DailyReportComponent',
                             icon: 'mdi-plus',
                         },
                         {
                             name: 'Add car damage',
-                            click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                            click: '',
+                            icon: 'mdi-car-wrench',
                         },
                         {
                             name: 'Show car damage',
-                            click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                            click: '',
+                            icon: 'mdi-list-status',
                         },
                     ],
                 },
@@ -100,13 +100,13 @@ export default {
                     options: [
                         {
                             name: 'Show my shifts',
-                            click: 'AddUserComponent',
-                            icon: '<span class="material-symbols-outlined">add</span>',
+                            click: '',
+                            icon: 'mdi-calendar-clock',
                         },
                         {
                             name: 'Sign up for shift',
-                            click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                            click: '',
+                            icon: 'mdi-calendar-plus',
                         },
                     ],
                 },
@@ -117,13 +117,13 @@ export default {
                     options: [
                         {
                             name: 'Statut',
-                            click: 'AddUserComponent',
-                            icon: '<span class="material-symbols-outlined">add</span>',
+                            click: '',
+                            icon: 'mdi-file-document-outline',
                         },
                         {
                             name: 'Contracts',
-                            click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                            click: '',
+                            icon: 'mdi-file-document-outline',
                         },
                     ],
                 },

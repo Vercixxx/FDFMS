@@ -292,6 +292,11 @@ import CreateSchedule from '../components/manager/ManageSchedules.vue';
 // Managers
 
 
+// Drivers
+import DailyReport from '..//components/driver/DailyReport.vue';
+// Drivers
+
+
 
 export default {
     data() {
@@ -708,6 +713,31 @@ export default {
             this.currentComponent = CreateSchedule;
         },
         // Managers
+
+
+
+        // Drivers
+        DailyReportComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Cars",
+                    component: '',
+                    disabled: true,                
+                },
+                {
+                    title: "Daily Report",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DailyReport;
+        },
+        // Drivers
 
 
 

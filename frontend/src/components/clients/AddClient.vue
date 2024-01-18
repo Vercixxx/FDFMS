@@ -242,6 +242,101 @@
                     </v-row>
                     <!-- Managers -->
 
+
+
+                    <!-- Drivers -->
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mt-10' : 'border-opacity-50 rounded-xl mt-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
+                    <p align="center" class="text-h4 text-md-h5 text-lg-h5">Drivers</p>
+                    <v-divider :thickness="3"
+                        :class="theme ? 'border-opacity-75 rounded-xl mb-10' : 'border-opacity-50 rounded-xl mb-10'"
+                        :color="theme ? '' : 'info'"></v-divider>
+
+
+                    <v-row>
+                        <v-col cols="12" sm="12">
+                            <v-text-field variant="solo-filled" v-model="driversQuery" label="Search in users"
+                                hint="Click enter to serach" clearable hide-actions
+                                @keydown.enter="getDrivers()"></v-text-field>
+                        </v-col>
+                    </v-row>
+
+                    {{ avaiableDrivers }}
+                    {{ selectedDrivers }}
+
+
+                    <v-row>
+                        <!-- Available -->
+                        <v-col cols="12" sm="5" class="border border-3">
+                            <h5 justify="center" align="center">Available drivers</h5>
+                            <v-data-table :headers="tableHeaders" :items="avaiableDrivers" density="compact"
+                                :loading="driversLoading" hover>
+
+                                <!-- No data -->
+                                <template v-slot:no-data>
+                                    <p class="text-h6 pa-5 text-danger">
+                                        <v-icon icon="mdi-database-alert-outline"></v-icon>
+                                        No available drivers
+                                    </p>
+                                </template>
+                                <!-- No data -->
+
+
+                                <template v-slot:item="{ item }">
+                                    <tr align="center" @click="selectDriver(item.username)" role="button">
+                                        <v-tooltip activator="parent" location="top" no-overflow>
+                                            Click to select
+                                        </v-tooltip>
+
+                                        <td v-for="header in tableHeaders" :key="header.key">
+                                            {{ item[header.key] }}
+                                        </td>
+                                    </tr>
+                                </template>
+
+                            </v-data-table>
+                        </v-col>
+                        <!-- Available -->
+
+                        <v-col cols="2"></v-col>
+
+                        <!-- Selected -->
+                        <v-col cols="12" sm="5" class="border border-3">
+                            <h5 justify="center" align="center">Selected drivers </h5>
+                            <v-data-table :headers="tableHeaders" :items="selectedDrivers" density="compact"
+                                :search="driversQuery" hover>
+
+                                <!-- No data -->
+                                <template v-slot:no-data>
+                                    <p class="text-h6 pa-5 text-danger">
+                                        <v-icon icon="mdi-database-alert-outline"></v-icon>
+                                        No available drivers
+                                    </p>
+                                </template>
+                                <!-- No data -->
+
+
+                                <template v-slot:item="{ item }">
+                                    <tr align="center" @click="unselectDriver(item.username)" role="button">
+                                        <v-tooltip activator="parent" location="top" no-overflow>
+                                            Click to unselect
+                                        </v-tooltip>
+                                        <td v-for="header in tableHeaders" :key="header.key">
+                                            {{ item[header.key] }}
+                                        </td>
+                                    </tr>
+                                </template>
+
+                            </v-data-table>
+                        </v-col>
+                        <!-- Selected -->
+
+                    </v-row>
+                    <!-- Drivers -->
+
+
+
                     <v-row>
 
                         <v-col align="center">
@@ -322,6 +417,16 @@ export default {
             tableHeaders: [
                 { title: 'Username', key: 'username', align: 'center', sortable: false },
             ],
+            // Managers
+
+
+            // Drivers
+            allDrivers: [],
+            avaiableDrivers: [],
+            selectedDrivers: [],
+            driversQuery: '',
+            driversLoading: true,
+            // Drivers
 
             // Search
             query: '',
@@ -413,6 +518,10 @@ export default {
         allInputs() {
             return [...this.basicInfoInputs, ...this.residenceAddress];
         },
+        avaiableDrivers() {
+            const selectedUsers = this.selectedDrivers.map(user => user.username);
+            return this.allDrivers.filter(user => !selectedUsers.includes(user.username));
+        },
     },
 
 
@@ -445,6 +554,9 @@ export default {
 
         // Get managers
         this.getManagers();
+
+        // Get Drivers
+        this.getDrivers();
 
         // Get brands
         this.loadBrands();
@@ -489,6 +601,9 @@ export default {
             this.input_data['managers'] = this.selectedManagers;
             this.input_data['brand'] = this.selectedBrand;
 
+            // Add drivers
+            this.input_data['drivers'] = this.selectedDrivers.map(driver => driver.username);
+
         },
         // Getting data from inputs
 
@@ -499,17 +614,21 @@ export default {
             try {
                 const response = await axios.get(`api/restaurant/get/${this.restId}/`);
                 this.editRest = response.data;
+                console.log(this.editRest);
 
-                
+
                 for (const field of this.allInputs) {
                     this.input_data[field.model] = this.editRest[field.model];
                 }
-                
+
                 this.selectedCountry = this.editRest['country'];
                 this.selectedState = this.editRest['state'];
                 this.selectedManagers = this.editRest['managers'];
                 this.selectedBrand = this.editRest['brand_name']
 
+                this.selectedDrivers = this.editRest['drivers'].map(driver => {
+                    return { username: driver };
+                });
             }
             catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
@@ -566,7 +685,6 @@ export default {
         async loadBrands() {
             try {
                 const response = await axios.get('api/brands/get-all/');
-                console.log(response.data)
                 this.availableBrands = response.data.results.map(item => item.name);
             }
             catch (error) {
@@ -602,6 +720,51 @@ export default {
 
         },
         // Get all managers
+
+
+
+        // Get all Drivers
+        async getDrivers() {
+
+            this.driversLoading = true;
+
+            try {
+                const response = await axios.get('api/users/get-usernames/', {
+                    params: {
+                        role: 'Driver',
+                        search: this.driversQuery,
+                    }
+                });
+
+                this.allDrivers = response.data;
+
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+            };
+
+            this.driversLoading = false;
+
+        },
+        // Get all Drivers
+
+
+        // Drivers selecting and unselecting
+        selectDriver(username) {
+            const userIndex = this.allDrivers.findIndex(user => user.username === username);
+
+            if (userIndex !== -1) {
+                const selectedUser = this.allDrivers[userIndex];
+                this.selectedDrivers.push(selectedUser);
+            }
+        },
+
+        unselectDriver(username) {
+            const userIndex = this.selectedDrivers.findIndex(user => user.username === username);
+            if (userIndex !== -1) {
+                this.selectedDrivers.splice(userIndex, 1)[0];
+            }
+        },
+        // Drivers selecting and unselecting
 
 
         // Create restaurant

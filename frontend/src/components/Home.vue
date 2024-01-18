@@ -1,10 +1,9 @@
 <template>
-
   <!-- Variant -->
   <v-row v-if="logged_role !== 'Driver'">
     <v-col cols="5">
-      <v-select class="ma-5" label="Choose home variant" v-model="version"
-        :items="versions" variant="outlined"></v-select>
+      <v-select class="ma-5" label="Choose home variant" v-model="version" :items="versions"
+        variant="outlined"></v-select>
     </v-col>
     <v-col align="end">
       <v-btn variant="plain" prepend-icon="mdi-plus" class="bg-teal-darken-2" @click="addPost()">
@@ -13,9 +12,15 @@
   </v-row>
   <!-- Variant -->
 
-  <p v-if="posts.length === 0">
-    No data
-  </p>
+
+
+  <v-row v-if="posts.length === 0">
+    <v-col>
+      <h2>No posts</h2>
+    </v-col>
+  </v-row>
+
+
 
   <v-card v-for="post in posts" :key="post.id" class="mx-auto my-8 pa-5 border-2">
     <v-card-item>
@@ -44,8 +49,8 @@
     </v-card-text>
   </v-card>
 
-  <v-pagination v-if="posts.length > 0" v-model="page" class="my-3" :length="pageAmount" :total-visible="5" @next="nextPage()"
-    @prev="prevPage()"></v-pagination>
+  <v-pagination v-if="posts.length > 0" v-model="page" class="my-3" :length="pageAmount" :total-visible="5"
+    @next="nextPage()" @prev="prevPage()"></v-pagination>
 
   <!-- Delete post dialog -->
   <v-dialog v-model="dialogDelete" width="400">
@@ -170,7 +175,7 @@ export default {
         this.$store.dispatch('triggerAlert', { message: 'Succesfully deleted post', type: 'success' });
       } catch (error) {
         this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
-        }
+      }
     },
     // Delete post
 

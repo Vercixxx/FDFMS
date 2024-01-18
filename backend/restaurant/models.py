@@ -36,6 +36,9 @@ class Restaurant(models.Model):
     home = models.CharField(max_length=10, blank=True, null=True)
     apartament = models.CharField(max_length=10, blank=True, null=True)
     zip = models.CharField(max_length=10, blank=True, null=True)
+    
+    # Drivers
+    drivers = models.ManyToManyField(Driver, blank=True)
 
 class WorkChange(models.Model):
     time_start = models.CharField(max_length=5)
