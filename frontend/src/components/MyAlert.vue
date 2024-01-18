@@ -1,9 +1,14 @@
 <template>
     <!-- Snackbar -->
-    <v-snackbar v-model="alert" :timeout="3000" location="top" :color="snackContent.type" style="position: fixed; top: 8vh;">
-        {{ snackContent.message }}
+    <v-snackbar v-model="alert" :timeout="3000" location="top" :color="snackContent.type" style="position: fixed; top: 8vh;"
+        rounded="pill" variant="elevated">
+
+        <span class="font-weight-bold">
+            {{ snackContent.message }}
+        </span>
+
         <template v-slot:actions>
-            <v-btn @click="alert = false">
+            <v-btn @click="alert = false" variant="plain" class="ma-1">
                 Close
             </v-btn>
         </template>

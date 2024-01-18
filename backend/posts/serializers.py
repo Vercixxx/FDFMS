@@ -12,7 +12,6 @@ class GetPostsSerializer(serializers.ModelSerializer):
 
     def get_author_username(self, obj):
         user = obj.author
-        print(user)
         try:
             user = GeneralUser.objects.get(username=user)
             return user.username

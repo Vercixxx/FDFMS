@@ -356,7 +356,6 @@ class UpdateUser(APIView):
 
     def put(self, request, username, user_role):
         data = request.data
-        print(data)
         
         try:
             user_model = GlobalDictionaries.get_serializer(
@@ -413,7 +412,6 @@ class UpdateUser(APIView):
                 address_serializer.is_valid()
                 errors.update(serializer.errors)
                 errors.update(address_serializer.errors)
-                print(errors)
                 return JsonResponse(errors, status=400)
             
 
