@@ -1,8 +1,10 @@
 from django.http import JsonResponse
 
-from .serializers import CarSerializer, CarVinLicensePlateSerializer
+from .serializers import CarSerializer, CarVinLicensePlateSerializer, CarDailyReportsSerializer
 
+# Models
 from .models import Car
+from driver.models import Driver
 
 from rest_framework.views import APIView
 from rest_framework.generics import DestroyAPIView
@@ -151,3 +153,31 @@ class GetVinLicensePlate(APIView):
         serializer = CarVinLicensePlateSerializer(queryset, many=True)
         
         return JsonResponse(serializer.data, status=200, safe=False)
+
+
+
+# Car daily reports
+
+# Add car daily report
+class AddDailyReport(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data
+        
+        # Get driver
+        data['driver'] = Driver.objects.get(username=data['driver'])
+        data['car' ] = Car.objects.get(license_plate=data['car'])
+        
+        
+        serializer = CarDailyReportsSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Successfully added report'}, status=200)
+        
+        else:
+            return JsonResponse(serializer.errors, status=400)
+# Add car daily report
+
+# Car daily reports
