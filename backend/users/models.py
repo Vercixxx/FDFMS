@@ -28,7 +28,7 @@ class GeneralUser(AbstractUser):
         default='Administrator'
     )
     
-    phone = models.CharField(max_length=25, blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
 
     
     bank_account_number = models.CharField(max_length=30, blank=True, null=True)

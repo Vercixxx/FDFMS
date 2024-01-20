@@ -125,9 +125,11 @@ class EditCar(APIView):
         try:
             car = Car.objects.get(vin=vin)
             serializer = CarSerializer(car, data=data)
+            print(data)
 
             if serializer.is_valid():
                 serializer.save()
+                print(serializer.data)
                 return JsonResponse({'message': 'Success'}, status=200)
 
             else:

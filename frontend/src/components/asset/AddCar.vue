@@ -149,20 +149,26 @@
 
 
                     <!-- OC and AC -->
-                    <v-row class="d-flex justify-center" v-if="!editing">
+                    <v-row class="d-flex justify-center">
                         <v-col cols="auto">
                             <v-switch v-model="oc" label="Does car has OC" inset :color="oc ? 'green' : ''"></v-switch>
                         </v-col>
-                    </v-row>
 
-                    <v-row class="d-flex justify-center" v-if="!editing">
                         <v-col cols="auto">
                             <v-switch v-model="ac" label="Does car has AC" inset :color="ac ? 'green' : ''">
                             </v-switch>
 
                         </v-col>
+                        <!-- OC and AC -->
+
+
+                        <!-- Active -->
+                        <v-col cols="auto">
+                            <v-switch v-model="active" label="Is car active" inset
+                                :color="active ? 'green' : ''"></v-switch>
+                        </v-col>
+                        <!-- Active -->
                     </v-row>
-                    <!-- OC and AC -->
 
 
 
@@ -219,6 +225,8 @@ export default {
                 v => /^[a-zA-Z0-9]+$/.test(v) || 'Vin can only contain numbers and letters',
             ],
             vin: '',
+
+            active: true,
 
             basicInfoInputs: [
                 {
@@ -434,7 +442,12 @@ export default {
                 }
             }
 
+            this.input_data['year_of_prod'] = this.year_of_prod;
+            this.input_data['transmission'] = this.transmission.title;
+            this.input_data['is_oc'] = this.oc;
+            this.input_data['is_ac'] = this.ac;
             this.input_data['vin'] = this.vin;
+            this.input_data['active'] = this.active;
         },
         // Get data from inputs
 
@@ -443,11 +456,6 @@ export default {
         // Create car
         async createCar() {
             this.getDataFromInputs();
-
-            this.input_data['year_of_prod'] = this.year_of_prod;
-            this.input_data['transmission'] = this.transmission.title;
-            this.input_data['is_oc'] = this.oc;
-            this.input_data['is_ac'] = this.ac;
 
             try {
                 const response = await axios.post('api/car/create/', this.input_data);
@@ -489,6 +497,8 @@ export default {
                 this.oc = this.editingCar['is_oc'];
                 this.ac = this.editingCar['is_ac'];
                 this.vin = this.editingCar['vin'];
+                this.active = this.editingCar['active'];
+
             } catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
@@ -502,11 +512,7 @@ export default {
         // Update car
         async updateCar() {
             // Generate dict for sending
-            this.input_data['year_of_prod'] = this.year_of_prod;
-            this.input_data['transmission'] = this.transmission.title;
-            this.input_data['is_oc'] = this.oc;
-            this.input_data['is_ac'] = this.ac;
-            this.input_data['vin'] = this.vin;
+            this.getDataFromInputs();
 
             // Send put request
             try {

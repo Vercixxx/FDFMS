@@ -10,6 +10,8 @@ class Car(models.Model):
 
     license_plate = models.TextField(
         max_length=10, unique=True, null=True, blank=True)
+    
+    active = models.BooleanField(default=True)
 
     brand = models.TextField()
     model = models.TextField()
@@ -41,7 +43,7 @@ class Car(models.Model):
     policy_number = models.TextField()
     is_oc = models.BooleanField()
     is_ac = models.BooleanField()
-    phone_policy_contact = models.IntegerField()
+    phone_policy_contact = models.CharField(max_length=20)
 
     def __str__(self):
         return self.vin

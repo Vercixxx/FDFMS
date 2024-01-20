@@ -71,7 +71,7 @@
 
             <!-- Accessing table cells -->
             <template v-slot:item="{ item }">
-                <tr align="center">
+                <tr align="center" :style="item.active ? '':'color: red'">
                     <td v-for="header in updatedColumns" :key="header.key">
                         <template v-if="header.key === 'action'">
                             <span>
@@ -226,7 +226,6 @@
     </v-dialog>
     <!-- dialog -->
 
-
     <!-- Dialog details -->
 </template>
 
@@ -263,7 +262,8 @@ export default {
                 { title: 'VIN', key: 'vin', align: 'center', sortable: false },
             ],
             columns: [
-                { title: 'License plate', key: 'license_plate', align: 'center', sortable: false},
+                { title: 'License plate', key: 'license_plate', align: 'center', sortable: false },
+                { title: 'Active status', key: 'active', align: 'center', sortable: false },
                 { title: 'Brand', key: 'brand', align: 'center', sortable: false },
                 { title: 'Model', key: 'model', align: 'center', sortable: false },
                 { title: 'Color', key: 'color', align: 'center', sortable: false },
@@ -293,15 +293,9 @@ export default {
     created() {
         this.loadCars();
 
-        this.selectedColumns = [
-            this.columns[0],
-            this.columns[1],
-            this.columns[3],
-            this.columns[8],
-            this.columns[9],
-            this.columns[10],
-            this.columns[11],
-        ];
+        this.selectedColumns = this.columns.filter(column =>
+            ['license_plate', 'active', 'mileage'].includes(column.key)
+        );
         this.avaliableColumns = this.columns;
     },
 
