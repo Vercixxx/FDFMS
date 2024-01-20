@@ -262,10 +262,6 @@
                         </v-col>
                     </v-row>
 
-                    {{ avaiableDrivers }}
-                    {{ selectedDrivers }}
-
-
                     <v-row>
                         <!-- Available -->
                         <v-col cols="12" sm="5" class="border border-3">
@@ -383,8 +379,7 @@
 <script>
 import axios from 'axios';
 import useEventsBus from '../../plugins/eventBus.js'
-import { ref, watch } from "vue";
-const { emit } = useEventsBus()
+import { watch } from "vue";
 import { useTheme } from 'vuetify'
 
 

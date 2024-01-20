@@ -23,9 +23,8 @@ class GetRestaurants(APIView):
         restaurants = Restaurant.objects.filter(drivers=driver)
         result = {}
 
-
         for restaurant in restaurants:
             fleets = Fleet.objects.filter(restaurant=restaurant)
-            result[restaurant.name] = [car.license_plate for fleet in fleets for car in fleet.cars.all()]
+            result[restaurant.name] = [car.license_plate for fleet in fleets for car in fleet.cars.filter(active=True)]
 
         return JsonResponse(result, safe=False)

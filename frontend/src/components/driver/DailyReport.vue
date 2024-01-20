@@ -18,14 +18,14 @@
 
             <span v-if="card == 1">
                 <v-autocomplete variant="solo-filled" :items="availableRestaurants" v-model="selectedRestaurant"
-                    label="Select restaurant" @update:model-value="getCars()"></v-autocomplete>
+                    label="Select restaurant" @update:model-value="getCars()" no-data-text="Sorry, you don't belong to any restaurant"></v-autocomplete>
             </span>
 
 
 
             <span v-else-if="card == 2">
                 <v-autocomplete variant="solo-filled" :disabled="selectedRestaurant == null" :items="availableCars"
-                    label="Select car" v-model="selectedCar"></v-autocomplete>
+                    label="Select car" v-model="selectedCar" no-data-text="Sorry, there isn't available cars for selected restaurant"></v-autocomplete>
             </span>
 
 
