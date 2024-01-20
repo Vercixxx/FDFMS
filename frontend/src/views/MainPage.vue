@@ -294,6 +294,7 @@ import CreateSchedule from '../components/manager/ManageSchedules.vue';
 
 // Drivers
 import DailyReport from '..//components/driver/DailyReport.vue';
+import AddCarDamage from '../components/driver/AddCarDamage.vue';
 // Drivers
 
 
@@ -736,6 +737,27 @@ export default {
                 },
             ];
             this.currentComponent = DailyReport;
+        },
+
+        AddCarDamageComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Cars",
+                    component: '',
+                    disabled: true,                
+                },
+                {
+                    title: "Add Car Damage",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = AddCarDamage;
         },
         // Drivers
 

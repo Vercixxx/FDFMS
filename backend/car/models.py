@@ -89,3 +89,15 @@ class CarDailyReports(models.Model):
 
     class Meta:
         db_table = 'CarDailyReports'
+        
+class CarDamage(models.Model):
+    date = models.DateTimeField(auto_now_add=True)
+
+    driver = models.ForeignKey(
+        Driver, db_column='driver', on_delete=models.CASCADE)
+    car = models.ForeignKey(Car, db_column='car', on_delete=models.CASCADE)
+
+    car_mileage = models.CharField(max_length=7)
+
+    description = models.TextField(max_length=1000)
+    

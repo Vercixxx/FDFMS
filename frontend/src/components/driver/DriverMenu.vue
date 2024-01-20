@@ -83,14 +83,14 @@ export default {
                         },
                         {
                             name: 'Add car damage',
-                            click: '',
+                            click: 'AddCarDamageComponent',
                             icon: 'mdi-car-wrench',
                         },
-                        {
-                            name: 'Show car damage',
-                            click: '',
-                            icon: 'mdi-list-status',
-                        },
+                        // {
+                        //     name: 'Show car damage',
+                        //     click: '',
+                        //     icon: 'mdi-list-status',
+                        // },
                     ],
                 },
                 {

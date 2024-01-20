@@ -26,4 +26,7 @@ urlpatterns = [
     
     # Car daily reports
     path('api/car/dailyreport/add/', views.AddDailyReport.as_view(), name="add-daily-report"),
+    
+    # Add car damage
+    path('api/car/damage/add/', views.AddCarDamage.as_view(), name="add-car-damage"),
 ]

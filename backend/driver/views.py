@@ -1,9 +1,5 @@
 from django.http import JsonResponse
 
-
-# Serializers
-# from .serializers import BrandSerializer, RestaurantSerializer, RestaurantInfoSerializer, RestaurantNameIdSerializer
-
 # Rest
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -31,7 +27,5 @@ class GetRestaurants(APIView):
         for restaurant in restaurants:
             fleets = Fleet.objects.filter(restaurant=restaurant)
             result[restaurant.name] = [car.license_plate for fleet in fleets for car in fleet.cars.all()]
-
-        print(result)
 
         return JsonResponse(result, safe=False)

@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from .serializers import CarSerializer, CarVinLicensePlateSerializer, CarDailyReportsSerializer
+from .serializers import CarSerializer, CarVinLicensePlateSerializer, CarDailyReportsSerializer, CarDamageSerializer
 
 # Models
 from .models import Car
@@ -157,8 +157,6 @@ class GetVinLicensePlate(APIView):
 
 
 # Car daily reports
-
-# Add car daily report
 class AddDailyReport(APIView):
     permission_classes = [IsAuthenticated]
     
@@ -178,6 +176,28 @@ class AddDailyReport(APIView):
         
         else:
             return JsonResponse(serializer.errors, status=400)
-# Add car daily report
-
 # Car daily reports
+
+
+# Add car damage
+class AddCarDamage(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data
+        
+        # Get driver
+        data['driver'] = Driver.objects.get(username=data['driver'])
+        data['car' ] = Car.objects.get(license_plate=data['car'])
+        
+        
+        serializer = CarDamageSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Successfully added report'}, status=200)
+        
+        else:
+            print(serializer.errors)
+            return JsonResponse(serializer.errors, status=400)
+# Add car damage
