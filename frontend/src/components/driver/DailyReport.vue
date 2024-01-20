@@ -237,7 +237,7 @@ export default {
                 const response = await axios.post(`api/car/dailyreport/add/`, {
                     driver: this.loggedUser,
                     car: this.selectedCar,
-                    mileage: this.mileage,
+                    car_mileage: this.mileage,
                     carCondition: this.carCondition,
                     cleanliness: this.cleanliness,
                     additional_remarks: this.additional_remarks.length > 0 ? this.additional_remarks : null,

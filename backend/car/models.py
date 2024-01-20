@@ -57,7 +57,7 @@ class CarDailyReports(models.Model):
         Driver, db_column='driver', on_delete=models.CASCADE)
     car = models.ForeignKey(Car, db_column='car', on_delete=models.CASCADE)
 
-    car_mileage = models.IntegerField(null=True)
+    car_mileage = models.CharField(max_length=7)
 
     car_condition_options = (
         ('3', '3'),
@@ -86,18 +86,6 @@ class CarDailyReports(models.Model):
     )
 
     additional_remarks = models.TextField(null=True, blank=True)
-
-    def formatted_date(self):
-        return self.date.strftime('%d:%m:%Y:%H:%M') if self.date else ""
-
-    def save(self, *args, **kwargs):
-        if self.formatted_date():
-            self.date = timezone.datetime.strptime(
-                self.formatted_date(), '%d:%m:%Y:%H:%M')
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.date, self.car, self.car_mileage
 
     class Meta:
         db_table = 'CarDailyReports'
