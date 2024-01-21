@@ -15,7 +15,6 @@
             </v-row>
 
 
-
             <span v-if="card == 1">
                 <v-autocomplete variant="solo-filled" :items="availableRestaurants" v-model="selectedRestaurant"
                     label="Select restaurant" @update:model-value="getCars()" no-data-text="Sorry, you don't belong to any restaurant"></v-autocomplete>

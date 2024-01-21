@@ -1,7 +1,6 @@
 <template>
     <div>
 
-
         <v-card align='center' justify="center">
             <v-row class="mb-2">
 
@@ -233,6 +232,7 @@ export default {
         mileage(newMileage) {
             this.buttons[3].active = newMileage && newMileage.length <= 7 && /^\d+$/.test(newMileage) && this.description && this.description.length <= 1000;
         },
+
         description(newDescription) {
             this.buttons[3].active = this.mileage && this.mileage.length <= 7 && /^\d+$/.test(this.mileage) && newDescription && newDescription.length <= 1000;
         },
