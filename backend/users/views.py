@@ -127,7 +127,7 @@ class UsersPagination(PageNumberPagination):
 class GetGeneralUsers(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = UsersPagination
-    
+
     @staticmethod
     def get_addresses(username):
         try:
@@ -138,7 +138,7 @@ class GetGeneralUsers(APIView):
             return {'error': 'User not found'}
         except Addresses.DoesNotExist:
             return {'error': 'Address not found'}
-    
+
     def get(self, request):
         limit = self.request.query_params.get('limit', '').strip()
         query = self.request.query_params.get('search', '').strip()
@@ -146,7 +146,8 @@ class GetGeneralUsers(APIView):
         status = self.request.query_params.get('status', '').strip()
 
         # Choosing correct serializer and user model
-        serializer_class = GlobalDictionaries.get_serializer('UserSerializers', role)
+        serializer_class = GlobalDictionaries.get_serializer(
+            'UserSerializers', role)
         serializer_class = serializer_class or GeneralUserSerializer
         user_model = GlobalDictionaries.get_serializer('UserModels', role)
 
@@ -157,17 +158,18 @@ class GetGeneralUsers(APIView):
             queryset = queryset.filter(is_active=True)
         elif status == 'False':
             queryset = queryset.filter(is_active=False)
-            
+
         # Additional filtering using Q
         if query:
-            queryset = queryset.filter(Q(username__icontains=query) | Q(email__icontains=query))
+            queryset = queryset.filter(
+                Q(username__icontains=query) | Q(email__icontains=query))
 
         # Sort by date
         queryset = queryset.order_by(F('date_joined').desc(nulls_last=True))
 
         paginator = UsersPagination()
         result_page = paginator.paginate_queryset(queryset, request)
-        
+
         serialized_data = []
         for user in result_page:
             user_data = serializer_class(user).data
@@ -185,7 +187,6 @@ class GetGeneralUsers(APIView):
             'total_results': queryset.count(),
         }
         return JsonResponse(response_data, status=200)
-
 
 
 class GetUsernames(APIView):
@@ -218,7 +219,7 @@ class UserAuth(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
-        
+
         # Check for is.active
         try:
             user = GeneralUser.objects.get(username=username)
@@ -226,10 +227,8 @@ class UserAuth(APIView):
                 return JsonResponse({'error': 'Error, user is not active'}, status=400)
         except:
             pass
-        
 
         general_user = authenticate(username=username, password=password)
-        
 
         if general_user is not None:
 
@@ -251,7 +250,6 @@ class UserAuth(APIView):
 
         else:
             return JsonResponse({'error': 'Invalid username or password'})
-        
 
     def get_tokens_for_user(self, user):
         refresh = RefreshToken.for_user(user)
@@ -267,24 +265,20 @@ class AddUser(APIView):
 
     def post(self, request):
         data = request.data
-        
-        
-        # Checking for duplicates
+
+        # Check for unique
         fields_to_check = ['email']
-        conflicting_fields = []
 
-        for field_name in fields_to_check:
-            if field_name in data:
-                field_value = data[field_name]
-                exclude_conditions = {field_name: field_value}
-                if GeneralUser.objects.exclude(username=data['username']).filter(**exclude_conditions).exists():
-                    conflicting_fields.append(field_name)
+        errors = [
+            f'Given {field} is already taken. Please try another.'
+            for field in fields_to_check
+            if GeneralUser.objects.filter(**{field: data.get(field, None)}).exists()
+        ]
 
-        if conflicting_fields:
-            error_message = f'The following fields are already taken: {", ".join(conflicting_fields)}. Please try another.'
-            return JsonResponse({'error': error_message}, status=400)
-        # Checking for duplicates
-        
+        if errors:
+            return JsonResponse({'error': ' '.join(errors)}, status=400)
+        # Check for unique
+
         user_role = data['user_role']
 
         # Password generating
@@ -297,19 +291,17 @@ class AddUser(APIView):
 
         serializer = serializer_class(data=data)
 
-        
         response_data = {}
 
         if serializer.is_valid():
             account = serializer.save()
             account.set_password(generated_password)
             account.save()
-            
+
         else:
             response_data = serializer.errors
             return JsonResponse(response_data, status=400)
-        
-            
+
         # Address
         residence_state_name = data['residence_state']
         registered_state_name = data['registered_state']
@@ -317,26 +309,27 @@ class AddUser(APIView):
 
         residence_state = State.objects.get(name=residence_state_name)
         registered_state = State.objects.get(name=registered_state_name)
-        correspondence_state = State.objects.get(name=correspondence_state_name)
+        correspondence_state = State.objects.get(
+            name=correspondence_state_name)
 
         data['residence_state'] = residence_state.id
         data['registered_state'] = registered_state.id
         data['correspondence_state'] = correspondence_state.id
-        
+
         addres_serializer = GeneralAddressesSerializer(data=data)
-        # Address 
-            
+        # Address
+
         if addres_serializer.is_valid():
             addres_serializer.save()
-            
+
             response_data['message'] = f'Succesfully registered {account.username}'
             print("Created ", account.username,
                   " with password: ", generated_password)
-            
+
         else:
             response_data = addres_serializer.errors
             return JsonResponse(response_data, status=400)
-            
+
         return JsonResponse(response_data, status=201)
 
     def generate_password(self):
@@ -356,8 +349,7 @@ class getUser(APIView):
         user_serializer = GlobalDictionaries.get_serializer(
             'GetUserSerializers', user_role)
         serializer_instance = user_serializer(user)
-        
-        
+
         output = serializer_instance.data
         return JsonResponse(output, status=200, safe=False)
 
@@ -367,7 +359,7 @@ class UpdateUser(APIView):
 
     def put(self, request, username, user_role):
         data = request.data
-        
+
         try:
             user_model = GlobalDictionaries.get_serializer(
                 'UserModels', user_role)
@@ -394,24 +386,27 @@ class UpdateUser(APIView):
             serializer_class = GlobalDictionaries.get_serializer(
                 'UpdateUserSerializers', user_role)
             serializer = serializer_class(user, data=data)
-            
+
             # Address
             residence_state_name = data['residence_state']
             registered_state_name = data['registered_state']
             correspondence_state_name = data['correspondence_state']
 
-            residence_state = State.objects.get(name__icontains=residence_state_name.split(' (')[0].strip())
-            registered_state = State.objects.get(name__icontains=registered_state_name.split(' (')[0].strip())
-            correspondence_state = State.objects.get(name__icontains=correspondence_state_name.split(' (')[0].strip())
+            residence_state = State.objects.get(
+                name__icontains=residence_state_name.split(' (')[0].strip())
+            registered_state = State.objects.get(
+                name__icontains=registered_state_name.split(' (')[0].strip())
+            correspondence_state = State.objects.get(
+                name__icontains=correspondence_state_name.split(' (')[0].strip())
 
             data['residence_state'] = residence_state.id
             data['registered_state'] = registered_state.id
             data['correspondence_state'] = correspondence_state.id
-            
-            address_instance = Addresses.objects.get(username=data['username'])
-            address_serializer = GeneralAddressesSerializer(address_instance, data=data)
-            # Address 
 
+            address_instance = Addresses.objects.get(username=data['username'])
+            address_serializer = GeneralAddressesSerializer(
+                address_instance, data=data)
+            # Address
 
             if serializer.is_valid() and address_serializer.is_valid():
                 serializer.save()
@@ -424,7 +419,6 @@ class UpdateUser(APIView):
                 errors.update(serializer.errors)
                 errors.update(address_serializer.errors)
                 return JsonResponse(errors, status=400)
-            
 
         except GeneralUser.DoesNotExist:
             return JsonResponse({'error': 'User does not exist.'}, status=404)
@@ -438,6 +432,3 @@ class ChangeUserState(APIView):
         user.is_active = not user.is_active
         user.save()
         return JsonResponse({'message': 'Changed successfully'}, status=200)
-    
-    
-    

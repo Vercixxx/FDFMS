@@ -66,7 +66,7 @@ export default {
                         },
                         {
                             name: 'Show drivers',
-                            click: 'ModifyUserComponent',
+                            click: 'ManageDriversComponent',
                             icon: 'mdi-list-status',
                         },
                     ],

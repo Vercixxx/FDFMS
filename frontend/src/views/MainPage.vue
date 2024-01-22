@@ -264,6 +264,7 @@ import AdminNav from '../components/admin/AdminMenu.vue'
 import ClientsNav from "../components/clients/ClientsMenu.vue"
 import HRNav from "../components/hr/HRMenu.vue"
 import DriverNav from "../components/driver/DriverMenu.vue"
+import RestManagerNav from "../components/manager/ManagerMenu.vue"
 // Navigation Bars
 
 // HR
@@ -289,6 +290,7 @@ import ManageFleets from '../components/asset/ManageFleets.vue';
 
 // Managers
 import CreateSchedule from '../components/manager/ManageSchedules.vue';
+import ManageDrivers from '../components/manager/ManageDrivers.vue';
 // Managers
 
 
@@ -409,6 +411,8 @@ export default {
                     return AdminNav;
                 case "Driver":
                     return DriverNav;
+                case "Manager":
+                    return RestManagerNav;
 
                 default:
                     return null;
@@ -712,6 +716,27 @@ export default {
                 },
             ];
             this.currentComponent = CreateSchedule;
+        },
+
+        ManageDriversComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Drivers",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Manage Drivers',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = ManageDrivers;
         },
         // Managers
 
