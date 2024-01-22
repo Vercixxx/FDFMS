@@ -242,7 +242,6 @@ export default {
         password: null,
         passwordVisible: false,
         loading: false,
-        atempt: 0,
 
 
         alert: false,
@@ -271,20 +270,7 @@ export default {
         },
     },
 
-    mounted() {
-        const rememberedUsername = localStorage.getItem('username')
-        const rememberedPassword = localStorage.getItem('password')
 
-        if (rememberedUsername && rememberedPassword) {
-            this.$refs.usernameInput.value = rememberedUsername;
-            this.$refs.passwordInput.value = rememberedPassword;
-
-            this.$refs.usernameInput.dispatchEvent(new Event('input'));
-            this.$refs.passwordInput.dispatchEvent(new Event('input'));
-        }
-
-
-    },
 
     methods: {
         onSubmit() {
@@ -317,25 +303,21 @@ export default {
             try {
                 const response = await axios.post('api/v1/login/', data)
 
-                if (response.data.error) {
-                    // alert
-                    this.errorContent = response.data.error;
-                    this.alert = true;
-                }
-                else {
-                    // Authentication was successfull
+                // Authentication was successfull
 
-                    // Vuex
-                    this.$store.dispatch('setuserData', response.data.data);
+                // Vuex
+                this.$store.dispatch('setuserData', response.data.data);
 
-                    this.$store.commit('setAccessToken', response.data.jwt.access);
-                    this.$store.commit('setRefreshToken', response.data.jwt.refresh);
+                this.$store.commit('setAccessToken', response.data.jwt.access);
+                this.$store.commit('setRefreshToken', response.data.jwt.refresh);
 
-                    axios.defaults.headers.common['Authorization'] = `JWT ${response.data.jwt.access}`;
+                axios.defaults.headers.common['Authorization'] = `JWT ${response.data.jwt.access}`;
 
-                    this.$router.push('/dashboard');
+                this.$router.push('/dashboard');
 
-                }
+
+
+
             }
             catch (error) {
                 if (error.message === "Network Error") {
@@ -343,7 +325,7 @@ export default {
                     this.alert = true;
                 }
                 else {
-                    this.errorContent = "Error. Please try again.";
+                    this.errorContent = error.response.data.error;
                     this.alert = true;
                 }
             }

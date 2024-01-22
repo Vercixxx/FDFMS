@@ -218,8 +218,18 @@ class UserAuth(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
+        
+        # Check for is.active
+        try:
+            user = GeneralUser.objects.get(username=username)
+            if not user.is_active:
+                return JsonResponse({'error': 'Error, user is not active'}, status=400)
+        except:
+            pass
+        
 
         general_user = authenticate(username=username, password=password)
+        
 
         if general_user is not None:
 
@@ -241,6 +251,7 @@ class UserAuth(APIView):
 
         else:
             return JsonResponse({'error': 'Invalid username or password'})
+        
 
     def get_tokens_for_user(self, user):
         refresh = RefreshToken.for_user(user)
