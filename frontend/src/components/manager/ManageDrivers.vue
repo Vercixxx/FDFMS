@@ -17,7 +17,7 @@
 
                                         <v-autocomplete variant="outlined" v-model="selectedRestaurant"
                                             :items="avaliableRestaurants" label="Select restaurant" prepend-icon="mdi-store"
-                                            no-data-text="Sorry, you don't belong to any restaurants"></v-autocomplete>
+                                            no-data-text="Sorry, you don't belong to any restaurants" @update:model-value="loadUsers()"></v-autocomplete>
 
                                     </v-col>
                                     <v-col cols="auto">
@@ -76,16 +76,20 @@
 
                 <!-- Search bar -->
                 <v-text-field variant="solo-filled" v-model="query" @keydown.enter="loadUsers()" label="Search"
-                    class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions clearable hint="Press enter to search" />
+                    class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions clearable hint="Press enter to search" :disabled="selectedRestaurant == null"/>
                 <!-- Search bar -->
 
             </v-col>
         </v-row>
 
+        <h3 v-if="selectedRestaurant == null">
+            Select restaurant first
+        </h3>
+
         <!-- Table -->
         <v-data-table :headers="updatedColumns" :items="users" :loading="loading" density="compact"
             class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover
-            show-current-page>
+            show-current-page v-if="selectedRestaurant != null">
 
 
 
@@ -93,10 +97,7 @@
             <template v-slot:no-data>
                 <p class="text-h4 pa-5">
                     <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
-                    <span v-if="selectedRestaurant == null">
-                        Select restaurant
-                    </span>
-                    <span v-else>
+                    <span>
                         No data for selected restaurant
                     </span>
                 </p>
@@ -285,7 +286,7 @@
             </v-card>
         </v-dialog>
         <!-- dialog -->
-{{ avaliableRestaurants }}
+
         <!-- Dialaogs section -->
     </div>
 </template>
@@ -365,6 +366,7 @@ export default {
             ],
 
             DriverHeaders: [
+                { title: 'RESTAURANT', align: 'center', key: 'restaurant_name', sortable: false },
                 { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
                 { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
                 { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
@@ -406,8 +408,6 @@ export default {
 
         this.loggedUserUsername = this.$store.getters.userData.username;
 
-        this.loadUsers();
-
         this.getRestaurants();
 
 
@@ -416,7 +416,7 @@ export default {
 
     created() {
         this.selectedColumns = this.DriverHeaders.filter(column =>
-            ['email', 'is_active'].includes(column.key)
+            ['restaurant_name', 'email', 'is_active'].includes(column.key)
         );
 
         this.avaliableColumns = this.DriverHeaders;
@@ -427,15 +427,16 @@ export default {
     methods: {
         async loadUsers(url) {
             this.loading = true;
+
             try {
                 const response = url
                     ? await axios.get(url)
-                    : await axios.get('api/users/getall', {
+                    : await axios.get('api/drivers/get/all/', {
                         params: {
                             limit: this.itemsPerPage,
                             search: this.query,
-                            role: 'Driver',
                             status: this.selectedActive,
+                            restaurant: this.selectedRestaurant,
                         }
                     });
 
@@ -449,6 +450,7 @@ export default {
                 }
 
                 this.users = response.data.results;
+                console.log(this.users);
 
                 // Add number for each row
                 this.users.forEach((user, index) => {
@@ -483,7 +485,7 @@ export default {
                         username: this.loggedUserUsername,
                     }
                 });
-     
+
                 this.avaliableRestaurants = response.data.map(restaurant => restaurant.name);
 
             }

@@ -56,6 +56,25 @@ class DriverSerializer(serializers.ModelSerializer):
                   ]
 
 
+class RestaurantDriversSerliazer(serializers.ModelSerializer):
+    restaurant_name = serializers.CharField(read_only=True)
+    date_joined = serializers.DateTimeField(format='%Y-%m-%d')
+
+    class Meta:
+        model = Driver
+        fields = ['email',
+                  'first_name',
+                  'is_active',
+                  'last_name',
+                  'user_role',
+                  'username',
+                  'phone',
+                  'date_joined',
+                  'restaurant_name',
+                  ]
+
+
+
 class AddDriverSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver
