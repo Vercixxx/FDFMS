@@ -13,7 +13,7 @@ from restaurant.models import Restaurant
 from users.models import GeneralUser, Addresses
 
 # Serializers
-from .serializers import RestaurantDriversSerliazer
+from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer
 from users.serializers import ResidenceAddressSerializer
 
 
@@ -45,6 +45,32 @@ class UsersPagination(PageNumberPagination):
             return self.max_page_size
         return page_size
     
+    
+class GetDriversUsernames(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        restaurant = self.request.query_params.get('restaurant', '').strip()
+
+        # Choosing correct serializer and user model
+        serializer_class = DriverUsernameSerializer
+        user_model = Driver
+
+        queryset = user_model.objects.all()
+        
+        # Get users from selected restaurant
+        restaurants = Restaurant.objects.filter(name=restaurant)
+        
+        drivers = Driver.objects.none()
+
+        for restaurant in restaurants:
+            drivers |= restaurant.drivers.all().order_by('date_joined')
+
+        queryset = drivers.filter(is_active=True)
+
+        serialized_data = serializer_class(queryset, many=True).data
+        return JsonResponse(serialized_data, status=200, safe=False)
+
     
 class GetDrivers(APIView):
     permission_classes = [IsAuthenticated]

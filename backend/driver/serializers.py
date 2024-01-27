@@ -73,6 +73,10 @@ class RestaurantDriversSerliazer(serializers.ModelSerializer):
                   'restaurant_name',
                   ]
 
+class DriverUsernameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Driver
+        fields = ['username', 'first_name', 'last_name']
 
 
 class AddDriverSerializer(serializers.ModelSerializer):

@@ -102,7 +102,8 @@
 
                             <v-tooltip text="Logout" location="bottom">
                                 <template v-slot:activator="{ props }">
-                                    <v-btn :ripple="false" variant="plain" v-bind="props" icon="mdi-logout" @click="logoutDialog = true">
+                                    <v-btn :ripple="false" variant="plain" v-bind="props" icon="mdi-logout"
+                                        @click="logoutDialog = true">
                                     </v-btn>
                                 </template>
                             </v-tooltip>
@@ -185,7 +186,7 @@
                         <v-icon :icon="social.icon" />
                     </a>
                 </span>
-                
+
                 {{ new Date().getFullYear() }} — Krzysztof Służałek
 
             </div>
@@ -291,6 +292,7 @@ import ManageFleets from '../components/asset/ManageFleets.vue';
 // Managers
 import CreateSchedule from '../components/manager/ManageSchedules.vue';
 import ManageDrivers from '../components/manager/ManageDrivers.vue';
+import DailyDriverReport from '../components/manager/DailyDriverReport.vue';
 // Managers
 
 
@@ -738,6 +740,27 @@ export default {
             ];
             this.currentComponent = ManageDrivers;
         },
+
+        DailyDriverReportComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Drivers",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Daily Report',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DailyDriverReport;
+        },
         // Managers
 
 
@@ -753,7 +776,7 @@ export default {
                 {
                     title: "Cars",
                     component: '',
-                    disabled: true,                
+                    disabled: true,
                 },
                 {
                     title: "Daily Report",
@@ -774,7 +797,7 @@ export default {
                 {
                     title: "Cars",
                     component: '',
-                    disabled: true,                
+                    disabled: true,
                 },
                 {
                     title: "Add Car Damage",

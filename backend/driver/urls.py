@@ -8,4 +8,7 @@ urlpatterns = [
     
     # Get Drivers
     path('api/drivers/get/all/', views.GetDrivers.as_view(), name='get_drivers'),
+    
+    # Get Drivers usernames
+    path('api/drivers/get/usernames/', views.GetDriversUsernames.as_view(), name='get_drivers_usernames'),
 ]

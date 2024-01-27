@@ -61,7 +61,7 @@ export default {
                     options: [
                         {
                             name: 'Daily driver report',
-                            click: 'AddUserComponent',
+                            click: 'DailyDriverReportComponent',
                             icon: 'mdi-plus',
                         },
                         {

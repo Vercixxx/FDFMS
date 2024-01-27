@@ -1,201 +1,209 @@
 <template>
     <div>
 
-        <div class="mt-5 mb-5">
+        <h2 v-if="selectedRestaurant == null">
+            Select restaurant first
+        </h2>
+
+        <v-autocomplete variant="outlined" v-model="selectedRestaurant" :items="avaliableRestaurants"
+            label="Select restaurant" prepend-icon="mdi-store" no-data-text="Sorry, you don't belong to any restaurants"
+            @update:model-value="loadUsers()"></v-autocomplete>
 
 
-            <!-- Search bar section -->
+        <span v-if="selectedRestaurant != null">
+
+            <div class="mt-5 mb-5">
+
+
+                <!-- Search bar section -->
+                <v-row>
+
+                    <v-col cols="12" sm="12">
+                        <v-expansion-panels>
+                            <v-expansion-panel title="Filters" elevation="1" style="border: 1px solid teal;">
+
+                                <v-expansion-panel-text>
+                                    <v-row justify="center" align="center">
+                                        <v-col cols="auto">
+                                            <!-- User status -->
+                                            <v-menu transition="slide-y-transition">
+                                                <template v-slot:activator="{ props }">
+                                                    <v-btn color="grey" v-bind="props" variant="outlined">
+                                                        <span class="pr-2">User status - </span>
+                                                        <span v-if="selectedActive === 'True'">Active</span>
+                                                        <span v-else-if="selectedActive === 'False'">Not active</span>
+                                                        <span v-else>All</span>
+                                                    </v-btn>
+                                                </template>
+                                                <v-list>
+                                                    <v-list-item v-for="option in userStatusList" :key="option.name">
+                                                        <v-list-item-title role="button"
+                                                            @click="chooseStatus(option.property)">
+                                                            {{ option.name }}
+                                                        </v-list-item-title>
+                                                    </v-list-item>
+                                                </v-list>
+                                            </v-menu>
+                                            <!-- User status -->
+                                        </v-col>
+
+                                        <v-col cols="12" sm="3">
+                                            <v-combobox variant="outlined" v-model="selectedColumns"
+                                                :items="avaliableColumns" label="Select columns"
+                                                prepend-icon="mdi-table-edit" multiple chips>
+                                            </v-combobox>
+                                        </v-col>
+
+                                        <v-col cols="12" sm="2">
+                                            <v-select v-model="itemsPerPage" variant="solo-filled"
+                                                :items="[5, 10, 25, 50, 100]" :label="`Items per page - ${itemsPerPage}`"
+                                                @update:model-value="loadUsers()"></v-select>
+                                        </v-col>
+                                    </v-row>
+
+                                </v-expansion-panel-text>
+                            </v-expansion-panel>
+                        </v-expansion-panels>
+
+                    </v-col>
+
+
+                </v-row>
+
+            </div>
+
+
+
+
+
             <v-row>
+                <v-col justify="start">
+                    <div class="text-h4 ma-5 font-weight-bold">
+                        Drivers
+                    </div>
+                </v-col>
+                <v-col justify="end" cols="12" sm="4">
 
-                <v-col cols="12" sm="12">
-                    <v-expansion-panels>
-                        <v-expansion-panel title="Filters" elevation="1" style="border: 1px solid teal;">
-
-                            <v-expansion-panel-text>
-                                <v-row justify="center" align="center">
-                                    <v-col cols="12" sm="3">
-
-                                        <v-autocomplete variant="outlined" v-model="selectedRestaurant"
-                                            :items="avaliableRestaurants" label="Select restaurant" prepend-icon="mdi-store"
-                                            no-data-text="Sorry, you don't belong to any restaurants" @update:model-value="loadUsers()"></v-autocomplete>
-
-                                    </v-col>
-                                    <v-col cols="auto">
-                                        <!-- User status -->
-                                        <v-menu transition="slide-y-transition">
-                                            <template v-slot:activator="{ props }">
-                                                <v-btn color="grey" v-bind="props" variant="outlined">
-                                                    <span class="pr-2">User status - </span>
-                                                    <span v-if="selectedActive === 'True'">Active</span>
-                                                    <span v-else-if="selectedActive === 'False'">Not active</span>
-                                                    <span v-else>All</span>
-                                                </v-btn>
-                                            </template>
-                                            <v-list>
-                                                <v-list-item v-for="option in userStatusList" :key="option.name">
-                                                    <v-list-item-title role="button" @click="chooseStatus(option.property)">
-                                                        {{ option.name }}
-                                                    </v-list-item-title>
-                                                </v-list-item>
-                                            </v-list>
-                                        </v-menu>
-                                        <!-- User status -->
-                                    </v-col>
-
-                                    <v-col cols="12" sm="3">
-                                        <v-combobox variant="outlined" v-model="selectedColumns" :items="avaliableColumns"
-                                            label="Select columns" prepend-icon="mdi-table-edit" multiple chips>
-                                        </v-combobox>
-                                    </v-col>
-
-                                    <v-col cols="12" sm="2">
-                                        <v-select v-model="itemsPerPage" variant="solo-filled" :items="[5, 10, 25, 50, 100]"
-                                            :label="`Items per page - ${itemsPerPage}`"
-                                            @update:model-value="loadUsers()"></v-select>
-                                    </v-col>
-                                </v-row>
-
-                            </v-expansion-panel-text>
-                        </v-expansion-panel>
-                    </v-expansion-panels>
+                    <!-- Search bar -->
+                    <v-text-field variant="solo-filled" v-model="query" @keydown.enter="loadUsers()" label="Search"
+                        class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions clearable
+                        hint="Press enter to search" />
+                    <!-- Search bar -->
 
                 </v-col>
-
-
             </v-row>
 
-        </div>
-
-        <v-row>
-            <v-col justify="start">
-                <div class="text-h4 ma-5 font-weight-bold">
-                    Drivers
-                </div>
-            </v-col>
-            <v-col justify="end" cols="12" sm="4">
-
-                <!-- Search bar -->
-                <v-text-field variant="solo-filled" v-model="query" @keydown.enter="loadUsers()" label="Search"
-                    class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions clearable hint="Press enter to search" :disabled="selectedRestaurant == null"/>
-                <!-- Search bar -->
-
-            </v-col>
-        </v-row>
-
-        <h3 v-if="selectedRestaurant == null">
-            Select restaurant first
-        </h3>
-
-        <!-- Table -->
-        <v-data-table :headers="updatedColumns" :items="users" :loading="loading" density="compact"
-            class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover
-            show-current-page v-if="selectedRestaurant != null">
+            <!-- Table -->
+            <v-data-table :headers="updatedColumns" :items="users" :loading="loading" density="compact"
+                class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover
+                show-current-page>
 
 
 
-            <!-- No data -->
-            <template v-slot:no-data>
-                <p class="text-h4 pa-5">
-                    <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
-                    <span>
-                        No data for selected restaurant
-                    </span>
-                </p>
-            </template>
-            <!-- No data -->
+                <!-- No data -->
+                <template v-slot:no-data>
+                    <p class="text-h4 pa-5">
+                        <v-icon icon="mdi-database-alert-outline" color="red"></v-icon>
+                        <span>
+                            No data for selected restaurant
+                        </span>
+                    </p>
+                </template>
+                <!-- No data -->
 
 
 
-            <!-- Accessing table cells -->
-            <template v-slot:item="{ item }">
-                <tr align="center" :style="item.is_active ? '' : 'color: red'">
-                    <td v-for="header in updatedColumns" :key="header.key">
+                <!-- Accessing table cells -->
+                <template v-slot:item="{ item }">
+                    <tr align="center" :style="item.is_active ? '' : 'color: red'">
+                        <td v-for="header in updatedColumns" :key="header.key">
 
-                        <template v-if="header.key === 'action'">
-                            <span>
-                                <v-btn variant="plain" color="blue" @click="userDetails(item.username, item.user_role)">
-                                    <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
-                                    <v-tooltip activator="parent" location="top">Show {{ item.username }}
-                                        details</v-tooltip>
-                                </v-btn>
-                            </span>
-                        </template>
+                            <template v-if="header.key === 'action'">
+                                <span>
+                                    <v-btn variant="plain" color="blue" @click="userDetails(item.username, item.user_role)">
+                                        <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
+                                        <v-tooltip activator="parent" location="top">Show {{ item.username }}
+                                            details</v-tooltip>
+                                    </v-btn>
+                                </span>
+                            </template>
 
-                        <template v-else-if="header.key === 'is_active'">
+                            <template v-else-if="header.key === 'is_active'">
 
-                            <v-tooltip location="top"
-                                :text="item.is_active ? `Make ${item.username} not active` : `Make ${item.username} active`">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn v-bind="props" variant="plain"
-                                        :icon="item.is_active ? 'mdi-check-bold' : 'mdi-close-thick'"
-                                        :style="item.is_active ? 'color:green' : 'color:red'"
-                                        @click="changeStateConfirm(item.username, item.user_role, item.is_active)"></v-btn>
-                                </template>
-                            </v-tooltip>
-
-                        </template>
-
-                        <template v-else-if="header.key === 'email'">
-
-                            <span v-if="item[header.key] === null || item[header.key] === ''">
-                                <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
-                            </span>
-
-                            <span v-else>
-                                <v-tooltip location="top" text="Click to copy email">
+                                <v-tooltip location="top"
+                                    :text="item.is_active ? `Make ${item.username} not active` : `Make ${item.username} active`">
                                     <template v-slot:activator="{ props }">
-                                        <v-btn v-bind="props" variant="plain" @click="copyElement(item.email)">
-                                            {{ item.email }}
-                                        </v-btn>
+                                        <v-btn v-bind="props" variant="plain"
+                                            :icon="item.is_active ? 'mdi-check-bold' : 'mdi-close-thick'"
+                                            :style="item.is_active ? 'color:green' : 'color:red'"
+                                            @click="changeStateConfirm(item.username, item.user_role, item.is_active)"></v-btn>
                                     </template>
                                 </v-tooltip>
-                            </span>
 
-                        </template>
-
-
-                        <template v-else>
-                            <span
-                                v-if="item[header.key] === null || item[header.key] === undefined || item[header.key] === ''">
-                                <v-icon icon="mdi-minus" />
-                            </span>
-                            <span v-else-if="item[header.key] === true">
-                                <v-icon icon="mdi-check-bold" style="color:green" />
-                            </span>
-                            <span v-else-if="item[header.key] === false">
-                                <v-icon icon="mdi-close-thick" style="color:red" />
-                            </span>
-                            <span v-else>
-                                {{ item[header.key] }}
-                            </span>
-                        </template>
-
-                    </td>
-                </tr>
-            </template>
-            <!-- Accessing table cells -->
-
-
-            <template v-slot:bottom="{ page, itemsPerPage }">
-                <v-row>
-                    <v-col align="center">
-                        <v-pagination v-model="paginationPage" :length="pagiController.total_pages" @next="nextPage()"
-                            @prev="prevPage()">
-                            <template v-slot:item="{ key, page }">
-                                <v-btn class="mt-1" variant="text" disabled rounded="xl">{{ key }}</v-btn>
                             </template>
-                        </v-pagination>
-                        <p>Page {{ pagiController.currentPage }} of {{ pagiController.total_pages }}</p>
-                        <p>{{ pagiController.totalRecors }} Records total</p>
-                    </v-col>
-                </v-row>
-            </template>
+
+                            <template v-else-if="header.key === 'email'">
+
+                                <span v-if="item[header.key] === null || item[header.key] === ''">
+                                    <v-icon icon="mdi-minus-thick" color="red-lighten-2" />
+                                </span>
+
+                                <span v-else>
+                                    <v-tooltip location="top" text="Click to copy email">
+                                        <template v-slot:activator="{ props }">
+                                            <v-btn v-bind="props" variant="plain" @click="copyElement(item.email)">
+                                                {{ item.email }}
+                                            </v-btn>
+                                        </template>
+                                    </v-tooltip>
+                                </span>
+
+                            </template>
+
+
+                            <template v-else>
+                                <span
+                                    v-if="item[header.key] === null || item[header.key] === undefined || item[header.key] === ''">
+                                    <v-icon icon="mdi-minus" />
+                                </span>
+                                <span v-else-if="item[header.key] === true">
+                                    <v-icon icon="mdi-check-bold" style="color:green" />
+                                </span>
+                                <span v-else-if="item[header.key] === false">
+                                    <v-icon icon="mdi-close-thick" style="color:red" />
+                                </span>
+                                <span v-else>
+                                    {{ item[header.key] }}
+                                </span>
+                            </template>
+
+                        </td>
+                    </tr>
+                </template>
+                <!-- Accessing table cells -->
+
+
+                <template v-slot:bottom="{ page, itemsPerPage }">
+                    <v-row>
+                        <v-col align="center">
+                            <v-pagination v-model="paginationPage" :length="pagiController.total_pages" @next="nextPage()"
+                                @prev="prevPage()">
+                                <template v-slot:item="{ key, page }">
+                                    <v-btn class="mt-1" variant="text" disabled rounded="xl">{{ key }}</v-btn>
+                                </template>
+                            </v-pagination>
+                            <p>Page {{ pagiController.currentPage }} of {{ pagiController.total_pages }}</p>
+                            <p>{{ pagiController.totalRecors }} Records total</p>
+                        </v-col>
+                    </v-row>
+                </template>
 
 
 
-        </v-data-table>
-        <!-- Table -->
+            </v-data-table>
+            <!-- Table -->
 
+        </span>
 
 
         <!-- Dialaogs section -->
@@ -450,7 +458,6 @@ export default {
                 }
 
                 this.users = response.data.results;
-                console.log(this.users);
 
                 // Add number for each row
                 this.users.forEach((user, index) => {

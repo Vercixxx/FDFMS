@@ -21,7 +21,7 @@ class Driver(GeneralUser):
 
 class DailyWork(models.Model):
     driver = models.ForeignKey(Driver, db_column='driver', on_delete=models.CASCADE)
-    day = models.CharField(max_length=10)
+    day = models.DateField(auto_now_add=True)
     start_work = models.TimeField()
     end_work = models.TimeField()
     orders = models.IntegerField(default=0)
