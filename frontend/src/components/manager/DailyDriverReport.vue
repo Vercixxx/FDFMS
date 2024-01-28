@@ -54,6 +54,61 @@
                     :rules="[value => !!value || 'Field is required', value => (/^\d+$/.test(value)) || 'Only numbers are allowed', value => (value && value.length <= 3 || 'Reached max length')]">
                 </v-text-field>
             </span>
+
+
+
+            <span v-if="card == 4">
+                <v-row align="center" justify="center">
+                    <v-col cols="6" sm="2">
+                        <h4>Start</h4>
+                        <v-autocomplete variant="solo" :items="hoursList" v-model="startShift"></v-autocomplete>
+                    </v-col>
+                    
+                    <v-col cols="6" sm=2>
+                        <h4>End</h4>
+                        <v-autocomplete variant="solo" :items="hoursList" v-model="endShift" :disabled="startShift == null"></v-autocomplete>
+                    </v-col>
+                </v-row>
+
+            </span>
+
+
+
+            <span v-if="card == 5">
+                <v-table>
+                    <thead>
+                        <tr>
+                            <th class="text-left">
+                                Name
+                            </th>
+                            <th class="text-left">
+                                Value
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Restaurant</td>
+                            <td>{{ selectedRestaurant }}</td>
+                        </tr>
+                        <tr>
+                            <td>Driver</td>
+                            <td>{{ drivers.find(user => user.username == selectedDriver).last_name + ' ' +
+                                drivers.find(user => user.username == selectedDriver).first_name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Orders</td>
+                            <td>{{ ordersAmout }}</td>
+                        </tr>
+                        <tr>
+                            <td>Shift details</td>
+                            <td>
+                                {{ startShift }} - {{ endShift }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </v-table>
+            </span>
             <!-- Cards -->
 
 
@@ -67,7 +122,7 @@
                 </v-col>
 
                 <v-col cols="6" align="end">
-                    <v-btn v-if="card < 6" variant="outlined" color="teal" @click="card++"
+                    <v-btn v-if="card < 5" variant="outlined" color="teal" @click="card++"
                         :disabled="!buttons[card].active">
                         {{ buttons[card].text }}
                         <v-icon icon="mdi-arrow-right"></v-icon>
@@ -86,24 +141,11 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { createWebHistory } from 'vue-router';
 
 export default {
     name: 'DailyDriverReport',
@@ -128,15 +170,21 @@ export default {
                 },
                 {
                     id: 3,
-                    text: 'Type amount of orders',
+                    text: 'Orders amount',
                     active: false,
                     icon: 'mdi-numeric-3-circle',
                 },
                 {
                     id: 4,
-                    text: 'Type amount of orders',
+                    text: 'Shift details',
                     active: false,
                     icon: 'mdi-numeric-4-circle',
+                },
+                {
+                    id: 5,
+                    text: 'Summary',
+                    active: true,
+                    icon: 'mdi-numeric-5-circle',
                 },
             ],
 
@@ -153,6 +201,10 @@ export default {
             selectedDriver: null,
 
             ordersAmout: null,
+
+            hoursList: [],
+            startShift: null,
+            endShift: null,
         }
     },
 
@@ -160,6 +212,16 @@ export default {
         this.loggedUserUsername = this.$store.getters.userData.username;
 
         this.getRestaurants()
+
+        this.generateHoursList();
+    },
+
+
+
+    computed: {
+        allButtonsActive() {
+            return this.buttons.every(button => button.active);
+        },
     },
 
 
@@ -175,12 +237,13 @@ export default {
         ordersAmout(ordersAmout) {
             this.buttons[3].active = ordersAmout && /^\d+$/.test(ordersAmout);
         },
-        carCondition(newCondition) {
-            this.buttons[4].active = !!newCondition;
+
+        shiftDetails() {
+            this.buttons[4].active = true;
+            this.buttons[5].active = true;
+            // this.buttons[4].active = this.shiftDetails != null;
         },
-        cleanliness(newCleanliness) {
-            this.buttons[5].active = !!newCleanliness;
-        },
+
     },
 
     methods: {
@@ -214,12 +277,30 @@ export default {
                 });
 
                 this.drivers = response.data;
-                console.log(this.drivers)
+
             } catch (error) {
                 this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
             }
-        }
+        },
         // Get drivers
+
+
+        // Send report
+        async sendReport() {
+
+        },
+        // Send report
+
+
+        async generateHoursList() {
+            for (let i = 0; i < 24 * 12; i++) {
+                await new Promise(resolve => setTimeout(resolve, 0));
+                let hour = Math.floor(i / 12);
+                let minutes = i % 12 * 5;
+                this.hoursList.push(`${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
+            }
+        },
+
 
     },
 }
