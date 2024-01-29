@@ -1,5 +1,7 @@
 from django.http import JsonResponse
 
+from datetime import datetime, date
+
 # Rest
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -7,13 +9,13 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import DestroyAPIView
 
 # Models
-from .models import Driver
+from .models import Driver, DailyWork
 from fleet.models import Fleet
 from restaurant.models import Restaurant
 from users.models import GeneralUser, Addresses
 
 # Serializers
-from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer
+from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer
 from users.serializers import ResidenceAddressSerializer
 
 
@@ -145,3 +147,33 @@ class GetDrivers(APIView):
         }
         
         return JsonResponse(response_data, status=200)
+
+
+
+
+class AddDailyReport(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data
+        
+        data['start_work'] = datetime.strptime(data['start_shift'], '%H:%M').time()
+        data['end_work'] = datetime.strptime(data['end_shift'], '%H:%M').time()
+        
+        # Working time
+        working_time = datetime.combine(date.min, data['end_work']) - datetime.combine(date.min, data['start_work'])
+        hours, remainder = divmod(working_time.seconds, 3600)
+        minutes, _ = divmod(remainder, 60)
+        data['working_time'] = '{:02}:{:02}'.format(hours, minutes)
+        # Working time
+        
+        data['driver'] = Driver.objects.get(username=data['driver'])
+
+        serializer = DailyDriverReportSerializer(data=data)
+        print(data)
+        print(serializer.error_messages)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'ok'}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)

@@ -287,7 +287,22 @@ export default {
 
         // Send report
         async sendReport() {
+            const data = {
+                restaurant: this.selectedRestaurant,
+                driver: this.selectedDriver,
+                orders: this.ordersAmout,
+                start_shift: this.startShift,
+                end_shift: this.endShift,
+            }
 
+            try {
+                const response = await axios.post('api/drivers/daily_report/add/', data);
+                
+                this.$store.dispatch('triggerAlert', { message: 'Succesully send report', type: 'teal' });
+                this.$root.changeCurrentComponent('HomeComponent');
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error.response, type: 'error' });
+            }
         },
         // Send report
 

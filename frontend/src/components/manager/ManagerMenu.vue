@@ -72,24 +72,19 @@ export default {
                     ],
                 },
                 {
-                    name: 'Cars',
+                    name: 'Fleets',
                     mainIcon: 'mdi-car-multiple',
-                    disabled: true,
+                    disabled: false,
                     options: [
                         {
                             name: 'Car management',
-                            click: 'ModifyUserComponent',
+                            click: 'ManagerCarManagementComponent',
                             icon: 'mdi-list-status',
                         },
                         {
-                            name: 'Add car damage',
-                            click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
-                        },
-                        {
-                            name: 'Show car damage',
-                            click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
+                            name: 'Car damages',
+                            click: 'ManagerCarDamagesComponent',
+                            icon: 'mdi-car-wrench',
                         },
                     ],
                 },

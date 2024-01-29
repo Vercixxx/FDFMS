@@ -11,4 +11,7 @@ urlpatterns = [
     
     # Get Drivers usernames
     path('api/drivers/get/usernames/', views.GetDriversUsernames.as_view(), name='get_drivers_usernames'),
+    
+    # Daily report
+    path('api/drivers/daily_report/add/', views.AddDailyReport.as_view(), name='add_daily_report'),
 ]
