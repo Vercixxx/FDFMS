@@ -27,3 +27,5 @@ class CarDamageSerializer(serializers.ModelSerializer):
         class Meta:
             model = CarDamage
             fields = '__all__'
+            
+

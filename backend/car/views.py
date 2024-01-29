@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from .serializers import CarSerializer, CarVinLicensePlateSerializer, CarDailyReportsSerializer, CarDamageSerializer
+from .serializers import CarSerializer, CarVinLicensePlateSerializer, CarDailyReportsSerializer, CarDamageSerializer 
 
 # Models
 from .models import Car

@@ -71,10 +71,16 @@
 
             <!-- Accessing table cells -->
             <template v-slot:item="{ item }">
-                <tr align="center" :style="item.active ? '':'color: red'">
+                <tr align="center" :style="item.active ? '' : 'color: red'">
                     <td v-for="header in updatedColumns" :key="header.key">
                         <template v-if="header.key === 'action'">
                             <span>
+                                <v-btn variant="plain" color="danger" @click="showCarDamages(item.vin)">
+                                    <v-icon icon="mdi-car-wrench" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Show {{ item.brand }} {{ item.model }}
+                                        damages</v-tooltip>
+                                </v-btn>
+
                                 <v-btn variant="plain" color="blue" @click="carDetailsFunct(item.vin)">
                                     <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
                                     <v-tooltip activator="parent" location="top">Show {{ item.brand }} {{ item.model }}
@@ -227,6 +233,31 @@
     <!-- dialog -->
 
     <!-- Dialog details -->
+
+    <!-- Car Damages  -->
+    <v-dialog persistent v-model="carDamagesDialog" fullscreen :scrim="false" transition="dialog-bottom-transition">
+        <v-card>
+            <v-card-title class="bg-deep-purple-lighten-1">
+                <v-row>
+                    <v-col class="text-h4">
+                        Car Damages for BRAND MODEL License plate
+                    </v-col>
+                    <v-col align="end">
+                        <v-btn variant="outlined" color="red" @click="carDamagesDialog = false" icon="mdi-close">
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-card-title>
+
+            <v-card-text>
+                <v-data-table :headers="carDamagesHeaders">
+
+                </v-data-table>
+            </v-card-text>
+
+        </v-card>
+    </v-dialog>
+    <!-- Car Damages  -->
 </template>
 
 
@@ -257,6 +288,10 @@ export default {
             carDetailsDialog: false,
             carDetails: [],
 
+            carDamagesDialog: false,
+            carDamagesVin: null,
+            carDamages: [],
+
             necessaryHeaders: [
                 { title: 'No', align: 'center', sortable: false, key: 'rownumber' },
                 { title: 'VIN', key: 'vin', align: 'center', sortable: false },
@@ -279,7 +314,16 @@ export default {
             ],
             actions: [
                 { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
-            ]
+            ],
+
+            carDamagesHeaders: [
+                { title: 'Reported by', align: 'center', sortable: false, key: 'rownumber' },
+                { title: 'Reported date', align: 'center', sortable: false, key: 'rownumber' },
+                { title: 'Car license plate', align: 'center', sortable: false, key: 'rownumber' },
+                { title: 'Mileage', align: 'center', sortable: false, key: 'rownumber' },
+                { title: 'VIN', key: 'vin', align: 'center', sortable: false },
+                { title: 'Description', key: 'vin', align: 'center', sortable: false },
+            ],
 
         };
     },
@@ -300,6 +344,14 @@ export default {
     },
 
     methods: {
+
+        // Show car damages
+        async showCarDamages(carVin) {
+            this.carDamagesVin = carVin;
+            this.carDamagesDialog = true;
+        },
+        // Show car damages
+
 
 
         // Load cars
@@ -411,6 +463,10 @@ export default {
             this.carDetailsDialog = true;
         },
         // Show car details
+
+
+
+
 
 
     },

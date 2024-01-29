@@ -29,4 +29,7 @@ urlpatterns = [
     
     # Add car damage
     path('api/car/damage/add/', views.AddCarDamage.as_view(), name="add-car-damage"),
+    
+    # Get car damage
+    # path('api/car/damage/get/', views.GetCarDamage.as_view(), name="get-car-damage"),
 ]

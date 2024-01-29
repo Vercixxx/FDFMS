@@ -170,8 +170,7 @@ class AddDailyReport(APIView):
         data['driver'] = Driver.objects.get(username=data['driver'])
 
         serializer = DailyDriverReportSerializer(data=data)
-        print(data)
-        print(serializer.error_messages)
+
         if serializer.is_valid():
             serializer.save()
             return JsonResponse({'message': 'ok'}, status=201)
