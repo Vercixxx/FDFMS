@@ -240,7 +240,7 @@
             <v-card-title class="bg-deep-purple-lighten-1">
                 <v-row>
                     <v-col class="text-h4">
-                        Car Damages for BRAND MODEL License plate
+                        Car Damages for [BRAND MODEL License plate]
                     </v-col>
                     <v-col align="end">
                         <v-btn variant="outlined" color="red" @click="carDamagesDialog = false" icon="mdi-close">
