@@ -5,6 +5,7 @@ from .serializers import CarSerializer, CarVinLicensePlateSerializer, CarDailyRe
 # Models
 from .models import Car, CarDamage
 from driver.models import Driver
+from fleet.models import Fleet
 
 from rest_framework.views import APIView
 from rest_framework.generics import DestroyAPIView
@@ -74,10 +75,16 @@ class GetCars(APIView):
     def get(self, request):
         limit = self.request.query_params.get('limit', '').strip()
         query = self.request.query_params.get('search', '').strip()
+        restaurant = self.request.query_params.get('restaurant', '').strip()
         
 
+        if restaurant:
+            fleet = Fleet.objects.get(restaurant__name=restaurant)
+            queryset = fleet.cars.all().order_by('-vin')
+        else:
+            queryset = Car.objects.all().order_by('-vin')
+        
         serializer_class = CarSerializer
-        queryset = Car.objects.all()
         
         if query:
             queryset = queryset.filter(

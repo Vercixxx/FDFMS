@@ -77,14 +77,9 @@ export default {
                     disabled: false,
                     options: [
                         {
-                            name: 'Car management',
-                            click: 'ManagerCarManagementComponent',
+                            name: 'Cars management',
+                            click: 'ManagerManageCarsComponent',
                             icon: 'mdi-list-status',
-                        },
-                        {
-                            name: 'Car damages',
-                            click: 'ManagerCarDamagesComponent',
-                            icon: 'mdi-car-wrench',
                         },
                     ],
                 },

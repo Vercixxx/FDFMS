@@ -285,7 +285,6 @@ import ManageBrands from '../components/clients/ManageBrands.vue';
 // Asset
 import AddCar from '../components/asset/AddCar.vue';
 import ManageCars from '../components/asset/ManageCars.vue';
-import ManageFleets from '../components/asset/ManageFleets.vue';
 // Asset
 
 
@@ -293,6 +292,7 @@ import ManageFleets from '../components/asset/ManageFleets.vue';
 import CreateSchedule from '../components/manager/ManageSchedules.vue';
 import ManageDrivers from '../components/manager/ManageDrivers.vue';
 import DailyDriverReport from '../components/manager/DailyDriverReport.vue';
+import ManagerManageCars from '../components/manager/ManageCars.vue';
 // Managers
 
 
@@ -680,26 +680,6 @@ export default {
             ];
             this.currentComponent = ManageCars;
         },
-        ManageFleetsComponent() {
-            this.path = [
-                {
-                    title: "Home",
-                    component: 'HomeComponent',
-                    disabled: false,
-                },
-                {
-                    title: "Fleets",
-                    component: '',
-                    disabled: true,
-                },
-                {
-                    title: 'Manage Fleets',
-                    component: '',
-                    disabled: true,
-                },
-            ];
-            this.currentComponent = ManageFleets;
-        },
         // Assets
 
 
@@ -760,6 +740,26 @@ export default {
                 },
             ];
             this.currentComponent = DailyDriverReport;
+        },
+        ManagerManageCarsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Cars",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Manage Cars',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = ManagerManageCars;
         },
         // Managers
 
