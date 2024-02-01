@@ -31,5 +31,5 @@ urlpatterns = [
     path('api/car/damage/add/', views.AddCarDamage.as_view(), name="add-car-damage"),
     
     # Get car damage
-    # path('api/car/damage/get/', views.GetCarDamage.as_view(), name="get-car-damage"),
+    path('api/car/damage/get/<int:vin>/', views.GetCarDamages.as_view(), name="get-car-damage"),
 ]

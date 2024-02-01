@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from .serializers import CarSerializer, CarVinLicensePlateSerializer, CarDailyReportsSerializer, CarDamageSerializer 
 
 # Models
-from .models import Car
+from .models import Car, CarDamage
 from driver.models import Driver
 
 from rest_framework.views import APIView
@@ -202,3 +202,17 @@ class AddCarDamage(APIView):
             print(serializer.errors)
             return JsonResponse(serializer.errors, status=400)
 # Add car damage
+
+
+
+class GetCarDamages(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, vin):
+        car = Car.objects.get(vin=vin)
+        
+        carDamage = CarDamage.objects.filter(car=car)
+        
+        serializer = CarDamageSerializer(carDamage, many=True).data
+        
+        return JsonResponse(serializer, status=200, safe=False)

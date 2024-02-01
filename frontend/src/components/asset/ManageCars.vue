@@ -240,7 +240,7 @@
             <v-card-title class="bg-deep-purple-lighten-1">
                 <v-row>
                     <v-col class="text-h4">
-                        Car Damages for [BRAND MODEL License plate]
+                        Damages for car vin - {{ carDamagesVin }}
                     </v-col>
                     <v-col align="end">
                         <v-btn variant="outlined" color="red" @click="carDamagesDialog = false" icon="mdi-close">
@@ -248,10 +248,10 @@
                     </v-col>
                 </v-row>
             </v-card-title>
+            
 
             <v-card-text>
-                <v-data-table :headers="carDamagesHeaders">
-
+                <v-data-table :headers="carDamagesHeaders" :items="carDamages" no-data-text="No damages reported">
                 </v-data-table>
             </v-card-text>
 
@@ -317,12 +317,11 @@ export default {
             ],
 
             carDamagesHeaders: [
-                { title: 'Reported by', align: 'center', sortable: false, key: 'rownumber' },
-                { title: 'Reported date', align: 'center', sortable: false, key: 'rownumber' },
-                { title: 'Car license plate', align: 'center', sortable: false, key: 'rownumber' },
-                { title: 'Mileage', align: 'center', sortable: false, key: 'rownumber' },
-                { title: 'VIN', key: 'vin', align: 'center', sortable: false },
-                { title: 'Description', key: 'vin', align: 'center', sortable: false },
+                { title: 'VIN', key: 'car', align: 'center', sortable: false },
+                { title: 'Reported by', align: 'center', sortable: false, key: 'driver' },
+                { title: 'Reported date', align: 'center', sortable: true, key: 'date' },
+                { title: 'At mileage', align: 'center', sortable: false, key: 'car_mileage' },
+                { title: 'Description', key: 'description', align: 'center', sortable: false },
             ],
 
         };
@@ -348,7 +347,15 @@ export default {
         // Show car damages
         async showCarDamages(carVin) {
             this.carDamagesVin = carVin;
-            this.carDamagesDialog = true;
+
+            try {
+                const response = await axios.get(`api/car/damage/get/${carVin}/`);
+                this.carDamages = response.data;
+                this.carDamagesDialog = true;
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error.response.error, type: 'error' });
+            }
+
         },
         // Show car damages
 
