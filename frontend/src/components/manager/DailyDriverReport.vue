@@ -1,265 +1,138 @@
 <template>
     <div>
 
+        <v-stepper v-model="step" :mobile="$vuetify.display.smAndDown">
+            <v-stepper-header>
+                <v-stepper-item :complete="step1" :title="titles[0]" value="1"></v-stepper-item>
 
-        <v-card align='center' justify="center" class="pa-5">
+                <v-divider></v-divider>
 
-            <!-- <v-card-title>
-                <h1>Daily driver report</h1>
-            </v-card-title> -->
+                <v-stepper-item :complete="step2" :title="titles[1]" value="2"></v-stepper-item>
 
-            <!-- Nav -->
-            <!-- <v-row class="mb-2" align='center' justify="center">
+                <v-divider></v-divider>
 
-                <v-col cols='2' v-for="button in buttons" :key="button.id">
+                <v-stepper-item :complete="step3" :title="titles[2]" value="3" :rules="oredersRules"></v-stepper-item>
 
-                    <v-btn variant="plain" :icon="button.icon" :color="button.active ? 'teal' : 'red'"
-                        @click="card = button.id" :disabled="!button.active">
+                <v-divider></v-divider>
+
+                <v-stepper-item :complete="step4" :title="titles[3]" value="4"></v-stepper-item>
+
+                <v-divider></v-divider>
+
+                <v-stepper-item :title="titles[4]" value="5"></v-stepper-item>
+
+            </v-stepper-header>
+
+            <v-stepper-window>
+
+                <v-window-item value="1">
+                    <v-autocomplete variant="underlined" v-model="selectedRestaurant" :items="restaurants"
+                        label="Select restaurant" no-data-text="There isn't available restaurants"
+                        @update:model-value="getDrivers()"></v-autocomplete>
+                </v-window-item>
+
+
+
+                <v-window-item value="2">
+                    <v-autocomplete variant="underlined" v-model="selectedDriver" :items="drivers" item-title="username" item-value="username"
+                        label="Select driver" no-data-text="There isn't available drivers for selected restaurant"
+                        :disabled="selectedRestaurant == null">
+
+                        <template v-slot:item="{ props, item }">
+                            <v-list-item v-bind="props" :title="item.raw.last_name + ' ' + item.raw.first_name"
+                                :subtitle="item.raw.username"></v-list-item>
+                        </template>
+
+                    </v-autocomplete>
+                </v-window-item>
+
+
+
+                <v-window-item value="3">
+                    <v-text-field v-model="ordersAmout" variant="underlined" label="Type amount of orders"
+                        :rules="[value => !!value || 'Field is required', value => (/^\d+$/.test(value)) || 'Only numbers are allowed', value => (value && value.length <= 3 || 'Reached max length')]">
+                    </v-text-field>
+                </v-window-item>
+
+
+
+                <v-window-item value="4">
+                    <v-row align="center" justify="center">
+                        <v-col cols="6" sm="2">
+                            <h4>Start</h4>
+                            <v-autocomplete variant="underlined" :items="hoursList" v-model="startShift"></v-autocomplete>
+                        </v-col>
+
+                        <v-col cols="6" sm=2>
+                            <h4>End</h4>
+                            <v-autocomplete variant="underlined" :items="hoursList" v-model="endShift"
+                                :disabled="startShift == null"></v-autocomplete>
+                        </v-col>
+                    </v-row>
+                </v-window-item>
+
+
+
+                <v-window-item value="5">
+                    <v-table>
+                        <thead>
+                            <tr>
+                                <th class="text-left">
+                                    Name
+                                </th>
+                                <th class="text-left">
+                                    Value
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Restaurant</td>
+                                <td>{{ selectedRestaurant }}</td>
+                            </tr>
+                            <tr>
+                                <td>Driver</td>
+                                <td>{{ drivers.find(user => user.username == selectedDriver).last_name + ' ' +
+                                    drivers.find(user => user.username == selectedDriver).first_name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Orders</td>
+                                <td>{{ ordersAmout }}</td>
+                            </tr>
+                            <tr>
+                                <td>Shift details</td>
+                                <td>
+                                    {{ startShift }} - {{ endShift }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </v-table>
+                </v-window-item>
+            </v-stepper-window>
+
+            <v-stepper-actions>
+                <template v-slot:next="">
+
+                    <v-btn v-if="step < 4" @click="step++" :disabled="!buttons[step].active">
+                        Next
                     </v-btn>
-                </v-col>
-
-            </v-row> -->
-            <!-- Nav -->
-
-
-
-            <!-- Cards -->
-
-            <!-- <span v-if="card == 1">
-                <v-autocomplete variant="solo-filled" v-model="selectedRestaurant" :items="restaurants"
-                    label="Select restaurant" no-data-text="There isn't available restaurants"
-                    @update:model-value="getDrivers()"></v-autocomplete>
-            </span>
-
-
-
-            <span v-if="card == 2">
-                <v-autocomplete v-model="selectedDriver" :items="drivers" item-title="username" item-value="username"
-                    label="Select driver" no-data-text="There isn't available drivers for selected restaurant"
-                    :disabled="selectedRestaurant == null">
-
-                    <template v-slot:item="{ props, item }">
-                        <v-list-item v-bind="props" :title="item.raw.last_name + ' ' + item.raw.first_name"
-                            :subtitle="item.raw.username"></v-list-item>
-                    </template>
-
-                </v-autocomplete>
-            </span>
-
-
-
-            <span v-if="card == 3">
-                <v-text-field v-model="ordersAmout" variant="solo-filled" label="Type amount of orders"
-                    :rules="[value => !!value || 'Field is required', value => (/^\d+$/.test(value)) || 'Only numbers are allowed', value => (value && value.length <= 3 || 'Reached max length')]">
-                </v-text-field>
-            </span>
-
-
-
-            <span v-if="card == 4">
-                <v-row align="center" justify="center">
-                    <v-col cols="6" sm="2">
-                        <h4>Start</h4>
-                        <v-autocomplete variant="solo" :items="hoursList" v-model="startShift"></v-autocomplete>
-                    </v-col>
-
-                    <v-col cols="6" sm=2>
-                        <h4>End</h4>
-                        <v-autocomplete variant="solo" :items="hoursList" v-model="endShift"
-                            :disabled="startShift == null"></v-autocomplete>
-                    </v-col>
-                </v-row>
-
-            </span>
-
-
-
-            <span v-if="card == 5">
-                <v-table>
-                    <thead>
-                        <tr>
-                            <th class="text-left">
-                                Name
-                            </th>
-                            <th class="text-left">
-                                Value
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Restaurant</td>
-                            <td>{{ selectedRestaurant }}</td>
-                        </tr>
-                        <tr>
-                            <td>Driver</td>
-                            <td>{{ drivers.find(user => user.username == selectedDriver).last_name + ' ' +
-                                drivers.find(user => user.username == selectedDriver).first_name }}</td>
-                        </tr>
-                        <tr>
-                            <td>Orders</td>
-                            <td>{{ ordersAmout }}</td>
-                        </tr>
-                        <tr>
-                            <td>Shift details</td>
-                            <td>
-                                {{ startShift }} - {{ endShift }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-table>
-            </span> -->
-            <!-- Cards -->
-
-
-
-            <!-- Buttons -->
-            <!-- <v-row class="mt-3 mb-3">
-                <v-col cols="6" align="start">
-                    <v-btn variant="outlined" color="red" v-if="card > 1" @click="card--" prepend-icon="mdi-arrow-left">
-                        {{ buttons[card - 2].text }}
-                    </v-btn>
-                </v-col>
-                <v-col cols="6" align="end">
-                    <v-btn v-if="card < 5" variant="outlined" color="teal" @click="card++"
-                        :disabled="!buttons[card - 1].active" v-autofocus>
-                        {{ buttons[card].text }}
-                        <v-icon icon="mdi-arrow-right"></v-icon>
-                    </v-btn>
-                    <v-btn v-else :variant="!allButtonsActive ? 'outlined' : 'elevated'"
-                        :color="!allButtonsActive ? 'red' : 'teal'" :disabled="!allButtonsActive" @click="sendReport()"
-                        append-icon="mdi-send">
+                    <v-btn v-else :disabled="!sendReportButtonActive" @click="sendReport()" append-icon="mdi-send-variant" variant="tonal" color="success">
                         Send
                     </v-btn>
-                </v-col>
-            </v-row> -->
-            <!-- Buttons -->
 
-        </v-card>
+                </template>
 
-
-        <v-card>
-
-            <v-row class="mb-2" align='center' justify="center">
-
-                <v-col cols='2' v-for="button in buttons" :key="button.id">
-
-                    <v-btn variant="plain" :icon="button.icon" :color="button.active ? 'teal' : 'red'"
-                        @click="card = button.id" :disabled="!button.active">
+                <template v-slot:prev="">
+                    <v-btn :disabled="step == 0" @click="step--">
+                        Back
                     </v-btn>
-                </v-col>
+                </template>
+            </v-stepper-actions>
 
-            </v-row>
-
-            <v-card-item>
-                <v-card-title>
-                    <h2>{{ cards[currentCard - 1].title }}</h2>
-                </v-card-title>
-
-                <v-card-text>
+        </v-stepper>
 
 
-
-                    <span v-if="currentCard == 1">
-                        <v-autocomplete variant="solo-filled" v-model="selectedRestaurant" :items="restaurants"
-                            label="Select restaurant" no-data-text="There isn't available restaurants"
-                            @update:model-value="getDrivers()"></v-autocomplete>
-                    </span>
-
-
-
-                    <span v-if="currentCard == 2">
-                        <v-autocomplete v-model="selectedDriver" :items="drivers" item-title="username"
-                            item-value="username" label="Select driver"
-                            no-data-text="There isn't available drivers for selected restaurant"
-                            :disabled="selectedRestaurant == null">
-
-                            <template v-slot:item="{ props, item }">
-                                <v-list-item v-bind="props" :title="item.raw.last_name + ' ' + item.raw.first_name"
-                                    :subtitle="item.raw.username"></v-list-item>
-                            </template>
-
-                        </v-autocomplete>
-                    </span>
-                    <span v-if="currentCard == 3">
-                        <v-text-field v-model="ordersAmout" variant="solo-filled" label="Type amount of orders"
-                            :rules="[value => !!value || 'Field is required', value => (/^\d+$/.test(value)) || 'Only numbers are allowed', value => (value && value.length <= 3 || 'Reached max length')]">
-                        </v-text-field>
-                    </span>
-
-
-
-                    <span v-if="currentCard == 4">
-                        <v-row align="center" justify="center">
-                            <v-col cols="6" sm="2">
-                                <h4>Start</h4>
-                                <v-autocomplete variant="solo" :items="hoursList" v-model="startShift"></v-autocomplete>
-                            </v-col>
-
-                            <v-col cols="6" sm=2>
-                                <h4>End</h4>
-                                <v-autocomplete variant="solo" :items="hoursList" v-model="endShift"
-                                    :disabled="startShift == null"></v-autocomplete>
-                            </v-col>
-                        </v-row>
-
-                    </span>
-
-
-
-                    <span v-if="currentCard == 5">
-                        <v-table>
-                            <thead>
-                                <tr>
-                                    <th class="text-left">
-                                        Name
-                                    </th>
-                                    <th class="text-left">
-                                        Value
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Restaurant</td>
-                                    <td>{{ selectedRestaurant }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Driver</td>
-                                    <td>{{ drivers.find(user => user.username == selectedDriver).last_name + ' ' +
-                                        drivers.find(user => user.username == selectedDriver).first_name }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Orders</td>
-                                    <td>{{ ordersAmout }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Shift details</td>
-                                    <td>
-                                        {{ startShift }} - {{ endShift }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </v-table>
-                    </span>
-
-
-                </v-card-text>
-
-                <v-card-actions>
-                    <v-btn @click="currentCard--" v-if="currentCard > 1">
-                        Back ({{ buttons[currentCard - 2].text }})
-                    </v-btn>
-                    <v-btn v-if="currentCard < 5" @click="currentCard++" :disabled="!buttons[currentCard - 1].active">
-                        Next ({{ buttons[currentCard].text }})
-                    </v-btn>
-                    <v-btn v-else :disabled="!allButtonsActive" @click="sendReport()">
-                        Send
-                    </v-btn>
-                </v-card-actions>
-            </v-card-item>
-
-        </v-card>
+{{ sendReportButtonActive }}
 
     </div>
 </template>
@@ -273,7 +146,7 @@ export default {
     data() {
         return {
             loggedUserUsername: null,
-            currentCard: 1,
+            step: 0,
 
             buttons: [
                 {
@@ -309,32 +182,12 @@ export default {
             ],
 
 
-            cards: [
-                {
-                    id: 1,
-                    title: 'Select restaurant',
-                    active: true,
-                },
-                {
-                    id: 2,
-                    title: 'Select driver',
-                    active: false,
-                },
-                {
-                    id: 3,
-                    title: 'Orders amount',
-                    active: false,
-                },
-                {
-                    id: 4,
-                    title: 'Shift details',
-                    active: false,
-                },
-                {
-                    id: 5,
-                    title: 'Summary',
-                    active: false,
-                }
+            titles: [
+                'Select restaurant',
+                'Select driver',
+                'Orders amount',
+                'Shift details',
+                'Summary',
             ],
 
 
@@ -346,6 +199,12 @@ export default {
             selectedDriver: null,
 
             ordersAmout: null,
+            oredersRules:
+                [
+                    value => !!value || 'Field is required',
+                    value => (/^\d+$/.test(value)) || 'Only numbers are allowed',
+                    value => (value && value.length <= 3 || 'Reached max length')
+                ],
 
             hoursList: [],
             startShift: null,
@@ -370,7 +229,28 @@ export default {
 
         summaryButtonActive() {
             return this.startShift != null && this.endShift != null;
+        },
+
+        step1() {
+            return this.selectedRestaurant != null;
+        },
+
+        step2() {
+            return this.selectedDriver != null;
+        },
+
+        step3() {
+            return this.ordersAmout != null;
+        },
+
+        step4() {
+            return this.startShift != null && this.endShift != null;
+        },
+
+        sendReportButtonActive() {
+            return this.step1 && this.step2 && this.step3 && this.step4;
         }
+
     },
 
 
