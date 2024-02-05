@@ -1,110 +1,123 @@
 <template>
     <div>
 
-        <v-card align='center' justify="center">
-            <v-row class="mb-2">
+        <v-stepper v-model="step" :mobile="$vuetify.display.smAndDown">
 
-                <v-col cols='3' v-for="button in buttons" :key="button.id">
+            <v-stepper-header>
+                <v-stepper-item :complete="step1" :title="cards[0].text" value="1"></v-stepper-item>
 
-                    <v-btn variant="plain" :icon="button.icon" :color="button.active ? 'teal' : 'red'"
-                        @click="card = button.id" :disabled="!button.active">
+                <v-divider></v-divider>
+
+                <v-stepper-item :complete="step2" :title="cards[1].text" value="2"></v-stepper-item>
+
+                <v-divider></v-divider>
+
+                <v-stepper-item :complete="step3" :title="cards[2].text" value="3"></v-stepper-item>
+
+                <v-divider></v-divider>
+
+                <v-stepper-item :complete="step4" :title="cards[3].text" value="4"></v-stepper-item>
+            </v-stepper-header>
+
+
+
+            <v-stepper-window>
+
+                <!-- Step 1 -->
+                <v-window-item value="1">
+                    <v-autocomplete variant="solo-filled" :items="restaurants" v-model="selectedRestaurant"
+                        label="Select restaurant" @update:model-value="getCars()"
+                        no-data-text="Sorry, you don't belong to any restaurant">
+                    </v-autocomplete>
+                </v-window-item>
+                <!-- Step 1 -->
+
+                <!-- Step 2 -->
+                <v-window-item value="2">
+                    <v-autocomplete variant="solo-filled" :disabled="selectedRestaurant == null" :items="cars"
+                        label="Select car" v-model="selectedCar"
+                        no-data-text="Sorry, there isn't available cars for selected restaurant">
+                    </v-autocomplete>
+                </v-window-item>
+                <!-- Step 2 -->
+
+                <!-- Step 3 -->
+                <v-window-item value="3">
+                    <v-text-field v-model="mileage" variant="solo-filled" label="Type mileage"
+                        :rules="[value => !!value || 'Mileage is required', value => (value && value.length <= 7) || 'Mileage must be a number up to 7 digits', value => (value && /^\d+$/.test(value)) || 'Only digits are allowed']">
+                        <template v-slot:append>km</template>
+                    </v-text-field>
+
+                    <v-textarea v-model="description" label="Describe damages" variant="solo-filled" class="mt-3" rows="3"
+                        auto-grow clearable counter="1000"
+                        :rules="[value => !!value || 'Field is required', value => (value && value.length <= 1000) || 'Max 1000 characters']"
+                        append-icon="mdi-chat-alert"></v-textarea>
+                </v-window-item>
+                <!-- Step 3 -->
+
+                <!-- Step 4 -->
+                <v-window-item value="4">
+                    <v-table>
+                        <thead>
+                            <tr>
+                                <th class="text-left">
+                                    Name
+                                </th>
+                                <th class="text-left">
+                                    Value
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Restaurant</td>
+                                <td>{{ selectedRestaurant }}</td>
+                            </tr>
+                            <tr>
+                                <td>Car license plate</td>
+                                <td>{{ selectedCar }}</td>
+                            </tr>
+                            <tr>
+                                <td>Mileage</td>
+                                <td>{{ mileage }} km</td>
+                            </tr>
+                            <tr>
+                                <td>Description</td>
+                                <td>
+                                    {{ description }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </v-table>
+                </v-window-item>
+                <!-- Step 4 -->
+
+            </v-stepper-window>
+
+
+
+            <v-stepper-actions>
+                <template v-slot:next="">
+
+                    <v-btn v-if="step < 3" @click="step++" :disabled="!cards[step].active">
+                        Next
                     </v-btn>
-                </v-col>
-
-            </v-row>
-
-
-
-            <span v-if="card == 1">
-                <v-autocomplete variant="solo-filled" :items="availableRestaurants" v-model="selectedRestaurant"
-                    label="Select restaurant" @update:model-value="getCars()" no-data-text="Sorry, you don't belong to any restaurant">
-                </v-autocomplete>
-            </span>
-
-
-
-            <span v-else-if="card == 2">
-                <v-autocomplete variant="solo-filled" :disabled="selectedRestaurant == null" :items="availableCars"
-                    label="Select car" v-model="selectedCar" no-data-text="Sorry, there isn't available cars for selected restaurant">
-                </v-autocomplete>
-            </span>
-
-
-            <span v-else-if="card == 3">
-                <v-text-field v-model="mileage" variant="solo-filled" label="Type mileage"
-                    :rules="[value => !!value || 'Mileage is required', value => (value && value.length <= 7 && /^\d+$/.test(value)) || 'Mileage must be a number up to 7 digits']">
-                    <template v-slot:append>km</template>
-                </v-text-field>
-
-                <v-textarea v-model="description" label="Describe damages" variant="solo-filled" class="mt-3" rows="3"
-                    auto-grow clearable counter="1000"
-                    :rules="[value => !!value || 'Field is required', value => (value && value.length <= 1000) || 'Max 1000 characters']"
-                    append-icon="mdi-chat-alert"></v-textarea>
-            </span>
-
-
-
-            <span v-else-if="card == 4">
-                <v-table>
-                    <thead>
-                        <tr>
-                            <th class="text-left">
-                                Name
-                            </th>
-                            <th class="text-left">
-                                Value
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Restaurant</td>
-                            <td>{{ selectedRestaurant }}</td>
-                        </tr>
-                        <tr>
-                            <td>Car license plate</td>
-                            <td>{{ selectedCar }}</td>
-                        </tr>
-                        <tr>
-                            <td>Mileage</td>
-                            <td>{{ mileage }} km</td>
-                        </tr>
-                        <tr>
-                            <td>Description</td>
-                            <td>
-                                {{ description }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-table>
-
-
-
-            </span>
-
-            <!-- Buttons -->
-            <v-row class="mt-3 mb-3">
-                <v-col cols="6" align="start">
-                    <v-btn variant="outlined" color="red" v-if="card > 1" @click="card--" prepend-icon="mdi-arrow-left">
-                        {{ buttons[card - 2].text }}
-                    </v-btn>
-                </v-col>
-
-                <v-col cols="6" align="end">
-                    <v-btn v-if="card < 4" variant="outlined" color="teal" @click="card++"
-                        :disabled="!buttons[card].active">
-                        {{ buttons[card].text }}
-                        <v-icon icon="mdi-arrow-right"></v-icon>
-                    </v-btn>
-                    <v-btn v-else :variant="!allButtonsActive ? 'outlined' : 'elevated'"
-                        :color="!allButtonsActive ? 'red' : 'teal'" :disabled="!allButtonsActive" @click="sendReport()"
-                        append-icon="mdi-send">
+                    <v-btn v-else :disabled="!sendReportButtonActive" @click="sendReport()" append-icon="mdi-send-variant"
+                        variant="tonal" color="success">
                         Send
                     </v-btn>
-                </v-col>
-            </v-row>
-            <!-- Buttons -->
-        </v-card>
+
+                </template>
+
+                <template v-slot:prev="">
+                    <v-btn :disabled="step == 0" @click="step--">
+                        Back
+                    </v-btn>
+                </template>
+            </v-stepper-actions>
+
+        </v-stepper>
+
 
     </div>
 </template>
@@ -118,10 +131,10 @@ export default {
         return {
             loggedUser: null,
 
-            availableRestaurants: [],
+            restaurants: [],
             selectedRestaurant: null,
 
-            availableCars: [],
+            cars: [],
             selectedCar: null,
 
             objects: [],
@@ -130,31 +143,27 @@ export default {
             description: null,
 
 
-            card: 1,
-            buttons: [
+            step: 0,
+            cards: [
                 {
                     id: 1,
                     text: 'Select restaurant',
-                    active: true,
-                    icon: 'mdi-numeric-1-circle',
+                    active: false,
                 },
                 {
                     id: 2,
                     text: 'Select car',
                     active: false,
-                    icon: 'mdi-numeric-2-circle',
                 },
                 {
                     id: 3,
                     text: 'Details',
                     active: false,
-                    icon: 'mdi-numeric-3-circle',
                 },
                 {
                     id: 4,
                     text: 'Summary',
                     active: false,
-                    icon: 'mdi-numeric-4-circle',
                 },
             ],
         }
@@ -181,7 +190,7 @@ export default {
                 const response = await axios.get(`api/drivers/get/restaurants/${this.loggedUser}/`);
 
                 this.objects = response.data;
-                this.availableRestaurants = Object.keys(this.objects)
+                this.restaurants = Object.keys(this.objects)
             } catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
@@ -191,7 +200,7 @@ export default {
 
         // Get cars for selected restaurant
         getCars() {
-            this.availableCars = this.objects[this.selectedRestaurant];
+            this.cars = this.objects[this.selectedRestaurant];
         },
         // Get cars for selected restaurant
 
@@ -222,27 +231,37 @@ export default {
 
     watch: {
         selectedRestaurant() {
-            this.buttons[1].active = this.selectedRestaurant != null;
+            this.cards[0].active = this.selectedRestaurant != null;
         },
 
         selectedCar() {
-            this.buttons[2].active = this.selectedCar != null;
-        },
-
-        mileage(newMileage) {
-            this.buttons[3].active = newMileage && newMileage.length <= 7 && /^\d+$/.test(newMileage) && this.description && this.description.length <= 1000;
-        },
-
-        description(newDescription) {
-            this.buttons[3].active = this.mileage && this.mileage.length <= 7 && /^\d+$/.test(this.mileage) && newDescription && newDescription.length <= 1000;
+            this.cards[1].active = this.selectedCar != null;
         },
     },
 
 
     computed: {
-        allButtonsActive() {
-            return this.buttons.every(button => button.active);
+        step1() {
+            return this.selectedRestaurant != null;
         },
+
+        step2() {
+            return this.selectedCar != null;
+        },
+
+        step3() {
+            if (this.mileage && this.description && this.mileage.length <= 7 && /^\d+$/.test(this.mileage) && this.description.length <= 1000) {
+                this.cards[2].active = true;
+                return true;
+            } else {
+                this.cards[2].active = false;
+                return false;
+            }
+        },
+
+        sendReportButtonActive() {
+            return this.step1 && this.step2 && this.step3;
+        }
     },
 
 }
