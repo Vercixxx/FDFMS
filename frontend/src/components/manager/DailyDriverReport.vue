@@ -3,23 +3,23 @@
 
         <v-stepper v-model="step" :mobile="$vuetify.display.smAndDown">
             <v-stepper-header>
-                <v-stepper-item :complete="step1" :title="titles[0]" value="1"></v-stepper-item>
+                <v-stepper-item :complete="step1" :title="cards[0].text" value="1"></v-stepper-item>
 
                 <v-divider></v-divider>
 
-                <v-stepper-item :complete="step2" :title="titles[1]" value="2"></v-stepper-item>
+                <v-stepper-item :complete="step2" :title="cards[1].text" value="2"></v-stepper-item>
 
                 <v-divider></v-divider>
 
-                <v-stepper-item :complete="step3" :title="titles[2]" value="3"></v-stepper-item>
+                <v-stepper-item :complete="step3" :title="cards[2].text" value="3"></v-stepper-item>
 
                 <v-divider></v-divider>
 
-                <v-stepper-item :complete="step4" :title="titles[3]" value="4"></v-stepper-item>
+                <v-stepper-item :complete="step4" :title="cards[3].text" value="4"></v-stepper-item>
 
                 <v-divider></v-divider>
 
-                <v-stepper-item :title="titles[4]" value="5"></v-stepper-item>
+                <v-stepper-item :title="cards[4].text" value="5"></v-stepper-item>
 
             </v-stepper-header>
 
@@ -114,7 +114,7 @@
             <v-stepper-actions>
                 <template v-slot:next="">
 
-                    <v-btn v-if="step < 4" @click="step++" :disabled="!buttons[step].active">
+                    <v-btn v-if="step < 4" @click="step++" :disabled="!cards[step].active">
                         Next
                     </v-btn>
                     <v-btn v-else :disabled="!sendReportButtonActive" @click="sendReport()" append-icon="mdi-send-variant"
@@ -148,48 +148,33 @@ export default {
             loggedUserUsername: null,
             step: 0,
 
-            buttons: [
+            cards: [
                 {
                     id: 1,
                     text: 'Select restaurant',
                     active: false,
-                    icon: 'mdi-numeric-1-circle',
                 },
                 {
                     id: 2,
                     text: 'Select driver',
                     active: false,
-                    icon: 'mdi-numeric-2-circle',
                 },
                 {
                     id: 3,
                     text: 'Orders amount',
                     active: false,
-                    icon: 'mdi-numeric-3-circle',
                 },
                 {
                     id: 4,
                     text: 'Shift details',
                     active: false,
-                    icon: 'mdi-numeric-4-circle',
                 },
                 {
                     id: 5,
                     text: 'Summary',
                     active: false,
-                    icon: 'mdi-numeric-5-circle',
                 },
             ],
-
-
-            titles: [
-                'Select restaurant',
-                'Select driver',
-                'Orders amount',
-                'Shift details',
-                'Summary',
-            ],
-
 
 
             restaurants: [],
@@ -247,19 +232,19 @@ export default {
 
     watch: {
         selectedRestaurant() {
-            this.buttons[0].active = this.selectedRestaurant != null;
+            this.cards[0].active = this.selectedRestaurant != null;
         },
 
         selectedDriver() {
-            this.buttons[1].active = this.selectedDriver != null;
+            this.cards[1].active = this.selectedDriver != null;
         },
 
         ordersAmout(ordersAmout) {
-            this.buttons[2].active = ordersAmout && /^\d+$/.test(ordersAmout);
+            this.cards[2].active = ordersAmout && /^\d+$/.test(ordersAmout);
         },
 
         endShift() {
-            this.buttons[3].active = this.summaryButtonActive;
+            this.cards[3].active = this.summaryButtonActive;
         },
 
     },
