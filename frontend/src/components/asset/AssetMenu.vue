@@ -104,20 +104,10 @@ export default {
                     disabled: false,
                     options: [
                         {
-                            name: 'Add fleet',
-                            click: 'AddFleetComponent',
-                            icon: 'mdi-plus',
-                        },
-                        {
                             name: 'Manage fleets',
                             click: 'ManageFleetsComponent',
                             icon: 'mdi-list-status',
                         },
-                        // {
-                        //     name: 'Transfer cars',
-                        //     click: '',
-                        //     icon: 'mdi-transfer',
-                        // },
                     ],
                 },
                 {

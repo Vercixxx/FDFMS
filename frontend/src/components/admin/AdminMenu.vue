@@ -30,22 +30,22 @@ export default {
                     name: 'Asset menu',
                     menu: AssetMenu
                 },
-                // {
-                //     name: 'Clients menu',
-                //     menu: ClientsMenu
-                // },
-                // {
-                //     name: 'Payroll menu',
-                //     menu: PayrollMenu
-                // },
-                // {
-                //     name: 'Manager menu',
-                //     menu: ManagerMenu
-                // },
-                // {
-                //     name: 'Driver menu',
-                //     menu: DriverMenu
-                // },
+                {
+                    name: 'Clients menu',
+                    menu: ClientsMenu
+                },
+                {
+                    name: 'Payroll menu',
+                    menu: PayrollMenu
+                },
+                {
+                    name: 'Manager menu',
+                    menu: ManagerMenu
+                },
+                {
+                    name: 'Driver menu',
+                    menu: DriverMenu
+                },
             ]
         };
     },

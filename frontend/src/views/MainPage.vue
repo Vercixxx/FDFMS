@@ -102,7 +102,8 @@
 
                             <v-tooltip text="Logout" location="bottom">
                                 <template v-slot:activator="{ props }">
-                                    <v-btn :ripple="false" variant="plain" v-bind="props" icon="mdi-logout" @click="logoutDialog = true">
+                                    <v-btn :ripple="false" variant="plain" v-bind="props" icon="mdi-logout"
+                                        @click="logoutDialog = true">
                                     </v-btn>
                                 </template>
                             </v-tooltip>
@@ -185,7 +186,7 @@
                         <v-icon :icon="social.icon" />
                     </a>
                 </span>
-                
+
                 {{ new Date().getFullYear() }} — Krzysztof Służałek
 
             </div>
@@ -263,6 +264,8 @@ const NonReactiveHome = markRaw(Home);
 import AdminNav from '../components/admin/AdminMenu.vue'
 import ClientsNav from "../components/clients/ClientsMenu.vue"
 import HRNav from "../components/hr/HRMenu.vue"
+import DriverNav from "../components/driver/DriverMenu.vue"
+import RestManagerNav from "../components/manager/ManagerMenu.vue"
 // Navigation Bars
 
 // HR
@@ -282,14 +285,21 @@ import ManageBrands from '../components/clients/ManageBrands.vue';
 // Asset
 import AddCar from '../components/asset/AddCar.vue';
 import ManageCars from '../components/asset/ManageCars.vue';
-import AddFleet from '../components/asset/AddFleet.vue';
-import ManageFleets from '../components/asset/ManageFleets.vue';
 // Asset
 
 
 // Managers
 import CreateSchedule from '../components/manager/ManageSchedules.vue';
+import ManageDrivers from '../components/manager/ManageDrivers.vue';
+import DailyDriverReport from '../components/manager/DailyDriverReport.vue';
+import ManagerManageCars from '../components/manager/ManageCars.vue';
 // Managers
+
+
+// Drivers
+import DailyReport from '..//components/driver/DailyReport.vue';
+import AddCarDamage from '../components/driver/AddCarDamage.vue';
+// Drivers
 
 
 
@@ -401,6 +411,10 @@ export default {
                     return ClientsNav;
                 case "HR":
                     return AdminNav;
+                case "Driver":
+                    return DriverNav;
+                case "Manager":
+                    return RestManagerNav;
 
                 default:
                     return null;
@@ -666,46 +680,6 @@ export default {
             ];
             this.currentComponent = ManageCars;
         },
-        AddFleetComponent() {
-            this.path = [
-                {
-                    title: "Home",
-                    component: 'HomeComponent',
-                    disabled: false,
-                },
-                {
-                    title: "Fleets",
-                    component: '',
-                    disabled: true,
-                },
-                {
-                    title: 'Add Fleet',
-                    component: '',
-                    disabled: true,
-                },
-            ];
-            this.currentComponent = AddFleet;
-        },
-        ManageFleetsComponent() {
-            this.path = [
-                {
-                    title: "Home",
-                    component: 'HomeComponent',
-                    disabled: false,
-                },
-                {
-                    title: "Fleets",
-                    component: '',
-                    disabled: true,
-                },
-                {
-                    title: 'Manage Fleets',
-                    component: '',
-                    disabled: true,
-                },
-            ];
-            this.currentComponent = ManageFleets;
-        },
         // Assets
 
 
@@ -725,7 +699,115 @@ export default {
             ];
             this.currentComponent = CreateSchedule;
         },
+
+        ManageDriversComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Drivers",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Manage Drivers',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = ManageDrivers;
+        },
+
+        DailyDriverReportComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Drivers",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Daily Report',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DailyDriverReport;
+        },
+        ManagerManageCarsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Cars",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Manage Cars',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = ManagerManageCars;
+        },
         // Managers
+
+
+
+        // Drivers
+        DailyReportComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Cars",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: "Daily Report",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DailyReport;
+        },
+
+        AddCarDamageComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Cars",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: "Add Car Damage",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = AddCarDamage;
+        },
+        // Drivers
 
 
 

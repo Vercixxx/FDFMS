@@ -4,7 +4,7 @@ from .models import Restaurant, WorkChange, DailyCarSchedule, Schedule, Brands
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Restaurant._meta.fields]
-    filter_horizontal = ['managers']
+    filter_horizontal = ['managers', 'drivers']
     
 @admin.register(WorkChange)
 class WorkChangeAdmin(admin.ModelAdmin):

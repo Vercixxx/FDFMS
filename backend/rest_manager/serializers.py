@@ -76,3 +76,8 @@ class GetAllManagersUI(serializers.ModelSerializer):
         model = RestManager
         fields = ['username']
 
+
+class GetRestaurantsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RestManager
+        fields = ['restaurants']

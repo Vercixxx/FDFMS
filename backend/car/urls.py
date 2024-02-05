@@ -22,4 +22,14 @@ urlpatterns = [
     
     # Get cars by search
     path('api/cars/get/', views.GetVinLicensePlate.as_view(), name="get-cars-by-search"),
+    
+    
+    # Car daily reports
+    path('api/car/dailyreport/add/', views.AddDailyReport.as_view(), name="add-daily-report"),
+    
+    # Add car damage
+    path('api/car/damage/add/', views.AddCarDamage.as_view(), name="add-car-damage"),
+    
+    # Get car damage
+    path('api/car/damage/get/<int:vin>/', views.GetCarDamages.as_view(), name="get-car-damage"),
 ]

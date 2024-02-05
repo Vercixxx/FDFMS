@@ -1,8 +1,11 @@
 from django.http import JsonResponse
 
-from .serializers import CarSerializer, CarVinLicensePlateSerializer
+from .serializers import CarSerializer, CarVinLicensePlateSerializer, CarDailyReportsSerializer, CarDamageSerializer 
 
-from .models import Car
+# Models
+from .models import Car, CarDamage
+from driver.models import Driver
+from fleet.models import Fleet
 
 from rest_framework.views import APIView
 from rest_framework.generics import DestroyAPIView
@@ -72,10 +75,16 @@ class GetCars(APIView):
     def get(self, request):
         limit = self.request.query_params.get('limit', '').strip()
         query = self.request.query_params.get('search', '').strip()
+        restaurant = self.request.query_params.get('restaurant', '').strip()
         
 
+        if restaurant:
+            fleet = Fleet.objects.get(restaurant__name=restaurant)
+            queryset = fleet.cars.all().order_by('-vin')
+        else:
+            queryset = Car.objects.all().order_by('-vin')
+        
         serializer_class = CarSerializer
-        queryset = Car.objects.all()
         
         if query:
             queryset = queryset.filter(
@@ -126,6 +135,7 @@ class EditCar(APIView):
 
             if serializer.is_valid():
                 serializer.save()
+                print(serializer.data)
                 return JsonResponse({'message': 'Success'}, status=200)
 
             else:
@@ -151,3 +161,65 @@ class GetVinLicensePlate(APIView):
         serializer = CarVinLicensePlateSerializer(queryset, many=True)
         
         return JsonResponse(serializer.data, status=200, safe=False)
+
+
+
+# Car daily reports
+class AddDailyReport(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data
+        
+        # Get driver
+        data['driver'] = Driver.objects.get(username=data['driver'])
+        data['car' ] = Car.objects.get(license_plate=data['car'])
+        
+        
+        serializer = CarDailyReportsSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Successfully added report'}, status=200)
+        
+        else:
+            return JsonResponse(serializer.errors, status=400)
+# Car daily reports
+
+
+# Add car damage
+class AddCarDamage(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data
+        
+        # Get driver
+        data['driver'] = Driver.objects.get(username=data['driver'])
+        data['car' ] = Car.objects.get(license_plate=data['car'])
+        
+        
+        serializer = CarDamageSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Successfully added report'}, status=200)
+        
+        else:
+            print(serializer.errors)
+            return JsonResponse(serializer.errors, status=400)
+# Add car damage
+
+
+
+class GetCarDamages(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, vin):
+        car = Car.objects.get(vin=vin)
+        
+        carDamage = CarDamage.objects.filter(car=car)
+        
+        serializer = CarDamageSerializer(carDamage, many=True).data
+        
+        return JsonResponse(serializer, status=200, safe=False)

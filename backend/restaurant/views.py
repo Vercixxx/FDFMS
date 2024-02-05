@@ -79,7 +79,7 @@ class UpdateRestaurant(APIView):
             errors = [
                 f'Given {field} is already taken. Please try another.'
                 for field in fields_to_check
-                if Restaurant.objects.filter(**{field: data.get(field, None)}).exists() >= 1
+                if Restaurant.objects.filter(**{field: data.get(field, None)}).exists() > 1
             ]
 
             if errors:

@@ -71,10 +71,16 @@
 
             <!-- Accessing table cells -->
             <template v-slot:item="{ item }">
-                <tr align="center">
+                <tr align="center" :style="item.active ? '' : 'color: red'">
                     <td v-for="header in updatedColumns" :key="header.key">
                         <template v-if="header.key === 'action'">
                             <span>
+                                <v-btn variant="plain" color="danger" @click="showCarDamages(item.vin)">
+                                    <v-icon icon="mdi-car-wrench" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Show {{ item.brand }} {{ item.model }}
+                                        damages</v-tooltip>
+                                </v-btn>
+
                                 <v-btn variant="plain" color="blue" @click="carDetailsFunct(item.vin)">
                                     <v-icon icon="mdi-book-open-page-variant-outline" class="text-h5"></v-icon>
                                     <v-tooltip activator="parent" location="top">Show {{ item.brand }} {{ item.model }}
@@ -226,8 +232,32 @@
     </v-dialog>
     <!-- dialog -->
 
-
     <!-- Dialog details -->
+
+    <!-- Car Damages  -->
+    <v-dialog persistent v-model="carDamagesDialog" fullscreen :scrim="false" transition="dialog-bottom-transition">
+        <v-card>
+            <v-card-title class="bg-deep-purple-lighten-1">
+                <v-row>
+                    <v-col class="text-h4">
+                        Damages for car vin - {{ carDamagesVin }}
+                    </v-col>
+                    <v-col align="end">
+                        <v-btn variant="outlined" color="red" @click="carDamagesDialog = false" icon="mdi-close">
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-card-title>
+            
+
+            <v-card-text>
+                <v-data-table :headers="carDamagesHeaders" :items="carDamages" no-data-text="No damages reported">
+                </v-data-table>
+            </v-card-text>
+
+        </v-card>
+    </v-dialog>
+    <!-- Car Damages  -->
 </template>
 
 
@@ -258,12 +288,17 @@ export default {
             carDetailsDialog: false,
             carDetails: [],
 
+            carDamagesDialog: false,
+            carDamagesVin: null,
+            carDamages: [],
+
             necessaryHeaders: [
                 { title: 'No', align: 'center', sortable: false, key: 'rownumber' },
                 { title: 'VIN', key: 'vin', align: 'center', sortable: false },
             ],
             columns: [
-                { title: 'License plate', key: 'license_plate', align: 'center', sortable: false},
+                { title: 'License plate', key: 'license_plate', align: 'center', sortable: false },
+                { title: 'Active status', key: 'active', align: 'center', sortable: false },
                 { title: 'Brand', key: 'brand', align: 'center', sortable: false },
                 { title: 'Model', key: 'model', align: 'center', sortable: false },
                 { title: 'Color', key: 'color', align: 'center', sortable: false },
@@ -279,7 +314,15 @@ export default {
             ],
             actions: [
                 { title: 'ACTIONS', align: 'center', key: 'action', sortable: false },
-            ]
+            ],
+
+            carDamagesHeaders: [
+                { title: 'VIN', key: 'car', align: 'center', sortable: false },
+                { title: 'Reported by', align: 'center', sortable: false, key: 'driver' },
+                { title: 'Reported date', align: 'center', sortable: true, key: 'date' },
+                { title: 'At mileage', align: 'center', sortable: false, key: 'car_mileage' },
+                { title: 'Description', key: 'description', align: 'center', sortable: false },
+            ],
 
         };
     },
@@ -293,19 +336,29 @@ export default {
     created() {
         this.loadCars();
 
-        this.selectedColumns = [
-            this.columns[0],
-            this.columns[1],
-            this.columns[3],
-            this.columns[8],
-            this.columns[9],
-            this.columns[10],
-            this.columns[11],
-        ];
+        this.selectedColumns = this.columns.filter(column =>
+            ['license_plate', 'active', 'mileage'].includes(column.key)
+        );
         this.avaliableColumns = this.columns;
     },
 
     methods: {
+
+        // Show car damages
+        async showCarDamages(carVin) {
+            this.carDamagesVin = carVin;
+
+            try {
+                const response = await axios.get(`api/car/damage/get/${carVin}/`);
+                this.carDamages = response.data;
+                this.carDamagesDialog = true;
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error.response.error, type: 'error' });
+            }
+
+        },
+        // Show car damages
+
 
 
         // Load cars
@@ -417,6 +470,10 @@ export default {
             this.carDetailsDialog = true;
         },
         // Show car details
+
+
+
+
 
 
     },

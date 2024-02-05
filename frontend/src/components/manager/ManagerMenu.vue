@@ -61,35 +61,25 @@ export default {
                     options: [
                         {
                             name: 'Daily driver report',
-                            click: 'AddUserComponent',
+                            click: 'DailyDriverReportComponent',
                             icon: 'mdi-plus',
                         },
                         {
                             name: 'Show drivers',
-                            click: 'ModifyUserComponent',
+                            click: 'ManageDriversComponent',
                             icon: 'mdi-list-status',
                         },
                     ],
                 },
                 {
-                    name: 'Cars',
+                    name: 'Fleets',
                     mainIcon: 'mdi-car-multiple',
-                    disabled: true,
+                    disabled: false,
                     options: [
                         {
-                            name: 'Car management',
-                            click: 'ModifyUserComponent',
+                            name: 'Cars management',
+                            click: 'ManagerManageCarsComponent',
                             icon: 'mdi-list-status',
-                        },
-                        {
-                            name: 'Add car damage',
-                            click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
-                        },
-                        {
-                            name: 'Show car damage',
-                            click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
                         },
                     ],
                 },

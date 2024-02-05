@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 
-from .models import Driver
+from .models import Driver, DailyWork
 from users.models import GeneralUser
 
 from users.serializers import GetAddressesSerializer
@@ -56,6 +56,29 @@ class DriverSerializer(serializers.ModelSerializer):
                   ]
 
 
+class RestaurantDriversSerliazer(serializers.ModelSerializer):
+    restaurant_name = serializers.CharField(read_only=True)
+    date_joined = serializers.DateTimeField(format='%Y-%m-%d')
+
+    class Meta:
+        model = Driver
+        fields = ['email',
+                  'first_name',
+                  'is_active',
+                  'last_name',
+                  'user_role',
+                  'username',
+                  'phone',
+                  'date_joined',
+                  'restaurant_name',
+                  ]
+
+class DriverUsernameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Driver
+        fields = ['username', 'first_name', 'last_name']
+
+
 class AddDriverSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver
@@ -82,3 +105,9 @@ class UpdateDriverUser(serializers.ModelSerializer):
             'ln_published_by',
             'ln_code',
         ]
+
+
+class DailyDriverReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DailyWork
+        fields = '__all__'

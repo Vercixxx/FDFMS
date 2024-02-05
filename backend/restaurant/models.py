@@ -8,7 +8,8 @@ from datetime import datetime
 
 class Brands(models.Model):
     name = models.CharField(max_length=150)
-    phone = models.CharField(max_length=25, blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    
     
     #address 
     country = models.CharField(max_length=100, blank=True, null=True)
@@ -26,7 +27,7 @@ class Restaurant(models.Model):
     brand = models.ForeignKey(Brands, db_column='brand', on_delete=models.CASCADE, null=True)
     managers = models.ManyToManyField(RestManager, blank=True)
     
-    phone = models.CharField(max_length=25, blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
 
     #address 
     country = models.CharField(max_length=100, blank=True, null=True)
@@ -36,6 +37,9 @@ class Restaurant(models.Model):
     home = models.CharField(max_length=10, blank=True, null=True)
     apartament = models.CharField(max_length=10, blank=True, null=True)
     zip = models.CharField(max_length=10, blank=True, null=True)
+    
+    # Drivers
+    drivers = models.ManyToManyField(Driver, blank=True)
 
 class WorkChange(models.Model):
     time_start = models.CharField(max_length=5)

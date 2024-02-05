@@ -111,7 +111,7 @@
 
       <!-- Accessing table cells -->
       <template v-slot:item="{ item }">
-        <tr align="center">
+        <tr align="center" :style="item.is_active ? '' : 'color: red'">
           <td v-for="header in updatedColumns" :key="header.key">
 
             <template v-if="header.key === 'action'">

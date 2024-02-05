@@ -2,8 +2,6 @@ from django.db import models
 from users.models import GeneralUser
 
 
-from datetime import datetime
-
 class Driver(GeneralUser):
     license_number = models.CharField(max_length=50, blank=True, null=True)
     ln_release_date = models.DateField(max_length=50, blank=True, null=True)
@@ -21,21 +19,11 @@ class Driver(GeneralUser):
 
 class DailyWork(models.Model):
     driver = models.ForeignKey(Driver, db_column='driver', on_delete=models.CASCADE)
-    day = models.CharField(max_length=10)
+    date = models.DateField(auto_now_add=True)
+    orders = models.IntegerField(default=0)
     start_work = models.TimeField()
     end_work = models.TimeField()
-    orders = models.IntegerField(default=0)
-    working_time = models.CharField(max_length=5, blank=True)
-    
-    def save(self, *args, **kwargs):
-        if self.start_work and self.end_work:
-            start_datetime = datetime.combine(datetime.today(), self.start_work)
-            end_datetime = datetime.combine(datetime.today(), self.end_work)
-            time_difference = end_datetime - start_datetime
-            hours = time_difference.seconds // 3600
-            minutes = (time_difference.seconds // 60) % 60
-            self.working_time = f"{hours:02}:{minutes:02}"
-        super(DailyWork, self).save(*args, **kwargs)
+    working_time = models.TimeField()
         
-    def __str__(self):
-        return f"Start Work: {self.start_work}, End Work: {self.end_work}, Orders: {self.orders}, Working Time: {self.working_time()}"
+    class Meta:
+        db_table = 'DailyWorkReports'
