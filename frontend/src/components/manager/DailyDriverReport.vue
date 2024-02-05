@@ -11,7 +11,7 @@
 
                 <v-divider></v-divider>
 
-                <v-stepper-item :complete="step3" :title="titles[2]" value="3" :rules="oredersRules"></v-stepper-item>
+                <v-stepper-item :complete="step3" :title="titles[2]" value="3"></v-stepper-item>
 
                 <v-divider></v-divider>
 
@@ -34,8 +34,9 @@
 
 
                 <v-window-item value="2">
-                    <v-autocomplete variant="underlined" v-model="selectedDriver" :items="drivers" item-title="username" item-value="username"
-                        label="Select driver" no-data-text="There isn't available drivers for selected restaurant"
+                    <v-autocomplete variant="underlined" v-model="selectedDriver" :items="drivers" item-title="username"
+                        item-value="username" label="Select driver"
+                        no-data-text="There isn't available drivers for selected restaurant"
                         :disabled="selectedRestaurant == null">
 
                         <template v-slot:item="{ props, item }">
@@ -116,7 +117,8 @@
                     <v-btn v-if="step < 4" @click="step++" :disabled="!buttons[step].active">
                         Next
                     </v-btn>
-                    <v-btn v-else :disabled="!sendReportButtonActive" @click="sendReport()" append-icon="mdi-send-variant" variant="tonal" color="success">
+                    <v-btn v-else :disabled="!sendReportButtonActive" @click="sendReport()" append-icon="mdi-send-variant"
+                        variant="tonal" color="success">
                         Send
                     </v-btn>
 
@@ -131,8 +133,6 @@
 
         </v-stepper>
 
-
-{{ sendReportButtonActive }}
 
     </div>
 </template>
@@ -199,12 +199,6 @@ export default {
             selectedDriver: null,
 
             ordersAmout: null,
-            oredersRules:
-                [
-                    value => !!value || 'Field is required',
-                    value => (/^\d+$/.test(value)) || 'Only numbers are allowed',
-                    value => (value && value.length <= 3 || 'Reached max length')
-                ],
 
             hoursList: [],
             startShift: null,
@@ -223,9 +217,6 @@ export default {
 
 
     computed: {
-        allButtonsActive() {
-            return this.buttons.every(button => button.active);
-        },
 
         summaryButtonActive() {
             return this.startShift != null && this.endShift != null;
@@ -334,6 +325,7 @@ export default {
         // Send report
 
 
+        // Generate hours list
         async generateHoursList() {
             for (let i = 0; i < 24 * 12; i++) {
                 await new Promise(resolve => setTimeout(resolve, 0));
@@ -342,6 +334,7 @@ export default {
                 this.hoursList.push(`${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
             }
         },
+        // Generate hours list
 
 
     },
