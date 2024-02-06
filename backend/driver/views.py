@@ -100,17 +100,21 @@ class GetDrivers(APIView):
         serializer_class = RestaurantDriversSerliazer
         user_model = Driver
 
-        queryset = user_model.objects.all()
+        queryset = user_model.objects.all().order_by('date_joined')
         
-        # Get users from selected restaurant
-        restaurants = Restaurant.objects.filter(name=restaurant)
+        if restaurant:
+            # Get users from selected restaurant
+            restaurants = Restaurant.objects.filter(name=restaurant)
         
-        drivers = Driver.objects.none()
+            drivers = Driver.objects.none()
 
-        for restaurant in restaurants:
-            drivers |= restaurant.drivers.all().annotate(restaurant_name=F('restaurant__name')).order_by('date_joined')
+            for restaurant in restaurants:
+                drivers |= restaurant.drivers.all().annotate(restaurant_name=F('restaurant__name')).order_by('date_joined')
 
-        queryset = drivers
+            queryset = drivers
+            
+        else:
+            queryset = queryset.annotate(restaurant_name=F('restaurant__name'))
         
         
         # Filtering by status

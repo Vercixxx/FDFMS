@@ -303,6 +303,11 @@ import AddCarDamage from '../components/driver/AddCarDamage.vue';
 // Drivers
 
 
+// Payroll
+import DriversWorkingHours from '../components/payroll/DriversWorkingHours.vue';
+// Payroll
+
+
 
 export default {
     data() {
@@ -703,6 +708,30 @@ export default {
             this.currentComponent = ManageFleets;
         },
         // Assets
+
+
+        // Payroll
+        DriversWorkingHoursComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Payroll",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Drivers Working Hours',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriversWorkingHours;
+        },
+        // Payroll
 
 
         // Managers
