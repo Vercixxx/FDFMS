@@ -63,7 +63,18 @@ setInterval(refreshAccessToken, 58 * 60 * 1000);
 // Access token refreshing
 
 
-createApp(App).use(store).use(router).use(vuetify).mount('#app')
+const app = createApp(App);
+
+app.use(store);
+app.use(router);
+app.use(vuetify);
+
+app.mount('#app');
+
+window.addEventListener('beforeunload', (event) => {
+  event.preventDefault();
+  event.returnValue = '';
+});
 
 
 
