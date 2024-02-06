@@ -77,9 +77,11 @@
                             </tr>
                         </template>
 
+                        <!-- Loading -->
                         <template v-slot:loading>
                             <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
                         </template>
+                        <!-- Loading -->
 
                     </v-data-table-server>
                 </v-col>
@@ -137,7 +139,6 @@
 <script>
 import axios from 'axios'
 import useEventsBus from '../plugins/eventBus.js'
-const { emit } = useEventsBus()
 
 export default {
     name: 'App',

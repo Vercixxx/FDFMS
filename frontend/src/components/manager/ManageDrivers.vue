@@ -98,7 +98,11 @@
                 class="elevation-4 rounded-xl" item-value="username" v-model:items-per-page="itemsPerPage" hover
                 show-current-page>
 
-
+                <!-- Loading -->
+                <template v-slot:loading>
+                    <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                </template>
+                <!-- Loading -->
 
                 <!-- No data -->
                 <template v-slot:no-data>

@@ -107,6 +107,12 @@
       </template>
       <!-- No data -->
 
+      <!-- Loading -->
+      <template v-slot:loading>
+        <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+      </template>
+      <!-- Loading -->
+
 
 
       <!-- Accessing table cells -->

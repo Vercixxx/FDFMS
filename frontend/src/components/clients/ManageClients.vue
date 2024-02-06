@@ -58,7 +58,11 @@
             class="elevation-4 rounded-xl" item-value="id" v-model:items-per-page="itemsPerPage" hover select-strategy="all"
             show-current-page>
 
-
+            <!-- Loading -->
+            <template v-slot:loading>
+                <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+            </template>
+            <!-- Loading -->
 
             <!-- No data -->
             <template v-slot:no-data>

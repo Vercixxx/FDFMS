@@ -66,8 +66,8 @@
                         <v-row>
                             <v-col cols="12" md="6">
                                 <v-select label="Choose country" variant="solo-filled"
-                                    :items="items.map(item => item.country)"
-                                    v-model="addingStateCountryName" @update:modelValue="handleChange"></v-select>
+                                    :items="items.map(item => item.country)" v-model="addingStateCountryName"
+                                    @update:modelValue="handleChange"></v-select>
                             </v-col>
 
                             <v-col cols="12" md="6">
@@ -99,6 +99,13 @@
             <v-col cols="12">
                 <v-data-table :headers="headersComputed" :items="items" :items-per-page="5" class="elevation-1"
                     :loading="tableLoading" item-value="name">
+
+                    <!-- Loading -->
+                    <template v-slot:loading>
+                        <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
+                    </template>
+                    <!-- Loading -->
+
                     <template v-slot:item.action="{ item }">
 
                         <v-btn v-if="type == 'State'" variant="plain" color="green" @click="editItem(item)">

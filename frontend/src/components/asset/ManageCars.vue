@@ -56,6 +56,11 @@
         <v-data-table :headers="updatedColumns" :items="cars" :loading="loading" density="compact"
             class="elevation-4 rounded-xl" item-value="vin" v-model:items-per-page="itemsPerPage" hover show-current-page>
 
+            <!-- Loading -->
+            <template v-slot:loading>
+                <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+            </template>
+            <!-- Loading -->
 
 
             <!-- No data -->
@@ -248,7 +253,7 @@
                     </v-col>
                 </v-row>
             </v-card-title>
-            
+
 
             <v-card-text>
                 <v-data-table :headers="carDamagesHeaders" :items="carDamages" no-data-text="No damages reported">

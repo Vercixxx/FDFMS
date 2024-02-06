@@ -161,6 +161,12 @@
                                     <v-data-table :headers="tableHeaders" :items="availableManagers" :loading="loading"
                                         class="elevation-4 rounded-xl" v-model:items-per-page="itemsPerPage" hover>
 
+                                        <!-- Loading -->
+                                        <template v-slot:loading>
+                                            <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                                        </template>
+                                        <!-- Loading -->
+
 
                                         <!-- No data -->
                                         <template v-slot:no-data>
@@ -211,7 +217,11 @@
                                         :search="searchTableSelected" class="elevation-4 rounded-xl"
                                         v-model:items-per-page="itemsPerPage" hover select-strategy="all" show-current-page>
 
-
+                                        <!-- Loading -->
+                                        <template v-slot:loading>
+                                            <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                                        </template>
+                                        <!-- Loading -->
 
                                         <!-- No data -->
                                         <template v-slot:no-data>
@@ -269,6 +279,12 @@
                             <v-data-table :headers="tableHeaders" :items="avaiableDrivers" density="compact"
                                 :loading="driversLoading" hover>
 
+                                <!-- Loading -->
+                                <template v-slot:loading>
+                                    <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                                </template>
+                                <!-- Loading -->
+
                                 <!-- No data -->
                                 <template v-slot:no-data>
                                     <p class="text-h6 pa-5 text-danger">
@@ -302,6 +318,12 @@
                             <h5 justify="center" align="center">Selected drivers </h5>
                             <v-data-table :headers="tableHeaders" :items="selectedDrivers" density="compact"
                                 :search="driversQuery" hover>
+
+                                <!-- Loading -->
+                                <template v-slot:loading>
+                                    <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                                </template>
+                                <!-- Loading -->
 
                                 <!-- No data -->
                                 <template v-slot:no-data>
