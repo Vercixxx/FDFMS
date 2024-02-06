@@ -285,6 +285,7 @@ import ManageBrands from '../components/clients/ManageBrands.vue';
 // Asset
 import AddCar from '../components/asset/AddCar.vue';
 import ManageCars from '../components/asset/ManageCars.vue';
+import ManageFleets from '../components/asset/ManageFleets.vue';
 // Asset
 
 
@@ -554,6 +555,7 @@ export default {
             ];
             this.currentComponent = DriverUser;
         },
+        // HR
 
 
         // Clients
@@ -679,6 +681,26 @@ export default {
                 },
             ];
             this.currentComponent = ManageCars;
+        },
+        ManageFleetsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Fleets",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Manage Fleets',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = ManageFleets;
         },
         // Assets
 
