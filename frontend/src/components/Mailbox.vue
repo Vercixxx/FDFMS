@@ -2,25 +2,60 @@
     <v-row>
         <v-col cols="2">
 
-            <p align="center">Menu</p>
+            <!-- Desktop version -->
+            <span v-if="!$vuetify.display.smAndDown">
 
-            <v-btn block v-for="button in buttons" :key="button.name" :text="button.name" :prepend-icon="button.icon"
-                variant="outlined" @click="menuClickHandle(button.component)" class=" pa-2 my-4">
-            </v-btn>
+                <p align="center">
+                    {{ loggedUser.first_name + ' ' + loggedUser.last_name }}
+                </p>
+
+                <v-btn block v-for="button in buttons" :key="button.name" :text="button.name" :prepend-icon="button.icon"
+                    variant="outlined" @click="menuClickHandle(button.component)" class=" pa-2 my-4">
+                </v-btn>
+            </span>
+            <!-- Desktop version -->
 
         </v-col>
 
-
-
-        <v-col cols="10">
+        <v-col cols="12" sm="10">
 
             <v-row>
 
                 <v-col cols="12">
-                    <span align="center">
-                        <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" variant="outlined"
-                            hide-details @keydown.enter="fetchData()"></v-text-field>
+                    <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" variant="outlined"
+                        hide-details @keydown.enter="fetchData()"></v-text-field>
 
+                    <!-- Mobile -->
+                    <v-row v-if="$vuetify.display.smAndDown">
+                        <v-col cols="10">
+                            <v-select class="mt-1" v-model="mailVersion" variant="underlined" :items="buttons"
+                                item-title="name" @update:model-value="menuClickHandle(mailVersion)">
+
+                                <template v-slot:selection>
+                                    <v-row align="center" justify="center">
+                                        <v-col cols="12" align="center" justify="center">
+                                            {{ mailVersion.toUpperCase() }}
+                                        </v-col>
+                                    </v-row>
+                                </template>
+
+                                <template v-slot:prepend>
+                                    Mailbox version
+                                </template>
+                            </v-select>
+                        </v-col>
+                        <v-col cols="2" align="center" justify="center" class="mb-10">
+                            <v-btn class="mb-3 mt-3" prepend-icon="mdi-refresh" @click="fetchData()"
+                                :variant="$vuetify.display.smAndDown ? 'plain' : 'outlined'"
+                                :text="$vuetify.display.smAndDown ? '' : 'Reload'">
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+
+                    <!-- Mobile -->
+
+                    <!-- Desktop -->
+                    <span align="center" v-if="!$vuetify.display.smAndDown">
 
                         <p v-if="mailVersion === 'all'" class="text-h4 my-5">
                             All messages
@@ -33,24 +68,13 @@
                         </p>
 
                     </span>
+                    <!-- Desktop -->
 
-                    <v-row>
-                        <v-col>
-                            <v-btn class="mb-3" prepend-icon="mdi-refresh" @click="fetchData()" variant="outlined"> Reload
-                            </v-btn>
-                        </v-col>
-                        <!-- <v-col>
-                            <v-col align="end">
-                                <v-tooltip :text="`Delete selected messages (${selected.length})`"
-                                    v-if="mailVersion === 'inbox'">
-                                    <template v-slot:activator="{ props }">
-                                        <v-btn icon="mdi-delete" color="red" variant="plain" v-bind="props"
-                                            :disabled="selected.length < 1" @click="dialogDelete = true"></v-btn>
-                                    </template>
-                                </v-tooltip>
-                            </v-col>
-                        </v-col> -->
-                    </v-row>
+
+                    <v-btn v-if="!$vuetify.display.smAndDown" class="mb-3 mt-3" prepend-icon="mdi-refresh"
+                        @click="fetchData()" variant="outlined" text="Reload">
+                    </v-btn>
+
 
                     <v-data-table-server v-model="selected" :items="mails" :headers="headers" :loading="loading"
                         item-value="id" show-select show-expand v-model:expanded="expanded"
@@ -82,6 +106,9 @@
                             <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
                         </template>
                         <!-- Loading -->
+
+                        <template v-slot:bottom v-if="mails.length == 0">
+                        </template>
 
                     </v-data-table-server>
                 </v-col>
@@ -138,7 +165,6 @@
 
 <script>
 import axios from 'axios'
-import useEventsBus from '../plugins/eventBus.js'
 
 export default {
     name: 'App',
@@ -149,6 +175,7 @@ export default {
 
             mailVersion: 'inbox',
             loggedUser: null,
+
 
             loading: true,
 
@@ -185,7 +212,7 @@ export default {
 
             buttons: [
                 {
-                    name: 'All mail',
+                    name: 'All mails',
                     icon: 'mdi-email-multiple-outline',
                     component: 'all'
                 },
@@ -205,10 +232,11 @@ export default {
         }
     },
 
-
+    created() {
+        this.loggedUser = this.$store.getters.userData;
+    },
 
     mounted() {
-        this.loggedUser = this.$store.getters.userData.username;
         this.fetchData();
     },
 
@@ -228,7 +256,7 @@ export default {
             this.loading = true
             try {
                 this.mails = [];
-                const response = await axios.get(`api/messages/get/?user=${this.loggedUser}&version=${this.mailVersion}&query=${this.search}`);
+                const response = await axios.get(`api/messages/get/?user=${this.loggedUser.username}&version=${this.mailVersion}&query=${this.search}`);
                 this.mails = response.data;
 
             } catch (error) {
