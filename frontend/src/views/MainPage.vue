@@ -88,7 +88,6 @@
                                 </template>
                             </v-tooltip>
 
-
                             <v-tooltip :text="isDarkModeEnabled ? 'Enable light mode' : 'Enable dark mode'"
                                 location="bottom">
                                 <template v-slot:activator="{ props }">
@@ -306,6 +305,7 @@ import AddCarDamage from '../components/driver/AddCarDamage.vue';
 // Payroll
 import DriversWorkingHours from '../components/payroll/DriversWorkingHours.vue';
 import DriverReports from '../components/payroll/DriverReports.vue';
+import ManageWagesTariffs from '../components/payroll/ManageWagesTariffs.vue';
 // Payroll
 
 
@@ -330,9 +330,6 @@ export default {
             snackContent: { type: 'success' },
 
             forceReload: 0,
-
-            isSmallScreen: false,
-
 
             socials: [
                 {
@@ -755,6 +752,26 @@ export default {
                 },
             ];
             this.currentComponent = DriverReports;
+        },
+        ManageWagesTariffsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Finance",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Manage Wages Tariffs',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = ManageWagesTariffs;
         },
         // Payroll
 

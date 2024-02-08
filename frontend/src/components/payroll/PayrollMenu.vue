@@ -68,6 +68,18 @@ export default {
                         },
                     ],
                 },
+                {
+                    name: 'Finance',
+                    mainIcon: 'mdi-cash-multiple',
+                    disabled: false,
+                    options: [
+                        {
+                            name: 'Manage wages tariffs',
+                            click: 'ManageWagesTariffsComponent',
+                            icon: 'mdi-cash-edit',
+                        },
+                    ],
+                },
             ]
 
         };

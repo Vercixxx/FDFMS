@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 
-from .models import Driver, DailyWork
+from .models import Driver, DailyWork, WageTariff
 from users.models import GeneralUser
 
 from users.serializers import GetAddressesSerializer
@@ -110,4 +110,10 @@ class UpdateDriverUser(serializers.ModelSerializer):
 class DailyDriverReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyWork
+        fields = '__all__'
+        
+
+class WageTariffSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WageTariff
         fields = '__all__'

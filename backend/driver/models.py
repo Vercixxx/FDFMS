@@ -9,6 +9,8 @@ class Driver(GeneralUser):
     ln_published_by = models.CharField(max_length=70, blank=True, null=True)
     ln_code = models.CharField(max_length=15, blank=True, null=True)
     
+    wage_tariff = models.ForeignKey('WageTariff', db_column='wage_tariff', on_delete=models.CASCADE, blank=True, null=True)
+    
 
     class Meta:
         db_table = 'Drivers'
@@ -28,3 +30,12 @@ class DailyWork(models.Model):
         
     class Meta:
         db_table = 'DailyWorkReports'
+        
+class WageTariff(models.Model):
+    name = models.CharField(max_length=50)
+    basic_hourly_rate = models.FloatField()
+    orders_bonus = models.FloatField()
+    fuel_bonus = models.FloatField()
+    
+    class Meta:
+        db_table = 'WageTariff'

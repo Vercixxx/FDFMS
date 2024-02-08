@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 
 from datetime import datetime, date, timedelta
 
@@ -9,13 +9,13 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import DestroyAPIView
 
 # Models
-from .models import Driver, DailyWork
+from .models import Driver, DailyWork, WageTariff
 from fleet.models import Fleet
 from restaurant.models import Restaurant
 from users.models import GeneralUser, Addresses
 
 # Serializers
-from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer
+from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer
 from users.serializers import ResidenceAddressSerializer
 
 
@@ -240,3 +240,44 @@ class GenerateReport(APIView):
             return response
         finally:
             os.remove(self.filename)
+
+
+
+
+class CreateWageTariff(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data
+        
+        serializer = WageTariffSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'ok'}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+        
+class EditWageTariff(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, pk):
+        tariff = WageTariff.objects.get(pk=pk)
+        data = request.data
+        
+        serializer = WageTariffSerializer(instance=tariff, data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'ok'}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+        
+        
+class GetWageTariffs(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        tariffs = WageTariff.objects.all()
+        serializer = WageTariffSerializer(tariffs, many=True)
+        return JsonResponse(serializer.data, status=200, safe=False)

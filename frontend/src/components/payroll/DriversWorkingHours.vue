@@ -20,8 +20,7 @@
                                             @update:model-value="loadUsers()">
 
                                             <template v-slot:item="{ props, item }">
-                                                <v-list-item v-bind="props"
-                                                    :title="item.raw.name"
+                                                <v-list-item v-bind="props" :title="item.raw.name"
                                                     :subtitle="item.raw.id == 'All' ? '' : `Restaurant id - ${item.raw.id}`"></v-list-item>
                                             </template>
 
@@ -127,7 +126,13 @@
                                         details</v-tooltip>
                                 </v-btn>
 
-                                <v-btn variant="plain" color="green" @click="goToReports(item)">
+                                <v-btn variant="plain" color="green" @click="assignTariff(item)">
+                                    <v-icon icon="mdi-cash-edit" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Assign tariff for {{ item.username
+                                    }}</v-tooltip>
+                                </v-btn>
+
+                                <v-btn variant="plain" color="error" @click="goToReports(item)">
                                     <v-icon icon="mdi-file-chart" class="text-h5"></v-icon>
                                     <v-tooltip activator="parent" location="top">Reports for {{ item.username }}</v-tooltip>
                                 </v-btn>
@@ -200,6 +205,39 @@
 
         <!-- Dialaogs section -->
 
+        <!-- Tariff -->
+        <v-dialog persistent v-model="tariffDialog" fullscreen :scrim="false"
+            transition="dialog-bottom-transition">
+            <v-card>
+                <v-card-title class="bg-deep-purple-lighten-1">
+                    <v-row>
+                        <v-col class="text-h5">
+                            Assign tariff for {{ tariffUser }}
+                        </v-col>
+                        <v-col align="end">
+                            <v-btn variant="outlined" color="red" @click="tariffDialog = false" icon="mdi-close">
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-card-title>
+
+                <v-card-text>
+                    <v-row>
+                        <v-col cols="12" sm="12">
+                            <v-select v-model="assignedTariff" :items="tariffs" label="Select tariff">
+                            </v-select>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-btn color="success" block @click="tariffDialog = false">Assign</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <!-- Tariff -->
+
+        
         <!-- dialog -->
         <v-dialog v-model="UserDetailsDialog" width="auto">
             <v-card>
@@ -273,7 +311,7 @@ export default {
             pagiController: {},
             query: '',
 
-            restaurants: [ 
+            restaurants: [
                 { name: 'All', id: 'All' },
             ],
             selectedRestaurant: 'All',
@@ -297,6 +335,11 @@ export default {
 
             selectedColumns: [],
             avaliableColumns: [],
+
+            tariffDialog: false,
+            tariffUser: null,
+            assignedTariff: null,
+            tariffs: [],
 
 
             userStatusList: [
@@ -505,6 +548,14 @@ export default {
             this.$root.changeCurrentComponent('DriverReportsComponent');
         },
         // Go to reports
+
+
+        // Assign tariff
+        assignTariff(user) {
+            this.tariffUser = user.username;
+            this.tariffDialog = true;
+        },
+        // Assign tariff
 
 
 
