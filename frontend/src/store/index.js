@@ -1,3 +1,4 @@
+
 import { createStore } from 'vuex'
 
 export default createStore({
@@ -14,6 +15,8 @@ export default createStore({
       type: '',
     },
 
+    busData: {},
+
   },
 
 
@@ -26,6 +29,8 @@ export default createStore({
     },
 
     alertData: state => state.alertData,
+
+    busData: state => state.busData,
 
   },
 
@@ -53,6 +58,10 @@ export default createStore({
       state.alertData = data;
     },
 
+    setBusData(state, data) {
+      state.busData = data;
+    },
+
   },
 
 
@@ -64,6 +73,10 @@ export default createStore({
 
     triggerAlert({ commit }, data) {
       commit('setAlertData', { show: true, ...data});
+    },
+
+    setBusData({ commit }, data) {
+      commit('setBusData', data);
     },
 
   },

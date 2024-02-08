@@ -24,6 +24,7 @@ class DailyWork(models.Model):
     start_work = models.TimeField()
     end_work = models.TimeField()
     working_time = models.TimeField()
+    orders_per_hour = models.FloatField(default=0.0)
         
     class Meta:
         db_table = 'DailyWorkReports'

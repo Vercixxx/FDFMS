@@ -305,6 +305,7 @@ import AddCarDamage from '../components/driver/AddCarDamage.vue';
 
 // Payroll
 import DriversWorkingHours from '../components/payroll/DriversWorkingHours.vue';
+import DriverReports from '../components/payroll/DriverReports.vue';
 // Payroll
 
 
@@ -392,7 +393,6 @@ export default {
         group() {
             this.drawer = false
         },
-
     },
 
 
@@ -719,7 +719,7 @@ export default {
                     disabled: false,
                 },
                 {
-                    title: "Payroll",
+                    title: "Drivers",
                     component: '',
                     disabled: true,
                 },
@@ -730,6 +730,31 @@ export default {
                 },
             ];
             this.currentComponent = DriversWorkingHours;
+        },
+        DriverReportsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Drivers",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Drivers Working Hours',
+                    component: 'DriversWorkingHoursComponent',
+                    disabled: false,
+                },
+                {
+                    title: 'Driver Reports',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriverReports;
         },
         // Payroll
 

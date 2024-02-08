@@ -14,4 +14,7 @@ urlpatterns = [
     
     # Daily report
     path('api/drivers/daily_report/add/', views.AddDailyReport.as_view(), name='add_daily_report'),
+    
+    # Genre report
+    path('api/drivers/generate_report/<str:username>/', views.GenerateReport.as_view(), name='generate_report'),
 ]

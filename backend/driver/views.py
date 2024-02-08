@@ -1,6 +1,6 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 # Rest
 from rest_framework.views import APIView
@@ -21,6 +21,14 @@ from users.serializers import ResidenceAddressSerializer
 
 # DB
 from django.db.models import Q,F
+
+# Document
+import csv
+import uuid
+from django.core.files import File
+from wsgiref.util import FileWrapper
+from django.http import FileResponse
+import os
 
 
 class GetRestaurants(APIView):
@@ -180,3 +188,55 @@ class AddDailyReport(APIView):
             return JsonResponse({'message': 'ok'}, status=201)
         else:
             return JsonResponse(serializer.errors, status=400)
+        
+        
+class GenerateReport(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def create_csv(self, user_working):
+        
+        self.filename = f"temp_{uuid.uuid4()}.csv"
+        
+        with open(self.filename, 'w', newline='') as f:
+            writer = csv.writer(f)
+
+            writer.writerow(['Driver', 'Date', 'Orders amount', 'Start work', 'End work', 'Working time', 'Orders per hour'])
+
+
+            total_working_time = timedelta()
+            
+            total_orders = 0
+
+            for item in user_working:
+                writer.writerow([item.driver, item.date, item.orders, item.start_work, item.end_work, item.working_time, item.orders_per_hour])
+                
+
+                working_time = timedelta(hours=item.working_time.hour, minutes=item.working_time.minute, seconds=item.working_time.second)
+                total_working_time += working_time
+                
+                total_orders += item.orders
+
+            total_time = (datetime.min + total_working_time).time()
+
+            writer.writerow(['Total', '', total_orders, '', '', total_time, ''])
+
+        django_file = File(open(self.filename, 'r'))
+
+        return django_file
+    
+    def get(self, request, username):
+        start_date = self.request.query_params.get('start_date', '').strip()
+        end_date = self.request.query_params.get('end_date', '').strip()
+        user = Driver.objects.get(username=username)
+        
+        user_working = DailyWork.objects.filter(driver=user, date__range=[start_date, end_date])
+
+        self.create_csv(user_working)
+        
+        try:
+            wrapper = FileWrapper(open(self.filename, 'rb'))
+            response = FileResponse(wrapper, content_type='text/csv')
+            response['Content-Disposition'] = f'attachment; filename={self.filename}'
+            return response
+        finally:
+            os.remove(self.filename)

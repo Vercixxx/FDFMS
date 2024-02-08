@@ -14,10 +14,10 @@
                             <v-expansion-panel-text>
                                 <v-row justify="center" align="center">
 
-                                    <v-col cols="4">
+                                    <v-col cols="12" sm="4">
                                         <v-autocomplete v-model="selectedRestaurant" :items="restaurants" item-title="name"
                                             item-value="id" label="Select restaurant" prepend-icon="mdi-store"
-                                            @update:model-value="loadUsers()" clearable>
+                                            @update:model-value="loadUsers()">
 
                                             <template v-slot:item="{ props, item }">
                                                 <v-list-item v-bind="props"
@@ -127,30 +127,12 @@
                                         details</v-tooltip>
                                 </v-btn>
 
-                                <v-btn variant="plain" color="green" @click="editUser(item.username, item.user_role)">
-                                    <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
-                                    <v-tooltip activator="parent" location="top">Edit {{ item.username }}</v-tooltip>
+                                <v-btn variant="plain" color="green" @click="goToReports(item)">
+                                    <v-icon icon="mdi-file-chart" class="text-h5"></v-icon>
+                                    <v-tooltip activator="parent" location="top">Reports for {{ item.username }}</v-tooltip>
                                 </v-btn>
 
-                                <v-btn variant="plain" color="red" @click="deleteConfirm(item.username)">
-                                    <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
-                                    <v-tooltip activator="parent" location="top">Delete {{ item.username }}</v-tooltip>
-                                </v-btn>
                             </span>
-                        </template>
-
-                        <template v-else-if="header.key === 'is_active'">
-
-                            <v-tooltip location="top"
-                                :text="item.is_active ? `Make ${item.username} not active` : `Make ${item.username} active`">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn v-bind="props" variant="plain"
-                                        :icon="item.is_active ? 'mdi-check-bold' : 'mdi-close-thick'"
-                                        :style="item.is_active ? 'color:green' : 'color:red'"
-                                        @click="changeStateConfirm(item.username, item.user_role, item.is_active)"></v-btn>
-                                </template>
-                            </v-tooltip>
-
                         </template>
 
                         <template v-else-if="header.key === 'email'">
@@ -217,80 +199,6 @@
 
 
         <!-- Dialaogs section -->
-
-        <!-- Delete user dialog -->
-        <v-dialog v-model="dialogDelete" width="400">
-            <v-card>
-                <div class="text-danger text-h6 text-md-h5 text-lg-h4">
-                    <div class="d-flex justify-content-between align-items-center px-4 pt-4">
-                        <v-icon icon="mdi-alert" class="text-h4" />
-                        Warning
-                        <v-icon icon="mdi-alert" class="text-h4" />
-                    </div>
-
-                    <hr />
-                </div>
-
-                <div class="pa-3" align="center">
-
-                    You are trying to delete
-                    <span class='fw-bolder'>
-                        {{ usernameDelete }}
-                    </span>
-                    , this operation is <span class="fw-bold">irreversible</span>.
-                    Are you sure?
-
-                </div>
-                <hr>
-
-                <div class="justify-center d-flex align-items-center mb-3">
-                    <v-btn variant="outlined" width="150" class="mr-5" @click="dialogDelete = false">No</v-btn>
-                    <v-btn width="150" @click="deleteUser(usernameDelete)" color="red">Yes</v-btn>
-                </div>
-
-            </v-card>
-        </v-dialog>
-        <!-- Delete user dialog -->
-
-        <!-- Change state of user dialog -->
-        <v-dialog v-model="dialogState" width="400">
-            <v-card>
-                <div class="text-warning text-h6 text-md-h5 text-lg-h4">
-                    <div class="d-flex justify-content-between align-items-center px-4 pt-4">
-                        <v-icon icon="mdi-alert" class="text-h4" />
-                        Warning
-                        <v-icon icon="mdi-alert" class="text-h4" />
-                    </div>
-
-                    <hr />
-                </div>
-
-                <div class="pa-3" align="center">
-
-                    This operation will change active state of
-                    <span class='fw-bolder'>
-                        {{ change_state.username }}
-                    </span>
-                    from
-                    <span v-if="change_state.state === true" class="text-success"> active </span>
-                    <span v-else class="text-danger"> not active </span>
-                    to
-                    <span v-if="change_state.state === true" class="text-danger"> not active </span>
-                    <span v-else class="text-success"> active </span>
-                    Are you sure?
-
-                </div>
-                <hr>
-
-                <div class="justify-center d-flex align-items-center mb-3">
-                    <v-btn variant="outlined" width="150" class="mr-5" @click="dialogState = false">No</v-btn>
-                    <v-btn width="150" @click="changeState(change_state.username)" color="red">Yes</v-btn>
-                </div>
-
-            </v-card>
-        </v-dialog>
-        <!-- Change state of user dialog -->
-
 
         <!-- dialog -->
         <v-dialog v-model="UserDetailsDialog" width="auto">
@@ -368,7 +276,7 @@ export default {
             restaurants: [ 
                 { name: 'All', id: 'All' },
             ],
-            selectedRestaurant: null,
+            selectedRestaurant: 'All',
 
             selectedActive: 'All',
             usernameDelete: '',
@@ -483,6 +391,9 @@ export default {
         async loadUsers(url) {
             this.loading = true;
 
+            let restaurant = this.selectedRestaurant === 'All' ? null : this.restaurants.find(restaurant => restaurant.id === this.selectedRestaurant);
+            if (restaurant) restaurant = restaurant.name;
+
             try {
                 const response = url
                     ? await axios.get(url)
@@ -491,7 +402,7 @@ export default {
                             limit: this.itemsPerPage,
                             search: this.query,
                             status: this.selectedActive,
-                            restaurant: this.selectedRestaurant,
+                            restaurant: restaurant,
                         }
                     });
 
@@ -505,7 +416,6 @@ export default {
                 }
 
                 this.users = response.data.results;
-                console.log(this.users);
 
                 // Add number for each row
                 this.users.forEach((user, index) => {
@@ -552,24 +462,6 @@ export default {
         },
 
 
-        changeStateConfirm(username, user_role, state) {
-            this.change_state.username = username;
-            this.change_state.user_role = user_role;
-            this.change_state.state = state;
-            this.dialogState = true;
-        },
-
-
-        async changeState(username) {
-            const response = await axios.put(`api/users/change-state/${username}/`)
-            this.dialogState = false;
-            this.reloadComponent()
-
-            // Call message
-            this.$store.dispatch('triggerAlert', { message: `Successfully changed state of ${username}`, type: 'success' });
-
-        },
-
         async userDetails(username, role) {
             try {
                 const response = await axios.get(`api/users/get/${username}/${role}/`);
@@ -599,6 +491,20 @@ export default {
             }
         },
         // Get all restaurants
+
+
+        // Go to reports
+        goToReports(user) {
+            const data = {
+                username: user.username,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                user_role: 'driver',
+            }
+            this.$store.dispatch('setBusData', data);
+            this.$root.changeCurrentComponent('DriverReportsComponent');
+        },
+        // Go to reports
 
 
 
