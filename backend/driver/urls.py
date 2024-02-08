@@ -28,6 +28,9 @@ urlpatterns = [
     path('api/drivers/wage_tariff/get/all/', views.GetWageTariffs.as_view(), name='get_wage_tariffs'),
     
     # Edit WageTariff
-    path('api/drivers/wage_tariff/edit/<int:pk>/', views.EditWageTariff.as_view(), name='edit_wage_tariff'),
+    path('api/drivers/wage_tariff/edit/<int:id>/', views.EditWageTariff.as_view(), name='edit_wage_tariff'),
+    
+    # Delete WageTariff
+    path('api/drivers/wage_tariff/delete/<int:id>/', views.DeleteWageTariff.as_view(), name='delete_wage_tariff'),
     
 ]

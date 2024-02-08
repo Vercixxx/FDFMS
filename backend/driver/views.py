@@ -261,8 +261,8 @@ class CreateWageTariff(APIView):
 class EditWageTariff(APIView):
     permission_classes = [IsAuthenticated]
     
-    def put(self, request, pk):
-        tariff = WageTariff.objects.get(pk=pk)
+    def put(self, request, id):
+        tariff = WageTariff.objects.get(id=id)
         data = request.data
         
         serializer = WageTariffSerializer(instance=tariff, data=data)
@@ -281,3 +281,10 @@ class GetWageTariffs(APIView):
         tariffs = WageTariff.objects.all()
         serializer = WageTariffSerializer(tariffs, many=True)
         return JsonResponse(serializer.data, status=200, safe=False)
+    
+
+class DeleteWageTariff(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = WageTariff.objects.all()
+    serializer_class = WageTariffSerializer
+    lookup_field = 'id'
