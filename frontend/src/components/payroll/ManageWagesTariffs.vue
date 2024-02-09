@@ -8,7 +8,7 @@
     <v-btn class="my-5" variant="tonal" prepend-icon="mdi-plus" color="teal" @click="tariffDialog = true">Add new
       tariff</v-btn>
 
-    <v-data-table :items="tariffs" :headers="headers" :loading="loading">
+    <v-data-table :items="tariffs" :headers="headers" :loading="loading" no-data-text="There isn't any tariffs yet" show-current-page>
 
 
       <!-- Loading -->
@@ -52,11 +52,10 @@
 
         <v-card-text>
           <v-form v-model="form">
-            {{ tariff }}
             <v-row>
               <v-col cols="12" sm="6" v-for="field in fields" :key="field.key">
-                <v-text-field v-model="tariff[field.key]" :label="field.label" variant="underlined"
-                  :rules="field.rules"></v-text-field>
+                <v-text-field v-model="tariff[field.key]" :label="field.label" variant="underlined" :rules="field.rules"
+                  :hint="field.hint"></v-text-field>
               </v-col>
             </v-row>
           </v-form>
@@ -64,7 +63,8 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-btn color="success" block :disabled="!form" @click="tariffDialog = false">Save</v-btn>
+          <v-btn color="success" block :disabled="!form" @click="addSaveTariff()"
+            :text="editing ? 'Save' : 'Add'"></v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -150,27 +150,34 @@ export default {
             label: 'Name',
             rules: [
               v => !!v || 'Name is required',
+              v => v.length <= 20 || 'Maximum length is 50 characters',
             ]
           },
           {
             key: 'basic_hourly_rate',
             label: 'Hourly rate',
+            hint: 'Seperate with a dot, e.g 12.50',
             rules: [
               v => !!v || 'Hourly rate is required',
+              v => /^(\d{1,4}(\.\d{0,2})?)?$/.test(v) || 'Invalid format. Only numbers and dot allowed, maximum length is 4 characters',
             ]
           },
           {
             key: 'orders_bonus',
             label: 'Exceeded orders bonus',
+            hint: 'Seperate with a dot, e.g 12.50',
             rules: [
               v => !!v || 'Exceeded orders bonus is required',
+              v => /^(\d{1,4}(\.\d{0,2})?)?$/.test(v) || 'Invalid format. Only numbers and dot allowed, maximum length is 4 characters',
             ]
           },
           {
             key: 'fuel_bonus',
             label: 'Fuel bonus',
+            hint: 'Seperate with a dot, e.g 12.50',
             rules: [
               v => !!v || 'Fuel bonus is required',
+              v => /^(\d{1,4}(\.\d{0,2})?)?$/.test(v) || 'Invalid format. Only numbers and dot allowed, maximum length is 4 characters',
             ]
           },
         ],
@@ -252,6 +259,34 @@ export default {
       }
     },
     // Delete item
+
+
+
+    // Add or save tariff
+    async addSaveTariff() {
+      if(this.editing){
+        try {
+          const response = await axios.put(`api/drivers/wage_tariff/edit/${this.tariff.id}/`, this.tariff);
+          this.$store.dispatch('triggerAlert', { message: 'Tariff updated', type: 'success' });
+          this.closeAddEditDialog();
+          this.fetchTariffs();
+        } catch (error) {
+          this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
+        
+        }
+      }
+      else {
+        try {
+          const response = await axios.post('api/drivers/wage_tariff/create/', this.tariff);
+          this.$store.dispatch('triggerAlert', { message: 'Tariff added', type: 'success' });
+          this.closeAddEditDialog();
+          this.fetchTariffs();
+        } catch (error) {
+          this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
+        }
+      }
+    },
+    // Add or save tariff
 
 
 
