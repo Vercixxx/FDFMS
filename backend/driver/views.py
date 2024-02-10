@@ -297,3 +297,15 @@ class DeleteWageTariff(DestroyAPIView):
     queryset = WageTariff.objects.all()
     serializer_class = WageTariffSerializer
     lookup_field = 'id'
+
+
+class AssignWageTariff(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, username):
+        driver = Driver.objects.get(username=username)
+        tariff = WageTariff.objects.get(id=request.data['wage_tariff'])
+        driver.wage_tariff = tariff
+        driver.save()
+        
+        return JsonResponse({'message': 'ok'}, status=201)

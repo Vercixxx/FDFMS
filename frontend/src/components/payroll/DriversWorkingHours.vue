@@ -227,7 +227,12 @@
                             <v-col cols="12" sm="12">
                                 <v-select :items="tariffs" v-model="selectedTariff" label="Select tariff"
                                     :rules="fieldRequired" variant="outlined" no-data-text="There aren't any tariffs yet"
-                                    item-title="name" item-value="id" :item-props="itemProps">
+                                    item-title="name" item-value="id">
+
+                                    <template v-slot:item="{ props, item }">
+                                        <v-list-item v-bind="props"
+                                            :subtitle="'Basic hourly wage - ' + item.raw.basic_hourly_rate + ',  ' + 'Orders bouns - ' + item.raw.orders_bonus + ',  ' + 'Fuel bouns - ' + item.raw.fuel_bonus"></v-list-item>
+                                    </template>
 
                                 </v-select>
                             </v-col>
@@ -236,7 +241,7 @@
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn color="success" block @click="tariffDialog = false">Assign</v-btn>
+                    <v-btn color="success" block @click="saveTariff(tariffUser)">Assign</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -618,12 +623,20 @@ export default {
         // Fetch tariffs
 
 
-        itemProps(item) {
-            return {
-                title: item.name,
-                subtitle: 'Basic hourly wage - ' + item.basic_hourly_rate + '  ' + 'Orders bouns - ' + item.orders_bonus  + '  ' +  'Fuel bouns - ' + item.fuel_bonus,
+        // Save tariff
+        async saveTariff(username) {
+            try {
+                const response = await axios.post(`api/drivers/wage_tariff/assign/${username}/`, {
+                    wage_tariff: this.selectedTariff,
+                });
+                this.$store.dispatch('triggerAlert', { message: response.data, type: 'success' });
+                this.tariffDialog = false;
+                this.loadUsers();
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
             }
         },
+        // Save tariff
 
 
     },

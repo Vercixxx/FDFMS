@@ -36,4 +36,7 @@ urlpatterns = [
     # Delete WageTariff
     path('api/drivers/wage_tariff/delete/<int:id>/', views.DeleteWageTariff.as_view(), name='delete_wage_tariff'),
     
+    # Assign WageTariff to Driver
+    path('api/drivers/wage_tariff/assign/<str:username>/', views.AssignWageTariff.as_view(), name='assign_wage_tariff'),
+    
 ]
