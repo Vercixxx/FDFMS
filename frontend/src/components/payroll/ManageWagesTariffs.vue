@@ -288,8 +288,6 @@ export default {
     },
     // Add or save tariff
 
-
-
   },
 
   mounted() {

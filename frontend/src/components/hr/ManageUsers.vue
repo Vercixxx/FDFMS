@@ -774,7 +774,6 @@ export default {
 
     // Download user info
     async downloadUserInfo(username, role) {
-      console.log(username, role)
       try {
         const response = await axios.get(`api/users/get-info-csv/${username}/${role}/`);
         const url = window.URL.createObjectURL(new Blob([response.data]));

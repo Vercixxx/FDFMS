@@ -206,8 +206,7 @@
         <!-- Dialaogs section -->
 
         <!-- Tariff -->
-        <v-dialog persistent v-model="tariffDialog" fullscreen :scrim="false"
-            transition="dialog-bottom-transition">
+        <v-dialog persistent v-model="tariffDialog" transition="dialog-bottom-transition">
             <v-card>
                 <v-card-title class="bg-deep-purple-lighten-1">
                     <v-row>
@@ -222,12 +221,18 @@
                 </v-card-title>
 
                 <v-card-text>
-                    <v-row>
-                        <v-col cols="12" sm="12">
-                            <v-select v-model="assignedTariff" :items="tariffs" label="Select tariff">
-                            </v-select>
-                        </v-col>
-                    </v-row>
+                    <v-form v-model="form">
+
+                        <v-row>
+                            <v-col cols="12" sm="12">
+                                <v-select :items="tariffs" v-model="selectedTariff" label="Select tariff"
+                                    :rules="fieldRequired" variant="outlined" no-data-text="There aren't any tariffs yet"
+                                    item-title="name" item-value="id" :item-props="itemProps">
+
+                                </v-select>
+                            </v-col>
+                        </v-row>
+                    </v-form>
                 </v-card-text>
 
                 <v-card-actions>
@@ -237,11 +242,31 @@
         </v-dialog>
         <!-- Tariff -->
 
-        
+
         <!-- dialog -->
         <v-dialog v-model="UserDetailsDialog" width="auto">
             <v-card>
                 <v-card-text>
+                    <v-row>
+                        <v-col cols="3">
+                        </v-col>
+                        <v-col cols="6" sm="6">
+                            <div class="text-h5 text-center">
+                                User details
+                            </div>
+                        </v-col>
+                        <!-- Download -->
+                        <v-col cols="3" align="end">
+                            <span>
+                                <v-btn icon="mdi-download" variant="pain"
+                                    @click="downloadUserInfo(userDetailData['Username'], userDetailData['User Role'])">
+                                </v-btn>
+                                <v-tooltip activator="parent" location="top">Download user info</v-tooltip>
+                            </span>
+                        </v-col>
+                        <!-- Download -->
+                    </v-row>
+
                     <v-table>
                         <thead>
                             <tr>
@@ -338,9 +363,11 @@ export default {
 
             tariffDialog: false,
             tariffUser: null,
-            assignedTariff: null,
+            selectedTariff: null,
             tariffs: [],
 
+            form: false,
+            fieldRequired: [v => !!v || 'Field is required',],
 
             userStatusList: [
                 {
@@ -363,6 +390,7 @@ export default {
                 { title: 'USERNAME', align: 'center', sortable: false, key: 'username' },
                 { title: 'USER ROLE', align: 'center', key: 'user_role', sortable: false },
                 { title: 'RESTAURANT', align: 'center', key: 'restaurant_name', sortable: true },
+                { title: 'Tariff', align: 'center', key: 'wage_tariff', sortable: true },
             ],
 
             actions: [
@@ -416,6 +444,8 @@ export default {
         this.loadUsers();
 
         this.getRestaurants();
+
+        this.getTariffs();
 
 
     },
@@ -553,10 +583,47 @@ export default {
         // Assign tariff
         assignTariff(user) {
             this.tariffUser = user.username;
+            this.selectedTariff = user.wage_tariff;
             this.tariffDialog = true;
         },
         // Assign tariff
 
+        // Download user info
+        async downloadUserInfo(username, role) {
+            try {
+                const response = await axios.get(`api/users/get-info-csv/${username}/${role}/`);
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `${username}_info.csv`);
+                document.body.appendChild(link);
+                link.click();
+            }
+            catch (error) {
+                this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
+            }
+        },
+        // Download user info
+
+
+        // Fetch tariffs
+        async getTariffs() {
+            try {
+                const response = await axios.get('api/drivers/wage_tariff/get/all/');
+                this.tariffs = response.data;
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
+            }
+        },
+        // Fetch tariffs
+
+
+        itemProps(item) {
+            return {
+                title: item.name,
+                subtitle: 'Basic hourly wage - ' + item.basic_hourly_rate + '  ' + 'Orders bouns - ' + item.orders_bonus  + '  ' +  'Fuel bouns - ' + item.fuel_bonus,
+            }
+        },
 
 
     },
