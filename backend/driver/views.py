@@ -15,7 +15,7 @@ from restaurant.models import Restaurant
 from users.models import GeneralUser, Addresses
 
 # Serializers
-from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer
+from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer, WageTariffGetIdSerializer
 from users.serializers import ResidenceAddressSerializer
 
 
@@ -281,6 +281,15 @@ class GetWageTariffs(APIView):
         tariffs = WageTariff.objects.all()
         serializer = WageTariffSerializer(tariffs, many=True)
         return JsonResponse(serializer.data, status=200, safe=False)
+    
+    
+class GetWageTariffId(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, name):
+        tariff = WageTariff.objects.get(name=name)
+        serializer = WageTariffGetIdSerializer(tariff)
+        return JsonResponse(serializer.data, status=200, safe=False)    
     
 
 class DeleteWageTariff(DestroyAPIView):

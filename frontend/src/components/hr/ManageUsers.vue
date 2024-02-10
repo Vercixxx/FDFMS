@@ -448,6 +448,7 @@ export default {
       ],
       DriverHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'Tariff', align: 'center', key: 'wage_tariff', sortable: false },
         { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
         { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
         { title: 'JOINED', align: 'center', key: 'date_joined' },
@@ -582,6 +583,7 @@ export default {
         }
 
         this.users = response.data.results;
+
 
         // Add number for each row
         this.users.forEach((user, index) => {

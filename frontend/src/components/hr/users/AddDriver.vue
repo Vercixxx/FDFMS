@@ -78,58 +78,43 @@
                             </v-text-field>
                         </v-col>
 
-                        <!-- Date pickers -->
+
+                        <!-- Release date -->
                         <v-col cols="12" sm="12">
 
-                            <!-- Release date -->
-                            <v-text-field variant="outlined" :value="formattedReleaseDate" v-model="ln_release"
-                                label="License number release date" readonly @click="show_ln_release = !show_ln_release"
-                                :rules="fieldRequired">
+                            <v-text-field type="date" v-model="ln_release_date" label="License number release date"
+                                variant="outlined" :rules="fieldRequired">
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
                                     <v-icon icon="mdi-star" color="red"
                                         style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
-                                    <v-icon class="icon" style="opacity: 0.4;" icon="mdi-calendar"></v-icon>
                                 </template>
                                 <!-- Icons -->
-
                             </v-text-field>
 
-                            <v-date-picker v-if="show_ln_release" ok-text="Select" v-model="ln_release"
-                                title="License number release date" view-mode="year" min="01-01-1960" :max="maxDate"
-                                color="teal-darken-3" @click:save="show_ln_release = !show_ln_release"
-                                @click:cancel="show_ln_release = !show_ln_release" class="mb-4"></v-date-picker>
-                            <!-- Release date -->
                         </v-col>
+                        <!-- Release date -->
 
+
+
+                        <!-- Expire date -->
                         <v-col cols="12" sm="12">
 
-
-                            <!-- Expire date -->
-                            <v-text-field variant="outlined" :value="formattedExpireDate" v-model="ln_expire"
-                                label="License number expire date" readonly @click="show_ln_expire = !show_ln_expire"
-                                :rules="fieldRequired">
+                            <v-text-field type="date" v-model="ln_expire_date" label="License number expire date"
+                                variant="outlined" :rules="fieldRequired">
 
                                 <!-- Icons -->
                                 <template v-slot:append-inner>
                                     <v-icon icon="mdi-star" color="red"
                                         style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
-                                    <v-icon class="icon" style="opacity: 0.4;" icon="mdi-calendar"></v-icon>
                                 </template>
                                 <!-- Icons -->
-
                             </v-text-field>
 
-                            <v-date-picker v-if="show_ln_expire" ok-text="Select" v-model="ln_expire"
-                                title="License number expire date" view-mode="year" min="01-01-1960" :max="maxDate"
-                                color="teal-darken-3" @click:save="show_ln_expire = !show_ln_expire"
-                                @click:cancel="show_ln_expire = !show_ln_expire" class="mb-4"></v-date-picker>
-                            <!-- Expire date -->
-
-
                         </v-col>
-                        <!-- Date pickers -->
+                        <!-- Expire date -->
+
 
 
                     </v-row>
@@ -159,6 +144,19 @@
 
                             </v-text-field>
 
+                        </v-col>
+
+                        <v-col cols="12" sm="6">
+                            <v-select :items="tariffs" v-model="selectedTariff" label="Select tariff" :rules="fieldRequired"
+                                variant="outlined" no-data-text="There aren't any tariffs yet" item-title="name"
+                                item-value="id">
+                                <!-- Icons -->
+                                <template v-slot:append-inner>
+                                    <v-icon icon="mdi-star" color="red"
+                                        style="font-size:medium; position: absolute; top:3px; right: 3px;"></v-icon>
+                                </template>
+                                <!-- Icons -->
+                            </v-select>
                         </v-col>
                     </v-row>
 
@@ -773,11 +771,12 @@ export default {
             editUser: {},
 
 
-            ln_release: null,
-            ln_expire: null,
-            show_ln_release: false,
-            show_ln_expire: false,
+            ln_release_date: null,
+            ln_expire_date: null,
             maxDate: null,
+
+            selectedTariff: null,
+            tariffs: [],
 
 
         };
@@ -787,14 +786,6 @@ export default {
         allInputs() {
             return [...this.basicInfoInputs, ...this.taxAndHealth, ...this.licenseInputs, ...this.residenceAddress, ...this.correspodenceAddress, ...this.registeredAddress];
         },
-
-        formattedReleaseDate() {
-            return this.ln_release ? format(this.ln_release, 'yyyy-M-d') : '';
-        },
-        formattedExpireDate() {
-            return this.ln_expire ? format(this.ln_expire, 'yyyy-M-d') : '';
-        },
-
     },
 
 
@@ -837,6 +828,9 @@ export default {
 
         // Get date for date pickers
         this.maxDate = this.getCurrentDate();
+
+        // Get all tariffs
+        this.getTariffs();
 
 
     },
@@ -963,8 +957,9 @@ export default {
 
 
             // Additional fields for driver
-            this.input_data['ln_release_date'] = this.formattedReleaseDate;
-            this.input_data['ln_expire_date'] = this.formattedExpireDate;
+            this.input_data['ln_release_date'] = this.ln_release_date;
+            this.input_data['ln_expire_date'] = this.ln_expire_date;
+            this.input_data['wage_tariff'] = this.selectedTariff;
         },
 
 
@@ -1084,6 +1079,13 @@ export default {
                 this.resSelectedState = this.editUser['residence_state'];
                 this.corSelectedState = this.editUser['correspondence_state'];
                 this.regSelectedState = this.editUser['registered_state'];
+
+                this.ln_release_date = this.editUser['ln_release_date'];
+                this.ln_expire_date = this.editUser['ln_expire_date'];
+
+                this.selectedTariff = this.editUser['wage_tariff'];
+
+                console.log(this.editUser)
             } catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
@@ -1099,11 +1101,19 @@ export default {
             // Generate dict for sending
             this.getDataFromInputs();
             this.input_data['user_role'] = 'Driver'
-            const input_data = this.input_data;
+            let input_data = this.input_data;
 
+            
 
             // Send put request
             try {
+
+                // Get id of tariff
+                const tariffResponse = await axios.get(`api/drivers/wage_tariff/get/${this.input_data['wage_tariff']}/`);
+                input_data['wage_tariff'] = tariffResponse.data.id;
+                // Get id of tariff
+
+
                 const response = await axios.put(`api/users/save/${input_data.username}/${input_data.user_role}/`, input_data);
                 this.$store.dispatch('triggerAlert', { message: `Successfully updated ${input_data.username}`, type: 'success' });
                 this.$root.changeCurrentComponent('ModifyUserComponent');
@@ -1122,6 +1132,19 @@ export default {
             this.$root.changeCurrentComponent('ModifyUserComponent');
         },
         // Go back
+
+
+
+        // Fetch tariffs
+        async getTariffs() {
+            try {
+                const response = await axios.get('api/drivers/wage_tariff/get/all/');
+                this.tariffs = response.data;
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error.response.data, type: 'error' });
+            }
+        },
+        // Fetch tariffs
 
     }
 };

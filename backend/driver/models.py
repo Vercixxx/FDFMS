@@ -39,3 +39,7 @@ class WageTariff(models.Model):
     
     class Meta:
         db_table = 'WageTariff'
+        
+
+    def __str__(self):
+        return self.name

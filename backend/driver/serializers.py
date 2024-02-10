@@ -9,6 +9,7 @@ from users.serializers import GetAddressesSerializer
 
 
 class GetDriver(serializers.ModelSerializer):
+    wage_tariff = serializers.StringRelatedField()
     class Meta:
         model = Driver
         fields = ['email',
@@ -28,6 +29,7 @@ class GetDriver(serializers.ModelSerializer):
                   'ln_expire_date',
                   'ln_published_by',
                   'ln_code',
+                  'wage_tariff',
                   ]
 
     def __init__(self, *args, **kwargs):
@@ -42,6 +44,7 @@ class GetDriver(serializers.ModelSerializer):
 
 class DriverSerializer(serializers.ModelSerializer):
     date_joined = serializers.DateTimeField(format='%Y-%m-%d')
+    wage_tariff = serializers.StringRelatedField()
 
     class Meta:
         model = Driver
@@ -53,12 +56,14 @@ class DriverSerializer(serializers.ModelSerializer):
                   'username',
                   'phone',
                   'date_joined',
+                  'wage_tariff',
                   ]
 
 
 class RestaurantDriversSerliazer(serializers.ModelSerializer):
     restaurant_name = serializers.CharField(read_only=True)
     date_joined = serializers.DateTimeField(format='%Y-%m-%d')
+    wage_tariff = serializers.StringRelatedField()
 
     class Meta:
         model = Driver
@@ -71,6 +76,7 @@ class RestaurantDriversSerliazer(serializers.ModelSerializer):
                   'phone',
                   'date_joined',
                   'restaurant_name',
+                  'wage_tariff',
                   ]
 
 class DriverUsernameSerializer(serializers.ModelSerializer):
@@ -104,6 +110,7 @@ class UpdateDriverUser(serializers.ModelSerializer):
             'ln_expire_date',
             'ln_published_by',
             'ln_code',
+            'wage_tariff',
         ]
 
 
@@ -117,3 +124,8 @@ class WageTariffSerializer(serializers.ModelSerializer):
     class Meta:
         model = WageTariff
         fields = '__all__'
+        
+class WageTariffGetIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WageTariff
+        fields = ['id']
