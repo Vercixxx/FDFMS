@@ -294,6 +294,26 @@
     <v-dialog v-model="UserDetailsDialog" width="auto">
       <v-card>
         <v-card-text>
+
+          <v-row>
+            <v-col cols="3">
+            </v-col>
+            <v-col cols="6" sm="6">
+              <div class="text-h5 text-center">
+                User details
+              </div>
+            </v-col>
+            <!-- Download -->
+            <v-col cols="3" align="end">
+              <span>
+                <v-btn icon="mdi-download" variant="pain" @click="downloadUserInfo(userDetailData['Username'], userDetailData['User Role'])">
+                </v-btn>
+                <v-tooltip activator="parent" location="top">Download user info</v-tooltip>
+              </span>
+            </v-col>
+            <!-- Download -->
+          </v-row>
+
           <v-table>
             <thead>
               <tr>
@@ -751,6 +771,25 @@ export default {
 
     },
 
+
+    // Download user info
+    async downloadUserInfo(username, role) {
+      console.log(username, role)
+      try {
+        const response = await axios.get(`api/users/get-info-csv/${username}/${role}/`);
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${username}_info.csv`);
+        document.body.appendChild(link);
+        link.click();
+      }
+      catch (error) {
+        this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
+      }
+    },
+    // Download user info
+    
 
   },
 

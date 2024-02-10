@@ -51,6 +51,12 @@ from django.db.models import Q
 # Pagination
 from rest_framework.pagination import PageNumberPagination
 
+# CSV
+import csv
+import os
+import uuid
+from django.http import FileResponse
+
 
 class GlobalDictionaries:
     dicts = {
@@ -352,6 +358,34 @@ class getUser(APIView):
 
         output = serializer_instance.data
         return JsonResponse(output, status=200, safe=False)
+
+
+class GenerateUserInfoCSV(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, username, user_role):
+        user_model = GlobalDictionaries.get_serializer('UserModels', user_role)
+        user = user_model.objects.get(username=username)
+
+        user_serializer = GlobalDictionaries.get_serializer(
+            'GetUserSerializers', user_role)
+        serializer_instance = user_serializer(user)
+
+        output = serializer_instance.data
+        
+
+        filename = f"{uuid.uuid4().hex}.csv"
+
+        with open(filename, 'w', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=output.keys())
+            writer.writeheader()
+            writer.writerow(output)
+
+        response = FileResponse(open(filename, 'rb'))
+
+        os.remove(filename)
+
+        return response
 
 
 class UpdateUser(APIView):

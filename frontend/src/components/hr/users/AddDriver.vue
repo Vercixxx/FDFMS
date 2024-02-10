@@ -1038,6 +1038,11 @@ export default {
 
             this.input_data['user_role'] = 'Driver';
 
+            // Get id of tariff
+            const tariffResponse = await axios.get(`api/drivers/wage_tariff/get/${this.input_data['wage_tariff']}/`);
+            this.input_data['wage_tariff'] = tariffResponse.data.id;
+            // Get id of tariff
+
             try {
                 const response = await axios.post('api/create/', this.input_data);
                 this.$store.dispatch('triggerAlert', { message: `Successfully added ${this.input_data.username}`, type: 'success' });
@@ -1103,7 +1108,6 @@ export default {
             this.input_data['user_role'] = 'Driver'
             let input_data = this.input_data;
 
-            
 
             // Send put request
             try {
@@ -1112,7 +1116,6 @@ export default {
                 const tariffResponse = await axios.get(`api/drivers/wage_tariff/get/${this.input_data['wage_tariff']}/`);
                 input_data['wage_tariff'] = tariffResponse.data.id;
                 // Get id of tariff
-
 
                 const response = await axios.put(`api/users/save/${input_data.username}/${input_data.user_role}/`, input_data);
                 this.$store.dispatch('triggerAlert', { message: `Successfully updated ${input_data.username}`, type: 'success' });
