@@ -18,6 +18,10 @@ urlpatterns = [
     # Genre report
     path('api/drivers/generate_report/<str:username>/', views.GenerateReport.as_view(), name='generate_report'),
     
+    # Get Daily reports
+    path('api/drivers/daily_report/get/all/', views.GetDailyDriversReport.as_view(), name='get_daily_reports'),
+    
+    
     
     # WageTariff
     
