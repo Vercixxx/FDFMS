@@ -30,8 +30,8 @@
     </v-container>
 
     <v-container v-else>
-      <v-btn block size="large" :variant="!datesValid ? 'outlined' : 'tonal'" @click="generateReport()"
-        append-icon="mdi-file-account" :disabled="!datesValid">
+      <v-btn block size="large" variant="tonal" @click="generateReport()"
+        append-icon="mdi-file-account">
         Generate report
       </v-btn>
     </v-container>

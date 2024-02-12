@@ -18,6 +18,12 @@ from django.db.models import Q
 # Pagination
 from rest_framework.pagination import PageNumberPagination
 
+# CSV
+import csv
+import os
+import uuid
+from django.http import FileResponse
+
 
 class AddCar(APIView):
     permission_classes = [IsAuthenticated]
@@ -216,10 +222,31 @@ class GetCarDamages(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, vin):
+        download = request.query_params.get('download', '').strip()
+
         car = Car.objects.get(vin=vin)
         
         carDamage = CarDamage.objects.filter(car=car)
         
         serializer = CarDamageSerializer(carDamage, many=True).data
         
-        return JsonResponse(serializer, status=200, safe=False)
+        
+
+        if download == 'true':
+            filename = f"temp_files/{uuid.uuid4().hex}.csv"
+
+            with open(filename, 'w', newline='') as csvfile:
+                fieldnames = serializer[0].keys() if serializer else []
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                for row in serializer:
+                    writer.writerow(row)
+
+            response = FileResponse(open(filename, 'rb'))
+
+            os.remove(filename)
+
+            return response
+        
+        else:
+            return JsonResponse(serializer, status=200, safe=False)

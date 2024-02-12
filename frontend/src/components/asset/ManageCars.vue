@@ -256,6 +256,14 @@
 
 
             <v-card-text>
+
+                <span>
+                    <v-btn icon="mdi-download" variant="pain"
+                        @click="showCarDamages(carDamagesVin, true)">
+                    </v-btn>
+                    <v-tooltip activator="parent" location="top">Download damages</v-tooltip>
+                </span>
+
                 <v-data-table :headers="carDamagesHeaders" :items="carDamages" no-data-text="No damages reported">
                 </v-data-table>
             </v-card-text>
@@ -350,13 +358,28 @@ export default {
     methods: {
 
         // Show car damages
-        async showCarDamages(carVin) {
+        async showCarDamages(carVin, download = false) {
             this.carDamagesVin = carVin;
 
             try {
-                const response = await axios.get(`api/car/damage/get/${carVin}/`);
-                this.carDamages = response.data;
-                this.carDamagesDialog = true;
+                const response = await axios.get(`api/car/damage/get/${carVin}/`, {
+                    params: {
+                        download: download,
+                    }
+                });
+
+                if(!download) {
+                    this.carDamages = response.data;
+                    this.carDamagesDialog = true;
+                }
+                else {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', `car_damages_${carVin}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                }
             } catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error.response.error, type: 'error' });
             }
