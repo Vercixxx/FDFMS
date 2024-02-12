@@ -123,6 +123,11 @@ class DailyDriverReportSerializer(serializers.ModelSerializer):
         model = DailyWork
         fields = ['id','driver', 'date', 'orders', 'start_work', 'end_work', 'working_time', 'orders_per_hour']
         
+class NewBillingPeriodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WageTariff
+        fields = ['starting_new_billing_period', 'name']
+        
 
 class WageTariffSerializer(serializers.ModelSerializer):
     class Meta:

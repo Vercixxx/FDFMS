@@ -43,4 +43,7 @@ urlpatterns = [
     # Assign WageTariff to Driver
     path('api/drivers/wage_tariff/assign/<str:username>/', views.AssignWageTariff.as_view(), name='assign_wage_tariff'),
     
+    # Get New Billing Period starting day
+    path('api/drivers/wage_tariff/get/new_billing_period/<str:name>/', views.GetNewBillingPeriodStartingDay.as_view(), name='get_new_billing_period'),
+    
 ]

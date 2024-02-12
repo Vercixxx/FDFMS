@@ -66,36 +66,25 @@ export default {
 
     // Generate report
     async generateReport() {
-      // this.overlay = true;
+      this.overlay = true;
 
       const response = await axios.get(`api/drivers/generate_report/${this.driver.username}`, {
         params: {
           start_date: this.startDate,
           end_date: this.endDate,
+          monthly: this.reportType == 'Billing period',
+          monthly_day: this.driver.tariff_starting_day,
         },
-        responseType: 'blob' // to tell axios to download the response as a blob
+        responseType: 'blob'
       });
 
-      // Create a new Blob object from the response data
       const blob = new Blob([response.data], { type: 'text/csv' });
-
-      // Create a new object URL for the blob
       const url = window.URL.createObjectURL(blob);
-
-      // Create a new link element
       const link = document.createElement('a');
-
-      // Set the href and download attributes of the link
       link.href = url;
       link.setAttribute('download', `${this.driver.username}_${this.startDate}-${this.endDate}.csv`);
-
-      // Append the link to the body
       document.body.appendChild(link);
-
-      // Programmatically click the link to start the download
       link.click();
-
-      // Remove the link from the body
       document.body.removeChild(link);
 
       this.overlay = false;
@@ -105,6 +94,30 @@ export default {
 
 
   },
+
+  watch: {
+    reportType(newReportType) {
+      if (newReportType === 'Billing period') {
+        let today = new Date();
+        let month = today.getMonth();
+        let year = today.getFullYear();
+
+        let currentMonthDate = new Date(year, month + 1, this.driver.tariff_starting_day);
+        let previousMonthDate = new Date(year, month , this.driver.tariff_starting_day);
+
+        let currentMonthDateString = `${currentMonthDate.getFullYear()}-${currentMonthDate.getMonth() + 1}-${currentMonthDate.getDate()}`;
+        let previousMonthDateString = `${previousMonthDate.getFullYear()}-${previousMonthDate.getMonth() + 1}-${previousMonthDate.getDate()}`;
+
+        let result = `${previousMonthDateString} to ${currentMonthDateString}`;
+
+        const message = `User ${this.driver.first_name} ${this.driver.last_name} has assigned tariff with name ${this.driver.tariff_name}. 
+        The report will be generated for the period from ${result}`;
+
+        this.$store.dispatch('triggerAlert', { message: message, type: 'teal' });
+      }
+    },
+  },
+
 
   computed: {
     datesValid() {
@@ -117,7 +130,6 @@ export default {
   },
 
   mounted() {
-
 
   },
 };

@@ -8,7 +8,8 @@
     <v-btn class="my-5" variant="tonal" prepend-icon="mdi-plus" color="teal" @click="tariffDialog = true">Add new
       tariff</v-btn>
 
-    <v-data-table :items="tariffs" :headers="headers" :loading="loading" no-data-text="There isn't any tariffs yet" show-current-page>
+    <v-data-table :items="tariffs" :headers="headers" :loading="loading" no-data-text="There isn't any tariffs yet"
+      show-current-page>
 
 
       <!-- Loading -->
@@ -56,6 +57,12 @@
               <v-col cols="12" sm="6" v-for="field in fields" :key="field.key">
                 <v-text-field v-model="tariff[field.key]" :label="field.label" variant="underlined" :rules="field.rules"
                   :hint="field.hint"></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-select v-model="tariff[startingDayOfNewPeriod.key]"
+                  :items="['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']"
+                  :label="startingDayOfNewPeriod.label" variant="underlined"
+                  :rules="startingDayOfNewPeriod.rules"></v-select>
               </v-col>
             </v-row>
           </v-form>
@@ -141,6 +148,7 @@ export default {
         basic_hourly_rate: null,
         orders_bonus: null,
         fuel_bonus: null,
+        starting_new_billing_period: null,
       },
 
       fields:
@@ -182,12 +190,22 @@ export default {
           },
         ],
 
+      startingDayOfNewPeriod:
+      {
+        key: 'starting_new_billing_period',
+        label: 'Day of starting new billing period',
+        rules: [
+          v => !!v || 'Fuel bonus is required',
+        ]
+      },
+
 
       headers: [
         { title: 'Name', key: 'name', align: 'center' },
         { title: 'Hourly rate', key: 'basic_hourly_rate', align: 'center' },
         { title: 'Exceeded orders bonus', key: 'orders_bonus', align: 'center' },
         { title: 'Fuel bonus', key: 'fuel_bonus', align: 'center' },
+        { title: 'Starting day of new period', sortable: false, key: 'starting_new_billing_period', align: 'center' },
         { title: 'Actions', key: 'action', sortable: false, align: 'center' },
       ],
 
@@ -220,6 +238,7 @@ export default {
         basic_hourly_rate: null,
         orders_bonus: null,
         fuel_bonus: null,
+        starting_new_billing_period: null,
       };
       this.editing = false;
       this.tariffDialog = false;
@@ -264,7 +283,7 @@ export default {
 
     // Add or save tariff
     async addSaveTariff() {
-      if(this.editing){
+      if (this.editing) {
         try {
           const response = await axios.put(`api/drivers/wage_tariff/edit/${this.tariff.id}/`, this.tariff);
           this.$store.dispatch('triggerAlert', { message: 'Tariff updated', type: 'success' });
@@ -272,7 +291,7 @@ export default {
           this.fetchTariffs();
         } catch (error) {
           this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
-        
+
         }
       }
       else {

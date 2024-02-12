@@ -572,17 +572,37 @@ export default {
 
 
         // Go to reports
-        goToReports(user) {
-            const data = {
-                username: user.username,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                user_role: 'driver',
+        async goToReports(user) {
+            try {
+                const tariff = await this.getNewBillingPeriodStartDay(user.wage_tariff)
+                
+                const data = {
+                    username: user.username,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    user_role: 'driver',
+                    tariff_name: tariff.name,
+                    tariff_starting_day: tariff.starting_new_billing_period,
+                }
+                this.$store.dispatch('setBusData', data);
+                this.$root.changeCurrentComponent('DriverReportsComponent');
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
             }
-            this.$store.dispatch('setBusData', data);
-            this.$root.changeCurrentComponent('DriverReportsComponent');
         },
         // Go to reports
+
+        // Get new billing period start day
+        async getNewBillingPeriodStartDay(tariffName) {
+            try {
+                const response = await axios.get(`api/drivers/wage_tariff/get/new_billing_period/${tariffName}/`);
+                return response.data;
+            }
+            catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error.response.error, type: 'error' });
+            }
+        },
+        // Get new billing period start day
 
 
         // Assign tariff
@@ -592,6 +612,7 @@ export default {
             this.tariffDialog = true;
         },
         // Assign tariff
+
 
         // Download user info
         async downloadUserInfo(username, role) {

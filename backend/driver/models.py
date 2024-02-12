@@ -37,6 +37,8 @@ class WageTariff(models.Model):
     orders_bonus = models.FloatField()
     fuel_bonus = models.FloatField()
     
+    starting_new_billing_period = models.PositiveSmallIntegerField(default=1)
+    
     class Meta:
         db_table = 'WageTariff'
         

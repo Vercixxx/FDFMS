@@ -15,7 +15,7 @@ from restaurant.models import Restaurant
 from users.models import GeneralUser, Addresses
 
 # Serializers
-from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer, WageTariffGetIdSerializer
+from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer, WageTariffGetIdSerializer, NewBillingPeriodSerializer
 from users.serializers import ResidenceAddressSerializer
 
 
@@ -227,9 +227,17 @@ class GenerateReport(APIView):
     def get(self, request, username):
         start_date = self.request.query_params.get('start_date', '').strip()
         end_date = self.request.query_params.get('end_date', '').strip()
+        monthly_day = self.request.query_params.get('monthly_day', '').strip()
+        monthly = self.request.query_params.get('monthly', '').strip()
+        
+        
         user = Driver.objects.get(username=username)
         
-        user_working = DailyWork.objects.filter(driver=user, date__range=[start_date, end_date])
+        if monthly == 'true':
+            user_working = DailyWork.objects.filter(driver=user, date__range=[start_date, end_date])
+            
+        else:
+            user_working = DailyWork.objects.filter(driver=user, date__range=[start_date, end_date])
 
         self.create_csv(user_working)
         
@@ -309,6 +317,17 @@ class AssignWageTariff(APIView):
         driver.save()
         
         return JsonResponse({'message': 'ok'}, status=201)
+    
+    
+
+class GetNewBillingPeriodStartingDay(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, name):
+        tariff = WageTariff.objects.get(name=name)
+        serializer = NewBillingPeriodSerializer(tariff)
+        return JsonResponse(serializer.data, status=200, safe=False) 
+
     
     
     
