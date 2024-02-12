@@ -115,9 +115,13 @@ class UpdateDriverUser(serializers.ModelSerializer):
 
 
 class DailyDriverReportSerializer(serializers.ModelSerializer):
+    start_work = serializers.TimeField(format='%H:%M')
+    end_work = serializers.TimeField(format='%H:%M')
+    working_time = serializers.TimeField(format='%H:%M')
+
     class Meta:
         model = DailyWork
-        fields = '__all__'
+        fields = ['id','driver', 'date', 'orders', 'start_work', 'end_work', 'working_time', 'orders_per_hour']
         
 
 class WageTariffSerializer(serializers.ModelSerializer):

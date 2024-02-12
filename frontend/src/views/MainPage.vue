@@ -306,6 +306,7 @@ import AddCarDamage from '../components/driver/AddCarDamage.vue';
 import DriversWorkingHours from '../components/payroll/DriversWorkingHours.vue';
 import DriverReports from '../components/payroll/DriverReports.vue';
 import ManageWagesTariffs from '../components/payroll/ManageWagesTariffs.vue';
+import DriverDailyReports from '../components/payroll/DriverDailyReports.vue';
 // Payroll
 
 
@@ -772,6 +773,26 @@ export default {
                 },
             ];
             this.currentComponent = ManageWagesTariffs;
+        },
+        DriverDailyReportsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Drivers",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Driver Daily Reports',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriverDailyReports;
         },
         // Payroll
 

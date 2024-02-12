@@ -241,7 +241,7 @@
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn color="success" block @click="saveTariff(tariffUser)">Assign</v-btn>
+                    <v-btn color="success" block @click="saveTariff(tariffUser)" :disabled="!form">Assign</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

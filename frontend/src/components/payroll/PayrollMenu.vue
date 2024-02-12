@@ -62,9 +62,14 @@ export default {
                             icon: 'mdi-calendar-clock',
                         },
                         {
+                            name: 'Drivers daily reports',
+                            click: 'DriverDailyReportsComponent',
+                            icon: ' mdi-list-box',
+                        },
+                        {
                             name: 'Drivers statistics',
                             click: '',
-                            icon: ' mdi-database-edit',
+                            icon: 'mdi-chart-line',
                         },
                     ],
                 },

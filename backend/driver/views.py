@@ -309,3 +309,111 @@ class AssignWageTariff(APIView):
         driver.save()
         
         return JsonResponse({'message': 'ok'}, status=201)
+    
+    
+    
+class GetDailyDriversReport(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = UsersPagination
+    
+    def create_csv(self, user_working):
+        
+        self.filename = f"temp_{uuid.uuid4()}.csv"
+        
+        with open(self.filename, 'w', newline='') as f:
+            writer = csv.writer(f)
+
+            writer.writerow(['Driver', 'Date', 'Orders amount', 'Start work', 'End work', 'Working time', 'Orders per hour'])
+
+
+            total_working_time = timedelta()
+            
+            total_orders = 0
+
+            for item in user_working:
+
+                writer.writerow([item['driver'], item['date'], item['orders'], item['start_work'], item['end_work'], item['working_time'], item['orders_per_hour']])
+                
+                working_time_str = item['working_time']
+                working_time_obj = datetime.strptime(working_time_str, "%H:%M:%S")
+
+                working_time = timedelta(hours=working_time_obj.hour, minutes=working_time_obj.minute, seconds=working_time_obj.second)
+
+                total_working_time += working_time
+                
+                total_orders += item['orders']
+
+            total_time = (datetime.min + total_working_time).time()
+
+            writer.writerow(['Total', '', total_orders, '', '', total_time, ''])
+
+        django_file = File(open(self.filename, 'r'))
+
+        return django_file
+    
+    def get(self, request):
+        limit = self.request.query_params.get('limit', '').strip()
+        query = self.request.query_params.get('search', '').strip()
+        restaurant = self.request.query_params.get('restaurant', '').strip()
+        download = self.request.query_params.get('download', '').strip()
+        start_date = self.request.query_params.get('start_date', '').strip()
+        end_date = self.request.query_params.get('end_date', '').strip()
+
+        # print(DailyWork.objects.all().order_by('-date'))
+        if start_date and end_date:
+            queryset = DailyWork.objects.filter(date__range=[start_date, end_date]).order_by('-date')
+        elif start_date:
+            queryset = DailyWork.objects.filter(date__gte=start_date).order_by('-date')
+        elif end_date:
+            queryset = DailyWork.objects.filter(date__lte=end_date).order_by('-date')
+        else:
+            queryset = DailyWork.objects.all().order_by('-date')
+            
+        if restaurant:
+            restaurants = Restaurant.objects.filter(id__in=restaurant)
+            drivers = Driver.objects.none()
+
+            for restaurant in restaurants:
+                drivers |= restaurant.drivers.all().annotate(restaurant_name=F('restaurant__name')).order_by('date_joined')
+
+            queryset = queryset.filter(driver__in=drivers)
+            
+        
+        if query:
+            try:
+                query_date = datetime.strptime(query, "%Y-%m-%d").date()
+                queryset = queryset.filter(
+                    Q(driver__username__icontains=query) | Q(date=query_date))
+            except ValueError:
+                queryset = queryset.filter(driver__username__icontains=query)
+            
+            
+            
+        serializer = DailyDriverReportSerializer(queryset, many=True)
+
+        paginator = UsersPagination()
+        result_page = paginator.paginate_queryset(queryset, request)
+        
+        if download == 'true':
+            self.create_csv(serializer.data)
+            
+            try:
+                wrapper = FileWrapper(open(self.filename, 'rb'))
+                response = FileResponse(wrapper, content_type='text/csv')
+                response['Content-Disposition'] = f'attachment; filename={self.filename}'
+                return response
+            finally:
+                os.remove(self.filename)
+                
+        else:
+            response_data = {
+                'posts_amount': paginator.page.paginator.count,
+                'total_pages': paginator.page.paginator.num_pages,
+                'current_page': paginator.page.number,
+                'results': serializer.data,
+                'next': paginator.get_next_link(),
+                'previous': paginator.get_previous_link(),
+                'total_results': queryset.count(),
+            }
+
+            return JsonResponse(response_data, status=200)
