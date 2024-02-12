@@ -285,6 +285,7 @@ import ManageBrands from '../components/clients/ManageBrands.vue';
 import AddCar from '../components/asset/AddCar.vue';
 import ManageCars from '../components/asset/ManageCars.vue';
 import ManageFleets from '../components/asset/ManageFleets.vue';
+import DailyCarsReports from '../components/asset/DailyCarsReports.vue';
 // Asset
 
 
@@ -704,6 +705,26 @@ export default {
                 },
             ];
             this.currentComponent = ManageFleets;
+        },
+        DailyCarsReportsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Cars",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Daily Cars Reports',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DailyCarsReports;
         },
         // Assets
 
