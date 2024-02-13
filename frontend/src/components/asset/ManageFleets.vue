@@ -25,7 +25,7 @@
             <v-row>
 
                 <!-- Available -->
-                <v-col cols="12" sm="5" class="border border-3">
+                <v-col cols="12" sm="5">
                     <h5 justify="center" align="center">Available cars</h5>
                     <v-data-table :headers="headers" :items="availableCars" density="compact" :loading="loading" hover>
 
@@ -57,7 +57,7 @@
                 <v-col cols="2"></v-col>
 
                 <!-- Selected -->
-                <v-col cols="12" sm="5" class="">
+                <v-col cols="12" sm="5">
 
                     <v-row>
                         <v-col align="center" class="text-h4 mb-5">
