@@ -65,8 +65,8 @@
                     <v-card-text>
                         <v-row>
                             <v-col cols="12" md="6">
-                                <v-select label="Choose country" variant="solo-filled"
-                                    :items="items.map(item => item.country)" v-model="addingStateCountryName"
+                                <v-select label="Choose country" variant="solo-filled" :items="countries" item-title="name"
+                                    item-value="id" v-model="addingStateCountryName"
                                     @update:modelValue="handleChange"></v-select>
                             </v-col>
 
@@ -95,9 +95,10 @@
         <!-- Adding and editing -->
 
         <v-row v-if="type !== null">
-            <!-- Table -->
-            <v-col cols="12">
-                <v-data-table :headers="headersComputed" :items="items" :items-per-page="5" class="elevation-1"
+
+            <!-- Country -->
+            <v-col cols="12" v-if="type == 'Country'">
+                <v-data-table :headers="countryHeaders" :items="countries" :items-per-page="5" class="elevation-1"
                     :loading="tableLoading" item-value="name">
 
                     <!-- Loading -->
@@ -108,7 +109,31 @@
 
                     <template v-slot:item.action="{ item }">
 
-                        <v-btn v-if="type == 'State'" variant="plain" color="green" @click="editItem(item)">
+                        <v-btn variant="plain" color="red" @click="deleteConfirm(item)">
+                            <v-icon icon="mdi-delete-empty" class="text-h5"></v-icon>
+                            <v-tooltip activator="parent" location="top">Delete {{ item.name }}</v-tooltip>
+                        </v-btn>
+
+                    </template>
+                </v-data-table>
+
+            </v-col>
+            <!-- Country -->
+
+            <!-- State -->
+            <v-col cols="12" v-else>
+                <v-data-table :headers="statesHeaders" :items="states" :items-per-page="5" class="elevation-1"
+                    :loading="tableLoading" item-value="name">
+
+                    <!-- Loading -->
+                    <template v-slot:loading>
+                        <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
+                    </template>
+                    <!-- Loading -->
+
+                    <template v-slot:item.action="{ item }">
+
+                        <v-btn variant="plain" color="green" @click="editItem(item)">
                             <v-icon icon="mdi-pencil-outline" class="text-h5"></v-icon>
                             <v-tooltip activator="parent" location="top">Edit {{ item.name }}</v-tooltip>
                         </v-btn>
@@ -120,8 +145,8 @@
 
                     </template>
                 </v-data-table>
-                <!-- Table -->
             </v-col>
+            <!-- State -->
         </v-row>
 
     </v-card-text>
@@ -190,6 +215,8 @@ export default {
             ],
 
             items: [],
+            countries: [],
+            states: [],
 
             countryDialog: false,
             addStateDialog: false,
@@ -203,7 +230,7 @@ export default {
                 v => !!v || 'Required',
                 v => (v && v.length <= 30) || 'Name must be less than 30 characters',
                 v => (v && v.length >= 3) || 'Name must be more than 3 characters',
-                v => /^[a-zA-Z]*$/.test(v) || 'Only letters are allowed',
+                v => /^[a-zA-Z ]*$/.test(v) || 'Only letters are allowed',
             ],
 
             form: false,
@@ -217,15 +244,11 @@ export default {
 
         };
     },
-    computed: {
-        headersComputed() {
-            if (this.type === 'Country') {
-                return this.countryHeaders;
-            } else if (this.type === 'State') {
-                return this.statesHeaders;
-            }
-            return [];
-        },
+
+    watch: {
+        type() {
+            this.handleChange();
+        }
     },
 
     methods: {
@@ -253,8 +276,7 @@ export default {
             this.tableLoading = true;
             try {
                 const response = await axios.get('api/countries/get/');
-                console.log(response);
-                this.items = response.data;
+                this.countries = response.data;
             } catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
@@ -296,8 +318,7 @@ export default {
             this.tableLoading = true;
             try {
                 const response = await axios.get('api/states/get/');
-                this.items = response.data;
-                console.log(response);
+                this.states = response.data;
             } catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }

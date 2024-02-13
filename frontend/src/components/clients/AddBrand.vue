@@ -190,7 +190,7 @@ export default {
                     rules: [
                         v => !!v || 'Name is required',
                         v => (v && v.length >= 2) || 'Name must containt at least 2 characters',
-                        v => /^[a-zA-Z0-9 -]+$/.test(v) || 'Name can only contain letters and numbers',
+                        v => /^[a-zA-Z0-9 -'"]+$/.test(v) || 'Name can only contain letters and numbers',
                     ],
                 },
 

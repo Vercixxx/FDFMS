@@ -260,7 +260,7 @@ class UpdateBrand(APIView):
             errors = [
                 f'Given {field} is already taken. Please try another.'
                 for field in fields_to_check
-                if Brands.objects.filter(**{field: data.get(field, None)}).exists() >= 1
+                if Brands.objects.filter(**{field: data.get(field, None)}).exists() > 1
             ]
 
             if errors:
