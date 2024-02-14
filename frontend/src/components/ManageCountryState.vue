@@ -267,6 +267,7 @@ export default {
                 this.countryDialog = true;
             } else if (this.type === 'State') {
                 this.addStateDialog = true;
+                this.fetchCountries();
             }
         },
 
