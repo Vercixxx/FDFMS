@@ -255,7 +255,7 @@ class UserAuth(APIView):
             return JsonResponse({'message': 'Logged in successfully', 'user_role': logged_user.user_role, 'data': user_data, 'jwt': jwt})
 
         else:
-            return JsonResponse({'error': 'Invalid username or password'})
+            return JsonResponse({'error': 'Invalid username or password'}, status=400)
 
     def get_tokens_for_user(self, user):
         refresh = RefreshToken.for_user(user)

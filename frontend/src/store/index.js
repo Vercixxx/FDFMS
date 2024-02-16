@@ -17,6 +17,16 @@ export default createStore({
 
     busData: {},
 
+    colorPalette: {
+      primary: '#2AD58A',
+      secondary: '#8A2AD5',
+      accent: '#D58A2A',
+      error: '#b71c1c',
+      success: '#4caf50',
+      warning: '#ffeb3b',
+      info: '#2196f3',
+    }
+
   },
 
 
@@ -31,6 +41,8 @@ export default createStore({
     alertData: state => state.alertData,
 
     busData: state => state.busData,
+
+    colorPalette: state => state.colorPalette,
 
   },
 
@@ -78,6 +90,8 @@ export default createStore({
     setBusData({ commit }, data) {
       commit('setBusData', data);
     },
+
+
 
   },
 
