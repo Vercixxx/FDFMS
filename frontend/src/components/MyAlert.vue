@@ -1,6 +1,6 @@
 <template>
     <!-- Snackbar -->
-    <v-snackbar v-model="alert" location="top" :color="snackContent.type" style="position: fixed; top: 8vh;" rounded="pill"
+    <v-snackbar v-model="alert" location="top" :timeout="time" :color="snackContent.type" style="position: fixed; top: 8vh;" rounded="pill"
         variant="elevated">
 
         <v-progress-linear v-model="value" :buffer-value="bufferValue" rounded color="white"></v-progress-linear>
@@ -32,6 +32,7 @@ export default {
             value: 0,
             bufferValue: 0,
             interval: 0,
+            
         };
     },
 
@@ -48,9 +49,7 @@ export default {
                 this.snackContent = newData;
                 this.startBuffer()
 
-                setTimeout(() => {
-                    this.closeAlert()
-                }, this.time)
+
             }
         },
     },

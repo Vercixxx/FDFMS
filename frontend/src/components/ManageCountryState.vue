@@ -99,7 +99,7 @@
             <!-- Country -->
             <v-col cols="12" v-if="type == 'Country'">
                 <v-data-table :headers="countryHeaders" :items="countries" :items-per-page="5" class="elevation-1"
-                    :loading="tableLoading" item-value="name">
+                    :loading="tableLoading" item-value="name" density="compact">
 
                     <!-- Loading -->
                     <template v-slot:loading>
@@ -123,7 +123,7 @@
             <!-- State -->
             <v-col cols="12" v-else>
                 <v-data-table :headers="statesHeaders" :items="states" :items-per-page="5" class="elevation-1"
-                    :loading="tableLoading" item-value="name">
+                    :loading="tableLoading" item-value="name" density="compact">
 
                     <!-- Loading -->
                     <template v-slot:loading>

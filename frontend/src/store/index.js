@@ -17,15 +17,29 @@ export default createStore({
 
     busData: {},
 
-    colorPalette: {
-      primary: '#2AD58A',
-      secondary: '#8A2AD5',
-      accent: '#D58A2A',
+
+    colorPalette: {},
+    colorPaletteLight: {
+      primary: '#52baba',
+      secondary: '#4E508B',
+      tertiary: '#7CB056',
+      accent: '#7CB056',
       error: '#b71c1c',
       success: '#4caf50',
       warning: '#ffeb3b',
       info: '#2196f3',
-    }
+    },
+    colorPaletteDark: {
+      primary: '#3B7878',
+      secondary: '#4E508B',
+      tertiary: '#7CB056',
+      accent: '#7CB056',
+      error: '#b71c1c',
+      success: '#4caf50',
+      warning: '#ffeb3b',
+      info: '#2196f3',
+    },
+    
 
   },
 
@@ -42,7 +56,7 @@ export default createStore({
 
     busData: state => state.busData,
 
-    colorPalette: state => state.colorPalette,
+    colorPalette: (state) => state.colorPalette,
 
   },
 
@@ -72,6 +86,10 @@ export default createStore({
 
     setBusData(state, data) {
       state.busData = data;
+    },
+
+    setColorPalette(state, isDark) {
+      state.colorPalette = isDark ? state.colorPaletteDark : state.colorPaletteLight;
     },
 
   },

@@ -266,7 +266,7 @@
                         <v-col cols="12" sm="6">
                             <h5 justify="center" align="center">Available drivers</h5>
                             <v-data-table :headers="tableHeaders" :items="avaiableDrivers" density="compact"
-                                :loading="driversLoading" hover  class="border">
+                                :loading="driversLoading" hover class="border">
 
                                 <!-- Loading -->
                                 <template v-slot:loading>

@@ -9,7 +9,7 @@
       tariff</v-btn>
 
     <v-data-table :items="tariffs" :headers="headers" :loading="loading" no-data-text="There isn't any tariffs yet"
-      show-current-page>
+      show-current-page  density="compact">
 
 
       <!-- Loading -->

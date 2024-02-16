@@ -264,7 +264,7 @@
                     <v-tooltip activator="parent" location="top">Download damages</v-tooltip>
                 </span>
 
-                <v-data-table :headers="carDamagesHeaders" :items="carDamages" no-data-text="No damages reported">
+                <v-data-table :headers="carDamagesHeaders" :items="carDamages" no-data-text="No damages reported"  density="compact">
                 </v-data-table>
             </v-card-text>
 

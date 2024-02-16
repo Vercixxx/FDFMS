@@ -2,7 +2,7 @@
     <v-app>
         <v-layout class="rounded rounded-md">
 
-            <v-app-bar app :elevation="3" class="bg-teal-darken-2">
+            <v-app-bar app :elevation="3" :style="{ backgroundColor: colorPalette['primary'], color: '#333333' }" >
 
 
                 <v-row align="center" no-gutters>
@@ -25,7 +25,7 @@
 
                             <v-col>
                                 <!-- Visible on larger devices -->
-                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown" class="mt-3 text-body-1">
+                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown" class="mt-3 text-body-3">
                                     <template v-slot:divider>
                                         <v-icon icon="mdi-chevron-right"></v-icon>
                                     </template>
@@ -82,7 +82,7 @@
                             <v-tooltip text="Help" location="bottom">
                                 <template v-slot:activator="{ props }">
                                     <v-btn :ripple="false" variant="plain" v-bind="props" icon="mdi-help"
-                                        color="blue-darken-4" @click="showHelp">
+                                        :color="colorPalette['secondary']" @click="showHelp">
 
                                     </v-btn>
                                 </template>
@@ -185,8 +185,11 @@
                         <v-icon :icon="social.icon" />
                     </a>
                 </span>
-
-                {{ new Date().getFullYear() }} — Krzysztof Służałek
+                
+                {{ new Date().getFullYear() }} — Food Delivery Fleet Management System
+                <div class="font-weight-thin">
+                    SITE IN DEV VERSION! Designed by Krzysztof Służałek
+                </div>
 
             </div>
         </footer>
@@ -328,6 +331,8 @@ export default {
             group: null,
             darkModeEnabled: true,
 
+            colorPallete: {},
+
             alert: false,
             snackContent: { type: 'success' },
 
@@ -360,7 +365,9 @@ export default {
         reversedPath() {
             return this.path.slice().reverse();
         },
-
+        colorPalette() {
+            return this.$store.getters.colorPalette;
+        },
     },
 
 

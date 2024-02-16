@@ -78,7 +78,7 @@
 
                     <v-data-table-server v-model="selected" :items="mails" :headers="headers" :loading="loading"
                         item-value="id" show-select show-expand v-model:expanded="expanded"
-                        loading-text="Loading... Please wait">
+                        loading-text="Loading... Please wait" density="compact">
 
                         <template v-slot:expanded-row="{ columns, item }">
                             <tr>

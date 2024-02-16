@@ -7,7 +7,7 @@ import './axios'
 // My packages
 
 
-import { createApp } from 'vue'
+import { createApp, reactive, watch } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -71,6 +71,13 @@ app.use(vuetify);
 
 app.mount('#app');
 
+// Watch for color palette changes
+const vuetifyTheme = reactive(vuetify.theme.current);
+watch(() => vuetifyTheme.value.dark, (isDark) => {
+    store.commit('setColorPalette', isDark);
+  }, { immediate: true });
+
+// Preventing page reload
 window.addEventListener('beforeunload', (event) => {
   event.preventDefault();
   event.returnValue = '';

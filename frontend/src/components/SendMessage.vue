@@ -61,7 +61,7 @@
 
 
                                                     <v-data-table-server :headers="tableHeaders" :items="availableUsers"
-                                                        :loading="loading" class="elevation-4 rounded-xl" hover>
+                                                        :loading="loading" class="elevation-4 rounded-xl" hover density="compact">
 
 
                                                         <template v-slot:no-data>
@@ -103,7 +103,7 @@
                                                     <v-data-table :headers="tableHeaders" :items="selectedUsers"
                                                         class="elevation-4 rounded-xl" item-value="username"
                                                         v-model:items-per-page="itemsPerPage" hover select-strategy="all"
-                                                        show-current-page>
+                                                        show-current-page density="compact">
 
 
 
