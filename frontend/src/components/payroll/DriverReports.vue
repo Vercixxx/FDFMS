@@ -29,7 +29,7 @@
 
     </v-container>
 
-    <v-container v-else>
+    <v-container v-else-if="reportType == 'Billing period'">
       <v-btn block size="large" variant="tonal" @click="generateReport()"
         append-icon="mdi-file-account">
         Generate report
