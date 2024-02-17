@@ -2,7 +2,7 @@ from django.http import JsonResponse
 
 
 # Serializers
-from .serializers import BrandSerializer, RestaurantSerializer, RestaurantInfoSerializer, RestaurantNameIdSerializer
+from .serializers import BrandSerializer, RestaurantSerializer, RestaurantInfoSerializer, RestaurantNameIdSerializer, RestaurantAndDriversSerializer
 
 # Rest
 from rest_framework.views import APIView
@@ -260,7 +260,7 @@ class UpdateBrand(APIView):
             errors = [
                 f'Given {field} is already taken. Please try another.'
                 for field in fields_to_check
-                if Brands.objects.filter(**{field: data.get(field, None)}).exists() >= 1
+                if Brands.objects.filter(**{field: data.get(field, None)}).exists() > 1
             ]
 
             if errors:
@@ -281,3 +281,35 @@ class UpdateBrand(APIView):
         except Brands.DoesNotExist:
             return JsonResponse({'error': 'Brand does not exist.'}, status=404)
 # Updating brand
+
+
+
+# Get Resurant and their drivers
+class GetRestaurantsAndDrivers(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, restaurant=None):
+        limit = self.request.query_params.get('limit', '').strip()
+        restaurant = self.request.query_params.get('restaurant', '').strip()
+        
+        if restaurant:
+            queryset = Restaurant.objects.filter(name=restaurant)
+        else:  
+            queryset = Restaurant.objects.all().order_by('id')
+        
+        paginator = LocalPaginator()
+        response_page = paginator.paginate_queryset(queryset, request)
+        
+        serialized_data = RestaurantAndDriversSerializer(response_page, many=True).data
+        
+        response_data = {
+            'posts_amount': paginator.page.paginator.count,
+            'total_pages': paginator.page.paginator.num_pages,
+            'current_page': paginator.page.number,
+            'results': serialized_data,
+            'next': paginator.get_next_link(),
+            'previous': paginator.get_previous_link(),
+            'total_results': queryset.count(),
+        }
+        
+        return JsonResponse(response_data, status=200)

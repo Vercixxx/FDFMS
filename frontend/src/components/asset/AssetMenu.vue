@@ -96,6 +96,11 @@ export default {
                             click: 'ShowCarsComponent',
                             icon: 'mdi-list-status',
                         },
+                        {
+                            name: 'Daily cars reports',
+                            click: 'DailyCarsReportsComponent',
+                            icon: 'mdi-list-box',
+                        },
                     ],
                 },
                 {

@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 # Rest
 from rest_framework.views import APIView
@@ -9,18 +9,26 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import DestroyAPIView
 
 # Models
-from .models import Driver, DailyWork
+from .models import Driver, DailyWork, WageTariff
 from fleet.models import Fleet
 from restaurant.models import Restaurant
 from users.models import GeneralUser, Addresses
 
 # Serializers
-from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer
+from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer, WageTariffGetIdSerializer, NewBillingPeriodSerializer
 from users.serializers import ResidenceAddressSerializer
 
 
 # DB
 from django.db.models import Q,F
+
+# Document
+import csv
+import uuid
+from django.core.files import File
+from wsgiref.util import FileWrapper
+from django.http import FileResponse
+import os
 
 
 class GetRestaurants(APIView):
@@ -100,17 +108,21 @@ class GetDrivers(APIView):
         serializer_class = RestaurantDriversSerliazer
         user_model = Driver
 
-        queryset = user_model.objects.all()
+        queryset = user_model.objects.all().order_by('date_joined')
         
-        # Get users from selected restaurant
-        restaurants = Restaurant.objects.filter(name=restaurant)
+        if restaurant:
+            # Get users from selected restaurant
+            restaurants = Restaurant.objects.filter(name=restaurant)
         
-        drivers = Driver.objects.none()
+            drivers = Driver.objects.none()
 
-        for restaurant in restaurants:
-            drivers |= restaurant.drivers.all().annotate(restaurant_name=F('restaurant__name')).order_by('date_joined')
+            for restaurant in restaurants:
+                drivers |= restaurant.drivers.all().annotate(restaurant_name=F('restaurant__name')).order_by('date_joined')
 
-        queryset = drivers
+            queryset = drivers
+            
+        else:
+            queryset = queryset.annotate(restaurant_name=F('restaurant__name'))
         
         
         # Filtering by status
@@ -176,3 +188,251 @@ class AddDailyReport(APIView):
             return JsonResponse({'message': 'ok'}, status=201)
         else:
             return JsonResponse(serializer.errors, status=400)
+        
+        
+class GenerateReport(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def create_csv(self, user_working):
+        
+        self.filename = f"temp_{uuid.uuid4()}.csv"
+        
+        with open(self.filename, 'w', newline='') as f:
+            writer = csv.writer(f)
+
+            writer.writerow(['Driver', 'Date', 'Orders amount', 'Start work', 'End work', 'Working time', 'Orders per hour'])
+
+
+            total_working_time = timedelta()
+            
+            total_orders = 0
+
+            for item in user_working:
+                writer.writerow([item.driver, item.date, item.orders, item.start_work, item.end_work, item.working_time, item.orders_per_hour])
+                
+
+                working_time = timedelta(hours=item.working_time.hour, minutes=item.working_time.minute, seconds=item.working_time.second)
+                total_working_time += working_time
+                
+                total_orders += item.orders
+
+            total_time = (datetime.min + total_working_time).time()
+
+            writer.writerow(['Total', '', total_orders, '', '', total_time, ''])
+
+        django_file = File(open(self.filename, 'r'))
+
+        return django_file
+    
+    def get(self, request, username):
+        start_date = self.request.query_params.get('start_date', '').strip()
+        end_date = self.request.query_params.get('end_date', '').strip()
+        monthly_day = self.request.query_params.get('monthly_day', '').strip()
+        monthly = self.request.query_params.get('monthly', '').strip()
+        
+        
+        user = Driver.objects.get(username=username)
+        
+        if monthly == 'true':
+            user_working = DailyWork.objects.filter(driver=user, date__range=[start_date, end_date])
+            
+        else:
+            user_working = DailyWork.objects.filter(driver=user, date__range=[start_date, end_date])
+
+        self.create_csv(user_working)
+        
+        try:
+            wrapper = FileWrapper(open(self.filename, 'rb'))
+            response = FileResponse(wrapper, content_type='text/csv')
+            response['Content-Disposition'] = f'attachment; filename={self.filename}'
+            return response
+        finally:
+            os.remove(self.filename)
+
+
+
+
+class CreateWageTariff(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data
+        
+        serializer = WageTariffSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'ok'}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+        
+class EditWageTariff(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, id):
+        tariff = WageTariff.objects.get(id=id)
+        data = request.data
+        
+        serializer = WageTariffSerializer(instance=tariff, data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'ok'}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+        
+        
+class GetWageTariffs(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        tariffs = WageTariff.objects.all()
+        serializer = WageTariffSerializer(tariffs, many=True)
+        return JsonResponse(serializer.data, status=200, safe=False)
+    
+    
+class GetWageTariffId(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, name):
+        tariff = WageTariff.objects.get(name=name)
+        serializer = WageTariffGetIdSerializer(tariff)
+        return JsonResponse(serializer.data, status=200, safe=False)    
+    
+
+class DeleteWageTariff(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = WageTariff.objects.all()
+    serializer_class = WageTariffSerializer
+    lookup_field = 'id'
+
+
+class AssignWageTariff(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, username):
+        driver = Driver.objects.get(username=username)
+        tariff = WageTariff.objects.get(id=request.data['wage_tariff'])
+        driver.wage_tariff = tariff
+        driver.save()
+        
+        return JsonResponse({'message': 'ok'}, status=201)
+    
+    
+
+class GetNewBillingPeriodStartingDay(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, name):
+        tariff = WageTariff.objects.get(name=name)
+        serializer = NewBillingPeriodSerializer(tariff)
+        return JsonResponse(serializer.data, status=200, safe=False) 
+
+    
+    
+    
+class GetDailyDriversReport(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = UsersPagination
+    
+    def create_csv(self, user_working):
+        
+        self.filename = f"temp_{uuid.uuid4()}.csv"
+        
+        with open(self.filename, 'w', newline='') as f:
+            writer = csv.writer(f)
+
+            writer.writerow(['Driver', 'Date', 'Orders amount', 'Start work', 'End work', 'Working time', 'Orders per hour'])
+
+
+            total_working_time = timedelta()
+            
+            total_orders = 0
+
+            for item in user_working:
+
+                writer.writerow([item['driver'], item['date'], item['orders'], item['start_work'], item['end_work'], item['working_time'], item['orders_per_hour']])
+                
+                working_time_str = item['working_time']
+                working_time_obj = datetime.strptime(working_time_str, "%H:%M:%S")
+
+                working_time = timedelta(hours=working_time_obj.hour, minutes=working_time_obj.minute, seconds=working_time_obj.second)
+
+                total_working_time += working_time
+                
+                total_orders += item['orders']
+
+            total_time = (datetime.min + total_working_time).time()
+
+            writer.writerow(['Total', '', total_orders, '', '', total_time, ''])
+
+        django_file = File(open(self.filename, 'r'))
+
+        return django_file
+    
+    def get(self, request):
+        limit = self.request.query_params.get('limit', '').strip()
+        query = self.request.query_params.get('search', '').strip()
+        restaurant = self.request.query_params.get('restaurant', '').strip()
+        download = self.request.query_params.get('download', '').strip()
+        start_date = self.request.query_params.get('start_date', '').strip()
+        end_date = self.request.query_params.get('end_date', '').strip()
+
+        # print(DailyWork.objects.all().order_by('-date'))
+        if start_date and end_date:
+            queryset = DailyWork.objects.filter(date__range=[start_date, end_date]).order_by('-date')
+        elif start_date:
+            queryset = DailyWork.objects.filter(date__gte=start_date).order_by('-date')
+        elif end_date:
+            queryset = DailyWork.objects.filter(date__lte=end_date).order_by('-date')
+        else:
+            queryset = DailyWork.objects.all().order_by('-date')
+            
+        if restaurant:
+            restaurants = Restaurant.objects.filter(id__in=restaurant)
+            drivers = Driver.objects.none()
+
+            for restaurant in restaurants:
+                drivers |= restaurant.drivers.all().annotate(restaurant_name=F('restaurant__name')).order_by('date_joined')
+
+            queryset = queryset.filter(driver__in=drivers)
+            
+        
+        if query:
+            try:
+                query_date = datetime.strptime(query, "%Y-%m-%d").date()
+                queryset = queryset.filter(
+                    Q(driver__username__icontains=query) | Q(date=query_date))
+            except ValueError:
+                queryset = queryset.filter(driver__username__icontains=query)
+            
+            
+            
+        serializer = DailyDriverReportSerializer(queryset, many=True)
+
+        paginator = UsersPagination()
+        result_page = paginator.paginate_queryset(queryset, request)
+        
+        if download == 'true':
+            self.create_csv(serializer.data)
+            
+            try:
+                wrapper = FileWrapper(open(self.filename, 'rb'))
+                response = FileResponse(wrapper, content_type='text/csv')
+                response['Content-Disposition'] = f'attachment; filename={self.filename}'
+                return response
+            finally:
+                os.remove(self.filename)
+                
+        else:
+            response_data = {
+                'posts_amount': paginator.page.paginator.count,
+                'total_pages': paginator.page.paginator.num_pages,
+                'current_page': paginator.page.number,
+                'results': serializer.data,
+                'next': paginator.get_next_link(),
+                'previous': paginator.get_previous_link(),
+                'total_results': queryset.count(),
+            }
+
+            return JsonResponse(response_data, status=200)

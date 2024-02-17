@@ -33,4 +33,7 @@ urlpatterns = [
     # Get usernames
     path('api/users/get-usernames/', views.GetUsernames.as_view(), name="get-usernames"),
     
+    # Get user info CSV
+    path('api/users/get-info-csv/<str:username>/<str:user_role>/', views.GenerateUserInfoCSV.as_view(), name="get-user-info-csv"),
+    
 ]

@@ -63,7 +63,7 @@ class GetFleet(APIView):
     permission_classes = (IsAuthenticated,)
     
     def get(self, request):
-        rest_id = self.request.query_params.get('rest_id', '').strip()
+        rest_id = self.request.query_params.get('restaurant_id', '').strip()
 
         try:
             restaurant = Restaurant.objects.get(id=rest_id)

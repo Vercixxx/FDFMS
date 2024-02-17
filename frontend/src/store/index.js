@@ -1,3 +1,4 @@
+
 import { createStore } from 'vuex'
 
 export default createStore({
@@ -14,6 +15,32 @@ export default createStore({
       type: '',
     },
 
+    busData: {},
+
+
+    colorPalette: {},
+    colorPaletteLight: {
+      primary: '#52baba',
+      secondary: '#4E508B',
+      tertiary: '#7CB056',
+      accent: '#7CB056',
+      error: '#b71c1c',
+      success: '#4caf50',
+      warning: '#ffeb3b',
+      info: '#2196f3',
+    },
+    colorPaletteDark: {
+      primary: '#3B7878',
+      secondary: '#4E508B',
+      tertiary: '#7CB056',
+      accent: '#7CB056',
+      error: '#b71c1c',
+      success: '#4caf50',
+      warning: '#ffeb3b',
+      info: '#2196f3',
+    },
+    
+
   },
 
 
@@ -26,6 +53,10 @@ export default createStore({
     },
 
     alertData: state => state.alertData,
+
+    busData: state => state.busData,
+
+    colorPalette: (state) => state.colorPalette,
 
   },
 
@@ -53,6 +84,14 @@ export default createStore({
       state.alertData = data;
     },
 
+    setBusData(state, data) {
+      state.busData = data;
+    },
+
+    setColorPalette(state, isDark) {
+      state.colorPalette = isDark ? state.colorPaletteDark : state.colorPaletteLight;
+    },
+
   },
 
 
@@ -65,6 +104,12 @@ export default createStore({
     triggerAlert({ commit }, data) {
       commit('setAlertData', { show: true, ...data});
     },
+
+    setBusData({ commit }, data) {
+      commit('setBusData', data);
+    },
+
+
 
   },
 

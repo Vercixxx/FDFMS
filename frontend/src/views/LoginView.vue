@@ -1,7 +1,7 @@
 <template>
     <v-app>
         <div
-            style="background: linear-gradient(to bottom right, rgba(0, 225, 255, 1), rgb(47, 111, 172), rgb(211, 94, 114))">
+            :style="`background: linear-gradient(to bottom right, ${colorPalette['primary']}, ${colorPalette['secondary']}, ${colorPalette['accent']})`">
 
 
             <!-- Mobile -->
@@ -226,7 +226,7 @@
             </v-card>
         </v-dialog>
         <!-- Password recovery -->
-
+        {{ colorPalette }}
 
     </v-app>
 </template>
@@ -243,6 +243,7 @@ export default {
         passwordVisible: false,
         loading: false,
 
+        colorPalette: {},
 
         alert: false,
         errorContent: '',
@@ -270,6 +271,9 @@ export default {
         },
     },
 
+    mounted() {
+        this.colorPalette = this.$store.state.colorPalette;
+    },
 
 
     methods: {
@@ -320,6 +324,7 @@ export default {
 
             }
             catch (error) {
+                console.log(error)
                 if (error.message === "Network Error") {
                     this.errorContent = "Server Error. Please try again.";
                     this.alert = true;

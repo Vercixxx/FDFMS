@@ -69,7 +69,11 @@
                 class="elevation-4 rounded-xl" item-value="vin" v-model:items-per-page="itemsPerPage" hover
                 show-current-page>
 
-
+                <!-- Loading -->
+                <template v-slot:loading>
+                    <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                </template>
+                <!-- Loading -->
 
                 <!-- No data -->
                 <template v-slot:no-data>
@@ -218,7 +222,7 @@
 
 
             <v-card-text>
-                <v-data-table :headers="carDamagesHeaders" :items="carDamages" no-data-text="No damages reported">
+                <v-data-table :headers="carDamagesHeaders" :items="carDamages" no-data-text="No damages reported" density="compact">
                 </v-data-table>
             </v-card-text>
 

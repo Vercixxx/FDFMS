@@ -16,10 +16,11 @@ class CarVinLicensePlateSerializer(serializers.ModelSerializer):
         fields = ('vin', 'license_plate')
         
 class CarDailyReportsSerializer(serializers.ModelSerializer):
+    date = serializers.DateTimeField(format='%d-%m-%Y')
     
     class Meta:
         model = CarDailyReports
-        fields = '__all__'
+        fields = ['id', 'date', 'driver', 'car', 'car_mileage', 'car_condition', 'car_cleanliness', 'additional_remarks']
         
 
 class CarDamageSerializer(serializers.ModelSerializer):

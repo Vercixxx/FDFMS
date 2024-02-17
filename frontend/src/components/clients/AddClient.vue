@@ -143,100 +143,99 @@
 
 
                     <!-- Managers -->
+
+                    <v-row>
+                        <v-col cols="12" sm="12">
+                            <v-text-field variant="solo-filled" v-model="query" @keydown.enter="getManagers()"
+                                label="Search" class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions
+                                hint="Press enter to search" @keydown.enter.prevent />
+                        </v-col>
+                    </v-row>
+
                     <v-row>
                         <v-col cols="12" sm="6" align="center">
 
-                            <v-card class="border-xl rounded-xl" :color="theme ? 'grey-darken-3' : ''">
-                                <v-col cols="12" align="center">
 
-                                    <p class="text-h4 text-md-h5 text-lg-h5">Available managers</p>
+                            <p class="text-h4 text-md-h5 text-lg-h5">Available managers</p>
 
-                                    <!-- Search bar -->
-                                    <v-text-field variant="solo-filled" v-model="query" @keydown.enter="getManagers()"
-                                        label="Search" class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions
-                                        hint="Press enter to search" />
-                                    <!-- Search bar -->
+                            <!-- Available managers -->
+                            <v-data-table :headers="tableHeaders" :items="availableManagers" :loading="loading"
+                                v-model:items-per-page="itemsPerPage" hover  density="compact" class="border">
 
-                                    <!-- Available managers -->
-                                    <v-data-table :headers="tableHeaders" :items="availableManagers" :loading="loading"
-                                        class="elevation-4 rounded-xl" v-model:items-per-page="itemsPerPage" hover>
+                                <!-- Loading -->
+                                <template v-slot:loading>
+                                    <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                                </template>
+                                <!-- Loading -->
 
 
-                                        <!-- No data -->
-                                        <template v-slot:no-data>
-                                            <p class="text-h6 pa-5 text-danger">
-                                                <v-icon icon="mdi-database-alert-outline"></v-icon>
-                                                No available managers
-                                            </p>
-                                        </template>
-                                        <!-- No data -->
+                                <!-- No data -->
+                                <template v-slot:no-data>
+                                    <p class="text-h6 pa-5 text-danger">
+                                        <v-icon icon="mdi-database-alert-outline"></v-icon>
+                                        No available managers
+                                    </p>
+                                </template>
+                                <!-- No data -->
 
 
-                                        <template v-slot:item="{ item }">
-                                            <tr align="center" @click="selectUser(item)" role="button">
-                                                <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
-                                                    Click to select
-                                                </v-tooltip>
-                                                <td v-for="header in tableHeaders" :key="header.key">
-                                                    {{ item }}
-                                                </td>
-                                            </tr>
-                                        </template>
+                                <template v-slot:item="{ item }">
+                                    <tr align="center" @click="selectUser(item)" role="button">
+                                        <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                                            Click to select
+                                        </v-tooltip>
+                                        <td v-for="header in tableHeaders" :key="header.key">
+                                            {{ item }}
+                                        </td>
+                                    </tr>
+                                </template>
 
 
-                                    </v-data-table>
-                                    <!-- Available managers -->
-                                </v-col>
-                            </v-card>
+                            </v-data-table>
+                            <!-- Available managers -->
+
 
                         </v-col>
 
                         <v-col cols="12" sm="6" align="center">
 
-                            <v-card class="border-xl rounded-xl" :color="theme ? 'grey-darken-3' : ''">
-                                <v-col cols="12" align="center">
-
-                                    <p align="center" class="text-h4 text-md-h5 text-lg-h5">Selected managers</p>
-
-                                    <!-- Search bar -->
-                                    <v-text-field variant="solo-filled" v-model="searchQuerySelected"
-                                        @keydown.enter="searchTableSelected = searchQuerySelected" label="Search"
-                                        class="px-1 " prepend-inner-icon="mdi-magnify" hide-actions
-                                        hint="Press enter to search" />
-                                    <!-- Search bar -->
+                            <p align="center" class="text-h4 text-md-h5 text-lg-h5">Selected managers</p>
 
 
-                                    <!-- Selected managers -->
-                                    <v-data-table :headers="tableHeaders" :items="selectedManagers"
-                                        :search="searchTableSelected" class="elevation-4 rounded-xl"
-                                        v-model:items-per-page="itemsPerPage" hover select-strategy="all" show-current-page>
+                            <!-- Selected managers -->
+                            <v-data-table :headers="tableHeaders" :items="selectedManagers" :search="query"
+                                v-model:items-per-page="itemsPerPage" hover select-strategy="all" show-current-page  density="compact" class="border">
+
+                                <!-- Loading -->
+                                <template v-slot:loading>
+                                    <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                                </template>
+                                <!-- Loading -->
+
+                                <!-- No data -->
+                                <template v-slot:no-data>
+                                    <p class="text-h6 pa-5 text-danger">
+                                        <v-icon icon="mdi-database-alert-outline"></v-icon>
+                                        No selected managers
+                                    </p>
+                                </template>
+                                <!-- No data -->
+
+                                <template v-slot:item="{ item }">
+                                    <tr align="center" @click="unselectUser(item)" role="button">
+                                        <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
+                                            Click to unselect
+                                        </v-tooltip>
+                                        <td v-for="header in tableHeaders" :key="header.key">
+                                            {{ item }}
+                                        </td>
+                                    </tr>
+                                </template>
+
+                            </v-data-table>
+                            <!-- Selected managers -->
 
 
-
-                                        <!-- No data -->
-                                        <template v-slot:no-data>
-                                            <p class="text-h6 pa-5 text-danger">
-                                                <v-icon icon="mdi-database-alert-outline"></v-icon>
-                                                No selected managers
-                                            </p>
-                                        </template>
-                                        <!-- No data -->
-
-                                        <template v-slot:item="{ item }">
-                                            <tr align="center" @click="unselectUser(item)" role="button">
-                                                <v-tooltip v-if="!form" activator="parent" location="top" no-overflow>
-                                                    Click to unselect
-                                                </v-tooltip>
-                                                <td v-for="header in tableHeaders" :key="header.key">
-                                                    {{ item }}
-                                                </td>
-                                            </tr>
-                                        </template>
-
-                                    </v-data-table>
-                                    <!-- Selected managers -->
-                                </v-col>
-                            </v-card>
 
                         </v-col>
                     </v-row>
@@ -257,17 +256,23 @@
                     <v-row>
                         <v-col cols="12" sm="12">
                             <v-text-field variant="solo-filled" v-model="driversQuery" label="Search in users"
-                                hint="Click enter to serach" clearable hide-actions
-                                @keydown.enter="getDrivers()"></v-text-field>
+                                hint="Click enter to serach" clearable hide-actions @keydown.enter="getDrivers()"
+                                @keydown.enter.prevent></v-text-field>
                         </v-col>
                     </v-row>
 
                     <v-row>
                         <!-- Available -->
-                        <v-col cols="12" sm="5" class="border border-3">
+                        <v-col cols="12" sm="6">
                             <h5 justify="center" align="center">Available drivers</h5>
                             <v-data-table :headers="tableHeaders" :items="avaiableDrivers" density="compact"
-                                :loading="driversLoading" hover>
+                                :loading="driversLoading" hover class="border">
+
+                                <!-- Loading -->
+                                <template v-slot:loading>
+                                    <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                                </template>
+                                <!-- Loading -->
 
                                 <!-- No data -->
                                 <template v-slot:no-data>
@@ -295,13 +300,19 @@
                         </v-col>
                         <!-- Available -->
 
-                        <v-col cols="2"></v-col>
+
 
                         <!-- Selected -->
-                        <v-col cols="12" sm="5" class="border border-3">
+                        <v-col cols="12" sm="6">
                             <h5 justify="center" align="center">Selected drivers </h5>
                             <v-data-table :headers="tableHeaders" :items="selectedDrivers" density="compact"
-                                :search="driversQuery" hover>
+                                :search="driversQuery" hover  class="border">
+
+                                <!-- Loading -->
+                                <template v-slot:loading>
+                                    <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                                </template>
+                                <!-- Loading -->
 
                                 <!-- No data -->
                                 <template v-slot:no-data>
@@ -334,7 +345,6 @@
 
 
                     <v-row>
-
                         <v-col align="center">
 
                             <!-- Button submit -->
@@ -609,7 +619,6 @@ export default {
             try {
                 const response = await axios.get(`api/restaurant/get/${this.restId}/`);
                 this.editRest = response.data;
-                console.log(this.editRest);
 
 
                 for (const field of this.allInputs) {

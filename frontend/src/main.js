@@ -7,7 +7,7 @@ import './axios'
 // My packages
 
 
-import { createApp } from 'vue'
+import { createApp, reactive, watch } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -63,7 +63,25 @@ setInterval(refreshAccessToken, 58 * 60 * 1000);
 // Access token refreshing
 
 
-createApp(App).use(store).use(router).use(vuetify).mount('#app')
+const app = createApp(App);
+
+app.use(store);
+app.use(router);
+app.use(vuetify);
+
+app.mount('#app');
+
+// Watch for color palette changes
+const vuetifyTheme = reactive(vuetify.theme.current);
+watch(() => vuetifyTheme.value.dark, (isDark) => {
+    store.commit('setColorPalette', isDark);
+  }, { immediate: true });
+
+// Preventing page reload
+window.addEventListener('beforeunload', (event) => {
+  event.preventDefault();
+  event.returnValue = '';
+});
 
 
 

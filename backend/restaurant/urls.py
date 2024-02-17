@@ -22,6 +22,8 @@ urlpatterns = [
     # Get restaurant name, id
     path('api/restaurant/get/name-id/', views.GetRestaurantsNameId.as_view(), name='get-restaurant-name-id'),
     
+    # Get Restaurant and their drivers
+    path('api/restaurant/get/drivers/<str:restaurant>/', views.GetRestaurantsAndDrivers.as_view(), name='get-restaurant-drivers'),
     
     
     # Brands Brands Brands
@@ -40,6 +42,8 @@ urlpatterns = [
     
     # Updating Brand
     path('api/brands/update/<int:brandID>/', views.UpdateBrand.as_view(), name='update-brand')
+    
+    
 ]
 
     

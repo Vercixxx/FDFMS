@@ -107,6 +107,12 @@
       </template>
       <!-- No data -->
 
+      <!-- Loading -->
+      <template v-slot:loading>
+        <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+      </template>
+      <!-- Loading -->
+
 
 
       <!-- Accessing table cells -->
@@ -288,6 +294,26 @@
     <v-dialog v-model="UserDetailsDialog" width="auto">
       <v-card>
         <v-card-text>
+
+          <v-row>
+            <v-col cols="3">
+            </v-col>
+            <v-col cols="6" sm="6">
+              <div class="text-h5 text-center">
+                User details
+              </div>
+            </v-col>
+            <!-- Download -->
+            <v-col cols="3" align="end">
+              <span>
+                <v-btn icon="mdi-download" variant="pain" @click="downloadUserInfo(userDetailData['Username'], userDetailData['User Role'])">
+                </v-btn>
+                <v-tooltip activator="parent" location="top">Download user info</v-tooltip>
+              </span>
+            </v-col>
+            <!-- Download -->
+          </v-row>
+
           <v-table>
             <thead>
               <tr>
@@ -442,6 +468,7 @@ export default {
       ],
       DriverHeaders: [
         { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
+        { title: 'Tariff', align: 'center', key: 'wage_tariff', sortable: false },
         { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
         { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
         { title: 'JOINED', align: 'center', key: 'date_joined' },
@@ -576,6 +603,7 @@ export default {
         }
 
         this.users = response.data.results;
+
 
         // Add number for each row
         this.users.forEach((user, index) => {
@@ -743,6 +771,24 @@ export default {
 
     },
 
+
+    // Download user info
+    async downloadUserInfo(username, role) {
+      try {
+        const response = await axios.get(`api/users/get-info-csv/${username}/${role}/`);
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${username}_info.csv`);
+        document.body.appendChild(link);
+        link.click();
+      }
+      catch (error) {
+        this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
+      }
+    },
+    // Download user info
+    
 
   },
 

@@ -37,7 +37,7 @@
         <v-list density="compact" nav>
 
             <v-list-item v-for="option in button.options" :key="option.name" :prepend-icon="option.icon"
-                :title="option.name" @click="handleButtonClick(option)">
+                :title="option.name" @click="handleButtonClick(option.click)">
             </v-list-item>
 
         </v-list>
@@ -52,19 +52,48 @@ export default {
         return {
             buttons: [
                 {
-                    name: 'Test',
-                    mainIcon: 'mdi-presentation',
-                    disabled: true,
+                    name: 'Users',
+                    mainIcon: 'mdi-account-group',
+                    disabled: false,
                     options: [
                         {
-                            name: 'Drivers statistics',
-                            click: 'AddUserComponent',
-                            icon: 'mdi-database-edit',
+                            name: 'Drivers working hours',
+                            click: 'DriversWorkingHoursComponent',
+                            icon: 'mdi-calendar-clock',
                         },
                         {
-                            name: 'Managers statistics',
-                            click: 'ModifyUserComponent',
-                            icon: ' mdi-database-edit',
+                            name: 'Drivers daily reports',
+                            click: 'DriverDailyReportsComponent',
+                            icon: ' mdi-list-box',
+                        },
+                        {
+                            name: 'Drivers statistics',
+                            click: '',
+                            icon: 'mdi-chart-line',
+                        },
+                    ],
+                },
+                {
+                    name: 'Restaurants',
+                    mainIcon: 'mdi-food-fork-drink',
+                    disabled: false,
+                    options: [
+                        {
+                            name: 'Settle restaurants',
+                            click: 'SettleRestaurantsComponent',
+                            icon: 'mdi-cash-multiple',
+                        },
+                    ],
+                },
+                {
+                    name: 'Finance',
+                    mainIcon: 'mdi-cash-multiple',
+                    disabled: false,
+                    options: [
+                        {
+                            name: 'Manage wages tariffs',
+                            click: 'ManageWagesTariffsComponent',
+                            icon: 'mdi-cash-edit',
                         },
                     ],
                 },

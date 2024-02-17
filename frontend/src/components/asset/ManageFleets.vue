@@ -4,11 +4,9 @@
 
         <h4>Select restaurant</h4>
 
-        <v-autocomplete variant="solo-filled" v-model="selectedRestaurant" :items="restaurants.map(item => item.name)"
-            label="Select Restaurant" item-text="name" item-value="id" @update:model-value="getFleet()">
+        <v-autocomplete variant="solo-filled" v-model="selectedRestaurant" :items="restaurants"
+            label="Select Restaurant" item-title="name" item-value="id" @update:model-value="getFleet()">
         </v-autocomplete>
-
-
 
         <span v-if="selectedRestaurant !== null">
 
@@ -23,10 +21,11 @@
                 </v-col>
             </v-row>
 
+
             <v-row>
 
                 <!-- Available -->
-                <v-col cols="12" sm="5" class="border border-3">
+                <v-col cols="12" sm="5">
                     <h5 justify="center" align="center">Available cars</h5>
                     <v-data-table :headers="headers" :items="availableCars" density="compact" :loading="loading" hover>
 
@@ -58,8 +57,29 @@
                 <v-col cols="2"></v-col>
 
                 <!-- Selected -->
-                <v-col cols="12" sm="5" class="border border-3">
-                    <h5 justify="center" align="center">Selected cars </h5>
+                <v-col cols="12" sm="5">
+
+                    <v-row>
+                        <v-col align="center" class="text-h4 mb-5">
+                            Selected cars ({{ selectedCars.length }})
+                        </v-col>
+                        <v-col cols="auto">
+                            <!-- Delete fleet -->
+                            <span>
+                                <v-tooltip activator="parent" location="top" no-overflow>
+                                    Delete fleet
+                                </v-tooltip>
+                                <span>
+                                    <v-btn v-if="editing" variant="text" type="submit" icon="mdi-delete"
+                                        @click="confirmDeleteFleet()" id="deleteButton">
+                                    </v-btn>
+                                </span>
+                            </span>
+                            <!-- Delete fleet -->
+                        </v-col>
+                    </v-row>
+
+
                     <v-data-table :headers="headers" :items="selectedCars" density="compact" :search="query" hover>
 
                         <!-- No data -->
@@ -83,32 +103,32 @@
                             </tr>
                         </template>
 
+                        <template v-slot:bottom>
+                        </template>
+
                     </v-data-table>
                 </v-col>
                 <!-- Selected -->
 
-                <v-row align="center" justify="center" class="my-2">
-                    <v-col cols="12" sm="6" v-if="editing">
-                        <v-btn color="danger" size="large" type="submit" class="mt-10 mb-5 font-weight-black" block @click="confirmDeleteFleet()">
-                            Delete {{ selectedRestaurant }} fleet
-                        </v-btn>
-                    </v-col>
-                    <v-col cols="12" sm="6">
-
+                <v-row>
+                    <v-col align="center" justify="center">
                         <span>
                             <v-tooltip v-if="selectedCars.length == 0" activator="parent" location="top" no-overflow>
                                 Fleet must contain at least one car
                             </v-tooltip>
                             <span>
-                                <v-btn :disabled="selectedCars.length == 0" :loading="loading"
+                                <v-btn variant="outlined" :disabled="selectedCars.length == 0" :loading="loading"
                                     :color="selectedCars.length == 0 ? 'danger' : 'success'" size="large" type="submit"
-                                    class="mt-10 mb-5 font-weight-black" block :text="editing ? 'Save' : 'Add'"
+                                    class="mt-10 mb-5 font-weight-black" :text="editing ? 'Save' : 'Add'"
                                     @click="addOrEditFleet()">
                                 </v-btn>
                             </span>
                         </span>
                     </v-col>
                 </v-row>
+
+
+
             </v-row>
 
         </span>
@@ -260,15 +280,13 @@ export default {
         // Fetch fleet
         async getFleet() {
 
-
             this.editing = false;
-            const rest_id = this.restaurants.find(restaurant => restaurant.name === this.selectedRestaurant).id;
             this.selectedCars = [];
 
             try {
                 const response = await axios.get('api/fleet/get/', {
                     params: {
-                        rest_id: rest_id,
+                        restaurant_id: this.selectedRestaurant,
                     }
                 });
 
@@ -385,3 +403,10 @@ export default {
     },
 };
 </script>
+
+
+<style>
+#deleteButton:hover {
+    color: red;
+}
+</style>

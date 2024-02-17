@@ -2,7 +2,7 @@
     <v-app>
         <v-layout class="rounded rounded-md">
 
-            <v-app-bar app :elevation="3" class="bg-teal-darken-2">
+            <v-app-bar app :elevation="3" :style="{ backgroundColor: colorPalette['primary'], color: '#333333' }" >
 
 
                 <v-row align="center" no-gutters>
@@ -25,7 +25,7 @@
 
                             <v-col>
                                 <!-- Visible on larger devices -->
-                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown" class="mt-3 text-body-1">
+                                <v-breadcrumbs :items="path" v-if="!$vuetify.display.smAndDown" class="mt-3 text-body-3">
                                     <template v-slot:divider>
                                         <v-icon icon="mdi-chevron-right"></v-icon>
                                     </template>
@@ -82,12 +82,11 @@
                             <v-tooltip text="Help" location="bottom">
                                 <template v-slot:activator="{ props }">
                                     <v-btn :ripple="false" variant="plain" v-bind="props" icon="mdi-help"
-                                        color="blue-darken-4" @click="showHelp">
+                                        :color="colorPalette['secondary']" @click="showHelp">
 
                                     </v-btn>
                                 </template>
                             </v-tooltip>
-
 
                             <v-tooltip :text="isDarkModeEnabled ? 'Enable light mode' : 'Enable dark mode'"
                                 location="bottom">
@@ -186,8 +185,11 @@
                         <v-icon :icon="social.icon" />
                     </a>
                 </span>
-
-                {{ new Date().getFullYear() }} — Krzysztof Służałek
+                
+                {{ new Date().getFullYear() }} — Food Delivery Fleet Management System
+                <div class="font-weight-thin">
+                    SITE IN DEV VERSION! Designed by Krzysztof Służałek
+                </div>
 
             </div>
         </footer>
@@ -285,6 +287,8 @@ import ManageBrands from '../components/clients/ManageBrands.vue';
 // Asset
 import AddCar from '../components/asset/AddCar.vue';
 import ManageCars from '../components/asset/ManageCars.vue';
+import ManageFleets from '../components/asset/ManageFleets.vue';
+import DailyCarsReports from '../components/asset/DailyCarsReports.vue';
 // Asset
 
 
@@ -300,6 +304,15 @@ import ManagerManageCars from '../components/manager/ManageCars.vue';
 import DailyReport from '..//components/driver/DailyReport.vue';
 import AddCarDamage from '../components/driver/AddCarDamage.vue';
 // Drivers
+
+
+// Payroll
+import DriversWorkingHours from '../components/payroll/DriversWorkingHours.vue';
+import DriverReports from '../components/payroll/DriverReports.vue';
+import ManageWagesTariffs from '../components/payroll/ManageWagesTariffs.vue';
+import DriverDailyReports from '../components/payroll/DriverDailyReports.vue';
+import SettleRestaurants from '../components/payroll/SettleRestaurants.vue';
+// Payroll
 
 
 
@@ -319,13 +332,12 @@ export default {
             group: null,
             darkModeEnabled: true,
 
+            colorPallete: {},
+
             alert: false,
             snackContent: { type: 'success' },
 
             forceReload: 0,
-
-            isSmallScreen: false,
-
 
             socials: [
                 {
@@ -354,7 +366,9 @@ export default {
         reversedPath() {
             return this.path.slice().reverse();
         },
-
+        colorPalette() {
+            return this.$store.getters.colorPalette;
+        },
     },
 
 
@@ -386,7 +400,6 @@ export default {
         group() {
             this.drawer = false
         },
-
     },
 
 
@@ -554,6 +567,7 @@ export default {
             ];
             this.currentComponent = DriverUser;
         },
+        // HR
 
 
         // Clients
@@ -680,7 +694,156 @@ export default {
             ];
             this.currentComponent = ManageCars;
         },
+        ManageFleetsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Fleets",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Manage Fleets',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = ManageFleets;
+        },
+        DailyCarsReportsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Cars",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Daily Cars Reports',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DailyCarsReports;
+        },
         // Assets
+
+
+        // Payroll
+        DriversWorkingHoursComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Drivers",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Drivers Working Hours',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriversWorkingHours;
+        },
+        DriverReportsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Drivers",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Drivers Working Hours',
+                    component: 'DriversWorkingHoursComponent',
+                    disabled: false,
+                },
+                {
+                    title: 'Driver Reports',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriverReports;
+        },
+        ManageWagesTariffsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Finance",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Manage Wages Tariffs',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = ManageWagesTariffs;
+        },
+        DriverDailyReportsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Drivers",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Driver Daily Reports',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriverDailyReports;
+        },
+        SettleRestaurantsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Restaurants",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Settle Restaurants',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = SettleRestaurants;
+        },
+        // Payroll
 
 
         // Managers
