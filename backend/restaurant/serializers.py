@@ -3,6 +3,8 @@ from rest_framework import serializers
 from .models import Restaurant, Brands
 from rest_manager.models import RestManager
 
+from driver.serializers import BasicDriverDataSerializer
+
 
 class GetAllRestaurants(serializers.ModelSerializer):
 
@@ -52,6 +54,7 @@ class RestaurantNameIdSerializer(serializers.ModelSerializer):
         
 class RestaurantAndDriversSerializer(serializers.ModelSerializer):
     brand_name = serializers.SerializerMethodField()
+    drivers = BasicDriverDataSerializer(many=True, read_only=True)
     
     class Meta:
         model = Restaurant

@@ -2,7 +2,7 @@
     <v-app>
         <v-layout class="rounded rounded-md">
 
-            <v-app-bar app :elevation="3" :style="{ backgroundColor: colorPalette['primary'], color: '#333333' }" >
+            <v-app-bar app :elevation="3" :style="{ backgroundColor: colorPalette['primary'], color: '#FFFFFF' }" >
 
 
                 <v-row align="center" no-gutters>
@@ -148,7 +148,7 @@
 
             <!-- Menu -->
             <v-navigation-drawer v-model="drawer" location="left" expand-on-hover rail
-                :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }">
+                :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }" >
 
                 <v-list density="compact" nav class="pa-3">
 

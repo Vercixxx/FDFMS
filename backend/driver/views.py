@@ -436,3 +436,13 @@ class GetDailyDriversReport(APIView):
             }
 
             return JsonResponse(response_data, status=200)
+        
+        
+        
+class GetMonthlySettlementForDrivers(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        drivers = request.data.get('drivers', [])
+        
+        

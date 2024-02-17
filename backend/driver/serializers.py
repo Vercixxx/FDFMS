@@ -8,6 +8,11 @@ from users.models import GeneralUser
 from users.serializers import GetAddressesSerializer
 
 
+class BasicDriverDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Driver
+        fields = ['username', 'first_name', 'last_name']
+
 class GetDriver(serializers.ModelSerializer):
     wage_tariff = serializers.StringRelatedField()
     class Meta:
