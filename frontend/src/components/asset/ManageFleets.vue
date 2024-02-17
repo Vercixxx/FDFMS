@@ -4,8 +4,8 @@
 
         <h4>Select restaurant</h4>
 
-        <v-autocomplete variant="solo-filled" v-model="selectedRestaurant" :items="restaurants.map(item => item.name)"
-            label="Select Restaurant" item-text="name" item-value="id" @update:model-value="getFleet()">
+        <v-autocomplete variant="solo-filled" v-model="selectedRestaurant" :items="restaurants"
+            label="Select Restaurant" item-title="name" item-value="id" @update:model-value="getFleet()">
         </v-autocomplete>
 
         <span v-if="selectedRestaurant !== null">
@@ -280,15 +280,13 @@ export default {
         // Fetch fleet
         async getFleet() {
 
-
             this.editing = false;
-            const rest_id = this.restaurants.find(restaurant => restaurant.name === this.selectedRestaurant).id;
             this.selectedCars = [];
 
             try {
                 const response = await axios.get('api/fleet/get/', {
                     params: {
-                        rest_id: rest_id,
+                        restaurant_id: this.selectedRestaurant,
                     }
                 });
 

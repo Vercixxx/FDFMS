@@ -74,6 +74,18 @@ export default {
                     ],
                 },
                 {
+                    name: 'Restaurants',
+                    mainIcon: 'mdi-food-fork-drink',
+                    disabled: false,
+                    options: [
+                        {
+                            name: 'Settle restaurants',
+                            click: 'SettleRestaurantsComponent',
+                            icon: 'mdi-cash-multiple',
+                        },
+                    ],
+                },
+                {
                     name: 'Finance',
                     mainIcon: 'mdi-cash-multiple',
                     disabled: false,

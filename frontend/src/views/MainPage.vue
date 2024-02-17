@@ -311,6 +311,7 @@ import DriversWorkingHours from '../components/payroll/DriversWorkingHours.vue';
 import DriverReports from '../components/payroll/DriverReports.vue';
 import ManageWagesTariffs from '../components/payroll/ManageWagesTariffs.vue';
 import DriverDailyReports from '../components/payroll/DriverDailyReports.vue';
+import SettleRestaurants from '../components/payroll/SettleRestaurants.vue';
 // Payroll
 
 
@@ -821,6 +822,26 @@ export default {
                 },
             ];
             this.currentComponent = DriverDailyReports;
+        },
+        SettleRestaurantsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Restaurants",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Settle Restaurants',
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = SettleRestaurants;
         },
         // Payroll
 
