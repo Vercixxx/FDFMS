@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 // My pages
 import 'pages/login_page.dart';
+import 'pages/main_page.dart';
 
 void main() {
   runApp(const MyApp());

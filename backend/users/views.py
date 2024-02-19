@@ -226,6 +226,7 @@ class UserAuth(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
 
+
         # Check for is.active
         try:
             user = GeneralUser.objects.get(username=username)

@@ -23,7 +23,7 @@ class LoginInput extends StatelessWidget {
           enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(
               color: Colors.black,
-              width: 2,
+              width: 0,
             ),
           ),
           focusedBorder: const OutlineInputBorder(
@@ -34,9 +34,9 @@ class LoginInput extends StatelessWidget {
           ),
           labelText: labelText,
           labelStyle: TextStyle(
-            color: Colors.grey[500],
+            color: Colors.grey[200],
           ),
-          fillColor: Colors.grey[100],
+          fillColor: const Color.fromARGB(59, 255, 255, 255),
           filled: true,
         ),
       ),

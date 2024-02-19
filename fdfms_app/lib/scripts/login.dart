@@ -1,39 +1,49 @@
-// import 'package:http/http.dart' as http;
-// import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import '../pages/main_page.dart';
 
-// Future<String> login(String username, String password) async {
-//   final response = await http.post(
-//     Uri.parse('http://127.0.0.1:8000/log-in/'),
-//     headers: <String, String>{
-//       'Content-Type': 'application/json; charset=UTF-8',
-//     },
-//     body: jsonEncode(<String, String>{
-//       'username': username,
-//       'password': password,
-//     }),
-//   );
+Future<String> login_func(String username, String password) async {
+  final response = await http.post(
+    Uri.parse('http://10.0.2.2:8000/log-in/'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'username': username,
+      'password': password,
+    }),
+  );
 
-//   if (response.statusCode == 200) {
-//     final token = jsonDecode(response.body)['token'];
-//     TokenManager.saveTokens(token['access'], token['refresh']);
-//   } else {
-//     throw Exception('Failed to log in.');
-//   }
-// }
+  // Print the response body
+  print('Response status: ${response.statusCode}');
+  print('Response body: ${response.body}');
 
-// class TokenManager {
-//   static String? accessToken;
-//   static String? refreshToken;
+  if (response.statusCode == 200) {
+    final responseBody = jsonDecode(response.body);
+    final jwt = responseBody['jwt'];
 
-//   static void saveTokens(String accessToken, String refreshToken) {
-//     TokenManager.accessToken = accessToken;
-//     TokenManager.refreshToken = refreshToken;
-//   }
+    print('JWT: $jwt');
+    // TokenManager.saveTokens(jwt['access'], jwt['refresh']);
+    return jwt;
+  } else {
+    throw Exception('Error! Failed to login.');
+  }
+}
 
-//   static Map<String, String> getHeaders() {
-//     return {
-//       'Content-Type': 'application/json; charset=UTF-8',
-//       'Authorization': 'Bearer ${TokenManager.accessToken}',
-//     };
-//   }
-// }
+class TokenManager {
+  static String? accessToken;
+  static String? refreshToken;
+
+  static void saveTokens(String accessToken, String refreshToken) {
+    TokenManager.accessToken = accessToken;
+    TokenManager.refreshToken = refreshToken;
+  }
+
+  static Map<String, String> getHeaders() {
+    return {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ${TokenManager.accessToken}',
+    };
+  }
+}
