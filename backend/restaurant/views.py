@@ -1,8 +1,8 @@
 from django.http import JsonResponse
-
+from datetime import datetime
 
 # Serializers
-from .serializers import BrandSerializer, RestaurantSerializer, RestaurantInfoSerializer, RestaurantNameIdSerializer, RestaurantAndDriversSerializer, GetDriverShiftsSerializer
+from .serializers import BrandSerializer, RestaurantSerializer, RestaurantInfoSerializer, RestaurantNameIdSerializer, RestaurantAndDriversSerializer, GetDriverShiftsSerializer, SaveDriverShiftsSerializer, CreateDriverShiftSerializer
 
 
 # Rest
@@ -13,9 +13,12 @@ from rest_framework.generics import DestroyAPIView
 
 # Models
 from .models import Restaurant, Brands, DriverShift
+from driver.models import Driver
 
 # DB
 from django.db.models import Q
+
+
 
 
 # Pagination
@@ -321,3 +324,64 @@ class GetDriverShifts(APIView):
         serialized_data = GetDriverShiftsSerializer(queryset, many=True).data
 
         return JsonResponse(serialized_data, status=200, safe=False)
+    
+    
+# Shifts
+class CreateUpdateDriverShift(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data['shift']
+        
+        print('CREATE')
+        print(data)
+        
+        if(data['with'] == 'No driver'):
+            data['with'] = None
+        else:
+            data['with'] = Driver.objects.get(username=data['with'])
+            
+        data['time_start'] = datetime.strptime(data['time']['start'], '%Y-%m-%d %H:%M')
+        data['time_end'] = datetime.strptime(data['time']['end'], '%Y-%m-%d %H:%M')
+        data['driver'] = data['with']
+        del data['color']
+        del data['time']
+       
+        serializer = CreateDriverShiftSerializer(data=data)
+        
+        if serializer.is_valid():
+            shift = serializer.save()
+            return JsonResponse({'message': 'Succesfully created'}, status=200)
+        else:
+            print(serializer.errors)
+            return JsonResponse(serializer.errors, status=400)
+        
+    def put(self, request):
+        data = request.data['shift']
+        
+        if(data['with'] == 'No driver'):
+            data['with'] = None
+        else:
+            data['with'] = Driver.objects.get(username=data['with'])
+        
+        data['time_start'] = datetime.strptime(data['time']['start'], '%Y-%m-%d %H:%M')
+        data['time_end'] = datetime.strptime(data['time']['end'], '%Y-%m-%d %H:%M')
+        data['driver'] = data['with']
+        del data['color']
+        del data['time']
+        
+        shift = DriverShift.objects.get(id=data['id'])
+        
+        serializer = SaveDriverShiftsSerializer(shift, data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Succesfully updated'}, status=200)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+        
+class DeleteDriverShift(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = DriverShift.objects.all()
+    serializer_class = SaveDriverShiftsSerializer
+    lookup_field = 'id'

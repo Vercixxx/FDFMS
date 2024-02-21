@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.utils.dateparse import parse_datetime
+from datetime import datetime
 
 from .models import Restaurant, Brands, DriverShift
 from rest_manager.models import RestManager
@@ -92,7 +93,21 @@ class GetDriverShiftsSerializer(serializers.ModelSerializer):
         del representation['time_start']
         del representation['time_end']
         
-        representation['color'] = instance.driver.user_color
+        if instance.driver is not None:
+            representation['color'] = instance.driver.user_color
+        else:
+            representation['color'] = 'red'
 
         return representation
+    
+class SaveDriverShiftsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DriverShift
+        fields = ['id', 'driver', 'time_start', 'time_end']
+        
+class CreateDriverShiftSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DriverShift
+        fields = ['driver', 'time_start', 'time_end', 'restaurant']
+        
     

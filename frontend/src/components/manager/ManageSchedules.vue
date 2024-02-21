@@ -4,11 +4,10 @@
         <v-autocomplete v-model="selectedRestaurant" :items="restaurants" variant="solo-filled" item-title="name"
             item-value="id" label="Select Restaurant" @update:model-value="getShifts()"></v-autocomplete>
 
-        {{ shifts }}
-
+        {{ editingShift }}
 
         <Qalendar v-if="selectedRestaurant != null" :events="shifts" :config="config" @delete-event="deleteEvent"
-            @datetime-was-clicked="handleDatetimeClicked" :key="calendarKey">
+            @datetime-was-clicked="handleDatetimeClicked" :key="calendarKey" @event-was-clicked="objectSelected">
 
             <!-- Dialog when clicked on scheduled -->
             <template #eventDialog="props">
@@ -17,10 +16,9 @@
                     <v-card-title>
                         <v-row>
                             <v-col cols="10">
-                                <v-autocomplete v-model="props.eventDialogData.with"
-                                    :items="restaurants.find(restaurant => restaurant.id === selectedRestaurant)?.drivers"
-                                    variant="solo-filled" label="Driver" item-title="username" item-value="username"
-                                    @update:model-value="updateSchedule()">
+                                <v-autocomplete v-model="props.eventDialogData.with" :items="drivers" variant="underlined"
+                                    label="Driver" item-title="username" item-value="username"
+                                    @update:model-value="updateSchedule(props.eventDialogData)">
 
                                     <template v-slot:item="{ props, item }">
                                         <v-list-item v-bind="props" :title="item.raw.username"
@@ -38,24 +36,20 @@
                     <v-card-text>
                         <v-row>
                             <v-col>
-                                <v-text-field v-model="props.eventDialogData.time.start" label="Start"
-                                    variant="underlined" />
+                                <v-text-field v-model="editingShiftStart" label="Start" variant="underlined"
+                                    @keydown.enter="updateSchedule(props.eventDialogData)" hint="Press enter to save"
+                                    persistent-hint />
                             </v-col>
                             <v-col>
-                                <v-text-field v-model="props.eventDialogData.time.end" label="End" variant="underlined" />
+                                <v-text-field v-model="editingShiftEnd" label="End" variant="underlined"
+                                    @keydown.enter="updateSchedule(props.eventDialogData)" hint="Press enter to save"
+                                    persistent-hint />
                             </v-col>
                         </v-row>
                     </v-card-text>
 
                     <v-card-actions>
-                        <v-row>
-                            <v-col cols="6">
-                                <v-btn block @click="props.closeEventDialog" color="danger">Delete</v-btn>
-                            </v-col>
-                            <v-col cols="6">
-                                <v-btn block @click="props.saveEvent" color="primary">Save</v-btn>
-                            </v-col>
-                        </v-row>
+                        <v-btn block @click="props.closeEventDialog" color="danger">Delete</v-btn>
                     </v-card-actions>
 
                 </v-card>
@@ -89,7 +83,8 @@ export default {
             drivers: [
                 {
                     username: 'No driver',
-                    first_name: 'This option is for unassigned shifts',
+                    first_name: '',
+                    last_name: 'This option is for unassigned shifts',
                 }
             ],
             selectedRestaurant: null,
@@ -97,7 +92,12 @@ export default {
 
             calendarKey: 0,
             shifts: [],
-            tempId: 9999999999,
+
+            editingShift: null,
+            editingShiftStart: null,
+            editingShiftEnd: null,
+
+            tempId: 'new999999',
             newShift: {
                 id: null,
                 with: null,
@@ -108,32 +108,6 @@ export default {
                 color: 'yellow',
                 isEditable: true,
             },
-            events: [
-                {
-                    title: "Advanced algebra",
-                    with: "Thomas ",
-                    time: { start: "2024-02-16 12:05", end: "2024-02-16 13:35" },
-                    color: "purple",
-                    isEditable: true,
-                    id: "1",
-                },
-                {
-                    title: "Advanced algebr23a",
-                    with: "Andrew",
-                    time: { start: "2024-02-16 12:05", end: "2024-02-16 13:35" },
-                    color: "red",
-                    isEditable: true,
-                    id: "2",
-                },
-                {
-                    with: "Nikola",
-                    time: { start: "2024-02-16 12:05", end: "2024-02-16 13:35" },
-                    color: "green",
-                    isEditable: true,
-                    id: "3",
-                },
-
-            ],
 
             config: {
                 defaultMode: 'day',
@@ -143,9 +117,6 @@ export default {
                     isCustom: true,
                 },
             },
-
-
-
 
         };
     },
@@ -182,6 +153,16 @@ export default {
                     }
                 });
                 this.shifts = response.data;
+
+                this.shifts.forEach(shift => {
+                    if (shift.with === null) {
+                        shift.with = 'No driver';
+                        shift.color = 'red';
+                    }
+                });
+
+                let newDrivers = this.restaurants.find(restaurant => restaurant.id === this.selectedRestaurant).drivers;
+                this.drivers = [...new Set([...this.drivers, ...newDrivers])];
             } catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
@@ -192,6 +173,12 @@ export default {
             console.log(event);
         },
 
+        objectSelected(event) {
+            this.editingShift = event.clickedEvent;
+            this.editingShiftStart = event.clickedEvent.time.start.slice(-5);
+            this.editingShiftEnd = event.clickedEvent.time.end.slice(-5);
+        },
+
         handleDatetimeClicked(datetime) {
             let end = new Date(datetime);
             end.setHours(end.getHours() + 2);
@@ -199,7 +186,7 @@ export default {
 
             this.newShift = {
                 id: this.tempId,
-                with: 'Driver not set',
+                with: this.drivers[0].username,
                 time: {
                     start: datetime,
                     end: end,
@@ -210,11 +197,37 @@ export default {
 
             this.shifts.push(this.newShift);
             this.calendarKey += 1;
-            this.tempId -= 1;
+
+            let numberPart = this.tempId.slice(3);
+            numberPart = Number(numberPart) - 1;
+            this.tempId = 'new' + numberPart;
         },
 
-        updateSchedule() {
-            console.log(this.newShift);
+        async updateSchedule(props) {
+            try {
+                // Map start and end time to the shift
+                props.time.start = props.time.start.slice(0, -5) + this.editingShiftStart;
+                props.time.end = props.time.end.slice(0, -5) + this.editingShiftEnd;
+
+                if (typeof props.id === 'string') {
+                    props.restaurant = this.selectedRestaurant;
+
+                    const response = await axios.post('api/restaurant/driver-shifts/create-update/', {
+                        shift: props,
+                    });
+                    this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
+                } else {
+                    const response = await axios.put('api/restaurant/driver-shifts/create-update/', {
+                        shift: props,
+                    });
+                    this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
+                }
+
+                this.getShifts();
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+            }
+
         },
 
     },

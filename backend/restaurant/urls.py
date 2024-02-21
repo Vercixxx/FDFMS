@@ -43,8 +43,14 @@ urlpatterns = [
     # Updating Brand
     path('api/brands/update/<int:brandID>/', views.UpdateBrand.as_view(), name='update-brand'),
     
-    # Driver shifts
+    # Get Driver shifts
     path('api/restaurant/driver-shifts/', views.GetDriverShifts.as_view(), name='driver-shifts'),
+    
+    # Create od update driver shift
+    path('api/restaurant/driver-shifts/create-update/', views.CreateUpdateDriverShift.as_view(), name='create-update-driver-shift'),
+    
+    # Delete driver shift
+    path('api/restaurant/driver-shifts/delete/<int:id>/', views.DeleteDriverShift.as_view(), name='delete-driver-shift'),
     
     
 ]
