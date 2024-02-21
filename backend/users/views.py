@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate
 import secrets
 import string
 
+import random
+
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -303,6 +305,11 @@ class AddUser(APIView):
         if serializer.is_valid():
             account = serializer.save()
             account.set_password(generated_password)
+            
+            if user_role == 'Driver':
+                colors = [color[0] for color in Driver.color_choices]
+                account.user_color = random.choice(colors)
+                
             account.save()
 
         else:

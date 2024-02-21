@@ -19,7 +19,8 @@
                             <v-col cols="10">
                                 <v-autocomplete v-model="props.eventDialogData.with"
                                     :items="restaurants.find(restaurant => restaurant.id === selectedRestaurant)?.drivers"
-                                    variant="solo-filled" label="Driver" item-title="username" item-value="username" @update:model-value="updateSchedule()">
+                                    variant="solo-filled" label="Driver" item-title="username" item-value="username"
+                                    @update:model-value="updateSchedule()">
 
                                     <template v-slot:item="{ props, item }">
                                         <v-list-item v-bind="props" :title="item.raw.username"
@@ -47,7 +48,14 @@
                     </v-card-text>
 
                     <v-card-actions>
-                        <v-btn block @click="props.saveEvent" color="primary">Save</v-btn>
+                        <v-row>
+                            <v-col cols="6">
+                                <v-btn block @click="props.closeEventDialog" color="danger">Delete</v-btn>
+                            </v-col>
+                            <v-col cols="6">
+                                <v-btn block @click="props.saveEvent" color="primary">Save</v-btn>
+                            </v-col>
+                        </v-row>
                     </v-card-actions>
 
                 </v-card>
@@ -78,7 +86,12 @@ export default {
             overlay: false,
 
             restaurants: [],
-            drivers: [],
+            drivers: [
+                {
+                    username: 'No driver',
+                    first_name: 'This option is for unassigned shifts',
+                }
+            ],
             selectedRestaurant: null,
             selectedDate: null,
 
@@ -186,7 +199,7 @@ export default {
 
             this.newShift = {
                 id: this.tempId,
-                with: 'ASSIGN DRIVER',
+                with: 'Driver not set',
                 time: {
                     start: datetime,
                     end: end,

@@ -226,7 +226,6 @@
             </v-card>
         </v-dialog>
         <!-- Password recovery -->
-        {{ colorPalette }}
 
     </v-app>
 </template>

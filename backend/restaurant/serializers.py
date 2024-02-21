@@ -91,6 +91,8 @@ class GetDriverShiftsSerializer(serializers.ModelSerializer):
 
         del representation['time_start']
         del representation['time_end']
+        
+        representation['color'] = instance.driver.user_color
 
         return representation
     
