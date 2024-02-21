@@ -1,6 +1,7 @@
 from rest_framework import serializers
+from django.utils.dateparse import parse_datetime
 
-from .models import Restaurant, Brands
+from .models import Restaurant, Brands, DriverShift
 from rest_manager.models import RestManager
 
 from driver.serializers import BasicDriverDataSerializer
@@ -52,6 +53,13 @@ class RestaurantNameIdSerializer(serializers.ModelSerializer):
         model = Restaurant
         fields = ['id', 'name']
         
+class GetRestAndDriversSerializer(serializers.ModelSerializer):
+    drivers = BasicDriverDataSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Restaurant
+        fields = ['id', 'name', 'drivers']
+        
 class RestaurantAndDriversSerializer(serializers.ModelSerializer):
     brand_name = serializers.SerializerMethodField()
     drivers = BasicDriverDataSerializer(many=True, read_only=True)
@@ -62,3 +70,27 @@ class RestaurantAndDriversSerializer(serializers.ModelSerializer):
         
     def get_brand_name(self, obj):
         return obj.brand.name   
+    
+    
+class GetDriverShiftsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DriverShift
+        fields = ['id', 'driver', 'time_start', 'time_end']
+        
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        start_time = parse_datetime(representation['time_start'])
+        end_time = parse_datetime(representation['time_end'])
+        
+        representation['time'] = {
+            'start': start_time.strftime('%Y-%m-%d %H:%M'),
+            'end': end_time.strftime('%Y-%m-%d %H:%M'),
+        }
+
+        representation['with'] = representation.pop('driver')
+
+        del representation['time_start']
+        del representation['time_end']
+
+        return representation
+    

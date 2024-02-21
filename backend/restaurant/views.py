@@ -2,7 +2,7 @@ from django.http import JsonResponse
 
 
 # Serializers
-from .serializers import BrandSerializer, RestaurantSerializer, RestaurantInfoSerializer, RestaurantNameIdSerializer, RestaurantAndDriversSerializer
+from .serializers import BrandSerializer, RestaurantSerializer, RestaurantInfoSerializer, RestaurantNameIdSerializer, RestaurantAndDriversSerializer, GetDriverShiftsSerializer
 
 
 # Rest
@@ -12,7 +12,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import DestroyAPIView
 
 # Models
-from .models import Restaurant, Brands
+from .models import Restaurant, Brands, DriverShift
 
 # DB
 from django.db.models import Q
@@ -285,8 +285,8 @@ class UpdateBrand(APIView):
 
 
 
-# Get Resurant and their drivers
-class GetRestaurantsAndDrivers(APIView):
+# Get Resurant and their drivers with brands
+class GetRestaurantsAndDriversWithBrands(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, restaurant=None):
@@ -298,5 +298,26 @@ class GetRestaurantsAndDrivers(APIView):
             queryset = Restaurant.objects.all().order_by('id')
 
         serialized_data = RestaurantAndDriversSerializer(queryset, many=True).data
+
+        return JsonResponse(serialized_data, status=200, safe=False)
+
+
+class GetDriverShifts(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        restaurant = self.request.query_params.get('restaurant', '').strip()
+        date = self.request.query_params.get('date', '').strip()
+        
+        print(restaurant, date)
+        
+        if date:
+            queryset = DriverShift.objects.filter(date=date)
+        elif restaurant:
+            queryset = DriverShift.objects.filter(restaurant=restaurant)
+        else:  
+            queryset = DriverShift.objects.all().order_by('id')
+
+        serialized_data = GetDriverShiftsSerializer(queryset, many=True).data
 
         return JsonResponse(serialized_data, status=200, safe=False)
