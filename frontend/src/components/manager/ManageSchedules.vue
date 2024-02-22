@@ -4,59 +4,75 @@
         <v-autocomplete v-model="selectedRestaurant" :items="restaurants" variant="solo-filled" item-title="name"
             item-value="id" label="Select Restaurant" @update:model-value="getShifts()"></v-autocomplete>
 
-        {{ editingShift }}
+        <v-row v-if="selectedRestaurant != null">
+            <v-col>
+                <v-btn append-icon="mdi-plus" @click="addNewSchedule()" color="success" variant="elevated" class="mb-5">Add
+                    Shift</v-btn>
+            </v-col>
+        </v-row>
 
-        <Qalendar v-if="selectedRestaurant != null" :events="shifts" :config="config" @delete-event="deleteEvent"
-            @datetime-was-clicked="handleDatetimeClicked" :key="calendarKey" @event-was-clicked="objectSelected">
+        <!-- {{ shifts }} -->
+        {{ calendar }}
 
-            <!-- Dialog when clicked on scheduled -->
-            <template #eventDialog="props">
+        <Qalendar v-model="calendar" v-if="selectedRestaurant != null" :events="shifts" :config="config" @delete-event="deleteEvent"
+            :key="calendarKey" @event-was-clicked="objectSelected" @updated-period="periodUpdated">
+        </Qalendar>
 
-                <v-card v-if="props.eventDialogData">
-                    <v-card-title>
-                        <v-row>
-                            <v-col cols="10">
-                                <v-autocomplete v-model="props.eventDialogData.with" :items="drivers" variant="underlined"
-                                    label="Driver" item-title="username" item-value="username"
-                                    @update:model-value="updateSchedule(props.eventDialogData)">
 
-                                    <template v-slot:item="{ props, item }">
-                                        <v-list-item v-bind="props" :title="item.raw.username"
-                                            :subtitle="item.raw.last_name + ' ' + item.raw.first_name"></v-list-item>
-                                    </template>
+        <!-- Dialog add schedule -->
+        <v-dialog v-model="modifyShiftDialog" max-width="500px" persistent>
+            <v-card>
+                <v-card-title>
+                    <v-row>
+                        <v-col cols="10">
+                            <v-autocomplete v-model="singleSchedule.with" :items="drivers" variant="underlined"
+                                label="Driver" item-title="username" item-value="username">
 
-                                </v-autocomplete>
-                            </v-col>
-                            <v-col cols="2" align="end">
-                                <v-btn icon="mdi-close" @click="props.closeEventDialog" variant="plain" />
-                            </v-col>
-                        </v-row>
-                    </v-card-title>
+                                <template v-slot:item="{ props, item }">
+                                    <v-list-item v-bind="props" :title="item.raw.username"
+                                        :subtitle="item.raw.last_name + ' ' + item.raw.first_name"></v-list-item>
+                                </template>
 
-                    <v-card-text>
+                            </v-autocomplete>
+                        </v-col>
+                        <v-col cols="2" align="end">
+                            <v-btn icon="mdi-close" @click="closeDialog()" variant="plain" />
+                        </v-col>
+                    </v-row>
+                </v-card-title>
+
+                <v-card-text>
+                    <v-form v-model="form" @submit-prevent="updateSchedule(singleSchedule)">
                         <v-row>
                             <v-col>
                                 <v-text-field v-model="editingShiftStart" label="Start" variant="underlined"
-                                    @keydown.enter="updateSchedule(props.eventDialogData)" hint="Press enter to save"
-                                    persistent-hint />
+                                    hint="HH:MM 24h" persistent-hint :rules="rules"/>
                             </v-col>
                             <v-col>
-                                <v-text-field v-model="editingShiftEnd" label="End" variant="underlined"
-                                    @keydown.enter="updateSchedule(props.eventDialogData)" hint="Press enter to save"
-                                    persistent-hint />
+                                <v-text-field v-model="editingShiftEnd" label="End" variant="underlined" hint="HH:MM 24h"
+                                    persistent-hint :rules="rules"/>
                             </v-col>
                         </v-row>
-                    </v-card-text>
+                    </v-form>
+                </v-card-text>
 
-                    <v-card-actions>
-                        <v-btn block @click="props.closeEventDialog" color="danger">Delete</v-btn>
-                    </v-card-actions>
+                <v-card-actions class="mb-1">
+                    <v-row>
+                        <v-col cols="6">
+                            <v-btn block @click="deleteSchedule(singleSchedule)" color="error" text="Delete"
+                                :disabled="adding"></v-btn>
+                        </v-col>
+                        <v-col cols="6">
+                            <v-btn block @click="updateSchedule(singleSchedule)" color="success"
+                                :text="adding ? 'Add' : 'Save'" :disabled="!form"></v-btn>
+                        </v-col>
+                    </v-row>
+                </v-card-actions>
 
-                </v-card>
+            </v-card>
+        </v-dialog>
+        <!-- Dialog add schedule -->
 
-            </template>
-            <!-- Dialog when clicked on scheduled -->
-        </Qalendar>
     </div>
 </template>
 
@@ -77,7 +93,8 @@ export default {
     data() {
         return {
             loggedUserUsername: null,
-            overlay: false,
+            date: null,
+            calendar: null,
 
             restaurants: [],
             drivers: [
@@ -89,6 +106,7 @@ export default {
             ],
             selectedRestaurant: null,
             selectedDate: null,
+            isPeriodUpdated: false,
 
             calendarKey: 0,
             shifts: [],
@@ -97,22 +115,30 @@ export default {
             editingShiftStart: null,
             editingShiftEnd: null,
 
+            modifyShiftDialog: false,
+            form: false,
+            rules: [
+                v => !!v || 'Time is required',
+                v => /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(v) || 'Invalid time format. Use HH:MM 24h format',
+            ],
+            adding: false,
             tempId: 'new999999',
-            newShift: {
+            singleSchedule: {
                 id: null,
                 with: null,
                 time: {
                     start: null,
                     end: null,
                 },
-                color: 'yellow',
+                color: 'red',
                 isEditable: true,
             },
 
             config: {
                 defaultMode: 'day',
                 showCurrentTime: true,
-
+                locale: 'pl-PL',
+                isSilent: true,
                 eventDialog: {
                     isCustom: true,
                 },
@@ -149,7 +175,7 @@ export default {
                 const response = await axios.get('api/restaurant/driver-shifts/', {
                     params: {
                         restaurant: this.selectedRestaurant,
-                        date: this.selectedDate,
+                        date: this.date,
                     }
                 });
                 this.shifts = response.data;
@@ -169,60 +195,95 @@ export default {
         },
         // Get shifts
 
-        deleteEvent(event) {
-            console.log(event);
+        // Period updated
+        periodUpdated(data) {
+            console.log(data);
+        },
+        // Period updated
+
+        async deleteSchedule(event) {
+            const id = event.id;
+
+            try {
+                const response = await axios.delete(`api/restaurant/driver-shifts/delete/${id}/`);
+                this.$store.dispatch('triggerAlert', { message: 'Successfully deleted', type: 'success' });
+                this.getShifts();
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+            }
+            this.modifyShiftDialog = false;
         },
 
         objectSelected(event) {
-            this.editingShift = event.clickedEvent;
+            this.singleSchedule = {
+                id: event.clickedEvent.id,
+                with: event.clickedEvent.with,
+                time: {
+                    start: event.clickedEvent.time.start,
+                    end: event.clickedEvent.time.end,
+                },
+                color: event.clickedEvent.color,
+                isEditable: true,
+            }
             this.editingShiftStart = event.clickedEvent.time.start.slice(-5);
             this.editingShiftEnd = event.clickedEvent.time.end.slice(-5);
+            this.modifyShiftDialog = true;
         },
 
-        handleDatetimeClicked(datetime) {
-            let end = new Date(datetime);
-            end.setHours(end.getHours() + 2);
-            end = end.toISOString().slice(0, 16).replace('T', ' ');
+        addNewSchedule() {
 
-            this.newShift = {
+            const start = new Date().toISOString().slice(0, 10);
+            const end = new Date().toISOString().slice(0, 10);
+
+            this.editingShiftStart = '09:00';
+            this.editingShiftEnd = '16:00';
+
+            this.singleSchedule = {
                 id: this.tempId,
                 with: this.drivers[0].username,
                 time: {
-                    start: datetime,
-                    end: end,
+                    start: this.editingShiftStart,
+                    end: this.editingShiftEnd,
                 },
-                color: 'yellow',
+                color: 'red',
                 isEditable: true,
             };
 
-            this.shifts.push(this.newShift);
-            this.calendarKey += 1;
+            this.adding = true;
+            this.modifyShiftDialog = true;
+        },
 
-            let numberPart = this.tempId.slice(3);
-            numberPart = Number(numberPart) - 1;
-            this.tempId = 'new' + numberPart;
+        closeDialog() {
+            this.modifyShiftDialog = false;
+            this.adding = false;
         },
 
         async updateSchedule(props) {
             try {
-                // Map start and end time to the shift
-                props.time.start = props.time.start.slice(0, -5) + this.editingShiftStart;
-                props.time.end = props.time.end.slice(0, -5) + this.editingShiftEnd;
 
                 if (typeof props.id === 'string') {
                     props.restaurant = this.selectedRestaurant;
+
+                    // Map start and end time to the shift
+                    let currentDate = new Date();
+                    let formattedDate = currentDate.toISOString().slice(0, 10);
+                    props.time.start = formattedDate + ' ' + this.editingShiftStart;
+                    props.time.end = formattedDate + ' ' + this.editingShiftEnd;
 
                     const response = await axios.post('api/restaurant/driver-shifts/create-update/', {
                         shift: props,
                     });
                     this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
                 } else {
+                    // Map start and end time to the shift
+                    props.time.start = props.time.start.slice(0, -5) + this.editingShiftStart;
+                    props.time.end = props.time.end.slice(0, -5) + this.editingShiftEnd;
                     const response = await axios.put('api/restaurant/driver-shifts/create-update/', {
                         shift: props,
                     });
                     this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
                 }
-
+                this.modifyShiftDialog = false;
                 this.getShifts();
             } catch (error) {
                 this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
@@ -233,6 +294,7 @@ export default {
     },
     mounted() {
         this.loggedUserUsername = this.$store.getters.userData.username;
+        this.date = new Date().toISOString().slice(0, 10);
         this.getRestaurants();
     },
 };

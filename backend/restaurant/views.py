@@ -312,10 +312,17 @@ class GetDriverShifts(APIView):
         restaurant = self.request.query_params.get('restaurant', '').strip()
         date = self.request.query_params.get('date', '').strip()
         
-        print(restaurant, date)
+        print(restaurant, len(date))
         
         if date:
-            queryset = DriverShift.objects.filter(date=date)
+            if len(date) == 10:
+                # User requested for a specific date
+                queryset = DriverShift.objects.filter(time_start__date=date)
+            else:
+                # User requested for a specific date range
+                date = date.split(' - ')
+                queryset = DriverShift.objects.filter(time_start__range=(date[0], date[1]))
+
         elif restaurant:
             queryset = DriverShift.objects.filter(restaurant=restaurant)
         else:  
@@ -332,10 +339,7 @@ class CreateUpdateDriverShift(APIView):
     
     def post(self, request):
         data = request.data['shift']
-        
-        print('CREATE')
-        print(data)
-        
+
         if(data['with'] == 'No driver'):
             data['with'] = None
         else:
