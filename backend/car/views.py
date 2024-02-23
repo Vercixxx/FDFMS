@@ -85,8 +85,11 @@ class GetCars(APIView):
         
 
         if restaurant:
-            fleet = Fleet.objects.get(restaurant__name=restaurant)
-            queryset = fleet.cars.all().order_by('-vin')
+            try:
+                fleet = Fleet.objects.get(restaurant__name=restaurant)
+                queryset = fleet.cars.all().order_by('-vin')
+            except Fleet.DoesNotExist:
+                return JsonResponse({'error': 'Fleet does not exist.'}, status=404)
         else:
             queryset = Car.objects.all().order_by('-vin')
         
@@ -97,6 +100,7 @@ class GetCars(APIView):
                 Q(brand__icontains=query) | Q(model__icontains=query) | Q(vin__icontains=query)
             )
             
+        
         paginator = CarsPagination()
         result_page = paginator.paginate_queryset(queryset, request)
         

@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from datetime import datetime
+from django.utils.dateparse import parse_datetime
 
 # Serializers
 from .serializers import BrandSerializer, RestaurantSerializer, RestaurantInfoSerializer, RestaurantNameIdSerializer, RestaurantAndDriversSerializer, GetDriverShiftsSerializer, SaveDriverShiftsSerializer, CreateDriverShiftSerializer
@@ -311,24 +312,24 @@ class GetDriverShifts(APIView):
     def get(self, request):
         restaurant = self.request.query_params.get('restaurant', '').strip()
         date = self.request.query_params.get('date', '').strip()
+        date_start = self.request.query_params.get('date[start]', '').strip()
+        date_end = self.request.query_params.get('date[end]', '').strip()
         
-        print(restaurant, len(date))
+        print(restaurant, date)
+        queryset = DriverShift.objects.filter(restaurant=restaurant)
         
-        if date:
-            if len(date) == 10:
-                # User requested for a specific date
-                queryset = DriverShift.objects.filter(time_start__date=date)
-            else:
-                # User requested for a specific date range
-                date = date.split(' - ')
-                queryset = DriverShift.objects.filter(time_start__range=(date[0], date[1]))
-
-        elif restaurant:
-            queryset = DriverShift.objects.filter(restaurant=restaurant)
-        else:  
-            queryset = DriverShift.objects.all().order_by('id')
-
+        if date_start and date_end:
+            # User requested for a specific date range
+            date_start = parse_datetime(date_start)
+            date_end = parse_datetime(date_end)
+            queryset = queryset.filter(time_start__range=[date_start, date_end])
+        
+        if date and len(date) == 10:
+            # User requested for a specific date
+            queryset = queryset.filter(time_start__date=date)
+    
         serialized_data = GetDriverShiftsSerializer(queryset, many=True).data
+        print(serialized_data)
 
         return JsonResponse(serialized_data, status=200, safe=False)
     

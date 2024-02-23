@@ -12,10 +12,11 @@
         </v-row>
 
         <!-- {{ shifts }} -->
-        {{ calendar }}
+        {{ shifts }}
 
-        <Qalendar v-model="calendar" v-if="selectedRestaurant != null" :events="shifts" :config="config" @delete-event="deleteEvent"
+        <Qalendar v-if="selectedRestaurant != null" :events="shifts" :config="config" @delete-event="deleteEvent"
             :key="calendarKey" @event-was-clicked="objectSelected" @updated-period="periodUpdated">
+           
         </Qalendar>
 
 
@@ -46,11 +47,11 @@
                         <v-row>
                             <v-col>
                                 <v-text-field v-model="editingShiftStart" label="Start" variant="underlined"
-                                    hint="HH:MM 24h" persistent-hint :rules="rules"/>
+                                    hint="HH:MM 24h" persistent-hint :rules="rules" />
                             </v-col>
                             <v-col>
                                 <v-text-field v-model="editingShiftEnd" label="End" variant="underlined" hint="HH:MM 24h"
-                                    persistent-hint :rules="rules"/>
+                                    persistent-hint :rules="rules" />
                             </v-col>
                         </v-row>
                     </v-form>
@@ -94,7 +95,6 @@ export default {
         return {
             loggedUserUsername: null,
             date: null,
-            calendar: null,
 
             restaurants: [],
             drivers: [
@@ -141,6 +141,11 @@ export default {
                 isSilent: true,
                 eventDialog: {
                     isCustom: true,
+                },
+
+                dayBoundaries: {
+                    start: 9,
+                    end: 23,
                 },
             },
 
@@ -197,7 +202,8 @@ export default {
 
         // Period updated
         periodUpdated(data) {
-            console.log(data);
+            this.date = data;
+            this.getShifts()
         },
         // Period updated
 
