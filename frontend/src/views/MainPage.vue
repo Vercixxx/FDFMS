@@ -303,6 +303,11 @@ import ManagerManageCars from '../components/manager/ManageCars.vue';
 // Drivers
 import DailyReport from '..//components/driver/DailyReport.vue';
 import AddCarDamage from '../components/driver/AddCarDamage.vue';
+import DriverSchedule from '../components/driver/DriverSchedule.vue';
+import DriverScheduleList from '../components/driver/DriverScheduleList.vue';
+import DriverStatute from '../components/driver/DriverStatute.vue';
+import DriverContracts from '../components/driver/DriverContracts.vue';
+
 // Drivers
 
 
@@ -969,6 +974,81 @@ export default {
                 },
             ];
             this.currentComponent = AddCarDamage;
+        },
+        DriverScheduleComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Scheduler",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriverSchedule;
+        },
+        DriverScheduleListComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Scheduler",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: "List",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriverScheduleList;
+        },
+        DriverStatuteComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Work",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: "Statute",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriverStatute;
+        },
+        DriverContractsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Work",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: "Contracts",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriverContracts;
         },
         // Drivers
 

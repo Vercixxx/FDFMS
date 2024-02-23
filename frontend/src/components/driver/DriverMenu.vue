@@ -100,12 +100,12 @@ export default {
                     options: [
                         {
                             name: 'Show my shifts',
-                            click: '',
+                            click: 'DriverScheduleListComponent',
                             icon: 'mdi-calendar-clock',
                         },
                         {
                             name: 'Sign up for shift',
-                            click: '',
+                            click: 'DriverScheduleComponent',
                             icon: 'mdi-calendar-plus',
                         },
                     ],
@@ -117,12 +117,12 @@ export default {
                     options: [
                         {
                             name: 'Statut',
-                            click: '',
+                            click: 'DriverStatuteComponent',
                             icon: 'mdi-file-document-outline',
                         },
                         {
                             name: 'Contracts',
-                            click: '',
+                            click: 'DriverContractsComponent',
                             icon: 'mdi-file-document-outline',
                         },
                     ],
