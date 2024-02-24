@@ -16,7 +16,6 @@ class Driver(GeneralUser):
 
     # User color
     color_choices = (
-        ('red', 'Red'),
         ('blue', 'Blue'),
         ('green', 'Green'),
         ('yellow', 'Yellow'),

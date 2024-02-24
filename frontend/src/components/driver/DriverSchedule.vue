@@ -1,24 +1,25 @@
 <template>
-  
-  <v-card>
-    <v-card-title>
-      <v-icon>mdi-calendar</v-icon>
-      <span>Work Schedule</span>
-    </v-card-title>
+  <div>
+    <v-card>
+      <v-card-title>
+        <v-icon>mdi-calendar</v-icon>
+        <span>Work Schedule</span>
+      </v-card-title>
 
-    <v-card-text>
-      <v-autocomplete v-model="selectedRestaurant" :items="restaurants" variant="solo-filled" item-title="name"
-        item-value="id" label="Select Restaurant" @update:model-value="getShifts()"></v-autocomplete>
-    </v-card-text>
-  </v-card>
+      <v-card-text>
+        <v-autocomplete v-model="selectedRestaurant" :items="restaurants" variant="solo-filled" item-title="name"
+          item-value="id" label="Select Restaurant" @update:model-value="getShifts()"></v-autocomplete>
+      </v-card-text>
+    </v-card>
 
 
-  {{ shifts }}
-  <div class="is-light-mode" v-if="selectedRestaurant != null">
-    <Qalendar :events="shifts" :config="config" @delete-event="deleteEvent"
-      :key="calendarKey" @event-was-clicked="objectSelected" @updated-period="periodUpdated">
+    {{ shifts }}
+    <div class="is-light-mode" v-if="selectedRestaurant != null">
+      <Qalendar :events="shifts" :config="config" @delete-event="deleteEvent" :key="calendarKey"
+        @event-was-clicked="objectSelected" @updated-period="periodUpdated">
 
-    </Qalendar>
+      </Qalendar>
+    </div>
   </div>
 </template>
 
@@ -94,6 +95,7 @@ export default {
           }
         });
 
+
       } catch (error) {
         this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
       }
@@ -107,11 +109,31 @@ export default {
     },
     // Period updated
 
+
+    // Get current week
+    async getCurrentWeek() {
+      let now = new Date();
+      let dayOfWeek = now.getDay();
+      let diffToMonday = (dayOfWeek >= 1 ? dayOfWeek - 1 : 6);
+      let dateStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday);
+      dateStart.setHours(23, 0, 0, 0);
+      let dateEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (7 - dayOfWeek));
+      dateEnd.setHours(22, 59, 59, 999);
+      let isoDateStart = dateStart.toISOString().slice(0, 24);
+      let isoDateEnd = dateEnd.toISOString().slice(0, 24);
+      this.date = {start: isoDateStart, end: isoDateEnd};
+    },
+    // Get current week
+
   },
-  mounted() {
+
+  async mounted() {
     this.loggedUserUsername = this.$store.getters.userData.username;
     this.date = new Date().toISOString().slice(0, 10);
-    this.getRestaurants();
+    await this.getRestaurants();
+    this.selectedRestaurant = this.restaurants[0].id;
+    await this.getCurrentWeek();
+    this.getShifts();
   },
 };
 </script>

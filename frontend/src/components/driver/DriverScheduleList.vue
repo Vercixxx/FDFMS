@@ -107,14 +107,30 @@ export default {
     },
     // Period updated
 
+
+    // Get current week
+    async getCurrentWeek() {
+      let now = new Date();
+      let dayOfWeek = now.getDay();
+      let diffToMonday = (dayOfWeek >= 1 ? dayOfWeek - 1 : 6);
+      let dateStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday);
+      dateStart.setHours(23, 0, 0, 0);
+      let dateEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (7 - dayOfWeek));
+      dateEnd.setHours(22, 59, 59, 999);
+      let isoDateStart = dateStart.toISOString().slice(0, 24);
+      let isoDateEnd = dateEnd.toISOString().slice(0, 24);
+      this.date = { start: isoDateStart, end: isoDateEnd };
+    },
+    // Get current week
+
   },
 
   async mounted() {
     this.loggedUserUsername = this.$store.getters.userData.username;
     this.date = new Date().toISOString().slice(0, 10);
     await this.getRestaurants();
-    console.log(this.restaurants);
     this.selectedRestaurant = this.restaurants[0].id;
+    await this.getCurrentWeek();
     this.getShifts();
   },
 };
