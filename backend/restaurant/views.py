@@ -326,8 +326,7 @@ class GetDriverShifts(APIView):
             date_start = parse_datetime(date_start)
             date_end = parse_datetime(date_end)
             queryset = queryset.filter(time_start__range=[date_start, date_end])
-            print(queryset)
-        
+
         if date and len(date) == 10:
             # User requested for a specific date
             queryset = queryset.filter(time_start__date=date)

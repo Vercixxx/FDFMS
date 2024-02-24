@@ -17,7 +17,7 @@
 
     <div class="is-light-mode" v-if="selectedRestaurant != null">
       <Qalendar :events="shifts" :config="config" @delete-event="deleteEvent" :key="calendarKey"
-        @event-was-clicked="objectSelected" @updated-period="periodUpdated">
+        @updated-period="periodUpdated" @updated-mode="periodModeUpdated">
 
       </Qalendar>
     </div>
@@ -49,7 +49,7 @@ export default {
         locale: 'pl-PL',
         isSilent: true,
         eventDialog: {
-          isCustom: true,
+          isDisabled: true,
         },
 
         dayBoundaries: {
@@ -110,6 +110,15 @@ export default {
     },
     // Period updated
 
+    // Period mode updated
+    periodModeUpdated(data) {
+      if (data.mode === 'month') {
+        this.getCurrentMonth();
+        this.getShifts();
+      }
+    },
+    // Period mode updated
+
 
     // Get current week
     async getCurrentWeek() {
@@ -125,6 +134,19 @@ export default {
       this.date = { start: isoDateStart, end: isoDateEnd };
     },
     // Get current week
+
+    // Get current month
+    async getCurrentMonth() {
+      let now = new Date();
+      let firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      firstDayOfMonth.setHours(0, 0, 0, 0);
+      let lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      lastDayOfMonth.setHours(23, 59, 59, 999);
+      let isoDateStart = firstDayOfMonth.toISOString().slice(0, 24);
+      let isoDateEnd = lastDayOfMonth.toISOString().slice(0, 24);
+      this.date = { start: isoDateStart, end: isoDateEnd };
+    },
+    // Get current month
 
   },
 
