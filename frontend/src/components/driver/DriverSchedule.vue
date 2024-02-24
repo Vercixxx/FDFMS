@@ -1,9 +1,11 @@
 <template>
   <div>
-    <v-card>
+    <v-card class="mb-2">
       <v-card-title>
         <v-icon>mdi-calendar</v-icon>
         <span>Work Schedule</span>
+        <span v-if="selectedRestaurant != null"> for {{ restaurants.find(restaurant => restaurant.id ==
+          selectedRestaurant).name }}</span>
       </v-card-title>
 
       <v-card-text>
@@ -13,7 +15,6 @@
     </v-card>
 
 
-    {{ shifts }}
     <div class="is-light-mode" v-if="selectedRestaurant != null">
       <Qalendar :events="shifts" :config="config" @delete-event="deleteEvent" :key="calendarKey"
         @event-was-clicked="objectSelected" @updated-period="periodUpdated">
@@ -121,7 +122,7 @@ export default {
       dateEnd.setHours(22, 59, 59, 999);
       let isoDateStart = dateStart.toISOString().slice(0, 24);
       let isoDateEnd = dateEnd.toISOString().slice(0, 24);
-      this.date = {start: isoDateStart, end: isoDateEnd};
+      this.date = { start: isoDateStart, end: isoDateEnd };
     },
     // Get current week
 
