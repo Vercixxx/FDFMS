@@ -46,4 +46,8 @@ urlpatterns = [
     # Get New Billing Period starting day
     path('api/drivers/wage_tariff/get/new_billing_period/<str:name>/', views.GetNewBillingPeriodStartingDay.as_view(), name='get_new_billing_period'),
     
+    
+    # Get restaurant for driver
+    path('api/drivers/get/restaurants/', views.GetRestaurants.as_view(), name='get_restaurant'),
+    
 ]

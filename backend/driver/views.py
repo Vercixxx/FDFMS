@@ -17,6 +17,7 @@ from users.models import GeneralUser, Addresses
 # Serializers
 from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer, WageTariffGetIdSerializer, NewBillingPeriodSerializer
 from users.serializers import ResidenceAddressSerializer
+from restaurant.serializers import RestaurantNameIdSerializer
 
 
 # DB
@@ -445,4 +446,17 @@ class GetMonthlySettlementForDrivers(APIView):
     def get(self, request):
         drivers = request.data.get('drivers', [])
         
+
+
+
+
+class GetRestaurants(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        username = request.query_params.get('username')
+        user = Driver.objects.get(username=username)
         
+        restaurants = Restaurant.objects.filter(drivers=user)
+        serialized = RestaurantNameIdSerializer(restaurants, many=True)
+        return JsonResponse(serialized.data, safe=False)

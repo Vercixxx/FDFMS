@@ -1,22 +1,121 @@
 <template>
-  <div>
-    Driver Schedule
+  
+  <v-card>
+    <v-card-title>
+      <v-icon>mdi-calendar</v-icon>
+      <span>Work Schedule</span>
+    </v-card-title>
+
+    <v-card-text>
+      <v-autocomplete v-model="selectedRestaurant" :items="restaurants" variant="solo-filled" item-title="name"
+        item-value="id" label="Select Restaurant" @update:model-value="getShifts()"></v-autocomplete>
+    </v-card-text>
+  </v-card>
+
+
+  {{ shifts }}
+  <div class="is-light-mode" v-if="selectedRestaurant != null">
+    <Qalendar :events="shifts" :config="config" @delete-event="deleteEvent"
+      :key="calendarKey" @event-was-clicked="objectSelected" @updated-period="periodUpdated">
+
+    </Qalendar>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+import { Qalendar } from "qalendar";
+
 export default {
   name: 'DriverSchedule',
+  components: {
+    Qalendar,
+  },
   data() {
     return {
+      loggedUserUsername: null,
+      date: null,
 
+      selectedRestaurant: null,
+      restaurants: [],
+
+      shifts: [],
+
+      config: {
+        defaultMode: 'week',
+        showCurrentTime: true,
+        locale: 'pl-PL',
+        isSilent: true,
+        eventDialog: {
+          isCustom: true,
+        },
+
+        dayBoundaries: {
+          start: 9,
+          end: 23,
+        },
+      },
     };
   },
   methods: {
 
+    // Get restaurants for user
+    async getRestaurants() {
+      try {
+        const response = await axios.get('api/drivers/get/restaurants/', {
+          params: {
+            username: this.loggedUserUsername,
+          }
+        });
+
+        this.restaurants = response.data
+      } catch (error) {
+        this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+      }
+    },
+    // Get restaurants for user
+
+
+    // Get shifts for restaurant
+    async getShifts() {
+      try {
+        const response = await axios.get('api/restaurant/driver-shifts/', {
+          params: {
+            restaurant: this.selectedRestaurant,
+            date: this.date,
+          }
+        });
+        this.shifts = response.data;
+
+        this.shifts.forEach(shift => {
+          if (shift.with === null) {
+            shift.with = 'No driver';
+            shift.color = 'red';
+          }
+        });
+
+      } catch (error) {
+        this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+      }
+    },
+    // Get shifts for restaurant
+
+    // Period updated
+    periodUpdated(data) {
+      this.date = data;
+      this.getShifts()
+    },
+    // Period updated
+
   },
   mounted() {
-
+    this.loggedUserUsername = this.$store.getters.userData.username;
+    this.date = new Date().toISOString().slice(0, 10);
+    this.getRestaurants();
   },
 };
 </script>
+
+<style>
+@import "qalendar/dist/style.css";
+</style>
