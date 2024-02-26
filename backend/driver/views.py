@@ -9,13 +9,13 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import DestroyAPIView
 
 # Models
-from .models import Driver, DailyWork, WageTariff
+from .models import Driver, DailyWork, WageTariff, Rating
 from fleet.models import Fleet
 from restaurant.models import Restaurant
 from users.models import GeneralUser, Addresses
 
 # Serializers
-from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer, WageTariffGetIdSerializer, NewBillingPeriodSerializer
+from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer, WageTariffGetIdSerializer, NewBillingPeriodSerializer, GetRatingSerializer
 from users.serializers import ResidenceAddressSerializer
 from restaurant.serializers import RestaurantNameIdSerializer
 
@@ -460,3 +460,44 @@ class GetRestaurants(APIView):
         restaurants = Restaurant.objects.filter(drivers=user)
         serialized = RestaurantNameIdSerializer(restaurants, many=True)
         return JsonResponse(serialized.data, safe=False)
+    
+    
+    
+class GetRatings(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        try:
+            ratings = Rating.objects.all().order_by('-rating')
+            serializer = GetRatingSerializer(ratings, many=True)
+            return JsonResponse(serializer.data, status=200, safe=False)
+        except Rating.DoesNotExist:
+            return JsonResponse({'error': 'No ratings found'}, status=404)
+        
+
+
+class ManageRating(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data
+        serializer = GetRatingSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Successfully created'}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+    
+    def put (self, request, id):
+        rating = Rating.objects.get(id=id)
+        data = request.data
+        serializer = GetRatingSerializer(instance=rating, data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Successfully updated '}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+
+

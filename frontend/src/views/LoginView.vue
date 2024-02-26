@@ -115,7 +115,7 @@
                     <!-- Left column -->
 
                     <!-- Right column -->
-                    <v-col style="height: 99dvh">
+                    <v-col>
 
                         <v-row align="center" justify="center" style="min-height: 99dvh;">
 

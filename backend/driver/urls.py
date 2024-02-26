@@ -50,4 +50,13 @@ urlpatterns = [
     # Get restaurant for driver
     path('api/drivers/get/restaurants/', views.GetRestaurants.as_view(), name='get_restaurant'),
     
+    
+    # Get ratings
+    path('api/drivers/ratings/get/ratings/', views.GetRatings.as_view(), name='get_ratings'),
+    
+    # Add rating
+    path('api/drivers/ratings/add/', views.ManageRating.as_view(), name='add_rating'),
+    
+    # Edit rating
+    path('api/drivers/ratings/edit/<int:id>/', views.ManageRating.as_view(), name='edit_rating'),
 ]

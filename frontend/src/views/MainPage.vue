@@ -281,6 +281,7 @@ import AddClient from '../components/clients/AddClient.vue';
 import ManageClients from '../components/clients/ManageClients.vue';
 import AddBrand from '../components/clients/AddBrand.vue';
 import ManageBrands from '../components/clients/ManageBrands.vue';
+import ManageRatings from '../components/clients/ManageRatings.vue';
 // Clients
 
 
@@ -656,7 +657,29 @@ export default {
             ],
                 this.currentComponent = ManageBrands
         },
+        ManageRatingsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Ratings",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Manage ratings',
+                    component: '',
+                    disabled: true,
+                },
+            ],
+                this.currentComponent = ManageRatings
+        },
+        // Clients
 
+        
 
         // Assets
         AddCarsComponent() {

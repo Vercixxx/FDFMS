@@ -1,8 +1,6 @@
 from django.db import models
 from users.models import GeneralUser
 
-import random 
-
 
 class Driver(GeneralUser):
     license_number = models.CharField(max_length=50, blank=True, null=True)
@@ -13,6 +11,8 @@ class Driver(GeneralUser):
 
     wage_tariff = models.ForeignKey(
         'WageTariff', db_column='wage_tariff', on_delete=models.SET_NULL, blank=True, null=True)
+    
+    rate = models.ForeignKey('Rating', db_column='rate', on_delete=models.SET_NULL, blank=True, null=True)
 
     # User color
     color_choices = (
@@ -76,3 +76,46 @@ class WageTariff(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Rating(models.Model):
+    # Rating options
+    rating_options = (
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+        ('5', '5'),
+    )
+
+    rating = models.CharField(
+        max_length=1,
+        choices=rating_options,
+        default='1'
+    )
+    
+    # Day options
+    day_options = (
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+        ('5', '5'),
+        ('6', '6'),
+        ('7', '7'),
+    )
+
+    day = models.CharField(
+        max_length=1,
+        choices=day_options,
+        default='1'
+    )
+    
+    hour = models.TimeField()
+        
+
+    class Meta:
+        db_table = 'DriverRatings'
+
+    def __str__(self):
+        return self.rating
