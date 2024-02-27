@@ -3,7 +3,7 @@
 
         <v-btn @click="addEditDialog = true" color="primary" append-icon="mdi-plus">Add Rating</v-btn>
 
-        <v-data-table :items="ratings" :headers="headers" :items-per-page="5">
+        <v-data-table :items="ratings" :headers="headers" :items-per-page="25">
 
             <template v-slot:item.actions="{ item }">
                 <v-btn @click="editRating(item)" variant="plain">
@@ -53,7 +53,7 @@
 
                 <v-card-actions>
 
-                    <v-btn block @click="addEditDialog = false" color="success" :disabled="!form">{{ editMode ? 'Save' :
+                    <v-btn block @click="addEditRating()" color="success" :disabled="!form">{{ editMode ? 'Save' :
                         'Add'
                     }}</v-btn>
                 </v-card-actions>
@@ -96,7 +96,6 @@ export default {
 
             // Rules
             rules: {
-                required: [v => !!v || 'Field is required'],
                 rating: [
                     v => !!v || 'Rating is required',
                     v => !isNaN(v) || 'Must be a number',
@@ -163,11 +162,11 @@ export default {
         async addEditRating() {
             try {
                 if (this.editMode) {
-                    await axios.put(`api/drivers/ratings/edit/rating/${this.rating.id}/`, this.rating)
-                    this.$store.dispatch('triggerAlert', { message: 'Rating updated successfully', type: 'success' });
+                    const response = await axios.put(`api/drivers/ratings/edit/${this.rating.id}/`, this.rating)
+                    this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
                 } else {
-                    await axios.post('api/drivers/ratings/add/rating/', this.rating)
-                    this.$store.dispatch('triggerAlert', { message: 'Rating added successfully', type: 'success' });
+                    const response = await axios.post('api/drivers/ratings/add/', this.rating)
+                    this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
                 }
                 this.getRatings()
                 this.addEditDialog = false
@@ -178,6 +177,19 @@ export default {
         },
         // Add or edit rating
 
+
+
+        // Delete rating
+        async deleteRating(id) {
+            try {
+                const response = await axios.delete(`api/drivers/ratings/delete/${id}/`)
+                this.$store.dispatch('triggerAlert', { message: 'Successfully deleted', type: 'success' });
+                this.getRatings()
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+            }
+        }
+        // Delete rating
     }
 }
 </script>

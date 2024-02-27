@@ -59,4 +59,7 @@ urlpatterns = [
     
     # Edit rating
     path('api/drivers/ratings/edit/<int:id>/', views.ManageRating.as_view(), name='edit_rating'),
+    
+    # Delete rating
+    path('api/drivers/ratings/delete/<int:id>/', views.DeleteRating.as_view(), name='delete_rating'),
 ]

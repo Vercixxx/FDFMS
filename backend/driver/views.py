@@ -501,3 +501,8 @@ class ManageRating(APIView):
             return JsonResponse(serializer.errors, status=400)
 
 
+class DeleteRating(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Rating.objects.all()
+    serializer_class = GetRatingSerializer
+    lookup_field = 'id'
