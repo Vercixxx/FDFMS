@@ -341,6 +341,7 @@ class CreateUpdateDriverShift(APIView):
     
     def post(self, request):
         data = request.data['shift']
+        print(data)
 
         if(data['with'] == 'No driver'):
             data['with'] = None
@@ -352,8 +353,12 @@ class CreateUpdateDriverShift(APIView):
         data['driver'] = data['with']
         del data['color']
         del data['time']
+        del data['id']
+        
+        print(data)
        
         serializer = CreateDriverShiftSerializer(data=data)
+        print(serializer)
         
         if serializer.is_valid():
             shift = serializer.save()

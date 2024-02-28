@@ -308,15 +308,18 @@ export default {
         },
     },
 
-    mounted() {
+    async mounted() {
         this.loggedUserUsername = this.$store.getters.userData.username;
 
-        this.getRestaurants();
+        await this.getRestaurants();
 
         this.selectedColumns = this.columns.filter(column =>
             ['license_plate', 'active', 'mileage'].includes(column.key)
         );
         this.avaliableColumns = this.columns;
+
+        this.selectedRestaurant = this.avaliableRestaurants[0];
+        this.loadCars();
     },
 
     methods: {

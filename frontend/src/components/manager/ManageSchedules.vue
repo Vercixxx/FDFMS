@@ -4,19 +4,16 @@
         <v-autocomplete v-model="selectedRestaurant" :items="restaurants" variant="solo-filled" item-title="name"
             item-value="id" label="Select Restaurant" @update:model-value="getShifts()"></v-autocomplete>
 
-        <v-row v-if="selectedRestaurant != null">
+        <v-row v-if="selectedRestaurant != null && calendarMode == 'day'">
             <v-col>
                 <v-btn append-icon="mdi-plus" @click="addNewSchedule()" color="success" variant="elevated" class="mb-5">Add
                     Shift</v-btn>
             </v-col>
         </v-row>
 
-        <!-- {{ shifts }} -->
-        {{ shifts }}
-
         <Qalendar v-if="selectedRestaurant != null" :events="shifts" :config="config" @delete-event="deleteEvent"
-            :key="calendarKey" @event-was-clicked="objectSelected" @updated-period="periodUpdated">
-           
+            :key="calendarKey" @event-was-clicked="objectSelected" @updated-period="periodUpdated" @updated-mode="updatedMode">
+
         </Qalendar>
 
 
@@ -73,7 +70,6 @@
             </v-card>
         </v-dialog>
         <!-- Dialog add schedule -->
-
     </div>
 </template>
 
@@ -106,7 +102,7 @@ export default {
             ],
             selectedRestaurant: null,
             selectedDate: null,
-            isPeriodUpdated: false,
+            calendarMode: 'day',
 
             calendarKey: 0,
             shifts: [],
@@ -177,10 +173,21 @@ export default {
         // Get shifts
         async getShifts() {
             try {
+                let date = null;
+                try {
+                    if (this.date && this.date.end) {
+                        date = this.date.end.toISOString().slice(0, 10);
+                    } else if (this.date) {
+                        date = this.date.toISOString().slice(0, 10);
+                    }
+                } catch (error) {
+                    this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+                }
+
                 const response = await axios.get('api/restaurant/driver-shifts/', {
                     params: {
                         restaurant: this.selectedRestaurant,
-                        date: this.date,
+                        date: date,
                     }
                 });
                 this.shifts = response.data;
@@ -202,10 +209,18 @@ export default {
 
         // Period updated
         periodUpdated(data) {
+            console.log(data);
             this.date = data;
             this.getShifts()
         },
         // Period updated
+
+
+        // Mode updated
+        updatedMode(data) {
+            this.calendarMode = data.mode;
+        },
+        // Mode updated
 
         async deleteSchedule(event) {
             const id = event.id;
@@ -271,10 +286,16 @@ export default {
                     props.restaurant = this.selectedRestaurant;
 
                     // Map start and end time to the shift
-                    let currentDate = new Date();
-                    let formattedDate = currentDate.toISOString().slice(0, 10);
+                    // let currentDate = new Date();
+                    let formattedDate = null;
+                    try {
+                        formattedDate = this.date.end.toISOString().slice(0, 10);
+                    } catch (error) {
+                        formattedDate = this.date.toISOString().slice(0, 10);
+                    }
                     props.time.start = formattedDate + ' ' + this.editingShiftStart;
                     props.time.end = formattedDate + ' ' + this.editingShiftEnd;
+                    console.log(props);
 
                     const response = await axios.post('api/restaurant/driver-shifts/create-update/', {
                         shift: props,
@@ -298,10 +319,13 @@ export default {
         },
 
     },
-    mounted() {
+
+    async created() {
         this.loggedUserUsername = this.$store.getters.userData.username;
-        this.date = new Date().toISOString().slice(0, 10);
-        this.getRestaurants();
+        this.date = new Date();
+        await this.getRestaurants();
+        this.selectedRestaurant = this.restaurants[0].id;
+        await this.getShifts();
     },
 };
 </script>

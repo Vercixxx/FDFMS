@@ -400,6 +400,7 @@ export default {
 
             DriverHeaders: [
                 { title: 'RESTAURANT', align: 'center', key: 'restaurant_name', sortable: false },
+                { title: 'RATE', align: 'center', key: 'rate', sortable: false },
                 { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
                 { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
                 { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
@@ -425,7 +426,7 @@ export default {
 
 
 
-    mounted() {
+    async mounted() {
         const { bus } = useEventsBus();
 
         watch(
@@ -441,15 +442,16 @@ export default {
 
         this.loggedUserUsername = this.$store.getters.userData.username;
 
-        this.getRestaurants();
+        await this.getRestaurants();
 
-
+        this.selectedRestaurant = this.avaliableRestaurants[0];
+        this.loadUsers();
     },
 
 
     created() {
         this.selectedColumns = this.DriverHeaders.filter(column =>
-            ['restaurant_name', 'email', 'is_active'].includes(column.key)
+            ['restaurant_name', 'rate', 'email', 'is_active'].includes(column.key)
         );
 
         this.avaliableColumns = this.DriverHeaders;
