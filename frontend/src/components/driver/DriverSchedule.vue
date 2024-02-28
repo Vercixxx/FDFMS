@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ rateInfo }}
     <v-card class="mb-2">
       <v-card-title>
         <v-icon>mdi-calendar</v-icon>
@@ -14,10 +15,11 @@
       </v-card-text>
     </v-card>
 
+    <h4>Your rate is {{ rateInfo.rating }}, you can assign for shifts at {{ getDayOfWeek(rateInfo.day) }} {{ rateInfo.hour }}</h4>
 
     <div class="is-light-mode" v-if="selectedRestaurant != null">
       <Qalendar :events="shifts" :config="config" @delete-event="deleteEvent" :key="calendarKey"
-        @updated-period="periodUpdated" @updated-mode="periodModeUpdated">
+        @updated-period="periodUpdated">
 
       </Qalendar>
     </div>
@@ -36,6 +38,7 @@ export default {
   data() {
     return {
       loggedUserUsername: null,
+      rateInfo: null,
       date: null,
 
       selectedRestaurant: null,
@@ -44,7 +47,8 @@ export default {
       shifts: [],
 
       config: {
-        defaultMode: 'week',
+        defaultMode: 'day',
+        disableModes: ['week', 'month'],
         showCurrentTime: true,
         locale: 'pl-PL',
         isSilent: true,
@@ -59,6 +63,17 @@ export default {
       },
     };
   },
+
+  computed: {
+    getDayOfWeek() {
+      return (day) => {
+        const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        return daysOfWeek[day - 1];
+      };
+    },
+  },
+
+
   methods: {
 
     // Get restaurants for user
@@ -110,52 +125,31 @@ export default {
     },
     // Period updated
 
-    // Period mode updated
-    periodModeUpdated(data) {
-      if (data.mode === 'month') {
-        this.getCurrentMonth();
-        this.getShifts();
+
+    // Get info about rate
+    async getRateInfo() {
+      try {
+        const response = await axios.get(`api/drivers/ratings/get/rate_info/${this.loggedUserUsername}/`);
+        this.rateInfo = response.data;
+      } catch (error) {
+        this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
       }
     },
-    // Period mode updated
+    // Get info about rate
 
-
-    // Get current week
-    async getCurrentWeek() {
-      let now = new Date();
-      let dayOfWeek = now.getDay();
-      let diffToMonday = (dayOfWeek >= 1 ? dayOfWeek - 1 : 6);
-      let dateStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday);
-      dateStart.setHours(23, 0, 0, 0);
-      let dateEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (7 - dayOfWeek));
-      dateEnd.setHours(22, 59, 59, 999);
-      let isoDateStart = dateStart.toISOString().slice(0, 24);
-      let isoDateEnd = dateEnd.toISOString().slice(0, 24);
-      this.date = { start: isoDateStart, end: isoDateEnd };
-    },
-    // Get current week
-
-    // Get current month
-    async getCurrentMonth() {
-      let now = new Date();
-      let firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      firstDayOfMonth.setHours(0, 0, 0, 0);
-      let lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      lastDayOfMonth.setHours(23, 59, 59, 999);
-      let isoDateStart = firstDayOfMonth.toISOString().slice(0, 24);
-      let isoDateEnd = lastDayOfMonth.toISOString().slice(0, 24);
-      this.date = { start: isoDateStart, end: isoDateEnd };
-    },
-    // Get current month
 
   },
 
-  async mounted() {
+  async created() {
     this.loggedUserUsername = this.$store.getters.userData.username;
+    await this.getRateInfo();
+  },
+
+  async mounted() {
+    
     this.date = new Date().toISOString().slice(0, 10);
     await this.getRestaurants();
     this.selectedRestaurant = this.restaurants[0].id;
-    await this.getCurrentWeek();
     this.getShifts();
   },
 };

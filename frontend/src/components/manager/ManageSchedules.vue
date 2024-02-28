@@ -199,7 +199,6 @@ export default {
 
         // Period updated
         periodUpdated(data) {
-            console.log(data);
             this.date = data;
             this.getShifts()
         },
@@ -208,7 +207,6 @@ export default {
 
         // Mode updated
         updatedMode(data) {
-            console.log(data);
             this.calendarMode = data.mode;
             this.date = data;
             this.getShifts()

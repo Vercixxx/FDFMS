@@ -525,3 +525,14 @@ class UpdateUserRating(APIView):
             return JsonResponse({'message': 'Successfully updated '}, status=201)
         else:
             return JsonResponse(serializer.errors, status=400)
+        
+        
+class GetRateInfoForDriver(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, username):
+        user = Driver.objects.get(username=username)
+        rate = user.rate
+        
+        serializer = GetRatingSerializer(rate)
+        return JsonResponse(serializer.data, status=200, safe=False)

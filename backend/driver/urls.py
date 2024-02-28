@@ -65,4 +65,8 @@ urlpatterns = [
     
     # Update driver's rating
     path('api/drivers/ratings/update/<str:username>/<int:rate>/', views.UpdateUserRating.as_view(), name='update_rating'),
+    
+    
+    # Get rate info for driver
+    path('api/drivers/ratings/get/rate_info/<str:username>/', views.GetRateInfoForDriver.as_view(), name='get_rate_info'),
 ]
