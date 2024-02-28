@@ -322,13 +322,16 @@ class GetDriverShifts(APIView):
             queryset = queryset.filter(Q(driver=driver))
         
         if date_start and date_end:
+            print(date_start, date_end)
             # User requested for a specific date range
             date_start = parse_datetime(date_start)
             date_end = parse_datetime(date_end)
             queryset = queryset.filter(time_start__range=[date_start, date_end])
 
-        if date and len(date) == 10:
+        if date:
+            print(date)
             # User requested for a specific date
+            date = parse_datetime(date)
             queryset = queryset.filter(time_start__date=date)
     
         serialized_data = GetDriverShiftsSerializer(queryset, many=True).data
@@ -341,7 +344,6 @@ class CreateUpdateDriverShift(APIView):
     
     def post(self, request):
         data = request.data['shift']
-        print(data)
 
         if(data['with'] == 'No driver'):
             data['with'] = None
@@ -355,10 +357,7 @@ class CreateUpdateDriverShift(APIView):
         del data['time']
         del data['id']
         
-        print(data)
-       
         serializer = CreateDriverShiftSerializer(data=data)
-        print(serializer)
         
         if serializer.is_valid():
             shift = serializer.save()

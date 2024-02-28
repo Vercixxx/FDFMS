@@ -12,7 +12,8 @@
         </v-row>
 
         <Qalendar v-if="selectedRestaurant != null" :events="shifts" :config="config" @delete-event="deleteEvent"
-            :key="calendarKey" @event-was-clicked="objectSelected" @updated-period="periodUpdated" @updated-mode="updatedMode">
+            :key="calendarKey" @event-was-clicked="objectSelected" @updated-period="periodUpdated"
+            @updated-mode="updatedMode">
 
         </Qalendar>
 
@@ -173,21 +174,10 @@ export default {
         // Get shifts
         async getShifts() {
             try {
-                let date = null;
-                try {
-                    if (this.date && this.date.end) {
-                        date = this.date.end.toISOString().slice(0, 10);
-                    } else if (this.date) {
-                        date = this.date.toISOString().slice(0, 10);
-                    }
-                } catch (error) {
-                    this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
-                }
-
                 const response = await axios.get('api/restaurant/driver-shifts/', {
                     params: {
                         restaurant: this.selectedRestaurant,
-                        date: date,
+                        date: this.date,
                     }
                 });
                 this.shifts = response.data;
@@ -218,7 +208,10 @@ export default {
 
         // Mode updated
         updatedMode(data) {
+            console.log(data);
             this.calendarMode = data.mode;
+            this.date = data;
+            this.getShifts()
         },
         // Mode updated
 
@@ -295,7 +288,6 @@ export default {
                     }
                     props.time.start = formattedDate + ' ' + this.editingShiftStart;
                     props.time.end = formattedDate + ' ' + this.editingShiftEnd;
-                    console.log(props);
 
                     const response = await axios.post('api/restaurant/driver-shifts/create-update/', {
                         shift: props,

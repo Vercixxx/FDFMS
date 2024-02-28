@@ -153,3 +153,8 @@ class GetRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         fields = ['id', 'rating', 'day', 'hour']
+
+class UserRating(serializers.ModelSerializer):
+    class Meta:
+        model = Driver
+        fields = ['rate']

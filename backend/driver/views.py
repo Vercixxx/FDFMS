@@ -15,7 +15,7 @@ from restaurant.models import Restaurant
 from users.models import GeneralUser, Addresses
 
 # Serializers
-from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer, WageTariffGetIdSerializer, NewBillingPeriodSerializer, GetRatingSerializer
+from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer, WageTariffGetIdSerializer, NewBillingPeriodSerializer, GetRatingSerializer, UserRating
 from users.serializers import ResidenceAddressSerializer
 from restaurant.serializers import RestaurantNameIdSerializer
 
@@ -506,3 +506,22 @@ class DeleteRating(DestroyAPIView):
     queryset = Rating.objects.all()
     serializer_class = GetRatingSerializer
     lookup_field = 'id'
+    
+
+class UpdateUserRating(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, username, rate):
+        user = Driver.objects.get(username=username)
+        
+        data = {
+            'rate': rate
+        }
+        
+        serializer = UserRating(user, data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Successfully updated '}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)

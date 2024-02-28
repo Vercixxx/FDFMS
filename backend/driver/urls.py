@@ -62,4 +62,7 @@ urlpatterns = [
     
     # Delete rating
     path('api/drivers/ratings/delete/<int:id>/', views.DeleteRating.as_view(), name='delete_rating'),
+    
+    # Update driver's rating
+    path('api/drivers/ratings/update/<str:username>/<int:rate>/', views.UpdateUserRating.as_view(), name='update_rating'),
 ]

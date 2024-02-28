@@ -164,6 +164,23 @@
 
                             </template>
 
+                            <template v-else-if="header.key === 'rate'">
+                                <v-menu transition="slide-y-transition">
+                                    <template v-slot:activator="{ props }">
+                                        <v-btn variant="text" v-bind="props">
+                                            {{ item['rate'] }}
+                                        </v-btn>
+                                    </template>
+                                    <v-list>
+                                        <v-list-item v-for="number in rateOptions" :key="number">
+                                            <v-btn variant="plain" @click="updateRate(item['username'], number)">
+                                                {{ number }}
+                                            </v-btn>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
+                            </template>
+
 
                             <template v-else>
                                 <span
@@ -371,6 +388,7 @@ export default {
             selectedColumns: [],
             avaliableColumns: [],
 
+            rateOptions: [1, 2, 3, 4, 5],
 
             userStatusList: [
                 {
@@ -524,10 +542,24 @@ export default {
 
             }
             catch (error) {
-                this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
+                this.$store.dispatch('triggerAlert', { message: error.response.error, type: 'error' });
             }
         },
         // Get restaurants
+
+
+        // Change rate
+        async updateRate(username, rate) {
+            try {
+                const response = await axios.put(`api/drivers/ratings/update/${username}/${rate}/`);
+                this.reloadComponent();
+                this.$store.dispatch('triggerAlert', { message: `Successfully changed rate of ${username} to ${rate}`, type: 'success' });
+            }
+            catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error.response.error, type: 'error' });
+            }
+        },
+        // Change rate
 
 
         copyElement(content) {
@@ -581,7 +613,7 @@ export default {
                 this.UserDetailsDialog = true;
             }
             catch (error) {
-                this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
+                this.$store.dispatch('triggerAlert', { message: error.response.error, type: 'error' });
             }
 
         },
@@ -599,7 +631,7 @@ export default {
                 link.click();
             }
             catch (error) {
-                this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
+                this.$store.dispatch('triggerAlert', { message: error.response.error, type: 'error' });
             }
         },
         // Download user info
