@@ -194,6 +194,7 @@ export default {
       let now = new Date();
       let firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       firstDayOfMonth.setHours(0, 0, 0, 0);
+      firstDayOfMonth.setDate(firstDayOfMonth.getDate() - 6);
       let lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
       lastDayOfMonth.setHours(23, 59, 59, 999);
       let isoDateStart = firstDayOfMonth.toISOString().slice(0, 24);

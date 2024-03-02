@@ -53,6 +53,10 @@ urlpatterns = [
     path('api/restaurant/driver-shifts/delete/<int:id>/', views.DeleteDriverShift.as_view(), name='delete-driver-shift'),
     
     
+    # Assign driver for shift
+    path('api/restaurant/assign-driver/', views.AssignDriverForShift.as_view(), name='assign-driver'),
+    
+    
 ]
 
     

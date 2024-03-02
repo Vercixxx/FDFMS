@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from datetime import datetime
+from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
 # Serializers
@@ -395,3 +396,52 @@ class DeleteDriverShift(DestroyAPIView):
     queryset = DriverShift.objects.all()
     serializer_class = SaveDriverShiftsSerializer
     lookup_field = 'id'
+    
+    
+class AssignDriverForShift(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data
+        
+        try:
+            driver = Driver.objects.get(username=data['driver'])
+            
+            shift = DriverShift.objects.get(id=data['shift'])
+            
+            date_str = data['date']
+            time_start_str = data['time_start']
+            time_end_str = data['time_end']
+
+            time_start_naive = datetime.strptime(f"{date_str} {time_start_str}", "%Y-%m-%d %H:%M")
+            time_end_naive = datetime.strptime(f"{date_str} {time_end_str}", "%Y-%m-%d %H:%M")
+
+            time_start = timezone.make_aware(time_start_naive)
+            time_end = timezone.make_aware(time_end_naive)
+
+            
+            start_diff_hours = (time_start - shift.time_start).total_seconds() / 3600
+            end_diff_hours = (shift.time_end - time_end).total_seconds() / 3600
+            
+            print(start_diff_hours)
+            if (start_diff_hours > 0):
+                new_shift = DriverShift.objects.create(driver=None, restaurant=shift.restaurant, time_start=shift.time_start, time_end=time_start)
+            elif (end_diff_hours > 0):
+                new_shift = DriverShift.objects.create(driver=None, restaurant=shift.restaurant, time_start=time_end, time_end=shift.time_end)
+
+            shift.time_start = time_start
+            shift.time_end = time_end
+            shift.driver = driver
+            shift.save()
+
+            response_message = {
+                'message' : 'Successfully assigned',
+                'day' : data['date'],
+            }
+            
+            return JsonResponse(response_message, status=201)
+        
+        except Exception as e:
+            return JsonResponse({'error': 'Something went wrong'}, status=400)
+
+    

@@ -536,3 +536,5 @@ class GetRateInfoForDriver(APIView):
         
         serializer = GetRatingSerializer(rate)
         return JsonResponse(serializer.data, status=200, safe=False)
+    
+    
