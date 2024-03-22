@@ -113,6 +113,7 @@ export default {
   },
 
 
+
   watch: {
     version: 'handleVersionChange',
   },
@@ -215,3 +216,4 @@ export default {
   },
 };
 </script>
+

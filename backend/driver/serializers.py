@@ -1,12 +1,16 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 
-from .models import Driver, DailyWork, WageTariff
+from .models import Driver, DailyWork, WageTariff, Rating
 from users.models import GeneralUser
 
 from users.serializers import GetAddressesSerializer
 
+
+class BasicDriverDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Driver
+        fields = ['username', 'first_name', 'last_name', 'user_color']
 
 class GetDriver(serializers.ModelSerializer):
     wage_tariff = serializers.StringRelatedField()
@@ -30,6 +34,7 @@ class GetDriver(serializers.ModelSerializer):
                   'ln_published_by',
                   'ln_code',
                   'wage_tariff',
+                  'rate',
                   ]
 
     def __init__(self, *args, **kwargs):
@@ -57,6 +62,7 @@ class DriverSerializer(serializers.ModelSerializer):
                   'phone',
                   'date_joined',
                   'wage_tariff',
+                  'rate',
                   ]
 
 
@@ -77,6 +83,7 @@ class RestaurantDriversSerliazer(serializers.ModelSerializer):
                   'date_joined',
                   'restaurant_name',
                   'wage_tariff',
+                  'rate',
                   ]
 
 class DriverUsernameSerializer(serializers.ModelSerializer):
@@ -111,6 +118,7 @@ class UpdateDriverUser(serializers.ModelSerializer):
             'ln_published_by',
             'ln_code',
             'wage_tariff',
+            'rate',
         ]
 
 
@@ -138,3 +146,15 @@ class WageTariffGetIdSerializer(serializers.ModelSerializer):
     class Meta:
         model = WageTariff
         fields = ['id']
+        
+
+class GetRatingSerializer(serializers.ModelSerializer):
+    hour = serializers.TimeField(format='%H:%M')
+    class Meta:
+        model = Rating
+        fields = ['id', 'rating', 'day', 'hour']
+
+class UserRating(serializers.ModelSerializer):
+    class Meta:
+        model = Driver
+        fields = ['rate']

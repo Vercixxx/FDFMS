@@ -22,8 +22,8 @@ urlpatterns = [
     # Get restaurant name, id
     path('api/restaurant/get/name-id/', views.GetRestaurantsNameId.as_view(), name='get-restaurant-name-id'),
     
-    # Get Restaurant and their drivers
-    path('api/restaurant/get/drivers/<str:restaurant>/', views.GetRestaurantsAndDrivers.as_view(), name='get-restaurant-drivers'),
+    # Get Restaurant and their drivers with brands
+    path('api/restaurant/get/drivers/<str:restaurant>/', views.GetRestaurantsAndDriversWithBrands.as_view(), name='get-restaurant-drivers'),
     
     
     # Brands Brands Brands
@@ -41,7 +41,20 @@ urlpatterns = [
     path('api/brands/delete/<int:id>/', views.DeleteBrands.as_view(), name='delete-brand'),
     
     # Updating Brand
-    path('api/brands/update/<int:brandID>/', views.UpdateBrand.as_view(), name='update-brand')
+    path('api/brands/update/<int:brandID>/', views.UpdateBrand.as_view(), name='update-brand'),
+    
+    # Get Driver shifts
+    path('api/restaurant/driver-shifts/', views.GetDriverShifts.as_view(), name='driver-shifts'),
+    
+    # Create od update driver shift
+    path('api/restaurant/driver-shifts/create-update/', views.CreateUpdateDriverShift.as_view(), name='create-update-driver-shift'),
+    
+    # Delete driver shift
+    path('api/restaurant/driver-shifts/delete/<int:id>/', views.DeleteDriverShift.as_view(), name='delete-driver-shift'),
+    
+    
+    # Assign driver for shift
+    path('api/restaurant/assign-driver/', views.AssignDriverForShift.as_view(), name='assign-driver'),
     
     
 ]

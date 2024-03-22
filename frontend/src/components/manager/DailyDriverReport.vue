@@ -37,7 +37,7 @@
                     <v-autocomplete variant="underlined" v-model="selectedDriver" :items="drivers" item-title="username"
                         item-value="username" label="Select driver"
                         no-data-text="There isn't available drivers for selected restaurant"
-                        :disabled="selectedRestaurant == null">
+                        :disabled="selectedRestaurant == null" @update:model-value="step += 1">
 
                         <template v-slot:item="{ props, item }">
                             <v-list-item v-bind="props" :title="item.raw.last_name + ' ' + item.raw.first_name"
@@ -280,6 +280,7 @@ export default {
                 });
 
                 this.drivers = response.data;
+                this.step += 1;
 
             } catch (error) {
                 this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });

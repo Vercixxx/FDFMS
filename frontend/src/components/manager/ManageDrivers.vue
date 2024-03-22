@@ -164,6 +164,23 @@
 
                             </template>
 
+                            <template v-else-if="header.key === 'rate'">
+                                <v-menu transition="slide-y-transition">
+                                    <template v-slot:activator="{ props }">
+                                        <v-btn variant="text" v-bind="props">
+                                            {{ item['rate'] }}
+                                        </v-btn>
+                                    </template>
+                                    <v-list>
+                                        <v-list-item v-for="number in rateOptions" :key="number">
+                                            <v-btn variant="plain" @click="updateRate(item['username'], number)">
+                                                {{ number }}
+                                            </v-btn>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
+                            </template>
+
 
                             <template v-else>
                                 <span
@@ -256,6 +273,27 @@
         <v-dialog v-model="UserDetailsDialog" width="auto">
             <v-card>
                 <v-card-text>
+
+                    <v-row>
+                        <v-col cols="3">
+                        </v-col>
+                        <v-col cols="6" sm="6">
+                            <div class="text-h5 text-center">
+                                User details
+                            </div>
+                        </v-col>
+                        <!-- Download -->
+                        <v-col cols="3" align="end">
+                            <span>
+                                <v-btn icon="mdi-download" variant="pain"
+                                    @click="downloadUserInfo(userDetailData['Username'], userDetailData['User Role'])">
+                                </v-btn>
+                                <v-tooltip activator="parent" location="top">Download user info</v-tooltip>
+                            </span>
+                        </v-col>
+                        <!-- Download -->
+                    </v-row>
+
                     <v-table>
                         <thead>
                             <tr>
@@ -350,6 +388,7 @@ export default {
             selectedColumns: [],
             avaliableColumns: [],
 
+            rateOptions: [1, 2, 3, 4, 5],
 
             userStatusList: [
                 {
@@ -379,6 +418,7 @@ export default {
 
             DriverHeaders: [
                 { title: 'RESTAURANT', align: 'center', key: 'restaurant_name', sortable: false },
+                { title: 'RATE', align: 'center', key: 'rate', sortable: false },
                 { title: 'EMAIL', align: 'center', key: 'email', sortable: false },
                 { title: 'PHONE NUMBER', align: 'center', key: 'phone', sortable: false },
                 { title: 'ACTIVE', align: 'center', key: 'is_active', sortable: false },
@@ -404,7 +444,7 @@ export default {
 
 
 
-    mounted() {
+    async mounted() {
         const { bus } = useEventsBus();
 
         watch(
@@ -420,15 +460,16 @@ export default {
 
         this.loggedUserUsername = this.$store.getters.userData.username;
 
-        this.getRestaurants();
+        await this.getRestaurants();
 
-
+        this.selectedRestaurant = this.avaliableRestaurants[0];
+        this.loadUsers();
     },
 
 
     created() {
         this.selectedColumns = this.DriverHeaders.filter(column =>
-            ['restaurant_name', 'email', 'is_active'].includes(column.key)
+            ['restaurant_name', 'rate', 'email', 'is_active'].includes(column.key)
         );
 
         this.avaliableColumns = this.DriverHeaders;
@@ -501,10 +542,24 @@ export default {
 
             }
             catch (error) {
-                this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
+                this.$store.dispatch('triggerAlert', { message: error.response.error, type: 'error' });
             }
         },
         // Get restaurants
+
+
+        // Change rate
+        async updateRate(username, rate) {
+            try {
+                const response = await axios.put(`api/drivers/ratings/update/${username}/${rate}/`);
+                this.reloadComponent();
+                this.$store.dispatch('triggerAlert', { message: `Successfully changed rate of ${username} to ${rate}`, type: 'success' });
+            }
+            catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error.response.error, type: 'error' });
+            }
+        },
+        // Change rate
 
 
         copyElement(content) {
@@ -558,10 +613,29 @@ export default {
                 this.UserDetailsDialog = true;
             }
             catch (error) {
-                this.$store.dispatch('triggerAlert', { message: 'Error, please try again', type: 'error' });
+                this.$store.dispatch('triggerAlert', { message: error.response.error, type: 'error' });
             }
 
         },
+
+
+        // Download user info
+        async downloadUserInfo(username, role) {
+            try {
+                const response = await axios.get(`api/users/get-info-csv/${username}/${role}/`);
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `${username}_info.csv`);
+                document.body.appendChild(link);
+                link.click();
+            }
+            catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error.response.error, type: 'error' });
+            }
+        },
+        // Download user info
+
 
 
     },

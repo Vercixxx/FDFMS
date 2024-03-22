@@ -41,27 +41,10 @@ class Restaurant(models.Model):
     # Drivers
     drivers = models.ManyToManyField(Driver, blank=True)
 
-class WorkChange(models.Model):
-    time_start = models.CharField(max_length=5)
-    time_end = models.CharField(max_length=5)
-    
+class DriverShift(models.Model):
     driver = models.ForeignKey(Driver, db_column='driver', on_delete=models.SET_NULL, null=True, default=None)
+    restaurant = models.ForeignKey(Restaurant, db_column='restaurant', on_delete=models.SET_NULL, null=True, default=None)
     
-    
-class DailyCarSchedule(models.Model):
-    date = models.DateTimeField()
-    
-    car = models.ForeignKey(Car, db_column='car', on_delete=models.SET_NULL, null=True, default=None)
-    work_changes = models.ManyToManyField(WorkChange, blank=True)
-    
-
-
-class Schedule(models.Model):
-    date = models.DateTimeField()
-    daily_cars_schedules = models.ManyToManyField(DailyCarSchedule, blank=True)
-    
-    
-
-    
-    
+    time_start = models.DateTimeField()
+    time_end = models.DateTimeField()
     

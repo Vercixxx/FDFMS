@@ -83,23 +83,23 @@ export default {
                         },
                     ],
                 },
-                {
-                    name: 'Work',
-                    mainIcon: 'mdi-briefcase',
-                    disabled: true,
-                    options: [
-                        {
-                            name: 'Statut',
-                            click: 'AddUserComponent',
-                            icon: '<span class="material-symbols-outlined">add</span>',
-                        },
-                        {
-                            name: 'Contracts',
-                            click: 'ModifyUserComponent',
-                            icon: ' <span class="material-symbols-outlined">edit</span>',
-                        },
-                    ],
-                },
+                // {
+                //     name: 'Work',
+                //     mainIcon: 'mdi-briefcase',
+                //     disabled: true,
+                //     options: [
+                //         {
+                //             name: 'Statut',
+                //             click: 'AddUserComponent',
+                //             icon: '<span class="material-symbols-outlined">add</span>',
+                //         },
+                //         {
+                //             name: 'Contracts',
+                //             click: 'ModifyUserComponent',
+                //             icon: ' <span class="material-symbols-outlined">edit</span>',
+                //         },
+                //     ],
+                // },
             ]
 
         };

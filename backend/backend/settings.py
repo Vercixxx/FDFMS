@@ -21,8 +21,8 @@ SECRET_KEY = secret_data.get("SECRET_KEY_VALUE")
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
-# ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 
@@ -63,14 +63,14 @@ INSTALLED_APPS = [
     
 ]
 
-# CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
-    "http://127.0.0.1:8000",
-    "http://192.168.0.155:8080",
-]
+CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",
+#     "http://localhost:8080",
+#     "http://127.0.0.1:8080",
+#     "http://127.0.0.1:8000",
+#     "http://192.168.0.155:8080",
+# ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

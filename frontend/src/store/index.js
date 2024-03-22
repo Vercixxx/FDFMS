@@ -20,9 +20,10 @@ export default createStore({
 
     colorPalette: {},
     colorPaletteLight: {
+      background: '#D3D3D3',
       primary: '#52baba',
-      secondary: '#4E508B',
-      tertiary: '#7CB056',
+      secondary: '#7F72AD',
+      tertiary: '#9ED278',
       accent: '#7CB056',
       error: '#b71c1c',
       success: '#4caf50',
@@ -30,6 +31,7 @@ export default createStore({
       info: '#2196f3',
     },
     colorPaletteDark: {
+      background: '#121212',
       primary: '#3B7878',
       secondary: '#4E508B',
       tertiary: '#7CB056',

@@ -1,11 +1,7 @@
 from django.http import JsonResponse
 
-# Pagination
-from rest_framework.pagination import PageNumberPagination
-
 # Serializers
-# from .serializers import
-from restaurant.serializers import RestaurantNameIdSerializer
+from restaurant.serializers import RestaurantNameIdSerializer, GetRestAndDriversSerializer
 
 # Models
 from restaurant.models import Restaurant
@@ -26,4 +22,15 @@ class GetRestaurants(APIView):
         
         restaurants = Restaurant.objects.filter(managers=user)
         serialized = RestaurantNameIdSerializer(restaurants, many=True)
+        return JsonResponse(serialized.data, safe=False)
+    
+class GetRestaurantsAndDrivers(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        username = request.query_params.get('username')
+        user = RestManager.objects.get(username=username)
+        
+        restaurants = Restaurant.objects.filter(managers=user)
+        serialized = GetRestAndDriversSerializer(restaurants, many=True)
         return JsonResponse(serialized.data, safe=False)

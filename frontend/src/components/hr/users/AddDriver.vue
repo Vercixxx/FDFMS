@@ -1038,11 +1038,6 @@ export default {
 
             this.input_data['user_role'] = 'Driver';
 
-            // Get id of tariff
-            const tariffResponse = await axios.get(`api/drivers/wage_tariff/get/${this.input_data['wage_tariff']}/`);
-            this.input_data['wage_tariff'] = tariffResponse.data.id;
-            // Get id of tariff
-
             try {
                 const response = await axios.post('api/create/', this.input_data);
                 this.$store.dispatch('triggerAlert', { message: `Successfully added ${this.input_data.username}`, type: 'success' });
@@ -1075,17 +1070,12 @@ export default {
                 for (const field of this.allInputs) {
                     this.input_data[field.model] = this.editUser[field.model];
                 }
-
+                
                 // Country and States
                 this.resSelectedCountry = this.editUser['residence_country'];
                 this.corSelectedCountry = this.editUser['correspondence_country'];
                 this.regSelectedCountry = this.editUser['registered_country'];
 
-                this.resSelectedState = this.editUser['residence_state'];
-                this.corSelectedState = this.editUser['correspondence_state'];
-                this.regSelectedState = this.editUser['registered_state'];
-
-                this.ln_release_date = this.editUser['ln_release_date'];
                 this.ln_expire_date = this.editUser['ln_expire_date'];
 
                 this.selectedTariff = this.editUser['wage_tariff'];
@@ -1115,8 +1105,8 @@ export default {
                 // Get id of tariff
                 const tariffResponse = await axios.get(`api/drivers/wage_tariff/get/${this.input_data['wage_tariff']}/`);
                 input_data['wage_tariff'] = tariffResponse.data.id;
-                // Get id of tariff
 
+                // Get id of tariff
                 const response = await axios.put(`api/users/save/${input_data.username}/${input_data.user_role}/`, input_data);
                 this.$store.dispatch('triggerAlert', { message: `Successfully updated ${input_data.username}`, type: 'success' });
                 this.$root.changeCurrentComponent('ModifyUserComponent');

@@ -9,14 +9,15 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import DestroyAPIView
 
 # Models
-from .models import Driver, DailyWork, WageTariff
+from .models import Driver, DailyWork, WageTariff, Rating
 from fleet.models import Fleet
 from restaurant.models import Restaurant
 from users.models import GeneralUser, Addresses
 
 # Serializers
-from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer, WageTariffGetIdSerializer, NewBillingPeriodSerializer
+from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer, WageTariffGetIdSerializer, NewBillingPeriodSerializer, GetRatingSerializer, UserRating
 from users.serializers import ResidenceAddressSerializer
+from restaurant.serializers import RestaurantNameIdSerializer
 
 
 # DB
@@ -436,3 +437,104 @@ class GetDailyDriversReport(APIView):
             }
 
             return JsonResponse(response_data, status=200)
+        
+        
+        
+class GetMonthlySettlementForDrivers(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        drivers = request.data.get('drivers', [])
+        
+
+
+
+
+class GetRestaurants(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        username = request.query_params.get('username')
+        user = Driver.objects.get(username=username)
+        
+        restaurants = Restaurant.objects.filter(drivers=user)
+        serialized = RestaurantNameIdSerializer(restaurants, many=True)
+        return JsonResponse(serialized.data, safe=False)
+    
+    
+    
+class GetRatings(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        try:
+            ratings = Rating.objects.all().order_by('-rating')
+            serializer = GetRatingSerializer(ratings, many=True)
+            return JsonResponse(serializer.data, status=200, safe=False)
+        except Rating.DoesNotExist:
+            return JsonResponse({'error': 'No ratings found'}, status=404)
+        
+
+
+class ManageRating(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data
+        serializer = GetRatingSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Successfully created'}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+    
+    def put (self, request, id):
+        rating = Rating.objects.get(id=id)
+        data = request.data
+        serializer = GetRatingSerializer(instance=rating, data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Successfully updated '}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+
+
+class DeleteRating(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Rating.objects.all()
+    serializer_class = GetRatingSerializer
+    lookup_field = 'id'
+    
+
+class UpdateUserRating(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, username, rate):
+        user = Driver.objects.get(username=username)
+        
+        data = {
+            'rate': rate
+        }
+        
+        serializer = UserRating(user, data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Successfully updated '}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+        
+        
+class GetRateInfoForDriver(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, username):
+        user = Driver.objects.get(username=username)
+        rate = user.rate
+        
+        serializer = GetRatingSerializer(rate)
+        return JsonResponse(serializer.data, status=200, safe=False)
+    
+    

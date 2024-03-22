@@ -10,10 +10,9 @@
             @update:model-value="loadCars()"></v-autocomplete>
 
 
-        <span v-if="selectedRestaurant != null">
+        <span v-if="selectedRestaurant != null && cars.length > 0">
 
             <div class="mt-5 mb-5">
-
 
                 <v-row>
                     <v-col cols="12" sm="12">
@@ -309,15 +308,18 @@ export default {
         },
     },
 
-    mounted() {
+    async mounted() {
         this.loggedUserUsername = this.$store.getters.userData.username;
 
-        this.getRestaurants();
+        await this.getRestaurants();
 
         this.selectedColumns = this.columns.filter(column =>
             ['license_plate', 'active', 'mileage'].includes(column.key)
         );
         this.avaliableColumns = this.columns;
+
+        this.selectedRestaurant = this.avaliableRestaurants[0];
+        this.loadCars();
     },
 
     methods: {
@@ -390,7 +392,7 @@ export default {
 
             }
             catch (error) {
-                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+                this.$store.dispatch('triggerAlert', { message: error.response.data.error, type: 'error' });
             }
             this.loading = false;
         },

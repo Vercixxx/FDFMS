@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate
 import secrets
 import string
 
+import random
+
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -226,6 +228,7 @@ class UserAuth(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
 
+
         # Check for is.active
         try:
             user = GeneralUser.objects.get(username=username)
@@ -291,6 +294,8 @@ class AddUser(APIView):
         generated_password = self.generate_password()
         data['password'] = generated_password
         data['password2'] = generated_password
+        
+        print(data)
 
         serializer_class = GlobalDictionaries.get_serializer(
             'AddUserSerializers', user_role)
@@ -302,6 +307,11 @@ class AddUser(APIView):
         if serializer.is_valid():
             account = serializer.save()
             account.set_password(generated_password)
+            
+            if user_role == 'Driver':
+                colors = [color[0] for color in Driver.color_choices]
+                account.user_color = random.choice(colors)
+                
             account.save()
 
         else:

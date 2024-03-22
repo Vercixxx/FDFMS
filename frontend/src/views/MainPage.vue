@@ -2,7 +2,7 @@
     <v-app>
         <v-layout class="rounded rounded-md">
 
-            <v-app-bar app :elevation="3" :style="{ backgroundColor: colorPalette['primary'], color: '#333333' }" >
+            <v-app-bar app :elevation="3" :style="{ backgroundColor: colorPalette['primary'], color: '#FFFFFF' }" >
 
 
                 <v-row align="center" no-gutters>
@@ -148,7 +148,7 @@
 
             <!-- Menu -->
             <v-navigation-drawer v-model="drawer" location="left" expand-on-hover rail
-                :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }">
+                :class="{ '': !isDarkModeEnabled, 'bg-grey-darken-4': isDarkModeEnabled }" >
 
                 <v-list density="compact" nav class="pa-3">
 
@@ -281,6 +281,7 @@ import AddClient from '../components/clients/AddClient.vue';
 import ManageClients from '../components/clients/ManageClients.vue';
 import AddBrand from '../components/clients/AddBrand.vue';
 import ManageBrands from '../components/clients/ManageBrands.vue';
+import ManageRatings from '../components/clients/ManageRatings.vue';
 // Clients
 
 
@@ -303,6 +304,11 @@ import ManagerManageCars from '../components/manager/ManageCars.vue';
 // Drivers
 import DailyReport from '..//components/driver/DailyReport.vue';
 import AddCarDamage from '../components/driver/AddCarDamage.vue';
+import DriverSchedule from '../components/driver/DriverSchedule.vue';
+import DriverScheduleList from '../components/driver/DriverScheduleList.vue';
+import DriverStatute from '../components/driver/DriverStatute.vue';
+import DriverContracts from '../components/driver/DriverContracts.vue';
+
 // Drivers
 
 
@@ -651,7 +657,29 @@ export default {
             ],
                 this.currentComponent = ManageBrands
         },
+        ManageRatingsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Ratings",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: 'Manage ratings',
+                    component: '',
+                    disabled: true,
+                },
+            ],
+                this.currentComponent = ManageRatings
+        },
+        // Clients
 
+        
 
         // Assets
         AddCarsComponent() {
@@ -969,6 +997,81 @@ export default {
                 },
             ];
             this.currentComponent = AddCarDamage;
+        },
+        DriverScheduleComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Scheduler",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriverSchedule;
+        },
+        DriverScheduleListComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Scheduler",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: "List",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriverScheduleList;
+        },
+        DriverStatuteComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Work",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: "Statute",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriverStatute;
+        },
+        DriverContractsComponent() {
+            this.path = [
+                {
+                    title: "Home",
+                    component: 'HomeComponent',
+                    disabled: false,
+                },
+                {
+                    title: "Work",
+                    component: '',
+                    disabled: true,
+                },
+                {
+                    title: "Contracts",
+                    component: '',
+                    disabled: true,
+                },
+            ];
+            this.currentComponent = DriverContracts;
         },
         // Drivers
 

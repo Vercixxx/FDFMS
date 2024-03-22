@@ -115,6 +115,19 @@ export default {
                 },
 
                 {
+                    name: 'Ratings',
+                    mainIcon: 'mdi-star-circle-outline',
+                    disabled: true,
+                    options: [
+                        {
+                            name: 'Manage ratings',
+                            click: 'ManageRatingsComponent',
+                            icon: 'mdi-database-edit',
+                        },
+                    ],
+                },
+
+                {
                     name: 'Other',
                     mainIcon: 'mdi-lightning-bolt',
                     disabled: false,

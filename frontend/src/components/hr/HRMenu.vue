@@ -156,19 +156,14 @@ export default {
 
             buttons: [
                 // {
-                //     name: 'Statistics',
-                //     mainIcon: 'mdi-presentation',
+                //     name: 'Ratings',
+                //     mainIcon: 'mdi-star-circle-outline',
                 //     disabled: true,
                 //     options: [
                 //         {
-                //             name: 'Drivers statistics',
-                //             click: 'AddUserComponent',
+                //             name: 'Manage ratings',
+                //             click: 'ManageRatingsComponent',
                 //             icon: 'mdi-database-edit',
-                //         },
-                //         {
-                //             name: 'Managers statistics',
-                //             click: 'ModifyUserComponent',
-                //             icon: ' mdi-database-edit',
                 //         },
                 //     ],
                 // },

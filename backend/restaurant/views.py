@@ -1,8 +1,11 @@
 from django.http import JsonResponse
-
+from datetime import datetime
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 # Serializers
-from .serializers import BrandSerializer, RestaurantSerializer, RestaurantInfoSerializer, RestaurantNameIdSerializer, RestaurantAndDriversSerializer
+from .serializers import BrandSerializer, RestaurantSerializer, RestaurantInfoSerializer, RestaurantNameIdSerializer, RestaurantAndDriversSerializer, GetDriverShiftsSerializer, SaveDriverShiftsSerializer, CreateDriverShiftSerializer
+
 
 # Rest
 from rest_framework.views import APIView
@@ -11,10 +14,13 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import DestroyAPIView
 
 # Models
-from .models import Restaurant, Brands
+from .models import Restaurant, Brands, DriverShift
+from driver.models import Driver
 
 # DB
 from django.db.models import Q
+
+
 
 
 # Pagination
@@ -284,32 +290,158 @@ class UpdateBrand(APIView):
 
 
 
-# Get Resurant and their drivers
-class GetRestaurantsAndDrivers(APIView):
+# Get Resurant and their drivers with brands
+class GetRestaurantsAndDriversWithBrands(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, restaurant=None):
-        limit = self.request.query_params.get('limit', '').strip()
         restaurant = self.request.query_params.get('restaurant', '').strip()
         
         if restaurant:
-            queryset = Restaurant.objects.filter(name=restaurant)
+            queryset = Restaurant.objects.filter(id=restaurant)
         else:  
             queryset = Restaurant.objects.all().order_by('id')
+
+        serialized_data = RestaurantAndDriversSerializer(queryset, many=True).data
+
+        return JsonResponse(serialized_data, status=200, safe=False)
+
+
+class GetDriverShifts(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        restaurant = self.request.query_params.get('restaurant', '').strip()
+        date = self.request.query_params.get('date', '').strip()
+        date_start = self.request.query_params.get('date[start]', '').strip()
+        date_end = self.request.query_params.get('date[end]', '').strip()
+        driver = self.request.query_params.get('driver', '').strip()
         
-        paginator = LocalPaginator()
-        response_page = paginator.paginate_queryset(queryset, request)
+        queryset = DriverShift.objects.filter(restaurant=restaurant)
         
-        serialized_data = RestaurantAndDriversSerializer(response_page, many=True).data
+        if driver:
+            queryset = queryset.filter(Q(driver=driver))
         
-        response_data = {
-            'posts_amount': paginator.page.paginator.count,
-            'total_pages': paginator.page.paginator.num_pages,
-            'current_page': paginator.page.number,
-            'results': serialized_data,
-            'next': paginator.get_next_link(),
-            'previous': paginator.get_previous_link(),
-            'total_results': queryset.count(),
-        }
+        if date_start and date_end:
+            print(date_start, date_end)
+            # User requested for a specific date range
+            date_start = parse_datetime(date_start)
+            date_end = parse_datetime(date_end)
+            queryset = queryset.filter(time_start__range=[date_start, date_end])
+
+        if date:
+            print(date)
+            # User requested for a specific date
+            date = parse_datetime(date)
+            queryset = queryset.filter(time_start__date=date)
+    
+        serialized_data = GetDriverShiftsSerializer(queryset, many=True).data
+        return JsonResponse(serialized_data, status=200, safe=False)
+    
+    
+# Shifts
+class CreateUpdateDriverShift(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data['shift']
+
+        if(data['with'] == 'No driver'):
+            data['with'] = None
+        else:
+            data['with'] = Driver.objects.get(username=data['with'])
+            
+        data['time_start'] = datetime.strptime(data['time']['start'], '%Y-%m-%d %H:%M')
+        data['time_end'] = datetime.strptime(data['time']['end'], '%Y-%m-%d %H:%M')
+        data['driver'] = data['with']
+        del data['color']
+        del data['time']
+        del data['id']
         
-        return JsonResponse(response_data, status=200)
+        serializer = CreateDriverShiftSerializer(data=data)
+        
+        if serializer.is_valid():
+            shift = serializer.save()
+            return JsonResponse({'message': 'Succesfully created'}, status=200)
+        else:
+            print(serializer.errors)
+            return JsonResponse(serializer.errors, status=400)
+        
+    def put(self, request):
+        data = request.data['shift']
+        
+        if(data['with'] == 'No driver'):
+            data['with'] = None
+        else:
+            data['with'] = Driver.objects.get(username=data['with'])
+        
+        data['time_start'] = datetime.strptime(data['time']['start'], '%Y-%m-%d %H:%M')
+        data['time_end'] = datetime.strptime(data['time']['end'], '%Y-%m-%d %H:%M')
+        data['driver'] = data['with']
+        del data['color']
+        del data['time']
+        
+        shift = DriverShift.objects.get(id=data['id'])
+        
+        serializer = SaveDriverShiftsSerializer(shift, data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Succesfully updated'}, status=200)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+        
+class DeleteDriverShift(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = DriverShift.objects.all()
+    serializer_class = SaveDriverShiftsSerializer
+    lookup_field = 'id'
+    
+    
+class AssignDriverForShift(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = request.data
+        
+        try:
+            driver = Driver.objects.get(username=data['driver'])
+            
+            shift = DriverShift.objects.get(id=data['shift'])
+            
+            date_str = data['date']
+            time_start_str = data['time_start']
+            time_end_str = data['time_end']
+
+            time_start_naive = datetime.strptime(f"{date_str} {time_start_str}", "%Y-%m-%d %H:%M")
+            time_end_naive = datetime.strptime(f"{date_str} {time_end_str}", "%Y-%m-%d %H:%M")
+
+            time_start = timezone.make_aware(time_start_naive)
+            time_end = timezone.make_aware(time_end_naive)
+
+            
+            start_diff_hours = (time_start - shift.time_start).total_seconds() / 3600
+            end_diff_hours = (shift.time_end - time_end).total_seconds() / 3600
+            
+            print(start_diff_hours)
+            if (start_diff_hours > 0):
+                new_shift = DriverShift.objects.create(driver=None, restaurant=shift.restaurant, time_start=shift.time_start, time_end=time_start)
+            elif (end_diff_hours > 0):
+                new_shift = DriverShift.objects.create(driver=None, restaurant=shift.restaurant, time_start=time_end, time_end=shift.time_end)
+
+            shift.time_start = time_start
+            shift.time_end = time_end
+            shift.driver = driver
+            shift.save()
+
+            response_message = {
+                'message' : 'Successfully assigned',
+                'day' : data['date'],
+            }
+            
+            return JsonResponse(response_message, status=201)
+        
+        except Exception as e:
+            return JsonResponse({'error': 'Something went wrong'}, status=400)
+
+    

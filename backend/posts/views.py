@@ -47,6 +47,16 @@ class GetPosts(APIView):
         return JsonResponse(response_data, status=200)
     
     
+class GetDriversPostsMobile(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        posts = DriverPosts.objects.all().order_by('-posted_date')
+        serializer = GetDriverPostsSerializer(posts, many=True).data
+        
+        return JsonResponse(serializer, status=200, safe=False)
+    
+    
 class CreatePost(APIView):
     permission_classes = [IsAuthenticated]
 

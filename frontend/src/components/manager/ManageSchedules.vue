@@ -1,283 +1,327 @@
 <template>
-    {{ cars }}
-    <v-row>
-        <v-col cols="auto">
-            <v-autocomplete label="Select restaurant" :items="['Sosnowiec plaza KFC']" variant="outlined"></v-autocomplete>
+    <div class="is-light-mode">
 
-            <v-date-picker v-model="date" border="2" rounded="4" elevation="4" hide-header></v-date-picker>
+        <v-autocomplete v-model="selectedRestaurant" :items="restaurants" variant="solo-filled" item-title="name"
+            item-value="id" label="Select Restaurant" @update:model-value="getShifts()"></v-autocomplete>
 
-            <v-row>
-                <v-col align="center">
-                    <v-btn variant="outlined" class="bg-teal my-5" @click="showScheduleSelector()" prepend-icon="mdi-plus">
-                        Add shift
-                    </v-btn>
-                </v-col>
-            </v-row>
-        </v-col>
-        <v-col>
-            <v-row>
-                <v-col align="center">
-                    {{ formattedDate }}
-                </v-col>
-            </v-row>
-            <v-row border="2" class="pa-2">
-                <v-row>
-                    <v-col cols="auto">
-                        <table style="height: 20vh">
-                            <thead>
-                                <tr align="center">
-                                    <th class="text-left font-weight-black">Hours</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="hour in hoursList" :key="hour.hour" align="center">
-                                    <td v-if="hour[3] != 3 && hour !== '9:30'">
-                                        {{ hour }}
-                                    </td>
-                                    <td v-else>&nbsp;</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </v-col>
+        <v-row v-if="selectedRestaurant != null && calendarMode == 'day'">
+            <v-col>
+                <v-btn append-icon="mdi-plus" @click="addNewSchedule()" color="success" variant="elevated" class="mb-5">Add
+                    Shift</v-btn>
+            </v-col>
+        </v-row>
 
-                    <v-col v-for="car in cars" :key="car.carId">
-                        <v-row :style="{ position: 'relative' }">
-                            <v-col align="center">
-                                Car {{ car.carId }}
-                            </v-col>
-                        </v-row>
+        <Qalendar v-if="selectedRestaurant != null" :events="shifts" :config="config" @delete-event="deleteEvent"
+            :key="calendarKey" @event-was-clicked="objectSelected" @updated-period="periodUpdated"
+            @updated-mode="updatedMode">
 
-                        <v-row :style="{ position: 'relative'}">
+        </Qalendar>
+
+
+        <!-- Dialog add schedule -->
+        <v-dialog v-model="modifyShiftDialog" max-width="500px" persistent>
+            <v-card>
+                <v-card-title>
+                    <v-row>
+                        <v-col cols="10">
+                            <v-autocomplete v-model="singleSchedule.with" :items="drivers" variant="underlined"
+                                label="Driver" item-title="username" item-value="username">
+
+                                <template v-slot:item="{ props, item }">
+                                    <v-list-item v-bind="props" :title="item.raw.username"
+                                        :subtitle="item.raw.last_name + ' ' + item.raw.first_name"></v-list-item>
+                                </template>
+
+                            </v-autocomplete>
+                        </v-col>
+                        <v-col cols="2" align="end">
+                            <v-btn icon="mdi-close" @click="closeDialog()" variant="plain" />
+                        </v-col>
+                    </v-row>
+                </v-card-title>
+
+                <v-card-text>
+                    <v-form v-model="form" @submit-prevent="updateSchedule(singleSchedule)">
+                        <v-row>
                             <v-col>
-                                <v-card v-for="schedule in car.schedules" :key="schedule.id">
-                                    <!-- Card content here -->a
-                                </v-card>
+                                <v-text-field v-model="editingShiftStart" label="Start" variant="underlined"
+                                    hint="HH:MM 24h" persistent-hint :rules="rules" />
+                            </v-col>
+                            <v-col>
+                                <v-text-field v-model="editingShiftEnd" label="End" variant="underlined" hint="HH:MM 24h"
+                                    persistent-hint :rules="rules" />
                             </v-col>
                         </v-row>
-                    </v-col>
-                </v-row>
-            </v-row>
-        </v-col>
-    </v-row>
+                    </v-form>
+                </v-card-text>
 
+                <v-card-actions class="mb-1">
+                    <v-row>
+                        <v-col cols="6">
+                            <v-btn block @click="deleteSchedule(singleSchedule)" color="error" text="Delete"
+                                :disabled="adding"></v-btn>
+                        </v-col>
+                        <v-col cols="6">
+                            <v-btn block @click="updateSchedule(singleSchedule)" color="success"
+                                :text="adding ? 'Add' : 'Save'" :disabled="!form"></v-btn>
+                        </v-col>
+                    </v-row>
+                </v-card-actions>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <v-row justify="center">
-        <v-col cols="3">
-            <v-btn block color="teal-darken-3"> Save </v-btn>
-        </v-col>
-    </v-row>
-    <ScheduleSelector ref="sreateMessage" style="display: none" />
+            </v-card>
+        </v-dialog>
+        <!-- Dialog add schedule -->
+    </div>
 </template>
 
-<script>
-import format from 'date-fns/format'
-import useEventsBus from '../../plugins/eventBus.js'
-import { watch } from "vue";
-const { emit } = useEventsBus()
 
-import ScheduleSelector from './ScheduleSelector.vue';
+
+<script>
+import axios from "axios";
+import { Qalendar } from "qalendar";
 
 export default {
-    name: 'App',
+    name: 'ManageSchedules',
+
+    components: {
+        Qalendar,
+    },
 
 
     data() {
         return {
-
+            loggedUserUsername: null,
             date: null,
-            hoursList: [],
-            rows: 29,
-            cars: [
-                {
-                    carId: 1,
-                    schedules: [
 
-                    ],
-                },
+            restaurants: [],
+            drivers: [
                 {
-                    carId: 2,
-                    schedules: [
-
-                    ],
-                },
-                {
-                    carId: 3,
-                    schedules: [
-
-                    ],
-                },
-                {
-                    carId: 4,
-                    schedules: [
-
-                    ],
-                },
+                    username: 'No driver',
+                    first_name: '',
+                    last_name: 'This option is for unassigned shifts',
+                }
             ],
+            selectedRestaurant: null,
+            selectedDate: null,
+            calendarMode: 'day',
 
+            calendarKey: 0,
+            shifts: [],
 
-            hoursListDict: {},
-            unitHeight: 1.93103448276,
+            editingShift: null,
+            editingShiftStart: null,
+            editingShiftEnd: null,
 
+            modifyShiftDialog: false,
+            form: false,
+            rules: [
+                v => !!v || 'Time is required',
+                v => /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(v) || 'Invalid time format. Use HH:MM 24h format',
+            ],
+            adding: false,
+            tempId: 'new999999',
+            singleSchedule: {
+                id: null,
+                with: null,
+                time: {
+                    start: null,
+                    end: null,
+                },
+                color: 'red',
+                isEditable: true,
+            },
 
+            config: {
+                defaultMode: 'day',
+                showCurrentTime: true,
+                locale: 'pl-PL',
+                isSilent: true,
+                eventDialog: {
+                    isCustom: true,
+                },
 
-        }
+                dayBoundaries: {
+                    start: 9,
+                    end: 23,
+                },
+            },
+
+        };
     },
-
-
-    components: {
-        ScheduleSelector,
-    },
-
-
-    computed: {
-        formattedDate() {
-            return this.date ? format(this.date, 'EEEE, dd/LL/yyyy') : "Select date"
-        },
-    },
-
-
-    mounted() {
-        this.hoursList = this.generateTimeRows().map(item => item.hour);
-
-        this.hoursList.forEach((hour, index) => {
-            this.hoursListDict[index] = hour;
-        });
-
-        const { bus } = useEventsBus();
-        watch(
-            () => [bus.value.get('appliedScheduleHours')],
-            ([appliedScheduleHours]) => {
-                this.handleAppliedScheduleHours(appliedScheduleHours);
-            }
-        );
-
-    },
-
 
 
     methods: {
-        generateTimeRows() {
-            const startHour = 9;
-            const endHour = 23;
-            const timeRows = [];
 
-            for (let hour = startHour; hour < endHour; hour++) {
-                timeRows.push({ hour: `${hour}:00` });
-                timeRows.push({ hour: `${hour}:30` });
-            }
-
-            timeRows.push({ hour: `${endHour}:00` });
-
-            return timeRows;
-        },
-
-        showScheduleSelector() {
-            const data = [
-                this.cars,
-            ]
-            emit('showScheduleSelector', data)
-        },
-
-
-        editSchedule(carSchedules) {
-            console.log(carSchedules)
-        },
-
-
-        handleAppliedScheduleHours(appliedScheduleHours) {
-            if (appliedScheduleHours) {
-                const start = appliedScheduleHours[0][0];
-                const end = appliedScheduleHours[0][1];
-                const carId = appliedScheduleHours[0][2];
-
-                const carIndex = this.cars.findIndex(car => car.carId === carId);
-
-                if (carIndex !== -1) {
-                    if (!this.cars[carIndex].schedules) {
-                        this.cars[carIndex].schedules = [];
+        // Get restaurants for manager
+        async getRestaurants() {
+            try {
+                const response = await axios.get('api/rest_manager/get_restaurants_and_drivers/', {
+                    params: {
+                        username: this.loggedUserUsername,
                     }
+                });
 
-                    const newSingleSchedule = {
-                        driver: true,
-                        start: start,
-                        end: end,
-                    };
-                    newSingleSchedule.startRow = this.calculateStartPosition(newSingleSchedule.start, newSingleSchedule.end);
-                    newSingleSchedule.blockHeight = this.calculateUnits(newSingleSchedule.start, newSingleSchedule.end) + 1;;
+                this.restaurants = response.data;
 
-                    this.cars[carIndex].schedules.push(newSingleSchedule);
-                }
+            }
+            catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
         },
+        // Get restaurants for manager
 
 
-        calculateUnits(startTime, endTime) {
-            const start = new Date(`2000-01-01 ${startTime}`);
-            const end = new Date(`2000-01-01 ${endTime}`);
-            const timeDiff = end - start;
-            const unitDiff = timeDiff / (30 * 60 * 1000);
-            return Math.floor(unitDiff);
-        },
-
-        calculateStartPosition(start) {
-            const referenceTime = new Date(`2000-01-01 09:00`);
-            const startTime = new Date(`2000-01-01 ${start}`);
-            const timeDiff = startTime - referenceTime;
-            const unitDiff = timeDiff / (30 * 60 * 1000);
-            return Math.floor(unitDiff);
-        },
-
-
-        isHourScheduled(hour, schedule) {
-            const hourInMinutes = this.hourToMinutes(hour);
-
-            for (const singleSchedule of schedule) {
-                const startInMinutes = this.hourToMinutes(singleSchedule.start);
-                const endInMinutes = this.hourToMinutes(singleSchedule.end);
-
-                if (hourInMinutes >= startInMinutes && hourInMinutes <= endInMinutes) {
-                    if (singleSchedule.breaks) {
-                        for (const breakTime of singleSchedule.breaks) {
-                            const breakStart = this.hourToMinutes(breakTime.start);
-                            const breakEnd = this.hourToMinutes(breakTime.end);
-
-                            if (hourInMinutes >= breakStart && hourInMinutes < breakEnd) {
-                                return '';
-                            }
-                        }
+        // Get shifts
+        async getShifts() {
+            try {
+                const response = await axios.get('api/restaurant/driver-shifts/', {
+                    params: {
+                        restaurant: this.selectedRestaurant,
+                        date: this.date,
                     }
+                });
+                this.shifts = response.data;
 
-                    return singleSchedule.driver;
+                this.shifts.forEach(shift => {
+                    if (shift.with === null) {
+                        shift.with = 'No driver';
+                        shift.color = 'red';
+                    }
+                });
+
+                let newDrivers = this.restaurants.find(restaurant => restaurant.id === this.selectedRestaurant).drivers;
+                this.drivers = [...new Set([...this.drivers, ...newDrivers])];
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+            }
+        },
+        // Get shifts
+
+        // Period updated
+        periodUpdated(data) {
+            this.date = data;
+            this.getShifts()
+        },
+        // Period updated
+
+
+        // Mode updated
+        updatedMode(data) {
+            this.calendarMode = data.mode;
+            this.date = data;
+            this.getShifts()
+        },
+        // Mode updated
+
+        async deleteSchedule(event) {
+            const id = event.id;
+
+            try {
+                const response = await axios.delete(`api/restaurant/driver-shifts/delete/${id}/`);
+                this.$store.dispatch('triggerAlert', { message: 'Successfully deleted', type: 'success' });
+                this.getShifts();
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
+            }
+            this.modifyShiftDialog = false;
+        },
+
+        objectSelected(event) {
+            this.singleSchedule = {
+                id: event.clickedEvent.id,
+                with: event.clickedEvent.with,
+                time: {
+                    start: event.clickedEvent.time.start,
+                    end: event.clickedEvent.time.end,
+                },
+                color: event.clickedEvent.color,
+                isEditable: true,
+            }
+            this.editingShiftStart = event.clickedEvent.time.start.slice(-5);
+            this.editingShiftEnd = event.clickedEvent.time.end.slice(-5);
+            this.modifyShiftDialog = true;
+        },
+
+        addNewSchedule() {
+
+            const start = new Date().toISOString().slice(0, 10);
+            const end = new Date().toISOString().slice(0, 10);
+
+            this.editingShiftStart = '09:00';
+            this.editingShiftEnd = '16:00';
+
+            this.singleSchedule = {
+                id: this.tempId,
+                with: this.drivers[0].username,
+                time: {
+                    start: this.editingShiftStart,
+                    end: this.editingShiftEnd,
+                },
+                color: 'red',
+                isEditable: true,
+            };
+
+            this.adding = true;
+            this.modifyShiftDialog = true;
+        },
+
+        closeDialog() {
+            this.modifyShiftDialog = false;
+            this.adding = false;
+        },
+
+        async updateSchedule(props) {
+            try {
+
+                if (typeof props.id === 'string') {
+                    props.restaurant = this.selectedRestaurant;
+
+                    // Map start and end time to the shift
+                    // let currentDate = new Date();
+                    let formattedDate = null;
+                    try {
+                        formattedDate = this.date.end.toISOString().slice(0, 10);
+                    } catch (error) {
+                        formattedDate = this.date.toISOString().slice(0, 10);
+                    }
+                    props.time.start = formattedDate + ' ' + this.editingShiftStart;
+                    props.time.end = formattedDate + ' ' + this.editingShiftEnd;
+
+                    const response = await axios.post('api/restaurant/driver-shifts/create-update/', {
+                        shift: props,
+                    });
+                    this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
+                } else {
+                    // Map start and end time to the shift
+                    props.time.start = props.time.start.slice(0, -5) + this.editingShiftStart;
+                    props.time.end = props.time.end.slice(0, -5) + this.editingShiftEnd;
+                    const response = await axios.put('api/restaurant/driver-shifts/create-update/', {
+                        shift: props,
+                    });
+                    this.$store.dispatch('triggerAlert', { message: response.data.message, type: 'success' });
                 }
+                this.modifyShiftDialog = false;
+                this.getShifts();
+            } catch (error) {
+                this.$store.dispatch('triggerAlert', { message: error, type: 'error' });
             }
 
-            return '';
         },
 
+    },
 
-        hourToMinutes(hour) {
-            const [hourPart, minutePart] = hour.split(":");
-            return parseInt(hourPart) * 60 + parseInt(minutePart);
-        },
-
-
+    async created() {
+        this.loggedUserUsername = this.$store.getters.userData.username;
+        this.date = new Date();
+        await this.getRestaurants();
+        this.selectedRestaurant = this.restaurants[0].id;
+        await this.getShifts();
     },
 };
 </script>
+
+
+
+<style>
+@import "qalendar/dist/style.css";
+</style>

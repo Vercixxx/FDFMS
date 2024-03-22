@@ -46,4 +46,27 @@ urlpatterns = [
     # Get New Billing Period starting day
     path('api/drivers/wage_tariff/get/new_billing_period/<str:name>/', views.GetNewBillingPeriodStartingDay.as_view(), name='get_new_billing_period'),
     
+    
+    # Get restaurant for driver
+    path('api/drivers/get/restaurants/', views.GetRestaurants.as_view(), name='get_restaurant'),
+    
+    
+    # Get ratings
+    path('api/drivers/ratings/get/ratings/', views.GetRatings.as_view(), name='get_ratings'),
+    
+    # Add rating
+    path('api/drivers/ratings/add/', views.ManageRating.as_view(), name='add_rating'),
+    
+    # Edit rating
+    path('api/drivers/ratings/edit/<int:id>/', views.ManageRating.as_view(), name='edit_rating'),
+    
+    # Delete rating
+    path('api/drivers/ratings/delete/<int:id>/', views.DeleteRating.as_view(), name='delete_rating'),
+    
+    # Update driver's rating
+    path('api/drivers/ratings/update/<str:username>/<int:rate>/', views.UpdateUserRating.as_view(), name='update_rating'),
+    
+    
+    # Get rate info for driver
+    path('api/drivers/ratings/get/rate_info/<str:username>/', views.GetRateInfoForDriver.as_view(), name='get_rate_info'),
 ]
