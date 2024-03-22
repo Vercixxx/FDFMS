@@ -294,6 +294,8 @@ class AddUser(APIView):
         generated_password = self.generate_password()
         data['password'] = generated_password
         data['password2'] = generated_password
+        
+        print(data)
 
         serializer_class = GlobalDictionaries.get_serializer(
             'AddUserSerializers', user_role)
