@@ -1,28 +1,17 @@
 from pathlib import Path
 import os
-import json
 from datetime import timedelta
 
-
-SECRET_DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'secret_data.json')
-
-with open(SECRET_DATA_FILE) as f:
-    secret_data = json.load(f)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 
-# https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-SECRET_KEY = secret_data.get("SECRET_KEY_VALUE")
+SECRET_KEY = os.environ.get('SECRET_KEY')
+DEBUG = bool(int(os.environ.get("DEBUG", "0")))
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(' ')
 
-
-
-DEBUG = True
-
-# ALLOWED_HOSTS = ['127.0.0.1']
-ALLOWED_HOSTS = ['*']
 
 
 
@@ -109,11 +98,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': secret_data.get("DB_NAME"),
-        'USER': secret_data.get("DB_USER"),
-        'PASSWORD': secret_data.get("DB_PASSWORD"),
-        'HOST': secret_data.get("DB_HOST"),
-        'PORT': secret_data.get("DB_PORT"),
+        'NAME': os.environ.get("DB_NAME"),
+        'USER': os.environ.get("DB_USER"),
+        'PASSWORD': os.environ.get("DB_PASSWORD"),
+        'HOST': os.environ.get("DB_HOST"),
+        'PORT': os.environ.get("DB_PORT"),
     }
 }
 
@@ -148,7 +137,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -1,3 +1,7 @@
 backend/venv
 secret_data.json
 .vscode/
+
+Dockerfile
+docker-compose.yml
+fdfms_django_image.tar

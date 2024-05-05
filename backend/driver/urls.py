@@ -69,4 +69,10 @@ urlpatterns = [
     
     # Get rate info for driver
     path('api/drivers/ratings/get/rate_info/<str:username>/', views.GetRateInfoForDriver.as_view(), name='get_rate_info'),
+    
+    
+    
+    
+    # App
+    path('api/drivers/get/restaurant_phone/<str:username>/', views.GetRestaurantPhoneNumber.as_view(), name='get_restaurant_phone'),
 ]

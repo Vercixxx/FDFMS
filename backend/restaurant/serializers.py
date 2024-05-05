@@ -54,6 +54,11 @@ class RestaurantNameIdSerializer(serializers.ModelSerializer):
         model = Restaurant
         fields = ['id', 'name']
         
+class GetRestaurantPhoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Restaurant
+        fields = ['name', 'phone']
+        
 class GetRestAndDriversSerializer(serializers.ModelSerializer):
     drivers = BasicDriverDataSerializer(many=True, read_only=True)
     
