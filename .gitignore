@@ -5,3 +5,4 @@ secret_data.json
 Dockerfile
 docker-compose.yml
 fdfms_django_image.tar
+run.sh
