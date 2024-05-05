@@ -270,7 +270,7 @@ class UserAuth(APIView):
 
 
 class AddUser(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         data = request.data
