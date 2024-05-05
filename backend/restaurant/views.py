@@ -317,23 +317,25 @@ class GetDriverShifts(APIView):
         date_end = self.request.query_params.get('date[end]', '').strip()
         driver = self.request.query_params.get('driver', '').strip()
         
-        queryset = DriverShift.objects.filter(restaurant=restaurant)
-        
+        if restaurant == 'all':
+            queryset = DriverShift.objects.all()
+        else:
+            queryset = DriverShift.objects.filter(restaurant=restaurant)
+    
         if driver:
             queryset = queryset.filter(Q(driver=driver))
         
         if date_start and date_end:
-            print(date_start, date_end)
             # User requested for a specific date range
             date_start = parse_datetime(date_start)
             date_end = parse_datetime(date_end)
             queryset = queryset.filter(time_start__range=[date_start, date_end])
 
         if date:
-            print(date)
             # User requested for a specific date
             date = parse_datetime(date)
             queryset = queryset.filter(time_start__date=date)
+            
     
         serialized_data = GetDriverShiftsSerializer(queryset, many=True).data
         return JsonResponse(serialized_data, status=200, safe=False)

@@ -54,6 +54,11 @@ class RestaurantNameIdSerializer(serializers.ModelSerializer):
         model = Restaurant
         fields = ['id', 'name']
         
+class GetRestaurantPhoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Restaurant
+        fields = ['name', 'phone']
+        
 class GetRestAndDriversSerializer(serializers.ModelSerializer):
     drivers = BasicDriverDataSerializer(many=True, read_only=True)
     
@@ -74,9 +79,10 @@ class RestaurantAndDriversSerializer(serializers.ModelSerializer):
     
     
 class GetDriverShiftsSerializer(serializers.ModelSerializer):
+    restaurant_name = serializers.SerializerMethodField()
     class Meta:
         model = DriverShift
-        fields = ['id', 'driver', 'time_start', 'time_end']
+        fields = ['id', 'driver', 'time_start', 'time_end', 'restaurant', 'restaurant_name']
         
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -99,6 +105,9 @@ class GetDriverShiftsSerializer(serializers.ModelSerializer):
             representation['color'] = 'red'
 
         return representation
+    
+    def get_restaurant_name(self, obj):
+        return obj.restaurant.name
     
 class SaveDriverShiftsSerializer(serializers.ModelSerializer):
     class Meta:

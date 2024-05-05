@@ -17,7 +17,7 @@ from users.models import GeneralUser, Addresses
 # Serializers
 from .serializers import RestaurantDriversSerliazer, DriverUsernameSerializer, DailyDriverReportSerializer, WageTariffSerializer, WageTariffGetIdSerializer, NewBillingPeriodSerializer, GetRatingSerializer, UserRating
 from users.serializers import ResidenceAddressSerializer
-from restaurant.serializers import RestaurantNameIdSerializer
+from restaurant.serializers import RestaurantNameIdSerializer, GetRestaurantPhoneSerializer
 
 
 # DB
@@ -461,6 +461,16 @@ class GetRestaurants(APIView):
         serialized = RestaurantNameIdSerializer(restaurants, many=True)
         return JsonResponse(serialized.data, safe=False)
     
+    
+class GetRestaurantPhoneNumber(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, username):
+        user = Driver.objects.get(username=username)
+        
+        restaurants = Restaurant.objects.filter(drivers=user)
+        serializer = GetRestaurantPhoneSerializer(restaurants, many=True)
+        return JsonResponse(serializer.data, status=200, safe=False)
     
     
 class GetRatings(APIView):
